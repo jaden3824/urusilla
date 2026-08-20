@@ -1,0 +1,399 @@
+{
+  "claim_eligible": false,
+  "cold_artifact_utf8_bytes": 16005,
+  "decoded_json_bridge_rule": "transport-only; no comprehension claim",
+  "format": "competitive-eval-cold-artifact-amortization-v1",
+  "logical_artifact_locks": {
+    "optimized_grammar": {
+      "sha256": "cb67a76a1b9537b909c2349b4df095ef69f715724f188b11c1c41f3e62618c0d",
+      "utf8_bytes": 437
+    },
+    "optimized_profile": {
+      "sha256": "f6368ee3e9ae9dd3b9a7335b5e3a0b3999e376c5a4e800f5ea8733e8f722a50d",
+      "utf8_bytes": 1358
+    },
+    "structured_bundle": {
+      "sha256": "8f864d02104783cf9adbdc2b1eb407577e7a99b8b208392ee8a2df319c493372",
+      "utf8_bytes": 13799
+    },
+    "structured_codebook": {
+      "sha256": "240986a14035049a16bbd3bb98b41bb8ba88978792b959bd3d4cc961a9703b8e",
+      "utf8_bytes": 11927
+    },
+    "structured_profile_base64": {
+      "sha256": "cac7b9839c57b4cc5656981916984c10f7c075ab9823cb340ca350a3099a98d3",
+      "utf8_bytes": 1872
+    },
+    "symbolic_grammar": {
+      "sha256": "fad7d0b4a11e25883bd6c6c48f038c01010887f38988cd9246bbd69da0ecda32",
+      "utf8_bytes": 411
+    }
+  },
+  "session_lengths": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32,
+    64,
+    128
+  ],
+  "stateless_surface_prompt_rule": "replay and charge every request",
+  "tokenizers": {
+    "cl100k_base": {
+      "amortized_cold_bytes_per_message": {
+        "1": {
+          "decimal": "16005.000000000000",
+          "denominator": 1,
+          "numerator": 16005
+        },
+        "128": {
+          "decimal": "125.039062500000",
+          "denominator": 128,
+          "numerator": 16005
+        },
+        "16": {
+          "decimal": "1000.312500000000",
+          "denominator": 16,
+          "numerator": 16005
+        },
+        "2": {
+          "decimal": "8002.500000000000",
+          "denominator": 2,
+          "numerator": 16005
+        },
+        "32": {
+          "decimal": "500.156250000000",
+          "denominator": 32,
+          "numerator": 16005
+        },
+        "4": {
+          "decimal": "4001.250000000000",
+          "denominator": 4,
+          "numerator": 16005
+        },
+        "64": {
+          "decimal": "250.078125000000",
+          "denominator": 64,
+          "numerator": 16005
+        },
+        "8": {
+          "decimal": "2000.625000000000",
+          "denominator": 8,
+          "numerator": 16005
+        }
+      },
+      "amortized_cold_tokens_per_message": {
+        "1": {
+          "decimal": "10170.000000000000",
+          "denominator": 1,
+          "numerator": 10170
+        },
+        "128": {
+          "decimal": "79.453125000000",
+          "denominator": 128,
+          "numerator": 10170
+        },
+        "16": {
+          "decimal": "635.625000000000",
+          "denominator": 16,
+          "numerator": 10170
+        },
+        "2": {
+          "decimal": "5085.000000000000",
+          "denominator": 2,
+          "numerator": 10170
+        },
+        "32": {
+          "decimal": "317.812500000000",
+          "denominator": 32,
+          "numerator": 10170
+        },
+        "4": {
+          "decimal": "2542.500000000000",
+          "denominator": 4,
+          "numerator": 10170
+        },
+        "64": {
+          "decimal": "158.906250000000",
+          "denominator": 64,
+          "numerator": 10170
+        },
+        "8": {
+          "decimal": "1271.250000000000",
+          "denominator": 8,
+          "numerator": 10170
+        }
+      },
+      "cold_artifact_tokens": 10170,
+      "warm_incremental_artifact_tokens": 0
+    },
+    "mistral_7b_instruct_v03": {
+      "amortized_cold_bytes_per_message": {
+        "1": {
+          "decimal": "16005.000000000000",
+          "denominator": 1,
+          "numerator": 16005
+        },
+        "128": {
+          "decimal": "125.039062500000",
+          "denominator": 128,
+          "numerator": 16005
+        },
+        "16": {
+          "decimal": "1000.312500000000",
+          "denominator": 16,
+          "numerator": 16005
+        },
+        "2": {
+          "decimal": "8002.500000000000",
+          "denominator": 2,
+          "numerator": 16005
+        },
+        "32": {
+          "decimal": "500.156250000000",
+          "denominator": 32,
+          "numerator": 16005
+        },
+        "4": {
+          "decimal": "4001.250000000000",
+          "denominator": 4,
+          "numerator": 16005
+        },
+        "64": {
+          "decimal": "250.078125000000",
+          "denominator": 64,
+          "numerator": 16005
+        },
+        "8": {
+          "decimal": "2000.625000000000",
+          "denominator": 8,
+          "numerator": 16005
+        }
+      },
+      "amortized_cold_tokens_per_message": {
+        "1": {
+          "decimal": "11750.000000000000",
+          "denominator": 1,
+          "numerator": 11750
+        },
+        "128": {
+          "decimal": "91.796875000000",
+          "denominator": 128,
+          "numerator": 11750
+        },
+        "16": {
+          "decimal": "734.375000000000",
+          "denominator": 16,
+          "numerator": 11750
+        },
+        "2": {
+          "decimal": "5875.000000000000",
+          "denominator": 2,
+          "numerator": 11750
+        },
+        "32": {
+          "decimal": "367.187500000000",
+          "denominator": 32,
+          "numerator": 11750
+        },
+        "4": {
+          "decimal": "2937.500000000000",
+          "denominator": 4,
+          "numerator": 11750
+        },
+        "64": {
+          "decimal": "183.593750000000",
+          "denominator": 64,
+          "numerator": 11750
+        },
+        "8": {
+          "decimal": "1468.750000000000",
+          "denominator": 8,
+          "numerator": 11750
+        }
+      },
+      "cold_artifact_tokens": 11750,
+      "warm_incremental_artifact_tokens": 0
+    },
+    "o200k_base": {
+      "amortized_cold_bytes_per_message": {
+        "1": {
+          "decimal": "16005.000000000000",
+          "denominator": 1,
+          "numerator": 16005
+        },
+        "128": {
+          "decimal": "125.039062500000",
+          "denominator": 128,
+          "numerator": 16005
+        },
+        "16": {
+          "decimal": "1000.312500000000",
+          "denominator": 16,
+          "numerator": 16005
+        },
+        "2": {
+          "decimal": "8002.500000000000",
+          "denominator": 2,
+          "numerator": 16005
+        },
+        "32": {
+          "decimal": "500.156250000000",
+          "denominator": 32,
+          "numerator": 16005
+        },
+        "4": {
+          "decimal": "4001.250000000000",
+          "denominator": 4,
+          "numerator": 16005
+        },
+        "64": {
+          "decimal": "250.078125000000",
+          "denominator": 64,
+          "numerator": 16005
+        },
+        "8": {
+          "decimal": "2000.625000000000",
+          "denominator": 8,
+          "numerator": 16005
+        }
+      },
+      "amortized_cold_tokens_per_message": {
+        "1": {
+          "decimal": "9661.000000000000",
+          "denominator": 1,
+          "numerator": 9661
+        },
+        "128": {
+          "decimal": "75.476562500000",
+          "denominator": 128,
+          "numerator": 9661
+        },
+        "16": {
+          "decimal": "603.812500000000",
+          "denominator": 16,
+          "numerator": 9661
+        },
+        "2": {
+          "decimal": "4830.500000000000",
+          "denominator": 2,
+          "numerator": 9661
+        },
+        "32": {
+          "decimal": "301.906250000000",
+          "denominator": 32,
+          "numerator": 9661
+        },
+        "4": {
+          "decimal": "2415.250000000000",
+          "denominator": 4,
+          "numerator": 9661
+        },
+        "64": {
+          "decimal": "150.953125000000",
+          "denominator": 64,
+          "numerator": 9661
+        },
+        "8": {
+          "decimal": "1207.625000000000",
+          "denominator": 8,
+          "numerator": 9661
+        }
+      },
+      "cold_artifact_tokens": 9661,
+      "warm_incremental_artifact_tokens": 0
+    },
+    "qwen2_5_7b_instruct": {
+      "amortized_cold_bytes_per_message": {
+        "1": {
+          "decimal": "16005.000000000000",
+          "denominator": 1,
+          "numerator": 16005
+        },
+        "128": {
+          "decimal": "125.039062500000",
+          "denominator": 128,
+          "numerator": 16005
+        },
+        "16": {
+          "decimal": "1000.312500000000",
+          "denominator": 16,
+          "numerator": 16005
+        },
+        "2": {
+          "decimal": "8002.500000000000",
+          "denominator": 2,
+          "numerator": 16005
+        },
+        "32": {
+          "decimal": "500.156250000000",
+          "denominator": 32,
+          "numerator": 16005
+        },
+        "4": {
+          "decimal": "4001.250000000000",
+          "denominator": 4,
+          "numerator": 16005
+        },
+        "64": {
+          "decimal": "250.078125000000",
+          "denominator": 64,
+          "numerator": 16005
+        },
+        "8": {
+          "decimal": "2000.625000000000",
+          "denominator": 8,
+          "numerator": 16005
+        }
+      },
+      "amortized_cold_tokens_per_message": {
+        "1": {
+          "decimal": "10348.000000000000",
+          "denominator": 1,
+          "numerator": 10348
+        },
+        "128": {
+          "decimal": "80.843750000000",
+          "denominator": 128,
+          "numerator": 10348
+        },
+        "16": {
+          "decimal": "646.750000000000",
+          "denominator": 16,
+          "numerator": 10348
+        },
+        "2": {
+          "decimal": "5174.000000000000",
+          "denominator": 2,
+          "numerator": 10348
+        },
+        "32": {
+          "decimal": "323.375000000000",
+          "denominator": 32,
+          "numerator": 10348
+        },
+        "4": {
+          "decimal": "2587.000000000000",
+          "denominator": 4,
+          "numerator": 10348
+        },
+        "64": {
+          "decimal": "161.687500000000",
+          "denominator": 64,
+          "numerator": 10348
+        },
+        "8": {
+          "decimal": "1293.500000000000",
+          "denominator": 8,
+          "numerator": 10348
+        }
+      },
+      "cold_artifact_tokens": 10348,
+      "warm_incremental_artifact_tokens": 0
+    }
+  },
+  "warm_incremental_artifact_bytes": 0,
+  "warning": "Artifact-only arithmetic. It is not a model-token saving result, and one-time charging requires independently verified persistent context."
+}

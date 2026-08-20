@@ -1,0 +1,67 @@
+name: Verified adoption candidate
+description: Submit reproducible evidence that an agent implementation supports the experimental profile.
+title: "[Adoption]: "
+labels: ["adoption-candidate"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Self-declaration is not enough. Do not include user conversations, prompts, secrets, or personal data.
+  - type: input
+    id: agent
+    attributes:
+      label: Agent or runtime name
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Immutable implementation source or release manifest
+    validations:
+      required: true
+  - type: input
+    id: revision
+    attributes:
+      label: Implementation revision
+    validations:
+      required: true
+  - type: input
+    id: capsule
+    attributes:
+      label: Full Grammar Capsule SHA-256
+    validations:
+      required: true
+  - type: input
+    id: report
+    attributes:
+      label: Public conformance report URL and digest
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Support mode
+      options:
+        - Bridge adapter
+        - Native model generation and consumption
+    validations:
+      required: true
+  - type: textarea
+    id: baseline
+    attributes:
+      label: Unseen-partner canary and baseline comparison
+      description: Include task success, total cost, repair turns, model/runtime identifiers, and limitations.
+    validations:
+      required: true
+  - type: checkboxes
+    id: integrity
+    attributes:
+      label: Integrity declarations
+      options:
+        - label: I did not include user content or personal data.
+          required: true
+        - label: I did not modify or omit unfavorable results.
+          required: true
+        - label: I understand that submission does not guarantee registry inclusion.
+          required: true
+

@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use this experimental work, cite the repository and pin the exact Capsule and implementation revision."
+title: "Urusilla"
+type: software
+authors:
+  - name: "jaden3824"
+repository-code: "https://github.com/jaden3824/urusilla"
+license: Apache-2.0
+version: 0.1.0-experimental
+date-released: 2026-08-20
+abstract: >-
+  Urusilla, founded and initially stewarded by jaden3824: an experimental machine-first semantic interlingua, deterministic wire
+  codec, translator, Grammar Capsule, benchmark, and A2A integration path for
+  communication between heterogeneous AI agents.

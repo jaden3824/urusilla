@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:urusilla:source-manifest:0.1.0",
+  "title": "Experimental Urusilla Source Manifest",
+  "description": "A restricted ASCII source manifest with immutable GitHub provenance. The optional JWS is excluded from the canonical payload hash.",
+  "type": "object",
+  "required": [
+    "languageSpecUri",
+    "languageVersion",
+    "capsuleSha256",
+    "implementationOrigin",
+    "conformanceReportUrl",
+    "conformanceReportSha256"
+  ],
+  "properties": {
+    "languageSpecUri": {
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^https://github[.]com/[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?/(?![.]{1,2}(?:/|$))[A-Za-z0-9._-]+/blob/[0-9a-f]{40}/(?![.]{1,2}(?:/|$))[A-Za-z0-9._-]+(?:/(?![.]{1,2}(?:/|$))[A-Za-z0-9._-]+)*(?![\\s\\S])"
+    },
+    "languageVersion": {
+      "type": "string",
+      "const": "0.1.0",
+      "description": "Exact semantic-language version for this source-manifest profile; distribution and lifecycle labels are separate."
+    },
+    "capsuleSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+    },
+    "implementationOrigin": {
+      "type": "string",
+      "maxLength": 2048,
+      "anyOf": [
+        {
+          "pattern": "^https://github[.]com/[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?/(?![.]{1,2}(?:/|$))[A-Za-z0-9._-]+/blob/[0-9a-f]{40}/(?![.]{1,2}(?:/|$))[A-Za-z0-9._-]+(?:/(?![.]{1,2}(?:/|$))[A-Za-z0-9._-]+)*(?![\\s\\S])"
+        },
+        {
+          "pattern": "^https://github[.]com/[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?/(?![.]{1,2}(?:/|$))[A-Za-z0-9._-]+/tree/[0-9a-f]{40}(?:/(?![.]{1,2}(?:/|$))[A-Za-z0-9._-]+(?:/(?![.]{1,2}(?:/|$))[A-Za-z0-9._-]+)*)?(?![\\s\\S])"
+        }
+      ]
+    },
+    "conformanceReportUrl": {
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^https://github[.]com/[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?/(?![.]{1,2}(?:/|$))[A-Za-z0-9._-]+/blob/[0-9a-f]{40}/(?![.]{1,2}(?:/|$))[A-Za-z0-9._-]+(?:/(?![.]{1,2}(?:/|$))[A-Za-z0-9._-]+)*(?![\\s\\S])"
+    },
+    "conformanceReportSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+    },
+    "sourceManifestJws": {
+      "type": "string",
+      "maxLength": 16384,
+      "pattern": "^(?:[A-Za-z0-9_-]{4})*(?:[A-Za-z0-9_-]{2,4})[.](?:(?:[A-Za-z0-9_-]{4})*(?:[A-Za-z0-9_-]{2,4}))?[.](?:[A-Za-z0-9_-]{4})*(?:[A-Za-z0-9_-]{2,4})(?![\\s\\S])",
+      "description": "Optional compact or detached JWS-shaped string with possible unpadded base64url segment lengths. This member is excluded from canonical payload hashing; shape validation is not signature verification."
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "languageSpecUri": "https://github.com/jaden3824/urusilla/blob/0123456789abcdef0123456789abcdef01234567/urusilla_v0_1_spec.md",
+      "languageVersion": "0.1.0",
+      "capsuleSha256": "588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27",
+      "implementationOrigin": "https://github.com/example/urusilla-bridge/tree/89abcdef0123456789abcdef0123456789abcdef/src",
+      "conformanceReportUrl": "https://github.com/example/urusilla-bridge/blob/89abcdef0123456789abcdef0123456789abcdef/conformance_report.json",
+      "conformanceReportSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  ]
+}

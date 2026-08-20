@@ -1,0 +1,41 @@
+{
+  "captured_at_utc": "2026-08-20T00:00:00Z",
+  "compatibility_impact": {
+    "frozen_vectors_affected": false,
+    "node_lane_behavior": "rejects the demonstrated 250,001-node frame",
+    "python_reference_behavior": "rejects the demonstrated 250,001-node frame"
+  },
+  "exact_boundary_probe": {
+    "body_plus_meta_nodes": 250000,
+    "decode_accepted": true,
+    "frame_bytes": 250138,
+    "frame_sha256": "2173ca1311b383a8dc62a7380014bf18070fa06bc084a4366bef97fe8093b75e"
+  },
+  "exact_plus_one_probe": {
+    "body_plus_meta_nodes": 250001,
+    "decode_accepted": false,
+    "error_contains": "semantic tree exceeds aggregate node limit 250000",
+    "frame_bytes": 250164,
+    "frame_sha256": "342c1669177dc6eb733e47a6162bc2c78248f05e084905381a53cff67722699c"
+  },
+  "format": "urusilla-python-reference-resource-probe-v2",
+  "implementation_runtime_dependency": false,
+  "invariant": "Exactly 250,000 body-plus-meta semantic values are accepted; 250,001 are rejected before effects.",
+  "measurement_limits": "This is a deterministic boundary check, not a performance benchmark, memory bound, or security certification.",
+  "minimal_non_sensitive_shape": {
+    "body_plus_meta_nodes": 250001,
+    "node_count_rule": "Every scalar, byte string, list, and map counts once across body and meta; map keys do not add semantic-value nodes.",
+    "relationship_to_limit": "one node over 250,000"
+  },
+  "purpose": "Deterministic cross-runtime check of the shared aggregate semantic-node ceiling.",
+  "root_inputs": {
+    "urusilla.py_sha256": "3cb84380149a522bdadd94e866e39a848fa23c8b666382c4f88ce341147fbdcf",
+    "urusilla_benchmark.py_sha256": "b5e2885f7e17097643c1e93ba3326f285cd37aa8199cf1cc3b234227e515b5f8",
+    "urusilla_wire_v02.py_sha256": "166b1090b536bfff942667d43be583b2345eeb14b9da5d1535b7a16bb6bab2e7"
+  },
+  "root_python_files_modified": false,
+  "runtime": {
+    "platform": "macOS-15.0-arm64-arm-64bit-Mach-O",
+    "python": "3.14.7"
+  }
+}

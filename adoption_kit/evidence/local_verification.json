@@ -1,0 +1,75 @@
+{
+  "claims": {
+    "adoption_adjusted_impact_milliunits": 0,
+    "crossplay_is_unseen_or_independent": false,
+    "download_counts_used": false,
+    "external_adopters_observed": 0,
+    "external_adoption_claim": false,
+    "independently_verified_external_safe_messages": 0,
+    "task_success_measured": false
+  },
+  "deterministic_examples": {
+    "one_agent_onboarding": {
+      "stdout_bytes": 541,
+      "stdout_sha256": "85db364d7afaace3b993c5dfb7f6c133d60eef9241b39d6a68e0f07e8334856d",
+      "two_runs_identical": true
+    },
+    "two_agent_python_node_crossplay": {
+      "request_delivery_sha256": "b533b61a7ce5c1a2d6aa8f4c1e97cb114a2b25449a155da4353cd3ef2a7146d7",
+      "response_delivery_sha256": "95a86765bf4273ff6b0b03ae069291937a6a2b495e9fb7c4cbf89eb737241d07",
+      "stdout_bytes": 601,
+      "stdout_sha256": "2145cf9e2dd163325ac4ee2b05d839d0ab3a8547fcfdfaafc63cffe91d479a97",
+      "two_runs_identical": true
+    }
+  },
+  "environment": {
+    "network_traffic_created": false,
+    "node": "25.9.0",
+    "packages_installed": false,
+    "python": "3.14.7"
+  },
+  "format": "urusilla-local-verification-v2",
+  "implementation_revision": {
+    "status": "unsigned worktree; bind any versioned release manifest to an immutable commit"
+  },
+  "release_gate": {
+    "effect_authorizing_requires_trusted_signature_and_policy": true,
+    "lifecycle_status": "experimental-unsigned",
+    "provenance_bound": false,
+    "reason": "public source distribution is allowed, but this unsigned worktree has no authenticated provenance or external conformance verifier",
+    "reference_codec_matches_capsule": true,
+    "support_claim_eligible": false,
+    "unsigned_operation_scope": "local-read-only",
+    "unsigned_public_source_distribution_allowed": true
+  },
+  "root_artifact_pins": {
+    "source_manifest.py": "7643d29d37d4ac4efc1ddddd2a529aa322b9c0e8b042eb5ed90a292473f6d6a4",
+    "urusilla.py": "3cb84380149a522bdadd94e866e39a848fa23c8b666382c4f88ce341147fbdcf",
+    "urusilla.py_capsule_embedded": "3cb84380149a522bdadd94e866e39a848fa23c8b666382c4f88ce341147fbdcf",
+    "urusilla_a2a_adapter.py": "1a930bfde9e4100789dfaa7666f994399f9d55ed6a27551ad05c3d68e751a15d",
+    "urusilla_capsule_v0_1.json": "588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27",
+    "urusilla_terse_english_benchmark.py": "f528f68e22aa0c7b2fcc2ef10719648453aeda54c9c08df0e3986a7161e2c00e",
+    "urusilla_v0_1_spec.md": "4d817a607218f64998e1c0b061f80f07b400b382236485f2a2e7b88f6e92b263",
+    "urusilla_wire_v02.profile_capsule": "b8d2cee7827f57e9c1b523cb195fbb75f3a91f8ad20e7a2f5209ce3abf63cdf6",
+    "urusilla_wire_v02.py": "166b1090b536bfff942667d43be583b2345eeb14b9da5d1535b7a16bb6bab2e7",
+    "wire_v02_dictionary_id": "7d12fc414eae60b2",
+    "wire_v02_profile_capsule": "b8d2cee7827f57e9c1b523cb195fbb75f3a91f8ad20e7a2f5209ce3abf63cdf6"
+  },
+  "scope": "same-project local verification only",
+  "snapshot_date": "2026-08-20",
+  "tests": {
+    "dependency_free_node": {
+      "failed": 0,
+      "passed": 9
+    },
+    "isolated_python_sdk_and_telemetry": {
+      "failed": 0,
+      "passed": 41
+    }
+  },
+  "wire_identities": {
+    "v01_magic_hex": "5552534c01",
+    "v02_capsule_magic_hex": "5552435002",
+    "v02_magic_hex": "5552534c02"
+  }
+}

@@ -1,0 +1,803 @@
+{
+  "applied_delta_digest": null,
+  "format": "urusilla-experimental-adaptive-profile-v1",
+  "parent_digest": null,
+  "profile": {
+    "admission_gates": [
+      "semantic_exactness",
+      "receiver_capability",
+      "authorization",
+      "latency",
+      "risk",
+      "privacy",
+      "hidden_state_compatibility",
+      "provenance",
+      "energy_task_utility",
+      "fallback"
+    ],
+    "codebooks": {
+      "urusilla-json-fixture@1": {
+        "digest": "sha256:6f6914783203678603c122daef806982ab184dd33d65e4810ba6e53ab6511224",
+        "exact": true,
+        "executable": true,
+        "verified": true
+      },
+      "urusilla-wire-v02-fixture@1": {
+        "digest": "sha256:c3559eda77a45ca6cb06d9f5ca772bb0e2456a781a7db07473f9443977918ffc",
+        "exact": true,
+        "executable": true,
+        "verified": true
+      }
+    },
+    "core_language_version": "0.1.0",
+    "core_relationship": "experimental_external_dialogue_projection",
+    "core_wire_acts": [
+      "ASSERT",
+      "QUERY",
+      "REQUEST",
+      "PROPOSE",
+      "COMMIT",
+      "RESOLVE",
+      "RETRACT"
+    ],
+    "governance": {
+      "agent_permissions": [
+        "propose",
+        "session_trial",
+        "cross_play_evaluate"
+      ],
+      "automated_metrics": "evidence_only_never_authority_to_ratify_meaning",
+      "core_or_official_ratification": "externally_verified_signed_founding_maintainer_approval_required",
+      "ephemeral_session_delta": {
+        "requirements": [
+          "all_hard_safety_gates_pass",
+          "session_and_peer_pins",
+          "no_global_activation",
+          "no_ratification_claim"
+        ],
+        "scope": "negotiated_non_core_only"
+      },
+      "phase": "founder_led_experimental_stewardship"
+    },
+    "interaction_effect_scopes": {
+      "CANCEL": "cancel",
+      "COMMIT": "commit",
+      "CORRECT": "revise",
+      "DEFINE": "schema",
+      "FAIL": "resolve",
+      "NEGOTIATE_SCHEMA": "schema",
+      "PARTIAL": "execute",
+      "PROGRESS": "execute",
+      "RETRACT": "revise",
+      "SUCCEED": "resolve"
+    },
+    "interaction_functions": {
+      "ASSERT": [
+        "claim",
+        "evidence",
+        "uncertainty"
+      ],
+      "CANCEL": [
+        "cancellation"
+      ],
+      "CLARIFY": [
+        "clarification"
+      ],
+      "COMMIT": [
+        "commitment"
+      ],
+      "COORDINATE": [
+        "coordination"
+      ],
+      "CORRECT": [
+        "correction"
+      ],
+      "COUNTERPROPOSE": [
+        "proposal"
+      ],
+      "DEFINE": [
+        "definition"
+      ],
+      "DISCOVER": [
+        "capability_query",
+        "capability_advertisement"
+      ],
+      "FAIL": [
+        "failure"
+      ],
+      "NEGOTIATE_SCHEMA": [
+        "schema_negotiation"
+      ],
+      "NOT_UNDERSTOOD": [
+        "not_understood"
+      ],
+      "PARTIAL": [
+        "partial_result"
+      ],
+      "PROGRESS": [
+        "progress"
+      ],
+      "PROPOSE": [
+        "proposal"
+      ],
+      "QUERY": [
+        "query"
+      ],
+      "REFUSE": [
+        "refusal"
+      ],
+      "REQUEST": [
+        "request"
+      ],
+      "RETRACT": [
+        "retraction"
+      ],
+      "SUCCEED": [
+        "success"
+      ]
+    },
+    "interaction_projection": [
+      {
+        "body_kind": "claim",
+        "discriminator": null,
+        "interaction_function": "ASSERT",
+        "wire_act": "ASSERT"
+      },
+      {
+        "body_kind": "evidence",
+        "discriminator": null,
+        "interaction_function": "ASSERT",
+        "wire_act": "ASSERT"
+      },
+      {
+        "body_kind": "uncertainty",
+        "discriminator": null,
+        "interaction_function": "ASSERT",
+        "wire_act": "ASSERT"
+      },
+      {
+        "body_kind": "cancellation",
+        "discriminator": null,
+        "interaction_function": "CANCEL",
+        "wire_act": "RETRACT"
+      },
+      {
+        "body_kind": "clarification",
+        "discriminator": null,
+        "interaction_function": "CLARIFY",
+        "wire_act": "QUERY"
+      },
+      {
+        "body_kind": "commitment",
+        "discriminator": null,
+        "interaction_function": "COMMIT",
+        "wire_act": "COMMIT"
+      },
+      {
+        "body_kind": "coordination",
+        "discriminator": null,
+        "interaction_function": "COORDINATE",
+        "wire_act": "PROPOSE"
+      },
+      {
+        "body_kind": "correction",
+        "discriminator": null,
+        "interaction_function": "CORRECT",
+        "wire_act": "ASSERT"
+      },
+      {
+        "body_kind": "proposal",
+        "discriminator": {
+          "equals": "counter",
+          "field": "mode"
+        },
+        "interaction_function": "COUNTERPROPOSE",
+        "wire_act": "PROPOSE"
+      },
+      {
+        "body_kind": "definition",
+        "discriminator": null,
+        "interaction_function": "DEFINE",
+        "wire_act": "ASSERT"
+      },
+      {
+        "body_kind": "capability_advertisement",
+        "discriminator": null,
+        "interaction_function": "DISCOVER",
+        "wire_act": "ASSERT"
+      },
+      {
+        "body_kind": "capability_query",
+        "discriminator": null,
+        "interaction_function": "DISCOVER",
+        "wire_act": "QUERY"
+      },
+      {
+        "body_kind": "failure",
+        "discriminator": null,
+        "interaction_function": "FAIL",
+        "wire_act": "RESOLVE"
+      },
+      {
+        "body_kind": "schema_negotiation",
+        "discriminator": null,
+        "interaction_function": "NEGOTIATE_SCHEMA",
+        "wire_act": "PROPOSE"
+      },
+      {
+        "body_kind": "not_understood",
+        "discriminator": null,
+        "interaction_function": "NOT_UNDERSTOOD",
+        "wire_act": "RESOLVE"
+      },
+      {
+        "body_kind": "partial_result",
+        "discriminator": null,
+        "interaction_function": "PARTIAL",
+        "wire_act": "RESOLVE"
+      },
+      {
+        "body_kind": "progress",
+        "discriminator": null,
+        "interaction_function": "PROGRESS",
+        "wire_act": "RESOLVE"
+      },
+      {
+        "body_kind": "proposal",
+        "discriminator": {
+          "equals": "initial",
+          "field": "mode"
+        },
+        "interaction_function": "PROPOSE",
+        "wire_act": "PROPOSE"
+      },
+      {
+        "body_kind": "query",
+        "discriminator": null,
+        "interaction_function": "QUERY",
+        "wire_act": "QUERY"
+      },
+      {
+        "body_kind": "refusal",
+        "discriminator": null,
+        "interaction_function": "REFUSE",
+        "wire_act": "RESOLVE"
+      },
+      {
+        "body_kind": "request",
+        "discriminator": null,
+        "interaction_function": "REQUEST",
+        "wire_act": "REQUEST"
+      },
+      {
+        "body_kind": "retraction",
+        "discriminator": null,
+        "interaction_function": "RETRACT",
+        "wire_act": "RETRACT"
+      },
+      {
+        "body_kind": "success",
+        "discriminator": null,
+        "interaction_function": "SUCCEED",
+        "wire_act": "RESOLVE"
+      }
+    ],
+    "lifecycle": [
+      "proposed",
+      "session_trial",
+      "cross_play_candidate",
+      "ratified",
+      "deprecated"
+    ],
+    "migration_relations": [
+      "equivalent",
+      "narrowing",
+      "widening",
+      "transform"
+    ],
+    "node_schemas": {
+      "action": {
+        "optional": [
+          "policy",
+          "budget"
+        ],
+        "required": [
+          "capability",
+          "arguments",
+          "effects"
+        ]
+      },
+      "action_state": {
+        "optional": [
+          "checkpoint"
+        ],
+        "required": [
+          "action",
+          "phase",
+          "state_digest"
+        ]
+      },
+      "asset_ref": {
+        "optional": [
+          "chunks"
+        ],
+        "required": [
+          "uri",
+          "media_type",
+          "digest",
+          "size_bytes"
+        ]
+      },
+      "assignment": {
+        "optional": [],
+        "required": [
+          "agent",
+          "step_ids",
+          "role"
+        ]
+      },
+      "budget": {
+        "optional": [
+          "consumed"
+        ],
+        "required": [
+          "resource",
+          "limit",
+          "unit"
+        ]
+      },
+      "cancellation": {
+        "optional": [],
+        "required": [
+          "target",
+          "reason_code"
+        ]
+      },
+      "capability_advertisement": {
+        "optional": [
+          "limits",
+          "policy"
+        ],
+        "required": [
+          "capability",
+          "input_schema",
+          "output_schema"
+        ]
+      },
+      "capability_query": {
+        "optional": [
+          "requirements"
+        ],
+        "required": [
+          "capability"
+        ]
+      },
+      "choice": {
+        "optional": [
+          "preference",
+          "minimum",
+          "maximum"
+        ],
+        "required": [
+          "alternatives"
+        ]
+      },
+      "claim": {
+        "optional": [
+          "context",
+          "valid_time"
+        ],
+        "required": [
+          "predicate",
+          "arguments"
+        ]
+      },
+      "clarification": {
+        "optional": [],
+        "required": [
+          "target",
+          "ambiguity",
+          "options"
+        ]
+      },
+      "commitment": {
+        "optional": [
+          "verifier"
+        ],
+        "required": [
+          "debtor",
+          "creditors",
+          "goal",
+          "expiry_ms"
+        ]
+      },
+      "conditional": {
+        "optional": [
+          "else"
+        ],
+        "required": [
+          "if",
+          "then"
+        ]
+      },
+      "coordination": {
+        "optional": [
+          "policy"
+        ],
+        "required": [
+          "participants",
+          "plan",
+          "assignments",
+          "quorum"
+        ]
+      },
+      "correction": {
+        "optional": [
+          "reason_code"
+        ],
+        "required": [
+          "target",
+          "replacement"
+        ]
+      },
+      "definition": {
+        "optional": [],
+        "required": [
+          "symbol",
+          "version",
+          "schema_digest",
+          "semantics"
+        ]
+      },
+      "entry": {
+        "optional": [],
+        "required": [
+          "key",
+          "value"
+        ]
+      },
+      "evidence": {
+        "optional": [
+          "provenance"
+        ],
+        "required": [
+          "target",
+          "digest",
+          "method",
+          "stance"
+        ]
+      },
+      "failure": {
+        "optional": [
+          "evidence",
+          "fallback"
+        ],
+        "required": [
+          "target",
+          "code",
+          "recoverable"
+        ]
+      },
+      "goal": {
+        "optional": [
+          "constraints",
+          "priority"
+        ],
+        "required": [
+          "condition"
+        ]
+      },
+      "literal": {
+        "optional": [
+          "language"
+        ],
+        "required": [
+          "datatype",
+          "value"
+        ]
+      },
+      "not_understood": {
+        "optional": [
+          "scope"
+        ],
+        "required": [
+          "target",
+          "fragment_ids",
+          "reason_codes",
+          "acceptable_codecs"
+        ]
+      },
+      "operator": {
+        "optional": [],
+        "required": [
+          "operator",
+          "operands"
+        ]
+      },
+      "partial_result": {
+        "optional": [
+          "evidence"
+        ],
+        "required": [
+          "target",
+          "value",
+          "completed_ppm"
+        ]
+      },
+      "plan": {
+        "optional": [
+          "goal",
+          "policy",
+          "budget"
+        ],
+        "required": [
+          "steps"
+        ]
+      },
+      "plan_step": {
+        "optional": [
+          "assignee"
+        ],
+        "required": [
+          "step_id",
+          "action",
+          "depends_on"
+        ]
+      },
+      "policy": {
+        "optional": [
+          "authority"
+        ],
+        "required": [
+          "rule",
+          "effect",
+          "scope"
+        ]
+      },
+      "preference": {
+        "optional": [
+          "weight_ppm",
+          "tie_policy"
+        ],
+        "required": [
+          "ordering"
+        ]
+      },
+      "progress": {
+        "optional": [
+          "status"
+        ],
+        "required": [
+          "target",
+          "completed_ppm"
+        ]
+      },
+      "proposal": {
+        "optional": [
+          "valid_until",
+          "preference"
+        ],
+        "required": [
+          "mode",
+          "action",
+          "conditions"
+        ]
+      },
+      "provenance": {
+        "optional": [
+          "observed_at",
+          "license"
+        ],
+        "required": [
+          "source",
+          "digest",
+          "method"
+        ]
+      },
+      "quantity": {
+        "optional": [
+          "comparator"
+        ],
+        "required": [
+          "mantissa",
+          "scale",
+          "unit"
+        ]
+      },
+      "query": {
+        "optional": [
+          "answer_schema"
+        ],
+        "required": [
+          "target",
+          "variables"
+        ]
+      },
+      "record": {
+        "optional": [],
+        "required": [
+          "entries"
+        ]
+      },
+      "ref": {
+        "optional": [],
+        "required": [
+          "uri"
+        ]
+      },
+      "refusal": {
+        "optional": [
+          "alternatives"
+        ],
+        "required": [
+          "target",
+          "reason_code"
+        ]
+      },
+      "request": {
+        "optional": [
+          "deadline",
+          "budget"
+        ],
+        "required": [
+          "goal"
+        ]
+      },
+      "retraction": {
+        "optional": [],
+        "required": [
+          "target",
+          "reason_code"
+        ]
+      },
+      "schema_negotiation": {
+        "optional": [
+          "accepted",
+          "migration"
+        ],
+        "required": [
+          "offered",
+          "required_features"
+        ]
+      },
+      "splice": {
+        "optional": [],
+        "required": [
+          "fragment_id",
+          "role",
+          "codec",
+          "codec_version",
+          "schema_digest",
+          "profile_digest",
+          "payload_b64",
+          "payload_digest",
+          "loss_mode",
+          "fallback_chain",
+          "execution_eligibility"
+        ]
+      },
+      "success": {
+        "optional": [
+          "evidence"
+        ],
+        "required": [
+          "target",
+          "result"
+        ]
+      },
+      "time": {
+        "optional": [
+          "duration_ms",
+          "timezone"
+        ],
+        "required": [
+          "relation",
+          "epoch_ms"
+        ]
+      },
+      "tool_result": {
+        "optional": [],
+        "required": [
+          "tool",
+          "schema_digest",
+          "value",
+          "provenance"
+        ]
+      },
+      "uncertainty": {
+        "optional": [
+          "confidence_ppm"
+        ],
+        "required": [
+          "target",
+          "distribution",
+          "parameters"
+        ]
+      },
+      "web_fact": {
+        "optional": [],
+        "required": [
+          "subject",
+          "predicate",
+          "object",
+          "provenance",
+          "observed_at"
+        ]
+      },
+      "working_state": {
+        "optional": [
+          "privacy"
+        ],
+        "required": [
+          "state_schema",
+          "state_digest",
+          "summary"
+        ]
+      }
+    },
+    "north_star_stages": [
+      {
+        "gate": "exact_semantics_with_fragment_local_fallback",
+        "name": "external_agent_dialogue",
+        "stage": 1
+      },
+      {
+        "gate": "schema_provenance_privacy_and_asset_integrity",
+        "name": "tool_and_web_information_payloads",
+        "stage": 2
+      },
+      {
+        "gate": "explicit_state_schema_without_chain_of_thought_disclosure",
+        "name": "model_native_working_memory_and_action_state",
+        "stage": 3
+      },
+      {
+        "gate": "hidden_state_compatibility_exact_decoder_and_semantic_fallback",
+        "name": "optional_compatible_latent_fast_paths",
+        "stage": 4
+      },
+      {
+        "gate": "open_conformance_federated_governance_and_transport_independence",
+        "name": "internet_semantic_control_plane",
+        "stage": 5
+      }
+    ],
+    "official_language_claim": "none",
+    "profile_id": "urn:urusilla:experimental:profile:adaptive-dialogue:fixture-1",
+    "scope": {
+      "chain_of_thought": "not_requested_or_required",
+      "external_utterance_layer": "targeted_for_staged_semantic_replacement",
+      "internal_reasoning": "model_specific_and_out_of_scope",
+      "large_modalities": "content_addressed_external_assets",
+      "native_coverage_rule": "raw_natural_language_escape_never_counts_as_native_coverage",
+      "transport": "payload_layer_over_existing_http_tcp_a2a_mcp_or_other_transport"
+    },
+    "splice": {
+      "loss_modes": [
+        "exact",
+        "lossless_bridge",
+        "lossy_summary",
+        "opaque"
+      ],
+      "roles": [
+        "action_state",
+        "argument",
+        "condition",
+        "constraint",
+        "evidence",
+        "modality_reference",
+        "other",
+        "result",
+        "tool_payload",
+        "web_payload",
+        "working_state"
+      ],
+      "unknown_or_unverified_execution": "forbidden",
+      "unsupported_scope": "fragment_only"
+    },
+    "status": "research_fixture_not_official_extension",
+    "version": "research-fixture-1"
+  },
+  "profile_digest": "sha256:074498c7a6054c2759e96b0aeaea3f5e527962ed79180af3d7ef20d652cf1744",
+  "sequence": 0
+}

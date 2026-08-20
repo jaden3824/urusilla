@@ -1,0 +1,237 @@
+{
+  "cases": [
+    {
+      "act_ok": true,
+      "case_id": "N4Q7",
+      "decision_ok": true,
+      "envelope_ok": true,
+      "essential_semantics_ok": true,
+      "expected_decision": "emit",
+      "structural_valid": true,
+      "submitted_decision": "emit",
+      "validation_error": null
+    },
+    {
+      "act_ok": true,
+      "case_id": "K2M9",
+      "decision_ok": true,
+      "envelope_ok": true,
+      "essential_semantics_ok": true,
+      "expected_decision": "emit",
+      "structural_valid": true,
+      "submitted_decision": "emit",
+      "validation_error": null
+    },
+    {
+      "act_ok": true,
+      "case_id": "R8D1",
+      "decision_ok": true,
+      "envelope_ok": true,
+      "essential_semantics_ok": null,
+      "expected_decision": "emit",
+      "structural_valid": false,
+      "submitted_decision": "emit",
+      "validation_error": "unknown node kind 'question-plus-answer-schema'; local prototype extensions require x:<name>"
+    },
+    {
+      "act_ok": true,
+      "case_id": "B6T3",
+      "decision_ok": true,
+      "envelope_ok": true,
+      "essential_semantics_ok": true,
+      "expected_decision": "emit",
+      "structural_valid": true,
+      "submitted_decision": "emit",
+      "validation_error": null
+    },
+    {
+      "act_ok": true,
+      "case_id": "H9V5",
+      "decision_ok": true,
+      "envelope_ok": true,
+      "essential_semantics_ok": true,
+      "expected_decision": "emit",
+      "structural_valid": true,
+      "submitted_decision": "emit",
+      "validation_error": null
+    },
+    {
+      "act_ok": true,
+      "case_id": "C3J8",
+      "decision_ok": true,
+      "envelope_ok": true,
+      "essential_semantics_ok": true,
+      "expected_decision": "emit",
+      "structural_valid": true,
+      "submitted_decision": "emit",
+      "validation_error": null
+    },
+    {
+      "act_ok": true,
+      "case_id": "P7A2",
+      "decision_ok": true,
+      "envelope_ok": true,
+      "essential_semantics_ok": null,
+      "expected_decision": "emit",
+      "structural_valid": false,
+      "submitted_decision": "emit",
+      "validation_error": "ref.uri must be an absolute URI or content identifier"
+    },
+    {
+      "act_ok": true,
+      "case_id": "W5L4",
+      "decision_ok": true,
+      "envelope_ok": true,
+      "essential_semantics_ok": null,
+      "expected_decision": "emit",
+      "structural_valid": false,
+      "submitted_decision": "emit",
+      "validation_error": "uncertainty.basis must be a canonical list"
+    },
+    {
+      "act_ok": null,
+      "case_id": "F1X6",
+      "decision_ok": true,
+      "envelope_ok": null,
+      "essential_semantics_ok": true,
+      "expected_decision": "reject",
+      "structural_valid": null,
+      "submitted_decision": "reject",
+      "validation_error": null
+    },
+    {
+      "act_ok": null,
+      "case_id": "Y8S2",
+      "decision_ok": true,
+      "envelope_ok": null,
+      "essential_semantics_ok": true,
+      "expected_decision": "reject",
+      "structural_valid": null,
+      "submitted_decision": "reject",
+      "validation_error": null
+    },
+    {
+      "act_ok": null,
+      "case_id": "D4U9",
+      "decision_ok": true,
+      "envelope_ok": null,
+      "essential_semantics_ok": true,
+      "expected_decision": "reject",
+      "structural_valid": null,
+      "submitted_decision": "reject",
+      "validation_error": null
+    },
+    {
+      "act_ok": true,
+      "case_id": "M6E3",
+      "decision_ok": true,
+      "envelope_ok": true,
+      "essential_semantics_ok": true,
+      "expected_decision": "emit",
+      "structural_valid": true,
+      "submitted_decision": "emit",
+      "validation_error": null
+    },
+    {
+      "act_ok": null,
+      "case_id": "Q2N7",
+      "decision_ok": true,
+      "envelope_ok": null,
+      "essential_semantics_ok": true,
+      "expected_decision": "reject",
+      "structural_valid": null,
+      "submitted_decision": "reject",
+      "validation_error": null
+    },
+    {
+      "act_ok": null,
+      "case_id": "A9K4",
+      "decision_ok": true,
+      "envelope_ok": null,
+      "essential_semantics_ok": true,
+      "expected_decision": "reject",
+      "structural_valid": null,
+      "submitted_decision": "reject",
+      "validation_error": null
+    },
+    {
+      "act_ok": true,
+      "case_id": "V3G8",
+      "decision_ok": true,
+      "envelope_ok": true,
+      "essential_semantics_ok": null,
+      "expected_decision": "emit",
+      "structural_valid": false,
+      "submitted_decision": "emit",
+      "validation_error": "claim.predicate cannot contain whitespace or control characters"
+    },
+    {
+      "act_ok": null,
+      "case_id": "L7P1",
+      "decision_ok": true,
+      "envelope_ok": null,
+      "essential_semantics_ok": true,
+      "expected_decision": "reject",
+      "structural_valid": null,
+      "submitted_decision": "reject",
+      "validation_error": null
+    }
+  ],
+  "components": {
+    "act_selection": {
+      "earned": 10,
+      "possible": 10
+    },
+    "decision_accuracy": {
+      "earned": 16,
+      "possible": 16
+    },
+    "envelope_preservation": {
+      "earned": 10,
+      "possible": 10
+    },
+    "essential_semantics": {
+      "earned": 6,
+      "possible": 10
+    },
+    "negative_rejection": {
+      "earned": 6,
+      "possible": 6
+    },
+    "structural_generation": {
+      "earned": 6,
+      "possible": 10
+    }
+  },
+  "current_artifacts_are_post_cutover_projection": true,
+  "digests": {
+    "capsule_sha256": "588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27",
+    "expectations_sha256": "dcd1b703ca73255d5514556437091b51c919aacf6b46e5ffe04f9ad190791d49",
+    "historical_capsule_sha256_before_project_rename": "a141de8359dc2bce4af619a931ed0bfc688c421067fbba80a16711a3348e5346",
+    "historical_participant_original_submission_sha256": "6428c66339e156b52be80e5695a72c8ff790828d1d52ea7eb2906cff1f493489",
+    "historical_published_submission_sha256_before_project_rename": "157fe4643ac60fb8d14a88e0103cacd8b4cac1dc04cae56a5cb377a866c425ad",
+    "historical_task_sha256_before_project_rename": "3199ee46e2f22f0b0782fb242de33bb395b0e97e24009e0f51b9438869471261",
+    "submission_sha256": "1f73c5bcd26e8e50cb02fe38eba25c4a3e6ffc7c64228085655cec50641939d9",
+    "tasks_sha256": "41e345b3fed3931c1fd9e764bf251c638550ea8cffcaed348f22499605ff3692"
+  },
+  "evaluation": "neutral-id-capsule-transfer-0.1",
+  "external_adopter_claim": false,
+  "limitations": [
+    "One participant instance from the same model family and research environment was used.",
+    "File-access isolation was self-declared rather than operating-system enforced.",
+    "The participant was not rerun after the Urusilla cutover. Historical digest fields preserve the measured task, Capsule, published submission, and untouched participant artifact; the current files are a post-cutover projection with distinct digests.",
+    "Structural generation replays the frozen original validator outcomes; later validator improvements are not credited retroactively.",
+    "Expected decisions were conceived while authoring the tasks, but the machine-readable expectation file and evaluator were created only after submission.",
+    "Case-specific semantic checks accept multiple valid graphs and are not a complete ontology equivalence proof.",
+    "No binary generation, partner task success, latency, learning-token count, or confidence interval was measured."
+  ],
+  "participant_rerun_after_urusilla_cutover": false,
+  "precommitment": {
+    "cryptographic_precommitment": false,
+    "expectations_created_after_submission": true,
+    "tasks_existed_before_submission": true
+  },
+  "standardized_teachability_score": null,
+  "status": "internal-neutral-id-transfer-pilot-only",
+  "why_no_standardized_score": "The pilot did not measure frame parsing, exact graph targets, unseen-partner cross-play, sample efficiency, or the full non-compensable gates in the Capsule formula."
+}

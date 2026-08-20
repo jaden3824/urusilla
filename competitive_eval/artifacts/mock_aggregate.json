@@ -1,0 +1,478 @@
+{
+  "actual_billed_usd": "0",
+  "arms": {
+    "autoform": {
+      "actual_billed_usd": "0",
+      "base_calls": 137,
+      "claim_eligible": false,
+      "cold_profile_bytes": 0,
+      "communication_only_output_tokens": 2310,
+      "episode_rates": {
+        "fallback": {
+          "count": 0,
+          "decimal": "0.000000000000",
+          "denominator": 18,
+          "fraction": "0/1"
+        },
+        "malformed": {
+          "count": 2,
+          "decimal": "0.111111111111",
+          "denominator": 18,
+          "fraction": "1/9"
+        },
+        "refusal": {
+          "count": 1,
+          "decimal": "0.055555555556",
+          "denominator": 18,
+          "fraction": "1/18"
+        },
+        "repair": {
+          "count": 2,
+          "decimal": "0.111111111111",
+          "denominator": 18,
+          "fraction": "1/9"
+        },
+        "timeout": {
+          "count": 0,
+          "decimal": "0.000000000000",
+          "denominator": 18,
+          "fraction": "0/1"
+        }
+      },
+      "episodes": 18,
+      "estimated_usd": "0",
+      "fallback_calls": 0,
+      "judge_tokens": 0,
+      "logical_end_to_end_latency_ns": {
+        "observations": 139,
+        "p50_nearest_rank": 3257931,
+        "p95_nearest_rank": 5817926,
+        "p99_nearest_rank": 5957214,
+        "wall_clock_measurement": false
+      },
+      "malformed_attempts": 2,
+      "mock_calls_including_repairs": 139,
+      "normalized_exact_matches": 17,
+      "refusal_attempts": 1,
+      "repair_calls": 2,
+      "safe_task_successes": 0,
+      "t_total": 93307,
+      "terminal_reasons": {
+        "eight_call_cap": 17,
+        "refused": 1
+      },
+      "timeout_attempts": 0,
+      "token_categories": {
+        "agent_input_history": 9356,
+        "agent_output_visible": 2017,
+        "encode_decode_model": 0,
+        "final_answer": 293,
+        "format_induction": 0,
+        "hidden_reasoning_billed": 0,
+        "negotiation_profile": 0,
+        "repair_retry": 104,
+        "safety_filter": 0,
+        "system_role": 20208,
+        "task_input": 61329,
+        "tool_request": 0,
+        "tool_result": 0
+      },
+      "transmitted_bytes": 9304
+    },
+    "canonical_minified_json": {
+      "actual_billed_usd": "0",
+      "base_calls": 35,
+      "claim_eligible": false,
+      "cold_profile_bytes": 0,
+      "communication_only_output_tokens": 1079,
+      "episode_rates": {
+        "fallback": {
+          "count": 0,
+          "decimal": "0.000000000000",
+          "denominator": 18,
+          "fraction": "0/1"
+        },
+        "malformed": {
+          "count": 2,
+          "decimal": "0.111111111111",
+          "denominator": 18,
+          "fraction": "1/9"
+        },
+        "refusal": {
+          "count": 1,
+          "decimal": "0.055555555556",
+          "denominator": 18,
+          "fraction": "1/18"
+        },
+        "repair": {
+          "count": 2,
+          "decimal": "0.111111111111",
+          "denominator": 18,
+          "fraction": "1/9"
+        },
+        "timeout": {
+          "count": 0,
+          "decimal": "0.000000000000",
+          "denominator": 18,
+          "fraction": "0/1"
+        }
+      },
+      "episodes": 18,
+      "estimated_usd": "0",
+      "fallback_calls": 0,
+      "judge_tokens": 0,
+      "logical_end_to_end_latency_ns": {
+        "observations": 37,
+        "p50_nearest_rank": 2789857,
+        "p95_nearest_rank": 5972202,
+        "p99_nearest_rank": 5978128,
+        "wall_clock_measurement": false
+      },
+      "malformed_attempts": 2,
+      "mock_calls_including_repairs": 37,
+      "normalized_exact_matches": 17,
+      "refusal_attempts": 1,
+      "repair_calls": 2,
+      "safe_task_successes": 17,
+      "t_total": 23210,
+      "terminal_reasons": {
+        "common_early_stop": 17,
+        "refused": 1
+      },
+      "timeout_attempts": 0,
+      "token_categories": {
+        "agent_input_history": 616,
+        "agent_output_visible": 506,
+        "encode_decode_model": 0,
+        "final_answer": 573,
+        "format_induction": 0,
+        "hidden_reasoning_billed": 0,
+        "negotiation_profile": 0,
+        "repair_retry": 137,
+        "safety_filter": 0,
+        "system_role": 5802,
+        "task_input": 15576,
+        "tool_request": 0,
+        "tool_result": 0
+      },
+      "transmitted_bytes": 4536
+    },
+    "compact_terse_english": {
+      "actual_billed_usd": "0",
+      "base_calls": 35,
+      "claim_eligible": false,
+      "cold_profile_bytes": 0,
+      "communication_only_output_tokens": 1032,
+      "episode_rates": {
+        "fallback": {
+          "count": 0,
+          "decimal": "0.000000000000",
+          "denominator": 18,
+          "fraction": "0/1"
+        },
+        "malformed": {
+          "count": 2,
+          "decimal": "0.111111111111",
+          "denominator": 18,
+          "fraction": "1/9"
+        },
+        "refusal": {
+          "count": 1,
+          "decimal": "0.055555555556",
+          "denominator": 18,
+          "fraction": "1/18"
+        },
+        "repair": {
+          "count": 2,
+          "decimal": "0.111111111111",
+          "denominator": 18,
+          "fraction": "1/9"
+        },
+        "timeout": {
+          "count": 0,
+          "decimal": "0.000000000000",
+          "denominator": 18,
+          "fraction": "0/1"
+        }
+      },
+      "episodes": 18,
+      "estimated_usd": "0",
+      "fallback_calls": 0,
+      "judge_tokens": 0,
+      "logical_end_to_end_latency_ns": {
+        "observations": 37,
+        "p50_nearest_rank": 3747697,
+        "p95_nearest_rank": 5905567,
+        "p99_nearest_rank": 5908039,
+        "wall_clock_measurement": false
+      },
+      "malformed_attempts": 2,
+      "mock_calls_including_repairs": 37,
+      "normalized_exact_matches": 17,
+      "refusal_attempts": 1,
+      "repair_calls": 2,
+      "safe_task_successes": 17,
+      "t_total": 23467,
+      "terminal_reasons": {
+        "common_early_stop": 17,
+        "refused": 1
+      },
+      "timeout_attempts": 0,
+      "token_categories": {
+        "agent_input_history": 582,
+        "agent_output_visible": 484,
+        "encode_decode_model": 0,
+        "final_answer": 548,
+        "format_induction": 0,
+        "hidden_reasoning_billed": 0,
+        "negotiation_profile": 0,
+        "repair_retry": 134,
+        "safety_filter": 0,
+        "system_role": 6143,
+        "task_input": 15576,
+        "tool_request": 0,
+        "tool_result": 0
+      },
+      "transmitted_bytes": 4332
+    },
+    "current_adaptive_surface": {
+      "actual_billed_usd": "0",
+      "base_calls": 35,
+      "claim_eligible": false,
+      "cold_profile_bytes": 464145,
+      "communication_only_output_tokens": 1079,
+      "episode_rates": {
+        "fallback": {
+          "count": 4,
+          "decimal": "0.222222222222",
+          "denominator": 18,
+          "fraction": "2/9"
+        },
+        "malformed": {
+          "count": 2,
+          "decimal": "0.111111111111",
+          "denominator": 18,
+          "fraction": "1/9"
+        },
+        "refusal": {
+          "count": 1,
+          "decimal": "0.055555555556",
+          "denominator": 18,
+          "fraction": "1/18"
+        },
+        "repair": {
+          "count": 2,
+          "decimal": "0.111111111111",
+          "denominator": 18,
+          "fraction": "1/9"
+        },
+        "timeout": {
+          "count": 0,
+          "decimal": "0.000000000000",
+          "denominator": 18,
+          "fraction": "0/1"
+        }
+      },
+      "episodes": 18,
+      "estimated_usd": "0",
+      "fallback_calls": 4,
+      "judge_tokens": 0,
+      "logical_end_to_end_latency_ns": {
+        "observations": 37,
+        "p50_nearest_rank": 3464528,
+        "p95_nearest_rank": 5805422,
+        "p99_nearest_rank": 5969932,
+        "wall_clock_measurement": false
+      },
+      "malformed_attempts": 2,
+      "mock_calls_including_repairs": 37,
+      "normalized_exact_matches": 17,
+      "refusal_attempts": 1,
+      "repair_calls": 2,
+      "safe_task_successes": 17,
+      "t_total": 334651,
+      "terminal_reasons": {
+        "common_early_stop": 17,
+        "refused": 1
+      },
+      "timeout_attempts": 0,
+      "token_categories": {
+        "agent_input_history": 1573,
+        "agent_output_visible": 506,
+        "encode_decode_model": 0,
+        "final_answer": 573,
+        "format_induction": 0,
+        "hidden_reasoning_billed": 0,
+        "negotiation_profile": 307929,
+        "repair_retry": 137,
+        "safety_filter": 0,
+        "system_role": 8357,
+        "task_input": 15576,
+        "tool_request": 0,
+        "tool_result": 0
+      },
+      "transmitted_bytes": 477893
+    },
+    "oracle_free_adaptive_selector": {
+      "actual_billed_usd": "0",
+      "base_calls": 35,
+      "claim_eligible": false,
+      "cold_profile_bytes": 0,
+      "communication_only_output_tokens": 1079,
+      "episode_rates": {
+        "fallback": {
+          "count": 0,
+          "decimal": "0.000000000000",
+          "denominator": 18,
+          "fraction": "0/1"
+        },
+        "malformed": {
+          "count": 2,
+          "decimal": "0.111111111111",
+          "denominator": 18,
+          "fraction": "1/9"
+        },
+        "refusal": {
+          "count": 1,
+          "decimal": "0.055555555556",
+          "denominator": 18,
+          "fraction": "1/18"
+        },
+        "repair": {
+          "count": 2,
+          "decimal": "0.111111111111",
+          "denominator": 18,
+          "fraction": "1/9"
+        },
+        "timeout": {
+          "count": 0,
+          "decimal": "0.000000000000",
+          "denominator": 18,
+          "fraction": "0/1"
+        }
+      },
+      "episodes": 18,
+      "estimated_usd": "0",
+      "fallback_calls": 0,
+      "judge_tokens": 0,
+      "logical_end_to_end_latency_ns": {
+        "observations": 37,
+        "p50_nearest_rank": 2504310,
+        "p95_nearest_rank": 5829880,
+        "p99_nearest_rank": 5978605,
+        "wall_clock_measurement": false
+      },
+      "malformed_attempts": 2,
+      "mock_calls_including_repairs": 37,
+      "normalized_exact_matches": 17,
+      "refusal_attempts": 1,
+      "repair_calls": 2,
+      "safe_task_successes": 17,
+      "t_total": 25039,
+      "terminal_reasons": {
+        "common_early_stop": 17,
+        "refused": 1
+      },
+      "timeout_attempts": 0,
+      "token_categories": {
+        "agent_input_history": 582,
+        "agent_output_visible": 506,
+        "encode_decode_model": 0,
+        "final_answer": 573,
+        "format_induction": 0,
+        "hidden_reasoning_billed": 0,
+        "negotiation_profile": 0,
+        "repair_retry": 137,
+        "safety_filter": 0,
+        "system_role": 7665,
+        "task_input": 15576,
+        "tool_request": 0,
+        "tool_result": 0
+      },
+      "transmitted_bytes": 4332
+    },
+    "paper_natural_language": {
+      "actual_billed_usd": "0",
+      "base_calls": 137,
+      "claim_eligible": false,
+      "cold_profile_bytes": 0,
+      "communication_only_output_tokens": 2310,
+      "episode_rates": {
+        "fallback": {
+          "count": 0,
+          "decimal": "0.000000000000",
+          "denominator": 18,
+          "fraction": "0/1"
+        },
+        "malformed": {
+          "count": 2,
+          "decimal": "0.111111111111",
+          "denominator": 18,
+          "fraction": "1/9"
+        },
+        "refusal": {
+          "count": 1,
+          "decimal": "0.055555555556",
+          "denominator": 18,
+          "fraction": "1/18"
+        },
+        "repair": {
+          "count": 2,
+          "decimal": "0.111111111111",
+          "denominator": 18,
+          "fraction": "1/9"
+        },
+        "timeout": {
+          "count": 0,
+          "decimal": "0.000000000000",
+          "denominator": 18,
+          "fraction": "0/1"
+        }
+      },
+      "episodes": 18,
+      "estimated_usd": "0",
+      "fallback_calls": 0,
+      "judge_tokens": 0,
+      "logical_end_to_end_latency_ns": {
+        "observations": 139,
+        "p50_nearest_rank": 3404232,
+        "p95_nearest_rank": 5786395,
+        "p99_nearest_rank": 5927709,
+        "wall_clock_measurement": false
+      },
+      "malformed_attempts": 2,
+      "mock_calls_including_repairs": 139,
+      "normalized_exact_matches": 17,
+      "refusal_attempts": 1,
+      "repair_calls": 2,
+      "safe_task_successes": 0,
+      "t_total": 92759,
+      "terminal_reasons": {
+        "eight_call_cap": 17,
+        "refused": 1
+      },
+      "timeout_attempts": 0,
+      "token_categories": {
+        "agent_input_history": 9356,
+        "agent_output_visible": 2017,
+        "encode_decode_model": 0,
+        "final_answer": 293,
+        "format_induction": 0,
+        "hidden_reasoning_billed": 0,
+        "negotiation_profile": 0,
+        "repair_retry": 104,
+        "safety_filter": 0,
+        "system_role": 19660,
+        "task_input": 61329,
+        "tool_request": 0,
+        "tool_result": 0
+      },
+      "transmitted_bytes": 9304
+    }
+  },
+  "claim_eligible": false,
+  "episode_count": 108,
+  "format": "competitive-eval-mock-aggregate-v1",
+  "paid_calls": 0,
+  "provider_calls": 0
+}

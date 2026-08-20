@@ -1,0 +1,260 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/sota-sentinel/registry.schema.json",
+  "title": "SOTA Sentinel evidence registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "registry_version",
+    "as_of",
+    "scope",
+    "project_claims",
+    "comparability_lanes",
+    "records",
+    "screened_but_not_ranked",
+    "claim_gate"
+  ],
+  "properties": {
+    "registry_version": {"type": "string", "const": "1.0.0"},
+    "as_of": {"type": "string", "format": "date"},
+    "scope": {"type": "string", "minLength": 1},
+    "project_claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sota_claim_made", "world_record_claim_made", "paid_model_calls_used"],
+      "properties": {
+        "sota_claim_made": {"const": false},
+        "world_record_claim_made": {"const": false},
+        "paid_model_calls_used": {"const": false}
+      }
+    },
+    "comparability_lanes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/lane"}
+    },
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/record"}
+    },
+    "screened_but_not_ranked": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "primary_url", "publication_status", "reason"],
+        "properties": {
+          "name": {"type": "string"},
+          "primary_url": {"type": "string", "format": "uri", "pattern": "^https://"},
+          "publication_status": {"type": "string"},
+          "reason": {"type": "string"}
+        }
+      }
+    },
+    "claim_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primary_baseline",
+        "mandatory_baselines",
+        "required_ledgers",
+        "success_rule",
+        "unseen_partner_rule",
+        "release_rule"
+      ],
+      "properties": {
+        "primary_baseline": {"type": "string"},
+        "mandatory_baselines": {"type": "array", "items": {"type": "string"}},
+        "required_ledgers": {"type": "array", "items": {"type": "string"}},
+        "success_rule": {"type": "string"},
+        "unseen_partner_rule": {"type": "string"},
+        "release_rule": {"type": "string"}
+      }
+    }
+  },
+  "$defs": {
+    "lane": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "definition", "unit", "included", "excluded"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+        "definition": {"type": "string"},
+        "unit": {"type": "string"},
+        "included": {"type": "array", "items": {"type": "string"}},
+        "excluded": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "publication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "venue", "status", "date", "primary_url", "doi_or_id"],
+      "properties": {
+        "title": {"type": "string"},
+        "venue": {"type": "string"},
+        "status": {
+          "enum": ["peer_reviewed_conference", "peer_reviewed_findings", "preprint", "repository_report"]
+        },
+        "date": {"type": "string", "pattern": "^\\d{4}(-\\d{2}(-\\d{2})?)?$"},
+        "primary_url": {"type": "string", "format": "uri", "pattern": "^https://"},
+        "doi_or_id": {"type": ["string", "null"]}
+      }
+    },
+    "headline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claim",
+        "metric",
+        "value",
+        "unit",
+        "direction",
+        "baseline",
+        "comparability_lane",
+        "incomparable_reason"
+      ],
+      "properties": {
+        "claim": {"type": "string"},
+        "metric": {"type": "string"},
+        "value": {"type": "number"},
+        "unit": {"type": "string"},
+        "direction": {"enum": ["lower_is_better", "higher_is_better", "descriptive"]},
+        "baseline": {"type": "string"},
+        "comparability_lane": {"type": "string"},
+        "incomparable_reason": {"type": ["string", "null"]}
+      }
+    },
+    "workload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tasks", "sample_definition", "topology", "repetitions", "hardware"],
+      "properties": {
+        "tasks": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "sample_definition": {"type": "string"},
+        "topology": {"type": "string"},
+        "repetitions": {"type": "string"},
+        "hardware": {"type": "string"}
+      }
+    },
+    "ledger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["included", "excluded", "unknown"],
+      "properties": {
+        "included": {"type": "array", "items": {"type": "string"}},
+        "excluded": {"type": "array", "items": {"type": "string"}},
+        "unknown": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "success": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metric", "baseline", "method", "constraint", "satisfied_as_reported"],
+      "properties": {
+        "metric": {"type": "string"},
+        "baseline": {"type": "string"},
+        "method": {"type": "string"},
+        "constraint": {"type": "string"},
+        "satisfied_as_reported": {"type": "boolean"}
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["availability", "url", "revision", "license", "license_status", "notes"],
+      "properties": {
+        "availability": {"enum": ["complete", "partial", "absent", "unknown"]},
+        "url": {"type": ["string", "null"], "pattern": "^https://"},
+        "revision": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+        "license": {"type": ["string", "null"]},
+        "license_status": {
+          "enum": [
+            "verified",
+            "absent",
+            "declared_without_license_text",
+            "not_applicable",
+            "upstream_mixed_or_unmanifested"
+          ]
+        },
+        "notes": {"type": "string"}
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "url", "checked_on", "link_status"],
+      "properties": {
+        "kind": {"type": "string"},
+        "url": {"type": "string", "format": "uri", "pattern": "^https://"},
+        "checked_on": {"type": "string", "format": "date"},
+        "link_status": {"enum": ["retrieved", "repository_resolved", "not_applicable"]}
+      }
+    },
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "method",
+        "track",
+        "comparison_class",
+        "publication",
+        "headline",
+        "workload",
+        "models",
+        "ledger",
+        "success_constraint",
+        "artifacts",
+        "reproduction",
+        "sources",
+        "audit_notes"
+      ],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+        "method": {"type": "string"},
+        "track": {
+          "enum": [
+            "compact_symbolic_or_induced",
+            "topology_or_routing_pruning",
+            "latent_channel",
+            "end_to_end_agent_task",
+            "systems_transport_boundary",
+            "negative_control"
+          ]
+        },
+        "comparison_class": {
+          "enum": ["same_workload_candidate", "headline_only", "systems_boundary", "negative_control"]
+        },
+        "publication": {"$ref": "#/$defs/publication"},
+        "headline": {"$ref": "#/$defs/headline"},
+        "workload": {"$ref": "#/$defs/workload"},
+        "models": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "ledger": {"$ref": "#/$defs/ledger"},
+        "success_constraint": {"$ref": "#/$defs/success"},
+        "artifacts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["code", "data"],
+          "properties": {
+            "code": {"$ref": "#/$defs/artifact"},
+            "data": {"$ref": "#/$defs/artifact"}
+          }
+        },
+        "reproduction": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["literal", "clean_room", "literal_blockers", "clean_room_requirements"],
+          "properties": {
+            "literal": {"enum": ["yes", "conditional", "no"]},
+            "clean_room": {"enum": ["yes", "conditional", "no"]},
+            "literal_blockers": {"type": "array", "items": {"type": "string"}},
+            "clean_room_requirements": {"type": "array", "items": {"type": "string"}}
+          }
+        },
+        "sources": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/source"}},
+        "audit_notes": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

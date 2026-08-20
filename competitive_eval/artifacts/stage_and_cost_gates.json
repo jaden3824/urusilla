@@ -1,0 +1,340 @@
+{
+  "a1_all_six_arms_same_three_pairs": {
+    "base_call_cap": 5760,
+    "covered_by_a0_cost_forecast": false,
+    "episodes": 720
+  },
+  "a1_costs": {
+    "controlling_approval_ceiling_usd": 40.0,
+    "estimated_paid_usd": 4.492993,
+    "estimated_with_reserve_usd": 5.391592,
+    "stop_before_next_call_crosses_any_cap": true
+  },
+  "a1_plan_and_a0_cost_variant_are_distinct": true,
+  "a1_reserves": {
+    "absolute_call_cap_new_safety_convention": 3456,
+    "absolute_paid_call_cap_new_safety_convention": 2304,
+    "base_calls": 576,
+    "paid_calls": 384
+  },
+  "format": "competitive-eval-stage-and-cost-gates-v1",
+  "per_episode": {
+    "current_surface_failure_fallback": "compact_terse_english",
+    "early_stop_requires_same_typed_answer_and_no_unresolved_request": true,
+    "failures_remain_in_denominator": true,
+    "max_base_calls": 8,
+    "max_calls_per_agent": 4,
+    "max_format_repairs": 1,
+    "opaque_archival_arms_never_use_heuristic_early_stop": true,
+    "strict_alternation": true
+  },
+  "stages": {
+    "A0": {
+      "arms": [
+        "paper_natural_language",
+        "compact_terse_english",
+        "canonical_minified_json",
+        "autoform",
+        "current_adaptive_surface",
+        "oracle_free_adaptive_selector"
+      ],
+      "base_call_cap": 0,
+      "episode_count": 0,
+      "items": 200,
+      "note": "Dataset, manifest, parser, local token, wire, and mock replay only.",
+      "ordered_pairs": [
+        [
+          "O",
+          "O"
+        ],
+        [
+          "O",
+          "G"
+        ],
+        [
+          "O",
+          "Q"
+        ],
+        [
+          "G",
+          "O"
+        ],
+        [
+          "G",
+          "G"
+        ],
+        [
+          "G",
+          "Q"
+        ],
+        [
+          "Q",
+          "O"
+        ],
+        [
+          "Q",
+          "G"
+        ],
+        [
+          "Q",
+          "Q"
+        ]
+      ],
+      "planning_usd_high": 0.0,
+      "repeats": 0,
+      "requires_fresh_approval": false
+    },
+    "A1_a0_cost_variant": {
+      "arms": [
+        "compact_terse_english",
+        "canonical_minified_json",
+        "current_adaptive_surface"
+      ],
+      "base_call_cap": 2880,
+      "episode_count": 360,
+      "items": 40,
+      "note": "The A0 preflight cost snapshot; not a replacement for A1_plan.",
+      "ordered_pairs": [
+        [
+          "O",
+          "G"
+        ],
+        [
+          "G",
+          "Q"
+        ],
+        [
+          "Q",
+          "O"
+        ]
+      ],
+      "planning_usd_high": 40.0,
+      "repeats": 1,
+      "requires_fresh_approval": true
+    },
+    "A1_plan": {
+      "arms": [
+        "compact_terse_english",
+        "autoform",
+        "current_adaptive_surface"
+      ],
+      "base_call_cap": 2880,
+      "episode_count": 360,
+      "items": 40,
+      "note": "The reproduction plan's A1 trio; distinct from the frozen A0 cost trio.",
+      "ordered_pairs": [
+        [
+          "O",
+          "G"
+        ],
+        [
+          "G",
+          "Q"
+        ],
+        [
+          "Q",
+          "O"
+        ]
+      ],
+      "planning_usd_high": 40.0,
+      "repeats": 1,
+      "requires_fresh_approval": true
+    },
+    "A2": {
+      "arms": [
+        "paper_natural_language",
+        "compact_terse_english",
+        "canonical_minified_json",
+        "autoform",
+        "current_adaptive_surface",
+        "oracle_free_adaptive_selector"
+      ],
+      "base_call_cap": 28800,
+      "episode_count": 3600,
+      "items": 200,
+      "note": "Full short-context items, six arms, three ordered pairs.",
+      "ordered_pairs": [
+        [
+          "O",
+          "G"
+        ],
+        [
+          "G",
+          "Q"
+        ],
+        [
+          "Q",
+          "O"
+        ]
+      ],
+      "planning_usd_high": 200.0,
+      "repeats": 1,
+      "requires_fresh_approval": true
+    },
+    "A3": {
+      "arms": [
+        "paper_natural_language",
+        "compact_terse_english",
+        "canonical_minified_json",
+        "autoform",
+        "current_adaptive_surface",
+        "oracle_free_adaptive_selector"
+      ],
+      "base_call_cap": 259200,
+      "episode_count": 32400,
+      "items": 200,
+      "note": "Full claim matrix before repairs.",
+      "ordered_pairs": [
+        [
+          "O",
+          "O"
+        ],
+        [
+          "O",
+          "G"
+        ],
+        [
+          "O",
+          "Q"
+        ],
+        [
+          "G",
+          "O"
+        ],
+        [
+          "G",
+          "G"
+        ],
+        [
+          "G",
+          "Q"
+        ],
+        [
+          "Q",
+          "O"
+        ],
+        [
+          "Q",
+          "G"
+        ],
+        [
+          "Q",
+          "Q"
+        ]
+      ],
+      "planning_usd_high": 1800.0,
+      "repeats": 3,
+      "requires_fresh_approval": true
+    },
+    "A4": {
+      "arms": [
+        "paper_natural_language",
+        "compact_terse_english",
+        "canonical_minified_json",
+        "autoform",
+        "current_adaptive_surface",
+        "oracle_free_adaptive_selector"
+      ],
+      "base_call_cap": 129600,
+      "episode_count": 16200,
+      "items": 100,
+      "note": "NarrativeQA transfer stage, not implemented by the A0 artifact set.",
+      "ordered_pairs": [
+        [
+          "O",
+          "O"
+        ],
+        [
+          "O",
+          "G"
+        ],
+        [
+          "O",
+          "Q"
+        ],
+        [
+          "G",
+          "O"
+        ],
+        [
+          "G",
+          "G"
+        ],
+        [
+          "G",
+          "Q"
+        ],
+        [
+          "Q",
+          "O"
+        ],
+        [
+          "Q",
+          "G"
+        ],
+        [
+          "Q",
+          "Q"
+        ]
+      ],
+      "planning_usd_high": 2400.0,
+      "repeats": 3,
+      "requires_fresh_approval": true
+    },
+    "A5": {
+      "arms": [
+        "paper_natural_language",
+        "compact_terse_english",
+        "canonical_minified_json",
+        "autoform",
+        "current_adaptive_surface",
+        "oracle_free_adaptive_selector"
+      ],
+      "base_call_cap": 2592000,
+      "episode_count": 324000,
+      "items": 2000,
+      "note": "Conditional powered public-set extension; separate approval.",
+      "ordered_pairs": [
+        [
+          "O",
+          "O"
+        ],
+        [
+          "O",
+          "G"
+        ],
+        [
+          "O",
+          "Q"
+        ],
+        [
+          "G",
+          "O"
+        ],
+        [
+          "G",
+          "G"
+        ],
+        [
+          "G",
+          "Q"
+        ],
+        [
+          "Q",
+          "O"
+        ],
+        [
+          "Q",
+          "G"
+        ],
+        [
+          "Q",
+          "Q"
+        ]
+      ],
+      "planning_usd_high": 15000.0,
+      "repeats": 3,
+      "requires_fresh_approval": true
+    }
+  }
+}

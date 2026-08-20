@@ -1,0 +1,1550 @@
+{
+  "registry_version": "1.0.0",
+  "as_of": "2026-08-20",
+  "scope": "Primary-source evidence for communication-efficiency methods plausibly relevant to compact or induced agent formats, topology and routing pruning, latent channels, end-to-end agent tasks, and the systems transport boundary. Headline values remain in their original ledgers and are not a global ranking.",
+  "project_claims": {
+    "sota_claim_made": false,
+    "world_record_claim_made": false,
+    "paid_model_calls_used": false
+  },
+  "comparability_lanes": [
+    {
+      "id": "generated_message_tokens",
+      "definition": "Decoded tokens generated as inter-agent messages or response payloads, measured with the paper's tokenizer or provider counter.",
+      "unit": "tokens",
+      "included": ["decoded inter-agent message text"],
+      "excluded": ["input prompts", "system prompts", "task input", "format induction", "training", "wire framing", "retries unless the source explicitly includes them"]
+    },
+    {
+      "id": "provider_prompt_tokens",
+      "definition": "Provider-reported or tokenizer-counted input tokens over agent API calls in an evaluated trajectory.",
+      "unit": "tokens",
+      "included": ["agent input prompts and accumulated upstream messages when counted by the source"],
+      "excluded": ["completion tokens", "wire bytes", "training calls unless explicitly stated", "non-model orchestration"]
+    },
+    {
+      "id": "provider_completion_tokens",
+      "definition": "Provider-reported or tokenizer-counted output tokens over agent API calls in an evaluated trajectory.",
+      "unit": "tokens",
+      "included": ["agent completions"],
+      "excluded": ["prompt tokens", "wire bytes", "training calls unless explicitly stated"]
+    },
+    {
+      "id": "total_runtime_model_tokens",
+      "definition": "Prompt plus completion tokens consumed by all runtime model calls named by the source.",
+      "unit": "tokens",
+      "included": ["runtime prompt tokens", "runtime completion tokens", "supervisor overhead when the source reports net totals"],
+      "excluded": ["training or induction unless explicitly amortized", "wire bytes", "tool compute", "wall-clock time"]
+    },
+    {
+      "id": "system_decoded_output_tokens",
+      "definition": "Total decoded output tokens across a multi-agent inference run; latent steps and transferred tensors are not tokens in this ledger.",
+      "unit": "tokens",
+      "included": ["decoded outputs from all agents as defined by the source"],
+      "excluded": ["input tokens", "latent steps", "KV-cache bytes", "training", "hardware transfer cost"]
+    },
+    {
+      "id": "tokenizer_count_short_message",
+      "definition": "Static tokenizer count for semantically matched short surface-form examples.",
+      "unit": "tokens",
+      "included": ["serialized message surface"],
+      "excluded": ["receiver task success", "teaching prompts", "retries", "full envelope", "cold start"]
+    },
+    {
+      "id": "message_generation_latency",
+      "definition": "Wall-clock latency of producing an inter-agent message or latent message, not the complete downstream task trajectory.",
+      "unit": "seconds",
+      "included": ["sender-side message generation path defined by the source"],
+      "excluded": ["full task execution", "environment actions", "training"]
+    },
+    {
+      "id": "end_to_end_inference_latency",
+      "definition": "Wall-clock time for the paper's complete multi-agent inference pipeline on one run.",
+      "unit": "seconds per run",
+      "included": ["paper-defined end-to-end model inference"],
+      "excluded": ["training", "data preparation", "hardware acquisition", "cost outside the measured run"]
+    },
+    {
+      "id": "ttft_prefill_latency",
+      "definition": "Time to first token or prefill latency for a serving request under a specified cache-sharing workload.",
+      "unit": "milliseconds",
+      "included": ["prefill and first-token boundary as corrected in the source"],
+      "excluded": ["remaining decode", "complete task latency", "training", "network transport unless stated"]
+    },
+    {
+      "id": "workflow_end_to_end_latency",
+      "definition": "Wall-clock latency for a complete synthetic or application workflow at the serving-system layer.",
+      "unit": "seconds or normalized speedup",
+      "included": ["all model invocations in the specified workflow", "cache movement handled by the serving system"],
+      "excluded": ["task-quality changes when output equivalence is guaranteed by unchanged computation", "training"]
+    },
+    {
+      "id": "monetary_inference_cost",
+      "definition": "Provider-priced inference cost for the model calls in a named task workflow; this lane can change when models or prices change even if token counts do not.",
+      "unit": "USD per task",
+      "included": ["provider-reported input and output usage multiplied by the source's stated prices"],
+      "excluded": ["training and search unless stated", "non-model compute", "wire bytes", "cost under later provider prices"]
+    },
+    {
+      "id": "latent_payload_bytes",
+      "definition": "Logical or measured byte footprint of a latent or KV payload exchanged between model stages under the source's precision and serialization assumptions.",
+      "unit": "bytes or megabytes",
+      "included": ["paper- or repository-defined latent payload storage or transfer volume"],
+      "excluded": ["sender and receiver compute", "metadata and network framing unless measured", "task latency", "training"]
+    },
+    {
+      "id": "accuracy_cost_frontier_only",
+      "definition": "A source reports a cost-quality curve or qualitative cost objective but no auditable scalar token-reduction headline.",
+      "unit": "descriptive",
+      "included": ["reported frontier points"],
+      "excluded": ["inferred percentage reductions not printed or recoverable from a table"]
+    }
+  ],
+  "records": [
+    {
+      "id": "autoform_2024",
+      "method": "AutoForm",
+      "track": "compact_symbolic_or_induced",
+      "comparison_class": "same_workload_candidate",
+      "publication": {
+        "title": "AutoForm: Efficient and Effective Agent Communication with Automatic Information Formatting",
+        "venue": "Findings of EMNLP 2024",
+        "status": "peer_reviewed_findings",
+        "date": "2024-11",
+        "primary_url": "https://aclanthology.org/2024.findings-emnlp.623/",
+        "doi_or_id": "10.18653/v1/2024.findings-emnlp.623"
+      },
+      "headline": {
+        "claim": "72.7% fewer generated communication tokens on HotpotQA for a GPT-4 initiator and GPT-3.5 recipient.",
+        "metric": "mean generated communication tokens per task",
+        "value": 72.7,
+        "unit": "percent reduction",
+        "direction": "lower_is_better",
+        "baseline": "natural-language communication, 345.5 tokens; AutoForm, 94.3 tokens",
+        "comparability_lane": "generated_message_tokens",
+        "incomparable_reason": null
+      },
+      "workload": {
+        "tasks": ["HotpotQA", "WikiHop", "NarrativeQA"],
+        "sample_definition": "100 examples per dataset in the released experiment configuration; the repository data digests are recorded in the report.",
+        "topology": "Two agents: an initiator sends a formatted message to a recipient that produces the task answer.",
+        "repetitions": "One reported aggregate per model pairing; no seed-based confidence interval reported.",
+        "hardware": "Closed-provider inference; hardware not reported."
+      },
+      "models": ["gpt-4-1106-preview", "gpt-3.5-turbo-1106", "GPT-4/GPT-4 and GPT-3.5/GPT-3.5 pairings also reported"],
+      "ledger": {
+        "included": ["generated communication-message tokens"],
+        "excluded": ["system and user prompts", "task documents", "recipient answer tokens", "format-selection prompt cost", "full wire envelope", "retries", "cold start"],
+        "unknown": ["exact tokenizer/counting implementation", "whether every formatting control token is included"]
+      },
+      "success_constraint": {
+        "metric": "Paper labels the main score F1 in prose but table captions use Rouge-L; this ambiguity must be preserved.",
+        "baseline": "0.64 on HotpotQA",
+        "method": "0.70 on HotpotQA",
+        "constraint": "Reported task score is non-decreasing on the headline cell.",
+        "satisfied_as_reported": true
+      },
+      "artifacts": {
+        "code": {
+          "availability": "complete",
+          "url": "https://github.com/thunlp/AutoForm",
+          "revision": "8df94501c462e7f7b4708e5f0297fbdcf8e12ffa",
+          "license": "Apache-2.0",
+          "license_status": "verified",
+          "notes": "Official repository includes prompts, task runners, and experiment data/configuration."
+        },
+        "data": {
+          "availability": "complete",
+          "url": "https://github.com/thunlp/AutoForm",
+          "revision": "8df94501c462e7f7b4708e5f0297fbdcf8e12ffa",
+          "license": null,
+          "license_status": "upstream_mixed_or_unmanifested",
+          "notes": "Released task artifacts are pinned by repository revision; upstream dataset licenses are not consolidated in a source manifest."
+        }
+      },
+      "reproduction": {
+        "literal": "no",
+        "clean_room": "yes",
+        "literal_blockers": ["The exact 2023 closed model snapshots are retired or non-stable provider endpoints.", "The score-label inconsistency and token-counter boundary prevent a unique literal reconstruction."],
+        "clean_room_requirements": ["Use the released 100-item task artifacts and prompts.", "Pin replacement models and tokenizers.", "Report generated-message, full-runtime-token, full-envelope-byte, and cold-start ledgers separately."]
+      },
+      "sources": [
+        {"kind": "official_proceedings", "url": "https://aclanthology.org/2024.findings-emnlp.623/", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "official_repository", "url": "https://github.com/thunlp/AutoForm", "checked_on": "2026-08-20", "link_status": "repository_resolved"}
+      ],
+      "audit_notes": [
+        "This is the primary same-workload format comparator for this project, not a universal leader.",
+        "Other model pairings contain regressions despite large token savings; the 72.7% cell must not be generalized across tasks or models."
+      ]
+    },
+    {
+      "id": "optimacs_2026",
+      "method": "OPTiMACS",
+      "track": "compact_symbolic_or_induced",
+      "comparison_class": "headline_only",
+      "publication": {
+        "title": "OPTiMACS: Optimizing LLM Agent Communication through Dynamic and Modular Interaction",
+        "venue": "Findings of ACL 2026",
+        "status": "peer_reviewed_findings",
+        "date": "2026-07",
+        "primary_url": "https://aclanthology.org/2026.findings-acl.1441/",
+        "doi_or_id": "10.18653/v1/2026.findings-acl.1441"
+      },
+      "headline": {
+        "claim": "3.4% fewer tokens on average across GSM+, WikiHopQA, HotpotQA, and NarrativeQA; NarrativeQA instead increased 19.3%.",
+        "metric": "mean tokens per task trajectory",
+        "value": 3.4,
+        "unit": "percent reduction",
+        "direction": "lower_is_better",
+        "baseline": "vanilla multi-agent natural language",
+        "comparability_lane": "generated_message_tokens",
+        "incomparable_reason": "The learned policy uses 500-2,000 training trajectories, a different multi-agent topology and evaluator, and no public implementation; its average cannot be pooled with AutoForm's two-agent 100-item message ledger."
+      },
+      "workload": {
+        "tasks": ["GSM+", "WikiHopQA", "HotpotQA", "NarrativeQA"],
+        "sample_definition": "Approximately 500-2,000 points for policy learning; test setting described as similar to AutoForm. Human checks use about 100 samples per dataset.",
+        "topology": "Three agents for GSM+; five information-asymmetric agents for multi-hop QA; trajectories terminate at success or 25 steps.",
+        "repetitions": "Three runs; paper reports approximately plus or minus 2% variance.",
+        "hardware": "One NVIDIA A100 GPU for local small-model inference; provider hardware undisclosed for GPT-4o and o3."
+      },
+      "models": ["GPT-4o", "o3", "Qwen2.5-Math-7B", "Phi-4-mini", "Llama-3-8B"],
+      "ledger": {
+        "included": ["paper-defined average tokens in evaluated trajectories"],
+        "excluded": ["policy-learning trajectories", "format discovery", "task inputs", "full envelopes", "cold start"],
+        "unknown": ["exact aggregation and tokenizer for closed/open model mixtures", "test item identities"]
+      },
+      "success_constraint": {
+        "metric": "Average task score over four tasks for GPT-4o",
+        "baseline": "55.6",
+        "method": "59.3",
+        "constraint": "Reported average score improves while average tokens decrease.",
+        "satisfied_as_reported": true
+      },
+      "artifacts": {
+        "code": {"availability": "absent", "url": null, "revision": null, "license": null, "license_status": "not_applicable", "notes": "No official public code repository was linked or found at cutoff; the paper provides pseudocode and prompts."},
+        "data": {"availability": "absent", "url": null, "revision": null, "license": null, "license_status": "not_applicable", "notes": "No item manifest or trained policy artifact is released; benchmark datasets are external."}
+      },
+      "reproduction": {
+        "literal": "no",
+        "clean_room": "conditional",
+        "literal_blockers": ["No official code, learned policy, or item manifest.", "Closed model revisions are not fully pinned."],
+        "clean_room_requirements": ["Reimplement the paper pseudocode and all samplers.", "Publish train/test item manifests and count policy-learning cost separately."]
+      },
+      "sources": [
+        {"kind": "official_proceedings", "url": "https://aclanthology.org/2026.findings-acl.1441/", "checked_on": "2026-08-20", "link_status": "retrieved"}
+      ],
+      "audit_notes": ["Exact task token changes are -8.7%, -5.4%, -18.8%, and +19.3%; the arithmetic headline hides a regression on NarrativeQA."]
+    },
+    {
+      "id": "ecolang_2025",
+      "method": "EcoLANG",
+      "track": "compact_symbolic_or_induced",
+      "comparison_class": "headline_only",
+      "publication": {
+        "title": "EcoLANG: Efficient and Effective Agent Communication Language",
+        "venue": "Findings of EMNLP 2025",
+        "status": "peer_reviewed_findings",
+        "date": "2025-11",
+        "primary_url": "https://aclanthology.org/2025.findings-emnlp.284/",
+        "doi_or_id": "10.18653/v1/2025.findings-emnlp.284"
+      },
+      "headline": {
+        "claim": "24.7% fewer generated response tokens on HiSim, while prompt-plus-completion runtime tokens fall by only about 6.2%.",
+        "metric": "generated response tokens per social-simulation scenario",
+        "value": 24.7,
+        "unit": "percent reduction",
+        "direction": "lower_is_better",
+        "baseline": "HiSim Base 13.02K response tokens; EcoLANG 9.80K",
+        "comparability_lane": "generated_message_tokens",
+        "incomparable_reason": "This is a 1,000-user social simulation with evolved rules and downstream GPT-based labeling, not the task-oriented two-agent QA workload used by the primary format comparator."
+      },
+      "workload": {
+        "tasks": ["PHEME rumor simulation", "HiSim #MeToo event", "HiSim Roe event"],
+        "sample_definition": "196 PHEME instances with 2-31 users; two HiSim events with 1,000 users each.",
+        "topology": "Large social-agent simulations in OASIS; language rules evolved on synthetic-persona-chat then transferred.",
+        "repetitions": "Three runs per simulation.",
+        "hardware": "Not reported for the complete pipeline."
+      },
+      "models": ["Llama-3.1-8B-Instruct agents", "GPT-4o rule judge", "GPT-4o-mini downstream labels"],
+      "ledger": {
+        "included": ["response tokens in the 24.7% headline", "paper separately reports prompt and completion tokens"],
+        "excluded": ["five-iteration rule evolution", "GPT-4o judge calls", "labeling cost", "vocabulary construction", "wire framing", "cold start"],
+        "unknown": ["tokenizer/version pins", "total dollar and compute cost"]
+      },
+      "success_constraint": {
+        "metric": "Multiple simulation-alignment metrics, without a single preregistered non-inferiority gate",
+        "baseline": "HiSim stance 70.30, content 30.23, delta-bias 0.093, delta-diversity 0.027",
+        "method": "HiSim stance 70.60, content 32.57, delta-bias 0.083, delta-diversity 0.020",
+        "constraint": "All displayed HiSim quality metrics move in the preferred direction.",
+        "satisfied_as_reported": true
+      },
+      "artifacts": {
+        "code": {"availability": "partial", "url": "https://github.com/xymou/EcoLANG", "revision": "00878bc4ef6a1dc2fe470ac33a9740e559003b83", "license": "MIT", "license_status": "verified", "notes": "Official repository is licensed, but does not freeze the complete evolved-rule, provider-output, and result-ledger artifact needed for literal reproduction."},
+        "data": {"availability": "partial", "url": "https://github.com/xymou/EcoLANG", "revision": "00878bc4ef6a1dc2fe470ac33a9740e559003b83", "license": null, "license_status": "upstream_mixed_or_unmanifested", "notes": "Public upstream datasets and code are available, but sampled instances, evolved trajectories, provider outputs, and a consolidated license manifest are not frozen."}
+      },
+      "reproduction": {
+        "literal": "no",
+        "clean_room": "conditional",
+        "literal_blockers": ["The evolved-rule artifact, exact sample/provider-output manifest, and complete cost ledger are not frozen.", "Closed judge and labeler model versions are not stable artifacts."],
+        "clean_room_requirements": ["Use the recorded licensed implementation revision with independently pinned artifacts.", "Pin all public data and open replacement judges, and disclose induction cost."]
+      },
+      "sources": [
+        {"kind": "official_proceedings", "url": "https://aclanthology.org/2025.findings-emnlp.284/", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "official_repository", "url": "https://github.com/xymou/EcoLANG", "checked_on": "2026-08-20", "link_status": "repository_resolved"}
+      ],
+      "audit_notes": ["PHEME response-token reduction is about 20.3%; total prompt-plus-completion reduction is about 3.1% for PHEME and 6.2% for HiSim."]
+    },
+    {
+      "id": "tokenese_2026_negative",
+      "method": "Tokenese v0.3 post-mortem",
+      "track": "negative_control",
+      "comparison_class": "negative_control",
+      "publication": {
+        "title": "Tokenese v0.3 Post-Mortem",
+        "venue": "Archived official repository report",
+        "status": "repository_report",
+        "date": "2026-07-25",
+        "primary_url": "https://github.com/snapsynapse/tokenese/blob/1108a819dd498836efc72ca8a6a256b2aca971af/POST-MORTEM.md",
+        "doi_or_id": null
+      },
+      "headline": {
+        "claim": "The designed v0.3 example was 1.31x larger than the English example under o200k_base and 1.30x larger under cl100k_base; keyword-minimal English was shortest.",
+        "metric": "relative static tokenizer count",
+        "value": 1.31,
+        "unit": "times the English token count",
+        "direction": "lower_is_better",
+        "baseline": "English 36/37 tokens; Tokenese 47/48 tokens",
+        "comparability_lane": "tokenizer_count_short_message",
+        "incomparable_reason": "This is a static surface-form falsification, not an end-to-end receiver task; it is retained as a mandatory negative control rather than a performance candidate."
+      },
+      "workload": {
+        "tasks": ["Semantically matched short-message tokenizer audit"],
+        "sample_definition": "One flagship example plus controlled alternative encodings in the post-mortem; audit tooling covers additional lexicon items.",
+        "topology": "No live agents; deterministic tokenizer audit.",
+        "repetitions": "Deterministic counts.",
+        "hardware": "CPU-only tokenizer tooling; hardware immaterial to token counts."
+      },
+      "models": ["o200k_base tokenizer", "cl100k_base tokenizer", "additional cross-vendor tokenizer audit tools"],
+      "ledger": {
+        "included": ["serialized message token count"],
+        "excluded": ["teaching payload", "receiver comprehension", "retries", "full envelope", "cold start", "task success"],
+        "unknown": []
+      },
+      "success_constraint": {
+        "metric": "Compression against English",
+        "baseline": "1.00x",
+        "method": "1.31x cost on o200k_base",
+        "constraint": "Designed form must use fewer tokens than terse or keyword-minimal English.",
+        "satisfied_as_reported": false
+      },
+      "artifacts": {
+        "code": {"availability": "complete", "url": "https://github.com/snapsynapse/tokenese", "revision": "1108a819dd498836efc72ca8a6a256b2aca971af", "license": "MIT", "license_status": "verified", "notes": "Archived repository includes tokenizer audits, translator, scorer, and tests."},
+        "data": {"availability": "complete", "url": "https://github.com/snapsynapse/tokenese", "revision": "1108a819dd498836efc72ca8a6a256b2aca971af", "license": "CC-BY-4.0 for specification; MIT for software", "license_status": "verified", "notes": "Examples and audit inputs are versioned in the repository; licenses are split by artifact type."}
+      },
+      "reproduction": {
+        "literal": "yes",
+        "clean_room": "yes",
+        "literal_blockers": [],
+        "clean_room_requirements": ["Install the pinned tokenizer dependencies and run the archived audit scripts."]
+      },
+      "sources": [
+        {"kind": "official_repository", "url": "https://github.com/snapsynapse/tokenese", "checked_on": "2026-08-20", "link_status": "repository_resolved"}
+      ],
+      "audit_notes": ["The post-mortem also reports a narrow 20-25% win for some structured payloads, but no live cross-family A/B task experiment was run."]
+    },
+    {
+      "id": "optima_2025",
+      "method": "OPTIMA",
+      "track": "end_to_end_agent_task",
+      "comparison_class": "headline_only",
+      "publication": {
+        "title": "OPTIMA: Optimizing Effectiveness and Efficiency for LLM-Based Multi-Agent System",
+        "venue": "Findings of ACL 2025",
+        "status": "peer_reviewed_findings",
+        "date": "2025-07",
+        "primary_url": "https://aclanthology.org/2025.findings-acl.601/",
+        "doi_or_id": "10.18653/v1/2025.findings-acl.601"
+      },
+      "headline": {
+        "claim": "On TriviaQA, iSFT-DPO reduces mean inference tokens from 408.6 to 32.5 (92.0%) while F1 rises from 71.0 to 77.1 relative to multi-agent debate.",
+        "metric": "mean inference tokens per episode",
+        "value": 92.0,
+        "unit": "percent reduction",
+        "direction": "lower_is_better",
+        "baseline": "multi-agent debate",
+        "comparability_lane": "system_decoded_output_tokens",
+        "incomparable_reason": "The inference-only comparison shifts substantial work into iterative SFT/DPO training and does not amortize training, data generation, or readability reward costs."
+      },
+      "workload": {
+        "tasks": ["HotpotQA", "2WikiMultiHopQA", "TriviaQA", "CBT", "MATH", "GSM8K", "ARC-Challenge", "MMLU"],
+        "sample_definition": "Paper-defined 0-shot benchmark splits; exact item manifests and checkpoint hashes are not released.",
+        "topology": "Two agents using the same trained model; information-asymmetric exchange or solver-critic debate depending on task.",
+        "repetitions": "Not reported as a multi-seed aggregate in the main table.",
+        "hardware": "Up to eight NVIDIA A100 GPUs; most training about 12 hours, MATH about 24 hours."
+      },
+      "models": ["Llama-3-8B", "Llama-3.2-3B"],
+      "ledger": {
+        "included": ["decoded inference tokens per episode"],
+        "excluded": ["iterative SFT/DPO training", "trajectory generation and ranking", "task input tokens", "weight download", "full envelope", "cold start"],
+        "unknown": ["tokenizer revision", "complete energy and data-generation cost"]
+      },
+      "success_constraint": {
+        "metric": "TriviaQA F1",
+        "baseline": "71.0",
+        "method": "77.1",
+        "constraint": "Task score improves while inference tokens fall.",
+        "satisfied_as_reported": true
+      },
+      "artifacts": {
+        "code": {"availability": "complete", "url": "https://github.com/thunlp/Optima", "revision": "4017740390b73f98ae94559ad5c703482f27ffe3", "license": null, "license_status": "absent", "notes": "Official repository contains code and configs but no root license grant; an unrelated submodule license does not license the project."},
+        "data": {"availability": "partial", "url": "https://github.com/thunlp/Optima", "revision": "4017740390b73f98ae94559ad5c703482f27ffe3", "license": null, "license_status": "upstream_mixed_or_unmanifested", "notes": "External public datasets and preparation scripts are referenced; trained checkpoints and a consolidated data-license manifest are absent."}
+      },
+      "reproduction": {
+        "literal": "no",
+        "clean_room": "conditional",
+        "literal_blockers": ["No released trained checkpoints or exact model/data hashes.", "No root software license permits reuse of the implementation."],
+        "clean_room_requirements": ["Reimplement from the paper without copying unlicensed code.", "Pin base weights, item manifests, training trajectories, and all training/inference ledgers."]
+      },
+      "sources": [
+        {"kind": "official_proceedings", "url": "https://aclanthology.org/2025.findings-acl.601/", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "official_repository", "url": "https://github.com/thunlp/Optima", "checked_on": "2026-08-20", "link_status": "repository_resolved"}
+      ],
+      "audit_notes": ["The abstract's 'up to 2.8x performance gain with less than 10% tokens' is not a universal joint point and must not replace task-level table cells."]
+    },
+    {
+      "id": "agentprune_2025",
+      "method": "AgentPrune",
+      "track": "topology_or_routing_pruning",
+      "comparison_class": "headline_only",
+      "publication": {
+        "title": "AgentPrune: Reducing Redundancy and Improving Efficiency in LLM-Based Multi-Agent Systems",
+        "venue": "ICLR 2025",
+        "status": "peer_reviewed_conference",
+        "date": "2025-04",
+        "primary_url": "https://proceedings.iclr.cc/paper_files/paper/2025/hash/bbc461518c59a2a8d64e70e2c38c4a0e-Abstract-Conference.html",
+        "doi_or_id": "OpenReview LkzuPorQ5L"
+      },
+      "headline": {
+        "claim": "72.8% fewer prompt tokens for GPTSwarm on HumanEval (2,736,136 to 745,617) with performance 88.49 to 88.96.",
+        "metric": "aggregate provider prompt tokens over the evaluation",
+        "value": 72.8,
+        "unit": "percent reduction",
+        "direction": "lower_is_better",
+        "baseline": "unpruned GPTSwarm",
+        "comparability_lane": "provider_prompt_tokens",
+        "incomparable_reason": "It prunes a graph and counts provider prompt tokens across benchmark runs, not message-surface tokens or full envelopes; training/evaluation leakage and a 161-item HumanEval artifact also affect comparability."
+      },
+      "workload": {
+        "tasks": ["MMLU", "GSM8K", "MultiArith", "SVAMP", "AQuA", "HumanEval"],
+        "sample_definition": "Repository evaluation files; public HumanEval artifact has 161 items versus the canonical 164, and graph optimization uses benchmark samples.",
+        "topology": "Five-agent spatial-temporal communication graph; two rounds for reasoning and four for code; 30% or 50% pruning.",
+        "repetitions": "Graph sampling Q'=5, 10, or 20 and M=10 are reported; evaluation confidence intervals are not the headline.",
+        "hardware": "Closed-provider inference; hardware not reported."
+      },
+      "models": ["gpt-3.5-turbo-0301", "gpt-4-1106-preview"],
+      "ledger": {
+        "included": ["provider prompt tokens", "provider completion tokens reported separately"],
+        "excluded": ["full envelope bytes", "tool compute", "cold start"],
+        "unknown": ["whether headline totals fully include topology-search calls; paper separately reports training-token ratios of about 2.8-6.82%"]
+      },
+      "success_constraint": {
+        "metric": "HumanEval performance in the paper's GPTSwarm setup",
+        "baseline": "88.49",
+        "method": "88.96",
+        "constraint": "No degradation on the headline cell.",
+        "satisfied_as_reported": true
+      },
+      "artifacts": {
+        "code": {"availability": "partial", "url": "https://github.com/yanweiyue/AgentPrune", "revision": "c544dd6a1858c02c6d5d371d23c6e6ff55e0be21", "license": null, "license_status": "absent", "notes": "Official code is public but has no root license grant and does not fully freeze the paper environment."},
+        "data": {"availability": "partial", "url": "https://github.com/yanweiyue/AgentPrune", "revision": "c544dd6a1858c02c6d5d371d23c6e6ff55e0be21", "license": null, "license_status": "upstream_mixed_or_unmanifested", "notes": "Evaluation artifacts are public but include a noncanonical HumanEval count and no clean train/evaluation separation manifest."}
+      },
+      "reproduction": {
+        "literal": "no",
+        "clean_room": "conditional",
+        "literal_blockers": ["Retired closed model versions.", "No repository license.", "Noncanonical HumanEval artifact and topology-search/evaluation overlap."],
+        "clean_room_requirements": ["Use canonical benchmark items and disjoint topology-learning data.", "Reimplement the graph learner and pin replacement models."]
+      },
+      "sources": [
+        {"kind": "official_proceedings", "url": "https://proceedings.iclr.cc/paper_files/paper/2025/hash/bbc461518c59a2a8d64e70e2c38c4a0e-Abstract-Conference.html", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "official_repository", "url": "https://github.com/yanweiyue/AgentPrune", "checked_on": "2026-08-20", "link_status": "repository_resolved"}
+      ],
+      "audit_notes": ["Completion tokens sometimes increase even when prompt tokens fall; prompt and completion lanes must remain separate."]
+    },
+    {
+      "id": "agentdropout_2025",
+      "method": "AgentDropout",
+      "track": "topology_or_routing_pruning",
+      "comparison_class": "headline_only",
+      "publication": {
+        "title": "AgentDropout: Dynamic Agent Elimination for Token-Efficient and High-Performance LLM-Based Multi-Agent Collaboration",
+        "venue": "ACL 2025",
+        "status": "peer_reviewed_conference",
+        "date": "2025-07",
+        "primary_url": "https://aclanthology.org/2025.acl-long.1170/",
+        "doi_or_id": "10.18653/v1/2025.acl-long.1170"
+      },
+      "headline": {
+        "claim": "Average 21.6% fewer prompt tokens and 18.4% fewer completion tokens than the stated prior topology method, with average task performance +1.14.",
+        "metric": "aggregate provider prompt tokens",
+        "value": 21.6,
+        "unit": "percent reduction",
+        "direction": "lower_is_better",
+        "baseline": "AgentPrune across evaluated model/task settings",
+        "comparability_lane": "provider_prompt_tokens",
+        "incomparable_reason": "The abstract average pools models and six benchmarks and uses graph-training samples; it is not the same workload, model, or ledger as message-format candidates."
+      },
+      "workload": {
+        "tasks": ["MMLU", "GSM8K", "AQuA", "MultiArith", "SVAMP", "HumanEval"],
+        "sample_definition": "Benchmark evaluations plus 40 topology-training samples per benchmark.",
+        "topology": "Multi-round MAS with learned node dropout followed by edge dropout; two rounds for reasoning and four for code.",
+        "repetitions": "Sampling count M in {10,20}; main table reports aggregate performance.",
+        "hardware": "NVIDIA A800 for Llama/Qwen via vLLM; DeepSeek-V3 API for the largest model."
+      },
+      "models": ["Meta-Llama-3-8B-Instruct", "Qwen2.5-72B-Instruct", "DeepSeek-V3-671B-Instruct"],
+      "ledger": {
+        "included": ["agent prompt tokens", "agent completion tokens in a separate column"],
+        "excluded": ["topology-training cost from the headline table", "wire bytes", "full cold start"],
+        "unknown": ["exact tokenizer revision and API accounting consistency across open and closed serving"]
+      },
+      "success_constraint": {
+        "metric": "Average score across six tasks for Llama-3-8B",
+        "baseline": "AgentPrune 66.51",
+        "method": "AgentDropout 68.70",
+        "constraint": "Average task score improves while both token categories fall.",
+        "satisfied_as_reported": true
+      },
+      "artifacts": {
+        "code": {"availability": "partial", "url": "https://github.com/wangzx1219/AgentDropout", "revision": "855befab08df60ac734c9608b3b2f317ce687e6e", "license": null, "license_status": "absent", "notes": "Official repository exposes code, scripts, datasets, and sample results but no root license."},
+        "data": {"availability": "partial", "url": "https://github.com/wangzx1219/AgentDropout", "revision": "855befab08df60ac734c9608b3b2f317ce687e6e", "license": null, "license_status": "upstream_mixed_or_unmanifested", "notes": "Bundled benchmark artifacts have no consolidated provenance/license manifest."}
+      },
+      "reproduction": {
+        "literal": "no",
+        "clean_room": "conditional",
+        "literal_blockers": ["No root software license.", "DeepSeek API and model/runtime revisions are not immutable.", "Training and evaluation item manifests are not fully pinned."],
+        "clean_room_requirements": ["Reimplement under a clean-room license and use pinned open model weights.", "Separate topology-search tokens from evaluation tokens."]
+      },
+      "sources": [
+        {"kind": "official_proceedings", "url": "https://aclanthology.org/2025.acl-long.1170/", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "official_repository", "url": "https://github.com/wangzx1219/AgentDropout", "checked_on": "2026-08-20", "link_status": "repository_resolved"}
+      ],
+      "audit_notes": ["For Llama-3-8B, the paper's appendix states 21.4% prompt and 16.1% completion reduction; Qwen and DeepSeek percentages differ."]
+    },
+    {
+      "id": "supervisoragent_2026",
+      "method": "SupervisorAgent / Supervised MAS",
+      "track": "end_to_end_agent_task",
+      "comparison_class": "headline_only",
+      "publication": {
+        "title": "Stop Wasting Your Tokens: Towards Efficient Runtime Multi-Agent Systems",
+        "venue": "ICLR 2026",
+        "status": "peer_reviewed_conference",
+        "date": "2026-04",
+        "primary_url": "https://openreview.net/forum?id=pzFhtpkabh",
+        "doi_or_id": "OpenReview pzFhtpkabh"
+      },
+      "headline": {
+        "claim": "29.68% lower net total token consumption on GAIA pass@1, including supervisor tokens, with identical 50.91% success; latency rises 37.27%.",
+        "metric": "average net total runtime tokens per GAIA pass@1 evaluation",
+        "value": 29.68,
+        "unit": "percent reduction",
+        "direction": "lower_is_better",
+        "baseline": "Smolagent 527.76K; supervised MAS net 371.12K",
+        "comparability_lane": "total_runtime_model_tokens",
+        "incomparable_reason": "GAIA uses tools, browsing, long trajectories, and a runtime supervisor; the net token ledger is broader than message-token studies but excludes tool compute and reports a latency regression."
+      },
+      "workload": {
+        "tasks": ["GAIA validation", "GSM8K-Hard subset", "AIME 2024", "HumanEval", "MBPP", "DROP subset"],
+        "sample_definition": "Full GAIA validation; random 600 GSM8K-Hard; full HumanEval and MBPP; 800 DROP; standard AIME 2024.",
+        "topology": "Smolagent runtime augmented by an adaptive filter and supervisor actions including guidance, correction, purification, and verification.",
+        "repetitions": "GAIA pass@1, pass@2, and pass@3; other tasks use paper-defined evaluation runs.",
+        "hardware": "Provider and local runtime mix; complete hardware allocation not reported."
+      },
+      "models": ["GPT-4.1 for primary GAIA", "Gemini-2.5-pro-0605", "Qwen3-235B-2507", "Qwen3-32B for five additional benchmarks"],
+      "ledger": {
+        "included": ["all runtime agent tokens", "supervisor intervention tokens in the net value"],
+        "excluded": ["tool execution and browsing compute", "wall-clock cost", "development and tuning", "training"],
+        "unknown": ["provider tokenizer normalization across model families", "full monetary cost"]
+      },
+      "success_constraint": {
+        "metric": "GAIA pass@1",
+        "baseline": "50.91%",
+        "method": "50.91%",
+        "constraint": "Statistical equivalence as claimed by the paper; exact inferential test details are not a released artifact.",
+        "satisfied_as_reported": true
+      },
+      "artifacts": {
+        "code": {"availability": "partial", "url": "https://github.com/LINs-lab/SupervisorAgent", "revision": "ab116b557b095ae8d45bdf2d61057ce19519d4ff", "license": "Apache-2.0", "license_status": "verified", "notes": "Official repository includes GAIA evaluation code; the README states other benchmark evaluators will be added later."},
+        "data": {"availability": "partial", "url": "https://github.com/LINs-lab/SupervisorAgent", "revision": "ab116b557b095ae8d45bdf2d61057ce19519d4ff", "license": null, "license_status": "upstream_mixed_or_unmanifested", "notes": "Benchmarks are public upstream, but complete run traces and all sampled manifests are not released."}
+      },
+      "reproduction": {
+        "literal": "no",
+        "clean_room": "conditional",
+        "literal_blockers": ["Closed model endpoints and tool/web state are time-varying.", "Only the GAIA evaluator is currently released."],
+        "clean_room_requirements": ["Freeze tool snapshots, model versions, sampled subsets, and complete traces.", "Report net tokens and wall-clock jointly because the paper saves tokens while increasing latency."]
+      },
+      "sources": [
+        {"kind": "paper", "url": "https://openreview.net/forum?id=pzFhtpkabh", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "official_repository", "url": "https://github.com/LINs-lab/SupervisorAgent", "checked_on": "2026-08-20", "link_status": "repository_resolved"}
+      ],
+      "audit_notes": ["The gross supervised MAS value without supervisor overhead is 314.07K; only the 371.12K net value is claim-safe."]
+    },
+    {
+      "id": "latentmas_2026",
+      "method": "LatentMAS",
+      "track": "latent_channel",
+      "comparison_class": "headline_only",
+      "publication": {
+        "title": "Latent Collaboration in Multi-Agent Systems",
+        "venue": "ICML 2026 Spotlight, PMLR 306",
+        "status": "peer_reviewed_conference",
+        "date": "2026-07",
+        "primary_url": "https://icml.cc/virtual/2026/poster/61180",
+        "doi_or_id": "ICML poster 61180; arXiv 2511.20639"
+      },
+      "headline": {
+        "claim": "Hierarchical LatentMAS averages 83.7% fewer decoded output tokens and 4.3x faster end-to-end inference than hierarchical TextMAS, with average task accuracy +4.6 points over TextMAS.",
+        "metric": "total decoded output tokens across the multi-agent system",
+        "value": 83.7,
+        "unit": "percent reduction",
+        "direction": "lower_is_better",
+        "baseline": "hierarchical text-based MAS under the same architecture",
+        "comparability_lane": "system_decoded_output_tokens",
+        "incomparable_reason": "Decoded output tokens exclude latent steps and tensor movement; all agents share compatible open-model families and run on eight A100 GPUs, unlike portable text/wire protocols."
+      },
+      "workload": {
+        "tasks": ["GSM8K", "AIME 2024", "AIME 2025", "GPQA-Diamond", "MedQA", "ARC-Easy", "ARC-Challenge", "MBPP+", "HumanEval+"],
+        "sample_definition": "Paper-defined public benchmark evaluation sets across nine tasks.",
+        "topology": "Sequential and hierarchical MAS; intermediate agents generate latent thoughts and pass layer-wise KV working memory; only the final agent decodes text.",
+        "repetitions": "Mean over three independent runs after hyperparameter tuning.",
+        "hardware": "Eight NVIDIA A100-80GB GPUs; Hugging Face and optional vLLM backends."
+      },
+      "models": ["Qwen3-4B", "Qwen3-8B", "Qwen3-14B", "Llama-3B family", "Llama-8B family"],
+      "ledger": {
+        "included": ["decoded output tokens across the system", "paper-defined end-to-end inference time in a separate metric"],
+        "excluded": ["input tokens", "latent steps", "KV-cache bytes and device-transfer volume", "hyperparameter tuning", "hardware amortization"],
+        "unknown": ["complete energy cost", "whether all setup/warm-up time is in every latency cell"]
+      },
+      "success_constraint": {
+        "metric": "Average accuracy under hierarchical MAS",
+        "baseline": "TextMAS reference",
+        "method": "+4.6 percentage points on average",
+        "constraint": "Average task accuracy improves; individual table cells can decline slightly and must be disclosed in reproductions.",
+        "satisfied_as_reported": true
+      },
+      "artifacts": {
+        "code": {"availability": "complete", "url": "https://github.com/Gen-Verse/LatentMAS", "revision": "9a9e4d331eb11430bd9e64754c6b252b06d73031", "license": "Apache-2.0", "license_status": "verified", "notes": "Official implementation covers Hugging Face and vLLM paths and includes example logs/configs."},
+        "data": {"availability": "partial", "url": "https://github.com/Gen-Verse/LatentMAS", "revision": "9a9e4d331eb11430bd9e64754c6b252b06d73031", "license": null, "license_status": "upstream_mixed_or_unmanifested", "notes": "Some processed data and logs are present; upstream benchmark licenses and exact model-weight revisions are not consolidated."}
+      },
+      "reproduction": {
+        "literal": "conditional",
+        "clean_room": "yes",
+        "literal_blockers": ["Exact Hugging Face weight revisions, container image, and all evaluation manifests are not pinned by immutable digest.", "Eight-A100 hardware is required for the reported timing lane."],
+        "clean_room_requirements": ["Pin weights, datasets, containers, GPU model, clocks, and warm-up protocol.", "Measure latent steps and tensor bytes alongside decoded tokens."]
+      },
+      "sources": [
+        {"kind": "official_proceedings", "url": "https://icml.cc/virtual/2026/poster/61180", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "paper", "url": "https://openreview.net/forum?id=syG9I9ofd8", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "official_repository", "url": "https://github.com/Gen-Verse/LatentMAS", "checked_on": "2026-08-20", "link_status": "repository_resolved"}
+      ],
+      "audit_notes": ["Sequential results are 70.8% fewer decoded tokens and 4.0x faster on average; do not combine them with the hierarchical 83.7%/4.3x pair."]
+    },
+    {
+      "id": "interlat_2026",
+      "method": "Interlat",
+      "track": "latent_channel",
+      "comparison_class": "headline_only",
+      "publication": {
+        "title": "Enabling Agents to Communicate Entirely in Latent Space",
+        "venue": "ACL 2026",
+        "status": "peer_reviewed_conference",
+        "date": "2026-07",
+        "primary_url": "https://aclanthology.org/2026.acl-long.1248/",
+        "doi_or_id": "10.18653/v1/2026.acl-long.1248"
+      },
+      "headline": {
+        "claim": "Message-generation latency falls from 9.19 s for full latent communication to 0.39 s with an untrained 8-step latent (23.6x), but seen/unseen ALFWorld success drops from 70.48/65.42 to 64.00/57.46.",
+        "metric": "sender-side message-generation wall-clock time",
+        "value": 23.6,
+        "unit": "times faster",
+        "direction": "higher_is_better",
+        "baseline": "full-length latent message generation",
+        "comparability_lane": "message_generation_latency",
+        "incomparable_reason": "The headline is a sender message-generation micro-boundary, not complete task latency, and its most aggressive point does not satisfy a tight task-success non-inferiority gate."
+      },
+      "workload": {
+        "tasks": ["ALFWorld", "MATH"],
+        "sample_definition": "Standard ALFWorld seen/unseen splits and MATH levels using paper-described training/validation data.",
+        "topology": "Primarily two agents with a learned communication adapter; additional three-agent chain and tree experiments use 32-step latent messages.",
+        "repetitions": "Three independent runs.",
+        "hardware": "Paper reports latency protocol but the main extracted table does not identify a universally portable hardware lane."
+      },
+      "models": ["Qwen2.5-7B/0.5B Base and Instruct variants", "Llama-3.1-8B-Base"],
+      "ledger": {
+        "included": ["message-generation latency"],
+        "excluded": ["environment rollout and complete task latency", "actor downstream decoding", "training", "latent tensor bytes", "wire transport"],
+        "unknown": ["cross-machine portability of timing results"]
+      },
+      "success_constraint": {
+        "metric": "ALFWorld seen/unseen success",
+        "baseline": "70.48 / 65.42 for full-length latent",
+        "method": "64.00 / 57.46 for untrained 8-step latent",
+        "constraint": "A claim-safe comparator would require a predeclared non-inferiority margin; a one-point margin is not met by the headline cell.",
+        "satisfied_as_reported": false
+      },
+      "artifacts": {
+        "code": {"availability": "complete", "url": "https://github.com/XiaoDu-flying/Interlat", "revision": "66a89cb4d4097b2f86cbe48ed9851d6e8578f821", "license": "Apache-2.0", "license_status": "verified", "notes": "Official code covers collection, adapter training, compression training, and evaluation."},
+        "data": {"availability": "partial", "url": "https://github.com/XiaoDu-flying/Interlat", "revision": "66a89cb4d4097b2f86cbe48ed9851d6e8578f821", "license": null, "license_status": "upstream_mixed_or_unmanifested", "notes": "Preparation scripts are public; complete trained checkpoints, exact dataset snapshots, and a consolidated license manifest are not all present."}
+      },
+      "reproduction": {
+        "literal": "conditional",
+        "clean_room": "yes",
+        "literal_blockers": ["Exact training checkpoints and all environment/model revisions are not immutable release artifacts.", "Timing requires matching hardware and software."],
+        "clean_room_requirements": ["Train the adapter/compressor from pinned public data and weights.", "Report full task latency, message latency, success confidence intervals, and tensor bytes separately."]
+      },
+      "sources": [
+        {"kind": "official_proceedings", "url": "https://aclanthology.org/2026.acl-long.1248/", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "official_repository", "url": "https://github.com/XiaoDu-flying/Interlat", "checked_on": "2026-08-20", "link_status": "repository_resolved"}
+      ],
+      "audit_notes": ["A trained 128-step cell is slower but closer in success; any efficiency claim must select the operating point before evaluation rather than after inspecting the frontier."]
+    },
+    {
+      "id": "kvcomm_2025",
+      "method": "KVCOMM",
+      "track": "systems_transport_boundary",
+      "comparison_class": "systems_boundary",
+      "publication": {
+        "title": "KVCOMM: Online Cross-context KV-cache Communication for Efficient LLM-based Multi-agent Systems",
+        "venue": "NeurIPS 2025",
+        "status": "peer_reviewed_conference",
+        "date": "2025-12",
+        "primary_url": "https://proceedings.neurips.cc/paper_files/paper/2025/hash/1a074a28c3a6f2056562d00649ae6416-Abstract-Conference.html",
+        "doi_or_id": "10.52202/085713-0605"
+      },
+      "headline": {
+        "claim": "Up to 7.82x TTFT speedup at agent 5, reducing about 430 ms to about 55 ms in a five-agent synthetic fully connected setup; reuse exceeds 70% on task workloads without reported quality degradation.",
+        "metric": "time to first token / prefill latency",
+        "value": 7.82,
+        "unit": "times faster",
+        "direction": "higher_is_better",
+        "baseline": "standard dense prefill pipeline",
+        "comparability_lane": "ttft_prefill_latency",
+        "incomparable_reason": "TTFT excludes the remaining 512-token decode and complete task execution; the 7.82x point is a synthetic fifth-agent serving measurement, not a task-level end-to-end result."
+      },
+      "workload": {
+        "tasks": ["MMLU/RAG-style collaboration", "GSM8K math reasoning", "HumanEval collaborative coding", "synthetic five-agent prefill benchmark"],
+        "sample_definition": "Paper-defined benchmark samples; synthetic speed cell uses 1K user input, 512 prefix, and 512 generated tokens per agent.",
+        "topology": "Two-to-five agent settings; headline uses five fully connected agents sharing preceding responses.",
+        "repetitions": "Paper reports benchmark aggregates; exact per-cell run count is not pinned in the release registry.",
+        "hardware": "Single NVIDIA H100 GPU for the reported TTFT headline."
+      },
+      "models": ["Llama-3.1-8B-Instruct for RAG/math", "Qwen2.5-Coder-7B-Instruct for HumanEval"],
+      "ledger": {
+        "included": ["prefill and first-token latency", "cache anchor matching/alignment overhead as implemented"],
+        "excluded": ["remaining decode latency", "complete task wall-clock", "network transfer between machines", "training because method is training-free"],
+        "unknown": ["energy and memory-allocation overhead outside measured server path"]
+      },
+      "success_constraint": {
+        "metric": "Task accuracy/pass@1 under KV reuse",
+        "baseline": "Dense prefill result for each task",
+        "method": "Reported as no quality degradation; HumanEval pass@1 remains 81.4-83.2% across tested reuse settings.",
+        "constraint": "No reported task-quality degradation at the selected reuse configuration.",
+        "satisfied_as_reported": true
+      },
+      "artifacts": {
+        "code": {"availability": "complete", "url": "https://github.com/FastMAS/KVCOMM", "revision": "48ca0b376c7f4fbf1c24042c1709a6fe4148c959", "license": null, "license_status": "absent", "notes": "Official implementation and scripts are public, but no root license grant was present at cutoff."},
+        "data": {"availability": "partial", "url": "https://github.com/FastMAS/KVCOMM", "revision": "48ca0b376c7f4fbf1c24042c1709a6fe4148c959", "license": null, "license_status": "upstream_mixed_or_unmanifested", "notes": "Benchmark preparation is provided; upstream licenses and all exact item/run manifests are not consolidated."}
+      },
+      "reproduction": {
+        "literal": "conditional",
+        "clean_room": "yes",
+        "literal_blockers": ["No root software license for direct code reuse.", "Exact H100 software stack, clocks, and all model/data hashes are not frozen."],
+        "clean_room_requirements": ["Reimplement from the paper or obtain a license grant.", "Match H100, model revisions, input/output lengths, warm-up, and corrected first-token timing."]
+      },
+      "sources": [
+        {"kind": "official_proceedings", "url": "https://proceedings.neurips.cc/paper_files/paper/2025/hash/1a074a28c3a6f2056562d00649ae6416-Abstract-Conference.html", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "official_repository", "url": "https://github.com/FastMAS/KVCOMM", "checked_on": "2026-08-20", "link_status": "repository_resolved"}
+      ],
+      "audit_notes": ["The final paper footnote states the original submission omitted first-token decode latency and corrects the TTFT calculation; reproductions must use the corrected definition."]
+    },
+    {
+      "id": "c2c_2026",
+      "method": "Cache-to-Cache (C2C)",
+      "track": "latent_channel",
+      "comparison_class": "headline_only",
+      "publication": {
+        "title": "Cache-to-Cache: Direct Semantic Communication Between Large Language Models",
+        "venue": "ICLR 2026",
+        "status": "peer_reviewed_conference",
+        "date": "2026-04",
+        "primary_url": "https://openreview.net/forum?id=LeatkxrBCi",
+        "doi_or_id": "arXiv 2510.03215"
+      },
+      "headline": {
+        "claim": "Average 2.5x latency speedup over text-to-text communication, with 3.1-5.4 percentage-point average accuracy gains over text communication depending on the sharer.",
+        "metric": "average inference latency for the two-model handoff",
+        "value": 2.5,
+        "unit": "times faster",
+        "direction": "higher_is_better",
+        "baseline": "text-to-text analyze-then-respond handoff",
+        "comparability_lane": "end_to_end_inference_latency",
+        "incomparable_reason": "C2C uses a trained KV-cache fuser, freezes two open models, excludes fuser-training cost from inference, and evaluates a two-model classifier-style handoff rather than a portable message surface."
+      },
+      "workload": {
+        "tasks": ["MMLU-Redux", "OpenBookQA", "ARC-Challenge", "C-Eval", "LongBench-E diagnostics"],
+        "sample_definition": "Zero-shot public benchmark evaluations; no-correct-answer MMLU-Redux items excluded. Fuser training uses the first 500K OpenHermes-2.5 samples for one epoch.",
+        "topology": "One Sharer encodes the query; a learned fuser transforms/merges its KV cache into one Receiver, which decodes the answer.",
+        "repetitions": "Deterministic greedy decoding with seed 42; main timing uses batch size one.",
+        "hardware": "Single NVIDIA A100 GPU for inference timing; fuser training up to 44.72-54.24 GPU-hours for full 1,929-step runs."
+      },
+      "models": ["Qwen3-0.6B Receiver", "Qwen2.5-0.5B-Instruct Sharer", "Llama-3.2-1B-Instruct Sharer", "Qwen3-4B-Base Sharer", "additional Qwen/Gemma combinations"],
+      "ledger": {
+        "included": ["two-model prefill", "C2C fusion time", "Receiver decode", "T2T Sharer decode and Receiver processing in the baseline"],
+        "excluded": ["fuser training and OpenHermes preparation", "model download/cold start", "cross-machine network", "energy"],
+        "unknown": ["whether all host orchestration overhead is synchronized into each timing cell"]
+      },
+      "success_constraint": {
+        "metric": "Average accuracy versus text-to-text over four main benchmarks",
+        "baseline": "Text-to-text reference",
+        "method": "+5.36, +4.15, or +3.06 percentage points depending on Sharer",
+        "constraint": "Accuracy improves over text-to-text for all three main Sharer settings.",
+        "satisfied_as_reported": true
+      },
+      "artifacts": {
+        "code": {"availability": "complete", "url": "https://github.com/thu-nics/C2C", "revision": "113c3a9b2538cbf096a0477e1ec99ae2a2e0d12a", "license": "Apache-2.0", "license_status": "verified", "notes": "Official train/evaluate code and multiple Hugging Face fuser checkpoints are public."},
+        "data": {"availability": "partial", "url": "https://github.com/thu-nics/C2C", "revision": "113c3a9b2538cbf096a0477e1ec99ae2a2e0d12a", "license": null, "license_status": "upstream_mixed_or_unmanifested", "notes": "Recipes reference public datasets and checkpoints; upstream data licenses and exact sampled index manifests are not consolidated."}
+      },
+      "reproduction": {
+        "literal": "conditional",
+        "clean_room": "yes",
+        "literal_blockers": ["Base-model and dataset revisions are not all pinned by content digest.", "Exact A100 stack and clock state are required for latency."],
+        "clean_room_requirements": ["Use released fuser checkpoints or retrain from a pinned OpenHermes snapshot.", "Freeze all weights, datasets, CUDA stack, timing synchronization, and warm-up."]
+      },
+      "sources": [
+        {"kind": "paper", "url": "https://openreview.net/forum?id=LeatkxrBCi", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "official_repository", "url": "https://github.com/thu-nics/C2C", "checked_on": "2026-08-20", "link_status": "repository_resolved"},
+        {"kind": "model_artifact", "url": "https://huggingface.co/nics-efc/C2C_Fuser", "checked_on": "2026-08-20", "link_status": "retrieved"}
+      ],
+      "audit_notes": ["A concrete MMLU-Redux timing cell is 1,596 ms T2T versus 445 ms C2C, including 90 ms cache fusion; the paper's abstract average should not be replaced by the best cell."]
+    },
+    {
+      "id": "kvflow_2025",
+      "method": "KVFlow",
+      "track": "systems_transport_boundary",
+      "comparison_class": "systems_boundary",
+      "publication": {
+        "title": "KVFlow: Efficient Prefix Caching for Accelerating LLM-Based Multi-Agent Workflows",
+        "venue": "NeurIPS 2025",
+        "status": "peer_reviewed_conference",
+        "date": "2025-12",
+        "primary_url": "https://arxiv.org/abs/2507.07400",
+        "doi_or_id": "10.52202/085713-4208"
+      },
+      "headline": {
+        "claim": "1.83x faster than SGLang with HiCache on a single 10-agent synthetic workflow at 8,192/32/32 fixed/dynamic/output tokens; 2.19x is only versus reactive HiCache under high concurrency.",
+        "metric": "end-to-end workflow latency",
+        "value": 1.83,
+        "unit": "times faster",
+        "direction": "higher_is_better",
+        "baseline": "SGLang with hierarchical HiCache",
+        "comparability_lane": "workflow_end_to_end_latency",
+        "incomparable_reason": "This preserves the exact model computation and optimizes cache eviction/prefetch; it is a serving-system control, not a communication representation or task-token reduction."
+      },
+      "workload": {
+        "tasks": ["Synthetic 10-agent sequential workflow", "Concurrent independent synthetic workflows", "PEER-style four-agent Financial QA workflow"],
+        "sample_definition": "Ten executions after cache warm-up for the single-workflow synthetic test; paper-defined concurrent and PEER-style simulations.",
+        "topology": "Sequential 10-agent synthetic workflow; multiple noninteracting workflows under concurrency; four agents for PEER-style Financial QA.",
+        "repetitions": "Single-workflow latency averaged over ten runs with varying dynamic suffixes.",
+        "hardware": "Llama-3.1-8B on NVIDIA A10G 24GB/PCIe Gen1 and Qwen2.5-32B on NVIDIA H100 80GB/PCIe Gen5."
+      },
+      "models": ["Llama-3.1-8B", "Qwen2.5-32B"],
+      "ledger": {
+        "included": ["all LLM calls in the specified workflow", "GPU/CPU KV-cache movement", "workflow-aware eviction and prefetch"],
+        "excluded": ["task-quality measurement because computation is semantically unchanged", "training", "model load before warm-up"],
+        "unknown": ["complete host/orchestrator overhead outside the modified SGLang path"]
+      },
+      "success_constraint": {
+        "metric": "Output semantic equivalence",
+        "baseline": "Unmodified model weights, prompts, and greedy decoding",
+        "method": "Same computation with different cache retention and movement",
+        "constraint": "Source argues correctness is guaranteed because weights, prompts, and decoding logic are unchanged.",
+        "satisfied_as_reported": true
+      },
+      "artifacts": {
+        "code": {"availability": "complete", "url": "https://github.com/PanZaifeng/KVFlow", "revision": "7ef897eaedc16626a281ccfe0d453fae80251e8f", "license": "Apache-2.0", "license_status": "verified", "notes": "Official repository contains the SGLang-based serving engine and scheduler layer; current head also includes later ScaleSim work."},
+        "data": {"availability": "partial", "url": "https://github.com/PanZaifeng/KVFlow", "revision": "7ef897eaedc16626a281ccfe0d453fae80251e8f", "license": null, "license_status": "upstream_mixed_or_unmanifested", "notes": "Synthetic generation is described and code is public; PEER Financial QA and upstream artifacts are not captured by one license/digest manifest."}
+      },
+      "reproduction": {
+        "literal": "conditional",
+        "clean_room": "yes",
+        "literal_blockers": ["The released repository head has evolved beyond the paper artifact and does not pin a container to the reported hardware stack.", "A10G/H100 PCIe characteristics and memory pressure must match."],
+        "clean_room_requirements": ["Checkout the recorded revision and isolate the KVFlow paper path from ScaleSim additions.", "Match SGLang baseline revision, GPU, PCIe bandwidth, prompt lengths, warm-up, and memory limits."]
+      },
+      "sources": [
+        {"kind": "paper", "url": "https://arxiv.org/abs/2507.07400", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "official_repository", "url": "https://github.com/PanZaifeng/KVFlow", "checked_on": "2026-08-20", "link_status": "repository_resolved"}
+      ],
+      "audit_notes": ["On PEER-style Financial QA, the practical gains are only up to 1.12x versus SGLang and 1.08x versus HiCache, much smaller than the synthetic headline."]
+    },
+    {
+      "id": "pact_2026",
+      "method": "PACT",
+      "track": "compact_symbolic_or_induced",
+      "comparison_class": "same_workload_candidate",
+      "publication": {
+        "title": "What Should Agents Say? Action-state Communication for Efficient Multi-Agent Systems",
+        "venue": "arXiv preprint",
+        "status": "preprint",
+        "date": "2026-06-03",
+        "primary_url": "https://arxiv.org/abs/2606.05304",
+        "doi_or_id": "arXiv:2606.05304v1"
+      },
+      "headline": {
+        "claim": "On the same four-role Qwen3-32B AIME25 topology, total model tokens fall from 57,984 for TextMAS to 30,970 for PACT, 46.59% fewer, while accuracy rises from 60.4% to 72.7%.",
+        "metric": "average total rendered input plus raw output tokens per problem",
+        "value": 46.59,
+        "unit": "percent reduction",
+        "direction": "lower_is_better",
+        "baseline": "TextMAS, 57,984 total model tokens; PACT, 30,970",
+        "comparability_lane": "total_runtime_model_tokens",
+        "incomparable_reason": null
+      },
+      "workload": {
+        "tasks": ["HotpotQA", "2WikiMultiHopQA", "AIME24", "AIME25", "GPQA-Diamond", "OpenBookQA", "SWE-bench Verified extension"],
+        "sample_definition": "Paper-defined task subsets; split-evidence QA gives each of two agents five paragraphs, and the four-role pipeline uses Planner, Critic, Refiner, and Solver.",
+        "topology": "Two-agent four-turn split-evidence runs and a four-role sequential reasoning topology.",
+        "repetitions": "No complete seed-level confidence interval is reported for the headline row.",
+        "hardware": "Not frozen in the paper artifact for the complete comparison."
+      },
+      "models": ["Qwen3-8B", "Qwen3-14B", "Qwen3-32B"],
+      "ledger": {
+        "included": ["every rendered chat input", "every raw model output including private think text", "all turns in the named topology"],
+        "excluded": ["wire framing and transport", "model loading", "offline method development", "unreleased SWE-bench harness costs"],
+        "unknown": ["exact tokenizer/model revisions", "whether all baseline implementations use byte-identical chat templates"]
+      },
+      "success_constraint": {
+        "metric": "AIME25 accuracy",
+        "baseline": "60.4%",
+        "method": "72.7%",
+        "constraint": "Headline same-topology row has higher point accuracy and lower total model tokens; no non-inferiority interval was predeclared.",
+        "satisfied_as_reported": true
+      },
+      "artifacts": {
+        "code": {"availability": "partial", "url": "https://github.com/iNLP-Lab/PACT", "revision": "91acf820f8a69fc7c181120b3120444a98823230", "license": null, "license_status": "absent", "notes": "Official repository exposes the PACT token ledger and one Hotpot path, but no software license or complete baseline harness."},
+        "data": {"availability": "partial", "url": "https://github.com/iNLP-Lab/PACT", "revision": "91acf820f8a69fc7c181120b3120444a98823230", "license": null, "license_status": "upstream_mixed_or_unmanifested", "notes": "Public upstream tasks are named; exact evaluation manifests and SWE-bench traces are not fully released."}
+      },
+      "reproduction": {
+        "literal": "no",
+        "clean_room": "yes",
+        "literal_blockers": ["The public code omits baseline implementations, the coding harness, pinned models, and exact data manifests.", "The repository has no software license."],
+        "clean_room_requirements": ["Reimplement ACTION, STATE, and RESULT history filtering from the CC-licensed paper.", "Run PACT and full-history TextMAS inside one pinned driver with the complete model-token ledger."]
+      },
+      "sources": [
+        {"kind": "paper", "url": "https://arxiv.org/abs/2606.05304", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "official_repository", "url": "https://github.com/iNLP-Lab/PACT", "checked_on": "2026-08-20", "link_status": "repository_resolved"}
+      ],
+      "audit_notes": ["The abstract's 38.7% average does not disclose a reconstructible averaging rule; the registry uses an exact same-topology table row instead.", "The 88.41% OpenBookQA reduction uses a different debate topology and is not the primary PACT scalar."]
+    },
+    {
+      "id": "clsr_2026",
+      "method": "CLSR",
+      "track": "compact_symbolic_or_induced",
+      "comparison_class": "headline_only",
+      "publication": {
+        "title": "When LLMs Develop Languages: Symbolic Communication for Efficient Multi-Agent Reasoning",
+        "venue": "ICML 2026, PMLR 306",
+        "status": "peer_reviewed_conference",
+        "date": "2026-07",
+        "primary_url": "https://icml.cc/virtual/2026/poster/61557",
+        "doi_or_id": "ICML poster 61557"
+      },
+      "headline": {
+        "claim": "DeepSeek-R1-0528-Qwen3-8B on ScienceQA falls from 125 Raw-CoT output tokens to 30 CLSR online output tokens, 76.0% fewer, while accuracy rises from 71.3% to 71.5%.",
+        "metric": "online generated output tokens from routing, symbolic-language calls, intermediate rounds, and aggregation",
+        "value": 76.0,
+        "unit": "percent reduction",
+        "direction": "lower_is_better",
+        "baseline": "Raw CoT, 125 output tokens; CLSR, 30",
+        "comparability_lane": "system_decoded_output_tokens",
+        "incomparable_reason": "Inputs and the offline evolution of symbolic languages over 200-2,000 exemplars and five generations are excluded; this is not a complete runtime or acquisition ledger."
+      },
+      "workload": {
+        "tasks": ["ScienceQA", "MATH500", "HotpotQA", "additional reasoning benchmarks"],
+        "sample_definition": "Paper-defined public benchmark evaluations; offline evolution uses 200-2,000 task exemplars.",
+        "topology": "An LLM router selects single, aggregate, or multi-round composition over evolved reusable language-symbolism frameworks.",
+        "repetitions": "Paper tables report point estimates; the headline row has no preregistered interval.",
+        "hardware": "Not sufficiently pinned for literal numerical reproduction."
+      },
+      "models": ["DeepSeek-R1-0528-Qwen3-8B", "Qwen3-8B", "Qwen3-32B"],
+      "ledger": {
+        "included": ["router outputs", "selected symbolism-framework outputs", "intermediate and aggregation outputs"],
+        "excluded": ["all input tokens", "offline language evolution", "wire bytes", "cold start"],
+        "unknown": ["provider-dependent cache coefficients", "complete acquisition cost"]
+      },
+      "success_constraint": {
+        "metric": "ScienceQA accuracy",
+        "baseline": "71.3%",
+        "method": "71.5%",
+        "constraint": "Point accuracy is non-decreasing on the selected exact row; no formal non-inferiority test.",
+        "satisfied_as_reported": true
+      },
+      "artifacts": {
+        "code": {"availability": "partial", "url": "https://github.com/pzqpzq/LSF_MDia", "revision": "7235a1724dfe47d116461549c014baf9e32a67b2", "license": "MIT", "license_status": "verified", "notes": "Official code is licensed, but its own reproduction documents say exact manuscript reproduction is unavailable."},
+        "data": {"availability": "partial", "url": "https://github.com/pzqpzq/LSF_MDia", "revision": "7235a1724dfe47d116461549c014baf9e32a67b2", "license": null, "license_status": "upstream_mixed_or_unmanifested", "notes": "Current configs and legacy workspace do not freeze the manuscript's complete evolved artifacts and item manifests."}
+      },
+      "reproduction": {
+        "literal": "no",
+        "clean_room": "yes",
+        "literal_blockers": ["The official repository explicitly marks the exact paper configuration as unavailable.", "Evolved artifacts, complete item manifests, and exact model revisions are not frozen."],
+        "clean_room_requirements": ["Regenerate symbolism frameworks on a separate pinned development set.", "Charge offline evolution separately and amortize it over declared reuse horizons."]
+      },
+      "sources": [
+        {"kind": "official_proceedings", "url": "https://icml.cc/virtual/2026/poster/61557", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "paper", "url": "https://arxiv.org/abs/2606.29354", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "official_repository", "url": "https://github.com/pzqpzq/LSF_MDia", "checked_on": "2026-08-20", "link_status": "repository_resolved"}
+      ],
+      "audit_notes": ["The strongest non-decreasing printed row is used instead of combining percentages across models and tasks."]
+    },
+    {
+      "id": "gdesigner_2025",
+      "method": "G-Designer",
+      "track": "topology_or_routing_pruning",
+      "comparison_class": "headline_only",
+      "publication": {
+        "title": "G-Designer: Architecting Multi-agent Communication Topologies via Graph Neural Networks",
+        "venue": "ICML 2025, PMLR 267",
+        "status": "peer_reviewed_conference",
+        "date": "2025-07",
+        "primary_url": "https://proceedings.mlr.press/v267/zhang25cu.html",
+        "doi_or_id": "PMLR v267:zhang25cu"
+      },
+      "headline": {
+        "claim": "The strongest exact table row reduces 20-agent MMLU prompt tokens from 30,317,341 for GPTSwarm to 1,852,538, 93.89% fewer, while accuracy rises from 75.38% to 77.82%; the abstract's 95.33% HumanEval claim lacks tabulated counts.",
+        "metric": "content-only prompt tokens",
+        "value": 93.89,
+        "unit": "percent reduction",
+        "direction": "lower_is_better",
+        "baseline": "20-agent GPTSwarm MMLU, 30,317,341 prompt tokens; G-Designer, 1,852,538",
+        "comparability_lane": "provider_prompt_tokens",
+        "incomparable_reason": "Prompt-only content tokenization omits completions, role/chat framing, transport, training, and full task cost; the 95.33% abstract maximum has no recoverable numerator and denominator."
+      },
+      "workload": {
+        "tasks": ["MMLU", "HumanEval", "GSM8K", "MATH", "AQuA", "MBPP"],
+        "sample_definition": "Six paper-defined public benchmark evaluations; exact task artifact digests are not released.",
+        "topology": "A variational graph autoencoder generates task-adaptive communication graphs; the exact row scales GPTSwarm to 20 agents.",
+        "repetitions": "No paired success non-inferiority interval for the token headline.",
+        "hardware": "Closed-provider inference; topology training hardware is not part of the prompt-token ledger."
+      },
+      "models": ["gpt-4-1106-preview", "five-agent main setting and 20-agent scalability setting"],
+      "ledger": {
+        "included": ["concatenated message-content prompt tokens"],
+        "excluded": ["completion tokens", "roles and chat-template framing", "topology training", "wire and tool cost"],
+        "unknown": ["exact provider usage reconciliation", "complete training-token cost"]
+      },
+      "success_constraint": {
+        "metric": "MMLU accuracy for the exact 20-agent row",
+        "baseline": "75.38%",
+        "method": "77.82%",
+        "constraint": "Point accuracy is higher; no confidence interval or non-inferiority gate is reported.",
+        "satisfied_as_reported": true
+      },
+      "artifacts": {
+        "code": {"availability": "partial", "url": "https://github.com/yanweiyue/GDesigner", "revision": "a6efcfa3b40bb4d9cbf46f883a95d62020bd8251", "license": null, "license_status": "absent", "notes": "Official repository has no license, result logs, released learned weights, or paper tag; its counter concatenates message contents."},
+        "data": {"availability": "absent", "url": null, "revision": null, "license": null, "license_status": "not_applicable", "notes": "No consolidated benchmark item manifest or learned-topology artifact is released."}
+      },
+      "reproduction": {
+        "literal": "no",
+        "clean_room": "conditional",
+        "literal_blockers": ["Retired closed model snapshot, missing weights/results/data manifest, and absent software license."],
+        "clean_room_requirements": ["Reimplement graph generation independently from the paper.", "Use one frozen open model and a full prompt-plus-completion ledger."]
+      },
+      "sources": [
+        {"kind": "official_proceedings", "url": "https://proceedings.mlr.press/v267/zhang25cu.html", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "official_repository", "url": "https://github.com/yanweiyue/GDesigner", "checked_on": "2026-08-20", "link_status": "repository_resolved"}
+      ],
+      "audit_notes": ["93.89% is the largest auditable exact topology reduction in this audit, but it is prompt-only and not a total-token or end-to-end record."]
+    },
+    {
+      "id": "agp_2025",
+      "method": "Adaptive Graph Pruning (AGP)",
+      "track": "topology_or_routing_pruning",
+      "comparison_class": "same_workload_candidate",
+      "publication": {
+        "title": "Adaptive Graph Pruning for Multi-Agent Communication",
+        "venue": "ECAI 2025 Spotlight",
+        "status": "peer_reviewed_conference",
+        "date": "2025-10",
+        "primary_url": "https://arxiv.org/abs/2506.02951",
+        "doi_or_id": "10.3233/FAIA251326"
+      },
+      "headline": {
+        "claim": "On MMLU, rounded prompt-token totals fall from 2.6M to 0.25M, approximately 90.38% fewer, while accuracy rises from 82.80% to 87.65%.",
+        "metric": "aggregate prompt tokens in the evaluated task run",
+        "value": 90.38,
+        "unit": "approximate percent reduction from rounded totals",
+        "direction": "lower_is_better",
+        "baseline": "paper baseline, 2.6M prompt tokens; AGP, 0.25M",
+        "comparability_lane": "provider_prompt_tokens",
+        "incomparable_reason": null
+      },
+      "workload": {
+        "tasks": ["MMLU", "GSM8K", "SVAMP", "HumanEval", "MBPP", "AQuA"],
+        "sample_definition": "Six public benchmarks in general, mathematical, and coding categories; released training artifacts exist but exact hosted-model outputs are not frozen.",
+        "topology": "Two-stage hard pruning of agent quantity plus soft pruning of graph edges from a maximum complete graph.",
+        "repetitions": "Paper reports the learned controller reaching baseline performance after about ten training steps; no paired task-level confidence interval for the headline.",
+        "hardware": "Hosted gpt-4o-mini agents; topology-controller training artifacts are released."
+      },
+      "models": ["gpt-4o-mini alias", "additional mainstream LLM generalization settings"],
+      "ledger": {
+        "included": ["content-counted inference prompt tokens"],
+        "excluded": ["completion tokens", "chat framing", "wire bytes", "controller training unless separately reported"],
+        "unknown": ["immutable hosted model snapshot", "provider-versus-tokenizer usage difference"]
+      },
+      "success_constraint": {
+        "metric": "MMLU accuracy",
+        "baseline": "82.80%",
+        "method": "87.65%",
+        "constraint": "Point accuracy improves while prompt tokens fall; no formal non-inferiority interval.",
+        "satisfied_as_reported": true
+      },
+      "artifacts": {
+        "code": {"availability": "complete", "url": "https://github.com/Resurgamm/AGP", "revision": "4c5508361e6a1b0e799b2223403f61c144a4c492", "license": "MIT", "license_status": "verified", "notes": "Official code plus Hugging Face weights and training data are public. Recorded weight revision cfe982bed2fa10b2c9605bdb1614a49e1bebbdb7."},
+        "data": {"availability": "complete", "url": "https://huggingface.co/datasets/Resurgammm/AGP-Training", "revision": "bee8f49b79df6f4458060f9d3363878347a30fc4", "license": null, "license_status": "upstream_mixed_or_unmanifested", "notes": "Training data are pinned; upstream benchmark licensing and exact evaluation outputs still require a separate manifest."}
+      },
+      "reproduction": {
+        "literal": "no",
+        "clean_room": "yes",
+        "literal_blockers": ["The unversioned gpt-4o-mini alias and provider outputs are not immutable.", "The paper uses rounded token totals and does not expose a complete chat-template ledger."],
+        "clean_room_requirements": ["Use the recorded code, weight, and data revisions with one frozen open model.", "Replace content-only token counting with provider-equivalent full chat accounting and publish every call."]
+      },
+      "sources": [
+        {"kind": "paper", "url": "https://arxiv.org/abs/2506.02951", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "official_repository", "url": "https://github.com/Resurgamm/AGP", "checked_on": "2026-08-20", "link_status": "repository_resolved"},
+        {"kind": "model_artifact", "url": "https://huggingface.co/Resurgammm/AGP-Weights", "checked_on": "2026-08-20", "link_status": "retrieved"}
+      ],
+      "audit_notes": ["AGP is the strongest practical artifact-backed topology baseline, not a literal historical reproduction and not a portable-format comparator."]
+    },
+    {
+      "id": "radar_2026",
+      "method": "RADAR",
+      "track": "topology_or_routing_pruning",
+      "comparison_class": "same_workload_candidate",
+      "publication": {
+        "title": "RADAR: Redundancy-Aware Diffusion for Multi-Agent Communication Structure Generation",
+        "venue": "ICML 2026, PMLR 306",
+        "status": "peer_reviewed_conference",
+        "date": "2026-07",
+        "primary_url": "https://icml.cc/virtual/2026/poster/65087",
+        "doi_or_id": "ICML poster 65087; OpenReview GtpiqFaJtZ"
+      },
+      "headline": {
+        "claim": "On GSM8K in one same-paper inference harness, prompt-plus-completion tokens fall from 7.7M for AgentPrune to 4.2M for RADAR, 45.45% fewer, while accuracy rises from 91.92% to 92.51%.",
+        "metric": "aggregate prompt plus completion inference tokens",
+        "value": 45.45,
+        "unit": "percent reduction",
+        "direction": "lower_is_better",
+        "baseline": "AgentPrune, 7.7M inference tokens; RADAR, 4.2M",
+        "comparability_lane": "total_runtime_model_tokens",
+        "incomparable_reason": null
+      },
+      "workload": {
+        "tasks": ["GSM8K", "MMLU", "HumanEval", "MBPP", "AQuA", "MATH"],
+        "sample_definition": "Six full public benchmark sets according to the paper; the repository includes only AQuA data at the recorded revision.",
+        "topology": "Five gpt-4o-mini agents; redundancy-aware graph diffusion generates sparse task-adaptive topologies.",
+        "repetitions": "No paired task-level confidence interval for the token and accuracy point estimates.",
+        "hardware": "Closed-provider agents plus local diffusion/proxy components; complete hardware and provider snapshot are not frozen."
+      },
+      "models": ["gpt-4o-mini alias", "five-agent graph"],
+      "ledger": {
+        "included": ["content-tokenized inference prompts", "content-tokenized inference completions"],
+        "excluded": ["roles and chat-template framing", "wire and tool overhead", "topology-training data generation in the inference-only figure"],
+        "unknown": ["provider usage reconciliation", "complete cold-start acquisition cost"]
+      },
+      "success_constraint": {
+        "metric": "GSM8K accuracy",
+        "baseline": "91.92%",
+        "method": "92.51%",
+        "constraint": "Point accuracy improves; no preregistered non-inferiority interval.",
+        "satisfied_as_reported": true
+      },
+      "artifacts": {
+        "code": {"availability": "partial", "url": "https://github.com/cszhangzhen/RADAR", "revision": "71d92b5e1517453f055a885c64cd6281d08521ab", "license": null, "license_status": "absent", "notes": "Official repository has no license, learned weights, result logs, or tests. The API wrapper omits passed temperature/max-token settings and counts concatenated contents."},
+        "data": {"availability": "partial", "url": "https://github.com/cszhangzhen/RADAR", "revision": "71d92b5e1517453f055a885c64cd6281d08521ab", "license": null, "license_status": "upstream_mixed_or_unmanifested", "notes": "Only AQuA is present; the remaining evaluation sets and topology-training artifacts are absent."}
+      },
+      "reproduction": {
+        "literal": "no",
+        "clean_room": "conditional",
+        "literal_blockers": ["Unfrozen hosted model alias, absent learned weights/data/logs, code-paper setting gaps, and no software license."],
+        "clean_room_requirements": ["Independently implement the diffusion and redundancy objective.", "Run against AGP, dense graph, and project methods on a frozen open model with provider-equivalent accounting."]
+      },
+      "sources": [
+        {"kind": "official_proceedings", "url": "https://icml.cc/virtual/2026/poster/65087", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "paper", "url": "https://arxiv.org/abs/2605.09907", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "official_repository", "url": "https://github.com/cszhangzhen/RADAR", "checked_on": "2026-08-20", "link_status": "repository_resolved"}
+      ],
+      "audit_notes": ["Against the full graph, the same 4.2M value is 56.25% lower than 9.6M; the registry uses AgentPrune because it is the stronger learned comparator.", "The paper's overall/cold table reports 11M to 6.5M versus AgentPrune, a 40.91% reduction."]
+    },
+    {
+      "id": "lcf_x_2026",
+      "method": "Latent Cache Flow (LCF-X)",
+      "track": "latent_channel",
+      "comparison_class": "headline_only",
+      "publication": {
+        "title": "Latent Cache Flow: Model-to-Model Communication Without Text",
+        "venue": "ICML 2026 AdaptFM Workshop / arXiv",
+        "status": "preprint",
+        "date": "2026-07",
+        "primary_url": "https://arxiv.org/abs/2605.22863",
+        "doi_or_id": "arXiv:2605.22863"
+      },
+      "headline": {
+        "claim": "On partitioned HotpotQA, LCF-X reduces time to end of answer from 502 ms for the quality-strongest 200-token T2T setting to 94 ms, 5.34x faster, while F1 rises from 32.66 to 35.13 and EM from 20.53 to 25.28.",
+        "metric": "communication-path time through the receiver's complete answer",
+        "value": 5.34,
+        "unit": "times faster",
+        "direction": "higher_is_better",
+        "baseline": "T2T with maximum 200 sender tokens, 502 ms; LCF-X, 94 ms",
+        "comparability_lane": "end_to_end_inference_latency",
+        "incomparable_reason": "The timing recipe, hardware, warm-up, synchronization, serialization, and network boundary are not disclosed, so this cannot be pooled with fully released same-process timings."
+      },
+      "workload": {
+        "tasks": ["Partitioned HotpotQA"],
+        "sample_definition": "5,899 examples; sender and receiver receive disjoint five-paragraph context sets. Exact filtered item manifest is not released.",
+        "topology": "One Qwen2.5-0.5B sender transfers a learned latent cache representation to one Qwen3-0.6B receiver.",
+        "repetitions": "Paper reports significant paired Wilcoxon/McNemar quality tests; timing repetition protocol is not sufficiently specified.",
+        "hardware": "Not reported for the exact timing table."
+      },
+      "models": ["Qwen2.5-0.5B sender", "Qwen3-0.6B receiver"],
+      "ledger": {
+        "included": ["communication-path computation through the receiver's last answer token"],
+        "excluded": ["model load", "external network and wire serialization", "training", "full application orchestration"],
+        "unknown": ["hardware", "batch and warm-up", "CUDA synchronization", "physical bytes transferred"]
+      },
+      "success_constraint": {
+        "metric": "HotpotQA F1 and exact match",
+        "baseline": "F1 32.66; EM 20.53",
+        "method": "F1 35.13; EM 25.28",
+        "constraint": "Both metrics improve and the paper reports significant paired tests.",
+        "satisfied_as_reported": true
+      },
+      "artifacts": {
+        "code": {"availability": "absent", "url": null, "revision": null, "license": null, "license_status": "not_applicable", "notes": "No official public implementation or checkpoint was found at cutoff; the paper discloses a US provisional patent application."},
+        "data": {"availability": "absent", "url": null, "revision": null, "license": null, "license_status": "not_applicable", "notes": "The exact 5,899-item partition/filter manifest is not released."}
+      },
+      "reproduction": {
+        "literal": "no",
+        "clean_room": "conditional",
+        "literal_blockers": ["No code, checkpoint, split manifest, environment, software license, or exact timing recipe."],
+        "clean_room_requirements": ["Reconstruct the split and adapter from the paper without using unreleased artifacts.", "Freeze hardware/timing and add a physical payload and wire ledger."]
+      },
+      "sources": [
+        {"kind": "paper", "url": "https://arxiv.org/abs/2605.22863", "checked_on": "2026-08-20", "link_status": "retrieved"}
+      ],
+      "audit_notes": ["The separate TTFT comparison is 410 ms to 48 ms, or 8.54x; time to end of answer is the more complete latency measure and is used here."]
+    },
+    {
+      "id": "obf_relay_2026",
+      "method": "OBF relay compression",
+      "track": "latent_channel",
+      "comparison_class": "headline_only",
+      "publication": {
+        "title": "When Less Latent Leads to Better Relay: Information-Preserving Compression for Latent Multi-Agent LLM Collaboration",
+        "venue": "arXiv preprint",
+        "status": "preprint",
+        "date": "2026-04",
+        "primary_url": "https://arxiv.org/abs/2604.13349",
+        "doi_or_id": "arXiv:2604.13349v2"
+      },
+      "headline": {
+        "claim": "A post-submission official-repository five-benchmark table reports full relay payload 290.1 MB versus 62.4 MB for layerwise/fast L-OBF, 4.65x smaller; the arXiv paper itself reports retaining 9.9%-20.2% of prompt-KV positions rather than measured bytes.",
+        "metric": "same-process logical relay payload footprint",
+        "value": 4.65,
+        "unit": "times smaller",
+        "direction": "higher_is_better",
+        "baseline": "full relay 290.1 MB; layerwise or fast L-OBF 62.4 MB",
+        "comparability_lane": "latent_payload_bytes",
+        "incomparable_reason": "The byte table is a first-party repository result added after arXiv v2, not peer-reviewed; it is same-A100 logical relay volume, not bytes on an external wire."
+      },
+      "workload": {
+        "tasks": ["Five-benchmark repository subset", "LatentMAS nine-benchmark paper suite"],
+        "sample_definition": "Qwen3-4B sequential LatentMAS with prompt budget B=32; the paper tunes PCA rank per dataset from 2, 4, 8, 16, and 32.",
+        "topology": "Sequential layerwise KV relay with online budget filtering and optional PCA-style compression.",
+        "repetitions": "Paper seeds 4, 44, and 444; the post-submission byte table has no independent review.",
+        "hardware": "Single NVIDIA A100 PCIe 40GB; relay is a same-device pointer pass before compression."
+      },
+      "models": ["Qwen3-4B"],
+      "ledger": {
+        "included": ["repository-defined KV relay megabytes", "paper-defined retained prompt-KV positions"],
+        "excluded": ["network framing and transfer", "sender/receiver compute", "training", "full task acquisition"],
+        "unknown": ["serialized physical wire representation", "independent validation of the repository-only byte table"]
+      },
+      "success_constraint": {
+        "metric": "Per-benchmark accuracy relative to full KV relay",
+        "baseline": "Full-KV accuracy per task",
+        "method": "H-OBF ranges from 97% to 120% of full-KV accuracy in the paper table",
+        "constraint": "No preregistered non-inferiority test; dataset-specific PCA rank is selected using accuracy.",
+        "satisfied_as_reported": false
+      },
+      "artifacts": {
+        "code": {"availability": "complete", "url": "https://github.com/markli404/When-Less-Latent-Leads-to-Better-Relay", "revision": "36f43183e84d2fbf3b84c9bf4e3e06b7c442a523", "license": null, "license_status": "absent", "notes": "Official repository has code, tests, and pinned dependencies but no license, immutable release, complete raw ledgers, or checkpoints."},
+        "data": {"availability": "partial", "url": "https://github.com/markli404/When-Less-Latent-Leads-to-Better-Relay", "revision": "36f43183e84d2fbf3b84c9bf4e3e06b7c442a523", "license": null, "license_status": "upstream_mixed_or_unmanifested", "notes": "Public upstream task loaders exist; selected ranks and complete raw per-task ledgers are not frozen as a release."}
+      },
+      "reproduction": {
+        "literal": "no",
+        "clean_room": "yes",
+        "literal_blockers": ["No software license, release tag, full checkpoints, or independently reviewed repository-only byte result."],
+        "clean_room_requirements": ["Independently implement fixed-budget relay filtering without copying unlicensed code.", "Measure actual serialized bytes and cross-device/network transfer, not only same-device tensor size."]
+      },
+      "sources": [
+        {"kind": "paper", "url": "https://arxiv.org/abs/2604.13349", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "official_repository", "url": "https://github.com/markli404/When-Less-Latent-Leads-to-Better-Relay", "checked_on": "2026-08-20", "link_status": "repository_resolved"}
+      ],
+      "audit_notes": ["Fast L-OBF is 25.79 s versus 24.67 s full relay on the same A100, so the 4.65x payload reduction is not an end-to-end speedup there."]
+    },
+    {
+      "id": "agentslimming_2026",
+      "method": "AgentSlimming",
+      "track": "topology_or_routing_pruning",
+      "comparison_class": "headline_only",
+      "publication": {
+        "title": "AgentSlimming: Towards Efficient and Cost-Aware Multi-Agent Systems",
+        "venue": "ACL 2026 Long Paper",
+        "status": "peer_reviewed_conference",
+        "date": "2026-07",
+        "primary_url": "https://aclanthology.org/2026.acl-long.1387/",
+        "doi_or_id": "10.18653/v1/2026.acl-long.1387"
+      },
+      "headline": {
+        "claim": "On LiveCode, historical API cost per problem falls from $0.0117 to $0.00247, 78.9% lower, while accuracy rises from 55.3% to 61.7%.",
+        "metric": "provider-reported input/output usage multiplied by historical model prices",
+        "value": 78.9,
+        "unit": "percent lower USD cost per problem",
+        "direction": "lower_is_better",
+        "baseline": "uncompressed AFlow-derived workflow, $0.0117 per LiveCode problem; AgentSlimming, $0.00247",
+        "comparability_lane": "monetary_inference_cost",
+        "incomparable_reason": "The method mixes agent removal with GPT-4.1-mini-to-nano substitution, and the dollar result changes with model pricing; it is not a token-only reduction."
+      },
+      "workload": {
+        "tasks": ["LiveCode", "GSM8K", "six additional AFlow-derived workloads"],
+        "sample_definition": "Eight paper-defined graph workflows; validation accepts an operation when its score ratio clears tau=0.95.",
+        "topology": "Graph workflow compression by removing low-importance agents or replacing them with cheaper models.",
+        "repetitions": "Final tables report point accuracy/cost; no paired efficiency confidence interval.",
+        "hardware": "Provider-hosted GPT-4.1-mini and GPT-4.1-nano; temperature 0."
+      },
+      "models": ["GPT-4.1-mini", "GPT-4.1-nano"],
+      "ledger": {
+        "included": ["provider-reported input tokens", "provider-reported output tokens", "paper-time model prices"],
+        "excluded": ["workflow-search and validation cost unless separately disclosed", "non-model compute", "wire bytes"],
+        "unknown": ["future price-equivalent result", "complete cost after the current code's recording bug"]
+      },
+      "success_constraint": {
+        "metric": "LiveCode accuracy",
+        "baseline": "55.3%",
+        "method": "61.7%",
+        "constraint": "Headline point accuracy improves; internal candidate operations use validation score ratio tau=0.95, without a final non-inferiority interval.",
+        "satisfied_as_reported": true
+      },
+      "artifacts": {
+        "code": {"availability": "partial", "url": "https://github.com/CitrusYL/AgentSlimming", "revision": "0bb1afc677e3751e09dc535e373f0316b0a8369f", "license": "MIT", "license_status": "verified", "notes": "Official code is licensed, but the recorded revision appears to reverse node and node_id positional arguments in its executor, likely breaking cost recording without repair."},
+        "data": {"availability": "partial", "url": "https://github.com/CitrusYL/AgentSlimming", "revision": "0bb1afc677e3751e09dc535e373f0316b0a8369f", "license": null, "license_status": "upstream_mixed_or_unmanifested", "notes": "AFlow-derived workloads are public in part, but no frozen provider response/usage ledger reproduces the paper table."}
+      },
+      "reproduction": {
+        "literal": "no",
+        "clean_room": "yes",
+        "literal_blockers": ["Closed provider models/prices drift, raw usage ledgers are absent, and current code has a likely cost-recording bug."],
+        "clean_room_requirements": ["Repair and test the executor in a disclosed fork or independently implement the method.", "Freeze one open model pool and report tokens separately from a dated price conversion."]
+      },
+      "sources": [
+        {"kind": "official_proceedings", "url": "https://aclanthology.org/2026.acl-long.1387/", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "official_repository", "url": "https://github.com/CitrusYL/AgentSlimming", "checked_on": "2026-08-20", "link_status": "repository_resolved"}
+      ],
+      "audit_notes": ["The GSM8K row is $0.00438 to $0.000930, 78.8% lower, at equal reported accuracy of 95.5%."]
+    },
+    {
+      "id": "agora_2024",
+      "method": "Agora",
+      "track": "end_to_end_agent_task",
+      "comparison_class": "headline_only",
+      "publication": {
+        "title": "A Scalable Communication Protocol for Networks of Large Language Models",
+        "venue": "arXiv preprint",
+        "status": "preprint",
+        "date": "2024-10-14",
+        "primary_url": "https://arxiv.org/abs/2410.11905",
+        "doi_or_id": "arXiv:2410.11905v1"
+      },
+      "headline": {
+        "claim": "Across 1,000 generated queries in a 100-agent network, historical API cost falls from $36.23 for natural-language-only communication to $7.67 for Agora, 78.83% lower or 4.72x cheaper.",
+        "metric": "historical provider-priced model-call cost over the complete generated query set",
+        "value": 78.83,
+        "unit": "percent lower historical API cost",
+        "direction": "lower_is_better",
+        "baseline": "natural-language-only network, $36.23; Agora, $7.67",
+        "comparability_lane": "monetary_inference_cost",
+        "incomparable_reason": "The experiment mixes three closed provider models and historical prices, has no semantic task-success oracle, and reports dollars rather than tokens or full wire bytes."
+      },
+      "workload": {
+        "tasks": ["1,000 randomly generated single-round network queries"],
+        "sample_definition": "A simulated decentralized network with 85 user agents and 15 server agents; no frozen query/result manifest is released.",
+        "topology": "100 heterogeneous agents negotiate protocols and reuse LLM-written or standardized routines; rare exchanges remain natural language.",
+        "repetitions": "One reported 1,000-query network run; eight Gemini API failures are noted.",
+        "hardware": "Provider-hosted GPT-4o, Llama-3-405B, and Gemini-1.5-Pro."
+      },
+      "models": ["38 GPT-4o nodes", "32 Llama-3-405B nodes", "30 Gemini-1.5-Pro nodes"],
+      "ledger": {
+        "included": ["natural-language API calls", "protocol negotiation", "protocol checking", "routine implementation", "input and output token prices"],
+        "excluded": ["CPU, storage, network and wire cost", "semantic correctness scoring", "long-run routine maintenance"],
+        "unknown": ["complete per-query usage trace", "current-price equivalent"]
+      },
+      "success_constraint": {
+        "metric": "Schema-constrained reply completion",
+        "baseline": "No semantic task-success score reported",
+        "method": "Replies pass structural checks except eight provider API failures",
+        "constraint": "A matched semantic success or non-inferiority gate is absent.",
+        "satisfied_as_reported": false
+      },
+      "artifacts": {
+        "code": {"availability": "partial", "url": "https://github.com/agora-protocol/paper-demo", "revision": "9dfe6837ee1ec0b49018f8dd20c055123c3e730e", "license": null, "license_status": "absent", "notes": "Official demo repository has no software license, result logs, query manifest, or complete three-model cost calculator."},
+        "data": {"availability": "absent", "url": null, "revision": null, "license": null, "license_status": "not_applicable", "notes": "Generated queries, responses, routines, and provider usage traces are not released as a pinned artifact."}
+      },
+      "reproduction": {
+        "literal": "no",
+        "clean_room": "conditional",
+        "literal_blockers": ["Closed model versions and historical prices drift; queries, logs, routines, and a complete cost calculator are absent; code is unlicensed."],
+        "clean_room_requirements": ["Build an independently licensed protocol-negotiation implementation.", "Use frozen open models, publish the query oracle, and record both acquisition and amortized reuse cost."]
+      },
+      "sources": [
+        {"kind": "paper", "url": "https://arxiv.org/abs/2410.11905", "checked_on": "2026-08-20", "link_status": "retrieved"},
+        {"kind": "official_repository", "url": "https://github.com/agora-protocol/paper-demo", "checked_on": "2026-08-20", "link_status": "repository_resolved"}
+      ],
+      "audit_notes": ["A two-agent weather example costs $0.043 to negotiate and implement a routine versus $0.020 per natural-language exchange, implying break-even only after more than two reuses."]
+    }
+  ],
+  "screened_but_not_ranked": [
+    {
+      "name": "CARD / Adaptive Multi-Agent Communication Protocol",
+      "primary_url": "https://openreview.net/forum?id=JgvJdICc6P",
+      "publication_status": "ICLR 2026 conference paper",
+      "reason": "Strong recent adaptive-topology evidence, but the paper reports accuracy and an accuracy-to-dollar frontier rather than a recoverable scalar token-reduction result. Official repository head d5d1f682a459074c0225b78eca94ab1ea92476e7 has an MIT badge but no LICENSE text, so it is not a licensed reproduction baseline."
+    },
+    {
+      "name": "AgentArk",
+      "primary_url": "https://arxiv.org/abs/2602.03955",
+      "publication_status": "arXiv preprint at cutoff",
+      "reason": "Distills multi-agent behavior into a single model and shifts runtime interaction into training. It is an adjacent training-time efficiency method, not runtime inter-agent communication, and does not provide a directly comparable communication ledger."
+    },
+    {
+      "name": "PAIRL",
+      "primary_url": "https://github.com/dwehrmann/PAIRL",
+      "publication_status": "Repository specification/report",
+      "reason": "Apache-2.0 compact-format implementation at tag v1.6.2, commit 0286fd1a3e6261872e56af50d48947927315b6e0. The advertised 47%-67% curve is explicitly a modeled illustration and the approximate 95% tool-history example has no released pairl-bench task ledger, so neither is admissible performance evidence."
+    },
+    {
+      "name": "Guided Topology Diffusion (GTD)",
+      "primary_url": "https://aclanthology.org/2026.acl-long.1764/",
+      "publication_status": "ACL 2026 Long Paper",
+      "reason": "GSM8K uses 4.8M inference tokens at 94.14% accuracy; prose says G-Designer uses 15% more and one-time topology-data generation costs about 0.4M tokens, but no exact baseline row is tabulated. Official repo 22738c3739fd14189193fc8f9e412b2bfe627137 has no license, weights, or results and defaults to GPT-4o although the paper uses GPT-4o-mini; literal reproduction is impossible."
+    },
+    {
+      "name": "GoAgent",
+      "primary_url": "https://arxiv.org/abs/2603.19677",
+      "publication_status": "arXiv v1 preprint",
+      "reason": "On GSM8K, total LLM inference tokens are 4.1M for ARG-Designer and 3.4M for GoAgent, 17.07% fewer, while accuracy is 94.37% versus 95.30%. Training/topology-data generation is excluded; no official code, data, weights, or software license exists, so only a paper-level clean-room reconstruction is possible."
+    },
+    {
+      "name": "DyTopo",
+      "primary_url": "https://arxiv.org/abs/2602.06039",
+      "publication_status": "arXiv v1 preprint",
+      "reason": "HumanEval reports 19,520 versus 9,453 total tokens per instance against AgentScope, 51.57% fewer, and 90.24% versus 92.07% accuracy. The method also early-stops at 2.6 average rounds while AgentScope is forced to five; tokenizer/chat boundaries are unspecified and no official code or license exists."
+    },
+    {
+      "name": "ATOM",
+      "primary_url": "https://arxiv.org/abs/2605.26178",
+      "publication_status": "arXiv v1 preprint",
+      "reason": "Meta-Llama-3.1-8B-Instruct HumanEval reports 0.26M prompt plus 0.11M completion tokens, about 0.37M total, versus approximately 0.53M for ARG-Designer, more than 30% lower, with 71.90% versus 68.60% accuracy. Exact test sizes and token implementation are absent; no official code or license was found."
+    },
+    {
+      "name": "AgentConductor",
+      "primary_url": "https://icml.cc/virtual/2026/poster/66333",
+      "publication_status": "ICML 2026 main-conference paper; no code or artifacts",
+      "reason": "The abstract's up-to-68% token-cost claim has no auditable table or named denominator. Its APPS table supports only 459,750 to 357,400 combined prompt/completion tokens against the next-lowest baseline G-Designer, 22.26% fewer, while accuracy rises 37.2% to 58.8%. No code, checkpoint, data, or license is released."
+    },
+    {
+      "name": "SafeSieve",
+      "primary_url": "https://ojs.aaai.org/index.php/AAAI/article/view/40236",
+      "publication_status": "AAAI 2026 conference paper",
+      "reason": "HumanEval full-connected prompt plus completion falls from 444K to 321K, 27.70%, while accuracy drops 95.50% to 95.01% with no non-inferiority test. Official repo 0af1b31474ae0107a4f6876b3dd6beb5dda6a9ac has no license and tokenizes every backbone as GPT-3.5 Turbo Instruct, blocking literal reproduction."
+    },
+    {
+      "name": "HyLaT",
+      "primary_url": "https://arxiv.org/abs/2605.25421",
+      "publication_status": "arXiv preprint",
+      "reason": "Against TextFullT, visible assistant tokens fall 505.03 to 72.01 and time 5.47 s to 1.47 s, but mean/majority accuracy drops 0.57/1.33 points and latent-vector bytes are excluded. Official Apache-2.0 repo 4a805c3b775ba8dc3273f5c1939bd64d9f5c1c27 lacks checkpoints and GPT-5-generated stage-two data, so literal and no-paid-call reproduction are impossible."
+    },
+    {
+      "name": "RecursiveMAS",
+      "primary_url": "https://arxiv.org/abs/2604.25917",
+      "publication_status": "arXiv v2 preprint",
+      "reason": "At recursion budget r=3, the paper reports 75.6% fewer tokens and 2.4x speed versus Recursive-TextMAS with better point accuracy across shown cells. Official MIT repo 38f7da45c1728747979c7a35bf5f66f17e67b1bb does not implement the timing/token ledger; task checkpoints differ and full search/evaluation depends on Tavily and Qwen3.5-397B, so literal reproduction is impossible."
+    },
+    {
+      "name": "DiffMAS",
+      "primary_url": "https://arxiv.org/abs/2604.21794",
+      "publication_status": "arXiv preprint under review at COLM 2026",
+      "reason": "The paper reports accuracy and latent-step ablations but no runtime, token, byte, memory, FLOP, or throughput metric. Ten latent steps and the word compact are not efficiency evidence; no official code, data, checkpoint, commit, or software license was found."
+    },
+    {
+      "name": "Dense heterogeneous latent communication",
+      "primary_url": "https://arxiv.org/abs/2606.13594",
+      "publication_status": "arXiv preprint",
+      "reason": "The paper estimates about 3.28x lower context-aware FLOPs by ratio of sums across six Qwen pairs, but explicitly reports roughly 20-30 MB of KV payload per sample versus hundreds of bytes for text. FLOPs use only 17 examples per benchmark and exclude attention; repo 0c74008757253bb97065a9c803218bde11cb0b53 has no license and says code is coming soon."
+    },
+    {
+      "name": "Agent Primitives",
+      "primary_url": "https://icml.cc/virtual/2026/poster/65501",
+      "publication_status": "ICML 2026 paper",
+      "reason": "Qwen3-8B averages imply 4.19x fewer benchmark-total output tokens and 3.35x lower task time than TextMAS, but the organizer uses GPT-5.2, timing hardware/seeds are absent, and official repo b9906548f8e6b79416b43450847a7352aec6e1b9 has no license or runnable end-to-end pipeline. It is a headline comparator, not a no-paid-call reproducible baseline."
+    },
+    {
+      "name": "MetaGlyph",
+      "primary_url": "https://arxiv.org/abs/2601.07354",
+      "publication_status": "arXiv preprint",
+      "reason": "The 215-to-41, 80.9% headline counts instruction-only regex pseudo-tokens and excludes shared task input and outputs; it is single-model prompting, not inter-agent communication. Official repo 7086b7bc5747ebdde46a51c5f981bc0f0045c2bf is noncommercial-licensed and its current 50-item config conflicts with 150-item committed tables."
+    },
+    {
+      "name": "XBridge",
+      "primary_url": "https://arxiv.org/abs/2608.11676",
+      "publication_status": "arXiv preprint",
+      "reason": "On a 200-item short-context HotpotQA setup, natural-language latency is 1.70 s and XBridge 0.15 s, 11.33x faster. It transfers the mapped full sender context and full hidden-state sequence rather than a compact payload; Apache-2.0 repo 58845e01aee68ee587d57f6663421857bcf81f50 plus one checkpoint/eval cache supports only partial reproduction."
+    },
+    {
+      "name": "StateBridge",
+      "primary_url": "https://arxiv.org/abs/2608.13317",
+      "publication_status": "COLM 2026 paper according to the primary paper",
+      "reason": "The sender autoregressively decodes its full message before sending 64 aligned final-layer hidden states. The paper reports accuracy but no measured token, latency, FLOP, memory-byte, or wire-byte result; Apache-2.0 repo 3f6bf5442c6e8848555a6132516e6d36f35444fb therefore does not supply an efficiency record."
+    },
+    {
+      "name": "Q-KVComm",
+      "primary_url": "https://arxiv.org/abs/2512.17914",
+      "publication_status": "arXiv preprint",
+      "reason": "Mixed 4/6/8-bit quantization plus selecting 70% of layers yields calculated KV footprint ratios near 6.93x, 5.69x, and 5.07x, but quality is heuristic semantic similarity rather than answer accuracy and there is no exact physical byte ledger, timing protocol, hardware, or official code."
+    }
+  ],
+  "claim_gate": {
+    "primary_baseline": "pact_2026",
+    "mandatory_baselines": ["pact_2026", "autoform_2024", "tokenese_2026_negative", "agp_2025", "radar_2026"],
+    "required_ledgers": [
+      "generated inter-agent tokens",
+      "all runtime prompt tokens",
+      "all runtime completion tokens",
+      "UTF-8 payload bytes",
+      "full serialized envelope bytes",
+      "format induction or training cost",
+      "negotiation, repair, retry, and fallback cost",
+      "cold-start and steady-state wall-clock",
+      "task success with uncertainty"
+    ],
+    "success_rule": "Pre-register a non-inferiority margin no wider than one absolute percentage point for the primary task metric, require the lower confidence bound to clear it, and fail closed on semantic, provenance, authorization, unit, or safety violations.",
+    "unseen_partner_rule": "Evaluate at least two held-out model families or providers that did not participate in format induction, and compare total task success and total cost against the best enabled fallback.",
+    "release_rule": "A world-record statement is prohibited until an independent party reproduces the pinned experiment, all positive and negative conformance tests pass, the exact grammar/capsule and implementation revisions are digested, and the project wins the same predeclared ledger on at least two task families and two unseen partner pairings against terse English, minified JSON/schema, clean-room PACT with full-history TextMAS, AutoForm, AGP and RADAR where topology is in scope, and the best enabled fallback. Claims must be lane-specific, never global."
+  }
+}

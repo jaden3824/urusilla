@@ -1,0 +1,268 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:urusilla:capability:local:1",
+  "title": "Urusilla Adoption Kit capability offer",
+  "description": "Local experimental Urusilla discovery object using a private, unregistered protocol identifier.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "interface_version",
+    "product_label",
+    "lifecycle",
+    "semantics",
+    "pins",
+    "provenance",
+    "modes",
+    "representations",
+    "cached_artifacts",
+    "bindings",
+    "limits",
+    "safety"
+  ],
+  "properties": {
+    "format": {
+      "const": "urusilla-capability-v1"
+    },
+    "interface_version": {
+      "const": "1.0.0"
+    },
+    "product_label": {
+      "const": "Urusilla Adoption Kit"
+    },
+    "lifecycle": {
+      "const": "experimental-unsigned"
+    },
+    "semantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "language_version",
+        "capsule_sha256",
+        "release_status",
+        "normative_representation"
+      ],
+      "properties": {
+        "language_version": {
+          "type": "string"
+        },
+        "capsule_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "release_status": {
+          "type": "string"
+        },
+        "normative_representation": {
+          "const": "typed-ir"
+        }
+      }
+    },
+    "pins": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "source_status",
+        "source_manifest_payload_sha256",
+        "source_manifest_signature_status"
+      ],
+      "properties": {
+        "source_id": {
+          "$ref": "#/$defs/sourceId"
+        },
+        "source_status": {
+          "type": "string"
+        },
+        "source_manifest_payload_sha256": {
+          "oneOf": [
+            { "$ref": "#/$defs/sha256" },
+            { "type": "null" }
+          ]
+        },
+        "source_manifest_signature_status": {
+          "type": "string"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capsule_reference_codec_sha256",
+        "observed_reference_codec_sha256",
+        "reference_codec_matches_capsule",
+        "support_claim_eligible"
+      ],
+      "properties": {
+        "capsule_reference_codec_sha256": { "$ref": "#/$defs/sha256" },
+        "observed_reference_codec_sha256": { "$ref": "#/$defs/sha256" },
+        "reference_codec_matches_capsule": { "type": "boolean" },
+        "support_claim_eligible": { "const": false }
+      }
+    },
+    "modes": {
+      "type": "object",
+      "required": [
+        "bridge",
+        "native",
+        "fallback"
+      ],
+      "properties": {
+        "bridge": {
+          "$ref": "#/$defs/claimedMode"
+        },
+        "native": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["supported", "verified", "claim"],
+          "properties": {
+            "supported": { "type": "boolean" },
+            "verified": { "type": "boolean" },
+            "claim": { "type": "string" }
+          }
+        },
+        "fallback": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["supported", "order"],
+          "properties": {
+            "supported": { "type": "boolean" },
+            "order": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "enum": ["canonical-json-v1", "controlled-terse-english-v1"] }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "representations": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/representation"
+      }
+    },
+    "cached_artifacts": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/sha256"
+      }
+    },
+    "bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["json_envelope", "a2a_message_shape", "mcp_structured_content"],
+      "properties": {
+        "json_envelope": { "const": true },
+        "a2a_message_shape": { "type": "string" },
+        "mcp_structured_content": { "type": "string" }
+      }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_delivery_bytes", "json_max_safe_integer", "json_float64", "json_bytes", "controlled_terse_float64", "controlled_terse_bytes"],
+      "properties": {
+        "max_delivery_bytes": { "const": 16777216 },
+        "json_max_safe_integer": { "const": 9007199254740991 },
+        "json_float64": { "const": false },
+        "json_bytes": { "const": false },
+        "controlled_terse_float64": { "type": "boolean" },
+        "controlled_terse_bytes": { "type": "boolean" }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "required": [
+        "effect_authorization",
+        "network_io",
+        "unsigned_operation_read_only"
+        ,"provenance_bound"
+      ],
+      "properties": {
+        "effect_authorization": {
+          "const": false
+        },
+        "network_io": {
+          "const": false
+        },
+        "unsigned_operation_read_only": {
+          "const": true
+        },
+        "provenance_bound": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "sourceId": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{32}$"
+    },
+    "claimedMode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "supported",
+        "claim"
+      ],
+      "properties": {
+        "supported": {
+          "type": "boolean"
+        },
+        "claim": {
+          "type": "string"
+        }
+      }
+    },
+    "representation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "can_encode",
+        "can_decode",
+        "relay_only",
+        "requires_cached_artifacts"
+      ],
+      "properties": {
+        "id": {
+          "enum": [
+            "canonical-json-v1",
+            "controlled-terse-english-v1",
+            "urusilla-wire-v0.1",
+            "urusilla-wire-v0.2-static-7d12fc414eae60b2"
+          ]
+        },
+        "can_encode": {
+          "type": "boolean"
+        },
+        "can_decode": {
+          "type": "boolean"
+        },
+        "relay_only": {
+          "type": "boolean"
+        },
+        "requires_cached_artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/sha256"
+          }
+        },
+        "profile": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,853 @@
+{
+  "capsule_type": "urusilla-grammar-capsule",
+  "capsule_version": "0.1.0",
+  "release_status": "experimental-unsigned",
+  "generated_at": "2026-08-20T00:00:00Z",
+  "language": {
+    "name": "Urusilla",
+    "name_status": "final-project-name",
+    "semantic_version": "0.1.0",
+    "semantic_model": "typed-observable-ledger research model",
+    "normative_representation": "UrusillaIR",
+    "wire_representation": "UrusillaWire",
+    "human_view": "UrusillaLens",
+    "design_claim": "one semantic language with negotiated machine codecs and deterministic inspection",
+    "non_claims": [
+      "This capsule does not claim that one codec is optimal for every model or task.",
+      "Opacity is not confidentiality; authenticated encryption belongs to the transport or security profile.",
+      "No registered media type, standards endorsement, trademark registration, or domain ownership is claimed.",
+      "Structural decoding does not prove identity, authorization, truth, or a valid ledger transition."
+    ]
+  },
+  "identifiers": {
+    "a2a_extension_uri": "urn:urusilla:experimental:0.1",
+    "a2a_extension_uri_status": "private experimental identifier; replace with a permanent governed identifier for a public proposal",
+    "capsule_distribution_url": "https://github.com/jaden3824/urusilla/releases/download/TAG/urusilla_capsule_v0_1.json",
+    "capsule_distribution_url_status": "publication template; deployment MUST replace TAG with a real release and verify the exact file digest",
+    "semantic_kernel_id": "urn:urusilla:kernel:core:0.1",
+    "core_schema_id": "urn:urusilla:schema:core:0.1",
+    "wire_profile_id": "urn:urusilla:wire:prototype:0.1",
+    "wire_media_type": "application/x-urusilla",
+    "wire_media_type_status": "unregistered private-use media type; it MUST NOT be presented as IANA-registered",
+    "capsule_media_type": "application/x-urusilla+json",
+    "source_repository": "https://github.com/jaden3824/urusilla",
+    "source_repository_status": "user-designated publication target; it is not an immutable normative source until the referenced artifacts are published and pinned to a commit",
+    "language_spec_uri_template": "https://github.com/jaden3824/urusilla/blob/COMMIT/urusilla_v0_1_spec.md",
+    "implementation_origin_template": "https://github.com/jaden3824/urusilla/tree/COMMIT/IMPLEMENTATION_PATH",
+    "github_template_status": "A live deployment MUST replace COMMIT and path placeholders with immutable public GitHub commit URLs."
+  },
+  "compatibility": {
+    "a2a_protocol_versions": [
+      "1.0"
+    ],
+    "activation": {
+      "default": "inactive",
+      "request_service_parameter": "A2A-Extensions",
+      "requested_value": "urn:urusilla:experimental:0.1",
+      "exact_version_match_required": true,
+      "implicit_version_fallback_forbidden": true
+    },
+    "a2a_part_mapping": {
+      "bridge_ir": {
+        "part_field": "data",
+        "media_type": "application/x-urusilla+json",
+        "extension_marker": "urn:urusilla:experimental:0.1"
+      },
+      "wire": {
+        "part_field": "raw",
+        "json_binding_encoding": "base64",
+        "media_type": "application/x-urusilla",
+        "extension_marker": "urn:urusilla:experimental:0.1"
+      }
+    },
+    "modes": [
+      {
+        "id": "bridge",
+        "input": "natural-language-or-structured-legacy-message",
+        "normative_boundary": "structurally-validated-UrusillaIR",
+        "wire_output": "UrusillaWire-or-structured-UrusillaIR",
+        "requires_native_model_training": false
+      },
+      {
+        "id": "native",
+        "input": "model-generated-UrusillaIR",
+        "normative_boundary": "structurally-validated-UrusillaIR",
+        "wire_output": "UrusillaWire",
+        "requires_native_model_training": true
+      }
+    ]
+  },
+  "usage_attribution_contract": {
+    "policy": "A verified immutable source manifest MUST be pinned during Agent Card or session negotiation. Every hot Message or Artifact MUST carry a compact 128-bit source_id that resolves to it.",
+    "a2a_metadata_key": "urn:urusilla:experimental:0.1",
+    "source_manifest_required_fields": [
+      {
+        "name": "languageSpecUri",
+        "rule": "immutable HTTPS GitHub URL pinned to an exact commit for the normative language specification"
+      },
+      {
+        "name": "languageVersion",
+        "rule": "exact semantic version"
+      },
+      {
+        "name": "capsuleSha256",
+        "rule": "lowercase 64-hex SHA-256 of the exact capsule bytes distributed out of band"
+      },
+      {
+        "name": "implementationOrigin",
+        "rule": "immutable GitHub commit URL or signed package provenance that resolves to source"
+      },
+      {
+        "name": "conformanceReportUrl",
+        "rule": "immutable HTTPS URL for a machine-readable report bound to this runtime, capsule, and test suite"
+      },
+      {
+        "name": "conformanceReportSha256",
+        "rule": "lowercase 64-hex SHA-256 of the exact conformance report bytes"
+      },
+      {
+        "name": "sourceManifestJws",
+        "rule": "required for signature-verified status; an unsigned research manifest omits it and is never effect-authorizing"
+      }
+    ],
+    "source_id_derivation": "lowercase hexadecimal encoding of the leftmost 16 bytes of SHA-256 over the RFC-8785-canonical source manifest payload excluding sourceManifestJws; that payload is covered by sourceManifestJws",
+    "source_id_format": "32 lowercase hexadecimal characters",
+    "agent_card_location": "capabilities.extensions[uri=urn:urusilla:experimental:0.1].params.sourceManifest",
+    "hot_message_and_artifact_location": "metadata[urn:urusilla:experimental:0.1].source_id",
+    "cold_debug_stateless_location": "metadata[urn:urusilla:experimental:0.1].source_manifest",
+    "human_lens_behavior": "Resolve source_id from the pinned session cache and display the complete verified source manifest. If resolution fails, display unverified and disable effectful processing.",
+    "verification_order": [
+      "require every full source-manifest field during Agent Card or session negotiation",
+      "reject moving GitHub branch or tag URLs as normative source identifiers",
+      "verify capsule and report digests",
+      "when present, verify sourceManifestJws against an accepted publisher key; when absent, mark unsigned and disable effects",
+      "derive source_id and bind the verified source manifest to the activated extension URI and current session",
+      "require each hot Message or Artifact source_id to resolve to exactly one pinned manifest",
+      "on an unknown or colliding source_id, pause processing and request the full manifest",
+      "mark the use unverified and disable effectful processing if any check fails"
+    ],
+    "full_capsule_hash_note": "A capsule cannot embed a hash of its own exact bytes. Its exact SHA-256 MUST be carried by the external source manifest negotiated through the Agent Card or session.",
+    "cold_debug_stateless_rule": "When no verified session cache exists, send the complete source_manifest once and derive source_id before processing. Full manifests MAY also be included in explicit debug traffic.",
+    "cache_policy": "Every hot use carries source_id. The complete manifest is sent once per verified session or cache miss and remains available to the human Lens."
+  },
+  "github_distribution": {
+    "publication_modes": {
+      "unsigned_research": "Public source review and versioned research assets are permitted with exact checksums, explicit unsigned status, and effect-authorizing behavior disabled.",
+      "trusted_effect_authorizing": "Production or effect-authorizing publication additionally requires an accepted publisher signature, authenticated deployment identity, conformance evidence, and independent authorization policy."
+    },
+    "required_publication_surface": [
+      "public source repository",
+      "normative specification pinned to an exact commit",
+      "versioned release assets with checksums; accepted signatures are mandatory for trusted or effect-authorizing releases",
+      "reference implementation and conformance runner",
+      "public issue tracker and security policy",
+      "machine-readable compatibility registry"
+    ],
+    "progressive_adoption_unit": "one independently verified agent implementation at a time",
+    "adoption_event_requirements": [
+      "verified source attribution",
+      "passing signed conformance report",
+      "at least one successful cross-implementation session",
+      "operator opt-in to public listing"
+    ],
+    "never_count_as_adoption": [
+      "repository view",
+      "star or social mention",
+      "raw-frame screenshot",
+      "self-declared Agent Card support without local verification",
+      "subsidized traffic with no measured net runtime value"
+    ]
+  },
+  "semantic_kernel": {
+    "manifest_digest": "sha256:d4edf0ab4d8c572f81cf5e723388ce130b9a786bbe787c385fb781c970e0ad7f",
+    "manifest_digest_scope": "RFC-8785-compatible canonical JSON of semantic_kernel.manifest only",
+    "manifest": {
+      "ledger_rule": {
+        "valid_message": "delta(ledger,message)=new_ledger",
+        "invalid_message": "delta(ledger,message)=unchanged_ledger+typed_error"
+      },
+      "communicative_acts": [
+        {
+          "code": 0,
+          "name": "ASSERT",
+          "public_effect": "append a claim, observation, evidence, or uncertainty record; truth is not implied",
+          "requires_reply_to": false
+        },
+        {
+          "code": 1,
+          "name": "QUERY",
+          "public_effect": "open a query with an answer schema and constraints",
+          "requires_reply_to": false
+        },
+        {
+          "code": 2,
+          "name": "REQUEST",
+          "public_effect": "request achievement of a goal without creating an obligation",
+          "requires_reply_to": false
+        },
+        {
+          "code": 3,
+          "name": "PROPOSE",
+          "public_effect": "append a tentative plan or contract bundle",
+          "requires_reply_to": false
+        },
+        {
+          "code": 4,
+          "name": "COMMIT",
+          "public_effect": "activate a public commitment whose debtor is the authenticated sender",
+          "requires_reply_to": true
+        },
+        {
+          "code": 5,
+          "name": "RESOLVE",
+          "public_effect": "record an authorized result, failure, rejection, or expiry for a referenced record",
+          "requires_reply_to": true
+        },
+        {
+          "code": 6,
+          "name": "RETRACT",
+          "public_effect": "append a tombstone for a sender-owned revocable record without deleting history",
+          "requires_reply_to": true
+        }
+      ],
+      "derived_conventions": {
+        "ACCEPT": "COMMIT whose reply_to references the proposal identifier or hash",
+        "REJECT": "RESOLVE with a typed rejected status",
+        "RESULT": "RESOLVE with a typed completed status and optional result",
+        "ERROR": "RESOLVE with a typed failed status and evidence",
+        "DELIVERY_ACK": "transport concern, not a semantic act"
+      },
+      "node_kinds": {
+        "claim": {
+          "required": [
+            "predicate"
+          ],
+          "recommended": [
+            "arguments",
+            "context",
+            "valid_time"
+          ]
+        },
+        "goal": {
+          "required": [
+            "condition"
+          ],
+          "recommended": [
+            "owner",
+            "window",
+            "priority",
+            "constraints"
+          ]
+        },
+        "constraint": {
+          "required": [
+            "scope",
+            "mode",
+            "condition"
+          ],
+          "recommended": [
+            "weight"
+          ],
+          "mode_values": [
+            "hard",
+            "soft"
+          ]
+        },
+        "evidence": {
+          "required": [
+            "target",
+            "stance",
+            "digest",
+            "provenance"
+          ],
+          "recommended": [
+            "observed_at",
+            "method"
+          ]
+        },
+        "uncertainty": {
+          "required": [
+            "target",
+            "model",
+            "parameters"
+          ],
+          "recommended": [
+            "basis"
+          ]
+        },
+        "action": {
+          "required": [
+            "capability",
+            "arguments"
+          ],
+          "recommended": [
+            "declared_effects"
+          ]
+        },
+        "commitment": {
+          "required": [
+            "debtor",
+            "creditors",
+            "goal",
+            "expiry_ms"
+          ],
+          "recommended": [
+            "verifier",
+            "cancellation_rule"
+          ]
+        },
+        "resolution": {
+          "required": [
+            "target",
+            "status"
+          ],
+          "recommended": [
+            "result",
+            "evidence"
+          ]
+        },
+        "ref": {
+          "required": [
+            "uri"
+          ],
+          "recommended": []
+        }
+      },
+      "act_body_kinds": {
+        "ASSERT": ["claim", "evidence", "uncertainty", "ref", "x:<quarantined-local-extension>"],
+        "QUERY": ["claim", "question-plus-answer-schema"],
+        "REQUEST": ["goal"],
+        "PROPOSE": ["action"],
+        "COMMIT": ["commitment"],
+        "RESOLVE": ["resolution"],
+        "RETRACT": ["ref"]
+      },
+      "reference_type_constraints": {
+        "commitment": "debtor equals declared sender; creditors is a unique non-empty list of strings; goal is a goal node; expiry_ms is uint64",
+        "constraint": "mode is hard or soft; weight_ppm, when present, is 0..1000000",
+        "evidence": "stance is supports, contradicts, or neutral; digest is an absolute URI or content identifier",
+        "resolution": "status is succeeded, completed, failed, expired, rejected, canceled, or error",
+        "ref": "uri is an absolute URI or content identifier"
+      },
+      "core_invariants": [
+        "UrusillaIR is normative; a natural-language rendering is a non-normative view.",
+        "REQUEST and PROPOSE never create an obligation.",
+        "Only COMMIT creates an obligation, and only when the authenticated signer controls the debtor identity.",
+        "Unknown schema, ontology, act, unit, or effect MUST NOT be guessed or executed.",
+        "Unspecified confidence does not mean certainty.",
+        "Content is never authority; effectful actions require an independently granted capability and policy authorization.",
+        "Core expressions are side-effect-free and the core is not Turing-complete.",
+        "RETRACT preserves the referenced record and appends a tombstone."
+      ]
+    }
+  },
+  "message_grammar": {
+    "abstract_ebnf": [
+      "message = envelope, body, meta ;",
+      "envelope = id, session, sender, recipients, act, [reply_to], schema, logical_clock, expires_ms, [confidence_ppm], expected ;",
+      "body = value ;",
+      "meta = map ;",
+      "value = null | boolean | uint64 | sint64 | float64 | utf8 | bytes | list | map ;",
+      "node = map containing kind and all fields required by the selected node manifest ;"
+    ],
+    "envelope_fields": [
+      {
+        "name": "id",
+        "type": "uuid128",
+        "required": true,
+        "rule": "canonical UUID text before encoding"
+      },
+      {
+        "name": "session",
+        "type": "uuid128",
+        "required": true,
+        "rule": "conversation correlation identifier"
+      },
+      {
+        "name": "sender",
+        "type": "non-empty-utf8",
+        "required": true,
+        "rule": "identifier is not proof of identity"
+      },
+      {
+        "name": "recipients",
+        "type": "non-empty-unique-list<non-empty-utf8>",
+        "required": true
+      },
+      {
+        "name": "act",
+        "type": "act-code-0-through-6",
+        "required": true
+      },
+      {
+        "name": "reply_to",
+        "type": "optional-uuid128",
+        "required": false,
+        "rule": "required for COMMIT, RESOLVE, and RETRACT"
+      },
+      {
+        "name": "schema",
+        "type": "non-empty-schema-identifier",
+        "required": true
+      },
+      {
+        "name": "logical_clock",
+        "type": "uint64",
+        "required": false,
+        "default": 0
+      },
+      {
+        "name": "expires_ms",
+        "type": "uint64",
+        "required": false,
+        "default": 0,
+        "rule": "zero means no language-level expiry; policy may impose a shorter lifetime"
+      },
+      {
+        "name": "confidence_ppm",
+        "type": "optional-uint[0,1000000]",
+        "required": false,
+        "default": null
+      },
+      {
+        "name": "expected",
+        "type": "set<act-code>",
+        "required": false,
+        "default": [],
+        "canonical_order": "ascending act code"
+      },
+      {
+        "name": "body",
+        "type": "semantic-value",
+        "required": true
+      },
+      {
+        "name": "meta",
+        "type": "map<utf8,semantic-value>",
+        "required": false,
+        "default": {}
+      }
+    ]
+  },
+  "wire_grammar": {
+    "profile": "prototype-wire-v0.1",
+    "frame_order": [
+      "magic_and_version",
+      "flags",
+      "payload_length_uvarint",
+      "dictionary_count_and_entries",
+      "fixed_envelope",
+      "typed_body",
+      "typed_meta",
+      "checksum_128"
+    ],
+    "magic_hex": "4142424c01",
+    "flags_hex": "01",
+    "integer_encoding": {
+      "unsigned": "shortest unsigned LEB128-style varint",
+      "signed": "zigzag then shortest unsigned varint",
+      "non_canonical_long_form": "reject"
+    },
+    "dictionary": {
+      "entry_encoding": "utf8-length-uvarint followed by utf8 bytes",
+      "order": [
+        "descending occurrence count",
+        "ascending UTF-8 byte length",
+        "ascending UTF-8 bytes"
+      ],
+      "duplicates": "reject"
+    },
+    "fixed_envelope_order": [
+      "id:16-bytes",
+      "session:16-bytes",
+      "sender:dictionary-index-uvarint",
+      "recipient-count-uvarint",
+      "recipient-indices-uvarint",
+      "act:one-byte",
+      "reply-presence:one-byte",
+      "reply_to:optional-16-bytes",
+      "schema:dictionary-index-uvarint",
+      "logical-clock-uvarint",
+      "expires-ms-uvarint",
+      "confidence-plus-one-uvarint-zero-means-null",
+      "expected-act-bitset:one-byte"
+    ],
+    "semantic_value_tags": [
+      {
+        "tag": 0,
+        "type": "null"
+      },
+      {
+        "tag": 1,
+        "type": "false"
+      },
+      {
+        "tag": 2,
+        "type": "true"
+      },
+      {
+        "tag": 3,
+        "type": "uint"
+      },
+      {
+        "tag": 4,
+        "type": "sint-zigzag"
+      },
+      {
+        "tag": 5,
+        "type": "float64-big-endian"
+      },
+      {
+        "tag": 6,
+        "type": "string-dictionary-reference"
+      },
+      {
+        "tag": 7,
+        "type": "bytes-length-prefixed"
+      },
+      {
+        "tag": 8,
+        "type": "list-count-prefixed"
+      },
+      {
+        "tag": 9,
+        "type": "map-count-prefixed"
+      }
+    ],
+    "canonicalization": [
+      "Map keys are sorted by ascending UTF-8 bytes.",
+      "Map keys are unique.",
+      "Unsigned and signed integers use the shortest possible varint.",
+      "Negative zero is encoded as positive zero.",
+      "NaN and infinity are forbidden.",
+      "The decoder MUST re-encode and require byte equality.",
+      "Trailing bytes are forbidden."
+    ],
+    "checksum": {
+      "algorithm": "SHA-256",
+      "input": "header-through-payload",
+      "output": "first-16-bytes",
+      "purpose": "accidental corruption detection only",
+      "authentication": false
+    }
+  },
+  "limits": {
+    "max_frame_bytes": 16777216,
+    "max_dictionary_items": 65535,
+    "max_utf8_string_bytes": 1048576,
+    "max_collection_items": 100000,
+    "max_semantic_nodes": 250000,
+    "max_semantic_depth": 64,
+    "max_recipients": 100000,
+    "unknown_bare_node_kind": "reject",
+    "prototype_extension_node_kind_rule": "kind begins with x:, is carried only by ASSERT, and remains quarantined until registry authorization",
+    "canonical_input_rule": "tuples and unknown top-level fields are rejected; core-node extra data belongs under annotations",
+    "production_note": "Replace local x: kinds with a governed signed registry before effectful use."
+  },
+  "translation_contract": {
+    "normative_source": "UrusillaIR",
+    "views": [
+      {
+        "id": "diagnostic-lossless",
+        "requirements": [
+          "preserve every act, kind, field, identifier, reference, uncertainty, and provenance value",
+          "render unknown extensions as identifiers plus raw fields without guessing",
+          "display complete canonical IR, message digest, translator build digest, and verification and authorization states"
+        ]
+      },
+      {
+        "id": "controlled-human",
+        "requirements": [
+          "use ontology-versioned templates",
+          "record translator build hash, ontology hash, and locale",
+          "label fluent paraphrases as non-normative"
+        ]
+      }
+    ],
+    "round_trip_requirements": [
+      "decode(encode(IR)) equals IR",
+      "if a controlled human form is parseable, parse(render(IR)) equals IR"
+    ],
+    "default_view_rule": "A readable summary is never the sole approval surface; the complete canonical audit record is mandatory.",
+    "free_form_input_rule": "If natural-language-to-UrusillaIR compilation yields multiple materially different candidates, return ambiguity and do not auto-select."
+  },
+  "security_contract": {
+    "decoder_policy": "treat every frame, capsule, schema, and extension value as untrusted input",
+    "effectful_message_requirements": [
+      "authenticated sender identity",
+      "freshness and replay protection",
+      "idempotency or correlation identifier",
+      "independently granted capability and policy authorization",
+      "resource budget",
+      "pinned schema and ontology digest",
+      "receiver-side interpreted UrusillaIR hash confirmation for high-risk actions"
+    ],
+    "append_only_audit_fields": [
+      "raw-frame-digest",
+      "UrusillaIR-digest",
+      "schema-digest",
+      "ontology-digest",
+      "authenticated-identity",
+      "signature",
+      "causal-parents",
+      "policy-decision",
+      "translator-version",
+      "resulting-effect"
+    ],
+    "fail_closed_conditions": [
+      "unknown act",
+      "unknown required schema",
+      "unknown required ontology",
+      "unknown unit",
+      "undeclared effect",
+      "capsule digest mismatch",
+      "signature failure",
+      "version mismatch",
+      "non-canonical wire frame"
+    ],
+    "unsigned_restriction": "This capsule has no publisher signature. It may be distributed publicly for source review, but its operation is limited to local read-only research and conformance experiments and it MUST NOT authorize external side effects."
+  },
+  "anti_spoofing_contract": {
+    "authoritative_objects": [
+      "signed immutable release manifest",
+      "signed Agent Card when a trust policy requires it",
+      "signed conformance report",
+      "signed registry entry",
+      "per-use source_id bound to a pinned signed source manifest"
+    ],
+    "non_authoritative_objects": [
+      "badge image",
+      "repository star count",
+      "human-readable README claim",
+      "screenshot",
+      "extension URI text without signature verification"
+    ],
+    "signature_rules": [
+      "The signed payload MUST include extension URI, language version, capsule digest, implementation origin, conformance report digest, signer key identifier, issued-at time, and expiry or revocation reference.",
+      "A GitHub account or URL alone is not cryptographic proof of publisher identity.",
+      "A badge MUST resolve to a signed machine-readable registry record and MUST display an unverified state if signature or digest validation fails.",
+      "Key rotation MUST preserve an auditable chain and compromised keys MUST be revocable.",
+      "Unknown signer, expired report, mismatched digest, moving source URL, or unsupported version MUST fail closed for effectful traffic."
+    ]
+  },
+  "conformance_badge_and_registry": {
+    "badge_is_presentational_only": true,
+    "registry_entry_required_fields": [
+      "agentCardUrl",
+      "extensionUri",
+      "languageVersion",
+      "capsuleSha256",
+      "implementationOrigin",
+      "implementationCommit",
+      "conformanceSuiteVersion",
+      "conformanceReportUrl",
+      "conformanceReportSha256",
+      "teachabilityScore",
+      "bridgeOrNativeModes",
+      "testedPeerImplementations",
+      "issuedAt",
+      "expiresAt",
+      "signerKeyId",
+      "signature"
+    ],
+    "listing_rule": "An implementation is listed only after an independent runner verifies the report and at least one cross-implementation session. Listing is opt-in and expires unless refreshed.",
+    "revocation_reasons": [
+      "signature or provenance failure",
+      "security incident with unresolved unauthorized effects",
+      "conformance regression",
+      "operator request",
+      "stale implementation or report"
+    ],
+    "compatibility_edge": "Registry edges represent tested implementation pairs, not universal compatibility inferred from two separate badges."
+  },
+  "consumer_visibility_contract": {
+    "end_state": "Personal AIs may negotiate with other personal or service AIs using the interlingua while presenting controlled human translations, consent boundaries, costs, commitments, and provenance to their users.",
+    "ui_controls": [
+      {
+        "label": "Show machine original",
+        "behavior": "local opt-in view of the exact frame and verified source manifest; hidden by default and never transmitted as analytics"
+      },
+      {
+        "label": "Share source card",
+        "behavior": "explicit export of a text-safe debug wrapper after privacy scrubbing and user confirmation"
+      }
+    ],
+    "debug_wrapper": {
+      "begin_marker": "-----BEGIN URUSILLA DEBUG-----",
+      "end_marker": "-----END URUSILLA DEBUG-----",
+      "allowed_header_fields": [
+        "spec: immutable GitHub commit URL",
+        "version: exact language version",
+        "source-id: 32 lowercase hexadecimal characters",
+        "capsule: full sha256 digest",
+        "payload: base64url opaque debug payload"
+      ],
+      "forbidden_fields": [
+        "user identity",
+        "agent identity",
+        "session or conversation identifier",
+        "timestamps more precise than a release version needs",
+        "message telemetry",
+        "credentials or signatures",
+        "private source or report URLs"
+      ],
+      "payload_rule": "A shareable payload MUST be synthetic, privacy-scrubbed, or re-encoded with pseudonymous envelope identifiers and sensitive body values removed. An exact production frame may be viewed locally but MUST NOT be exported unless an explicit privacy review proves that it contains no identity or private content.",
+      "purpose": "make voluntary screenshots traceable to stable public source without fabricating a leak"
+    },
+    "leakage_policy": [
+      "Raw frames may surface because of genuine UI or logging bugs; treat that as a security and privacy incident.",
+      "Intentionally manufacturing an accidental-looking leak is prohibited.",
+      "Do not place real user data into demos, screenshots, launch posts, or debug wrappers.",
+      "Novelty or viral leakage is never an adoption metric."
+    ]
+  },
+  "teachability_protocol": {
+    "objective": "measure whether a previously untrained agent can safely acquire the language from this capsule instead of assuming universal comprehension",
+    "cold_start_conditions": [
+      "frozen model weights",
+      "empty capsule cache",
+      "no hidden examples beyond the declared capsule",
+      "unseen partner identity",
+      "reported tokenizer and model version"
+    ],
+    "score_formula": {
+      "range": "0..100",
+      "formula": "100*(0.25*parse_valid + 0.25*semantic_exact + 0.15*generate_valid + 0.15*negative_rejection + 0.10*unseen_composition + 0.10*sample_efficiency)",
+      "components": {
+        "parse_valid": "fraction of valid held-out frames decoded to an accepted typed graph",
+        "semantic_exact": "exact graph match on held-out messages",
+        "generate_valid": "fraction of requested messages emitted as canonical valid frames",
+        "negative_rejection": "fraction of malformed, unsafe, or incompatible inputs rejected with no effect",
+        "unseen_composition": "success on unseen partner, task, and node composition",
+        "sample_efficiency": "max(0,1-(capsule_learning_tokens/32768))"
+      }
+    },
+    "non_compensable_gates": {
+      "core_round_trip_exact": 1.0,
+      "unauthorized_side_effects": 0,
+      "capsule_digest_verification": 1.0,
+      "negative_rejection_minimum": 0.999,
+      "semantic_exact_minimum": 0.95
+    },
+    "advertising_thresholds": {
+      "bridge": {
+        "minimum_score": 85,
+        "additional_requirement": "loss and ambiguity telemetry enabled"
+      },
+      "native": {
+        "minimum_score": 90,
+        "additional_requirement": "unseen-partner task-success non-inferior to the best enabled baseline"
+      }
+    },
+    "report_separately": [
+      "capsule exact bytes",
+      "capsule tokenizer-specific tokens",
+      "wall-clock learning time",
+      "runtime memory",
+      "model and tokenizer identifiers",
+      "confidence intervals"
+    ]
+  },
+  "conformance": {
+    "positive_vectors": [
+      {
+        "id": "request-goal-001",
+        "input": {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "session": "00000000-0000-0000-0000-000000000101",
+          "sender": "urn:agent:alpha",
+          "recipients": [
+            "urn:agent:beta"
+          ],
+          "act": "REQUEST",
+          "schema": "urn:urusilla:schema:core:0.1",
+          "logical_clock": 1,
+          "expires_ms": 0,
+          "expected": [
+            "PROPOSE",
+            "COMMIT",
+            "RESOLVE"
+          ],
+          "body": {
+            "kind": "goal",
+            "condition": {
+              "kind": "claim",
+              "predicate": "urn:example:sum-equals",
+              "arguments": [
+                2,
+                3,
+                5
+              ]
+            }
+          },
+          "meta": {}
+        },
+        "normalized_additions": {
+          "reply_to": null,
+          "confidence_ppm": null
+        },
+        "wire_bytes": 221,
+        "wire_sha256": "b84cd6ac927d4098651397141a9759103b3dcd3142e37aefcdfb07b1738839d1",
+        "wire_base64": "VVJTTAEBxQEKBGtpbmQEZ29hbAVjbGFpbQlhcmd1bWVudHMJY29uZGl0aW9uCXByZWRpY2F0ZQ51cm46YWdlbnQ6YmV0YQ91cm46YWdlbnQ6YWxwaGEWdXJuOmV4YW1wbGU6c3VtLWVxdWFscxx1cm46dXJ1c2lsbGE6c2NoZW1hOmNvcmU6MC4xAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAQEHAQYCAAkBAAA4CQIECQMDCAMDAgMDAwUABgIFBggABgEJAFjdyWIjWtz3tsYJIbMIJ+A="
+      }
+    ],
+    "negative_vectors": [
+      {
+        "id": "commit-without-causal-reference",
+        "mutation_of": "request-goal-001",
+        "mutations": {
+          "act": "COMMIT",
+          "reply_to": null
+        },
+        "expected": "reject-before-ledger-mutation",
+        "error_class": "ValidationError",
+        "error_contains": "COMMIT requires reply_to"
+      },
+      {
+        "id": "unknown-bare-node-kind",
+        "mutation_of": "request-goal-001",
+        "mutations": {
+          "body.kind": "future-node"
+        },
+        "expected": "reject-before-ledger-mutation",
+        "error_class": "ValidationError",
+        "error_contains": "local prototype extensions require x:<name>"
+      },
+      {
+        "id": "one-bit-corruption",
+        "mutation_of": "request-goal-001-wire",
+        "mutation": "flip one payload bit without recomputing checksum",
+        "expected": "reject-before-decode",
+        "error_class": "DecodeError",
+        "error_contains": "checksum mismatch"
+      },
+      {
+        "id": "non-canonical-trailing-data",
+        "mutation_of": "request-goal-001-wire",
+        "mutation": "append one zero byte",
+        "expected": "reject-before-decode",
+        "error_class": "DecodeError",
+        "error_contains": "payload length does not match frame length"
+      }
+    ],
+    "pass_rule": "Every positive vector MUST round-trip to byte equality and every negative vector MUST be rejected before ledger mutation or side effect."
+  },
+  "implementation_artifacts": {
+    "reference_spec": {
+      "local_filename": "urusilla_v0_1_spec.md",
+      "sha256": "4d817a607218f64998e1c0b061f80f07b400b382236485f2a2e7b88f6e92b263",
+      "status": "exact local prototype artifact; external use still requires an immutable GitHub commit URL and digest verification"
+    },
+    "reference_codec": {
+      "local_filename": "urusilla.py",
+      "sha256": "3cb84380149a522bdadd94e866e39a848fa23c8b666382c4f88ce341147fbdcf"
+    },
+    "publication_warning": "Local filenames are evidence for this prototype bundle, not globally resolvable distribution identifiers."
+  },
+  "publisher_authentication": {
+    "signature_profile": "Unsigned public research distribution is permitted only with explicit experimental status; a JWS detached signature over a canonical release manifest and an accepted publisher key are required before effect-authorizing or production use",
+    "signatures": [],
+    "status": "unsigned",
+    "safe_use": "public source review and distribution, plus local read-only research and conformance testing; never external side effects"
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:urusilla:delivery:local:1",
+  "title": "Urusilla Adoption Kit delivery envelope",
+  "description": "A local JSON carrier around a canonical or fallback representation. It never grants effect authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "interface_version",
+    "product_label",
+    "mode",
+    "representation",
+    "pins",
+    "payload",
+    "safety"
+  ],
+  "properties": {
+    "format": {
+      "const": "urusilla-delivery-v1"
+    },
+    "interface_version": {
+      "const": "1.0.0"
+    },
+    "product_label": {
+      "const": "Urusilla Adoption Kit"
+    },
+    "mode": {
+      "enum": [
+        "bridge",
+        "native",
+        "fallback"
+      ]
+    },
+    "representation": {
+      "enum": [
+        "canonical-json-v1",
+        "controlled-terse-english-v1",
+        "urusilla-wire-v0.1",
+        "urusilla-wire-v0.2-static-7d12fc414eae60b2"
+      ]
+    },
+    "pins": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "language_version",
+        "capsule_sha256",
+        "source_id"
+      ],
+      "properties": {
+        "language_version": {
+          "type": "string"
+        },
+        "capsule_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "source_id": {
+          "$ref": "#/$defs/sourceId"
+        },
+        "profile_id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "profile_capsule_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "dictionary_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{16}$"
+        }
+      }
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "encoding",
+        "data",
+        "sha256"
+      ],
+      "properties": {
+        "encoding": {
+          "enum": [
+            "utf-8-json",
+            "utf-8-controlled-english",
+            "base64"
+          ]
+        },
+        "data": {
+          "type": "string"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "effect_authorized",
+        "semantic_status",
+        "fallback_reason"
+      ],
+      "properties": {
+        "effect_authorized": {
+          "const": false
+        },
+        "semantic_status": {
+          "enum": [
+            "canonical-locally-validated",
+            "opaque-fallback-only"
+          ]
+        },
+        "fallback_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "sourceId": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{32}$"
+    }
+  }
+}

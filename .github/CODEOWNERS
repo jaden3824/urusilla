@@ -1,0 +1,11 @@
+# The canonical experimental project is founder-led.
+* @jaden3824
+
+# Normative semantics, governance, releases, provenance, and security policy
+# require review from the Founding Maintainer.
+/urusilla_v0_1_spec.md @jaden3824
+/urusilla_capsule_v0_1.json @jaden3824
+/GOVERNANCE.md @jaden3824
+/PROVENANCE.md @jaden3824
+/SECURITY.md @jaden3824
+/.github/workflows/ @jaden3824

@@ -1,0 +1,64 @@
+name: Reproduction or benchmark result
+description: Submit a favorable, null, or unfavorable Urusilla research result.
+title: "[Research]: "
+labels: ["research-evidence"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Negative and null results are welcome. Do not include private prompts, user data, secrets, or material you cannot redistribute.
+
+  - type: dropdown
+    id: result
+    attributes:
+      label: Result direction
+      options:
+        - Unfavorable or regression
+        - Null or inconclusive
+        - Favorable
+    validations:
+      required: true
+
+  - type: textarea
+    id: claim
+    attributes:
+      label: Bounded claim tested
+      description: State the exact corpus, task, models, tokenizers, transport contract, and baseline.
+    validations:
+      required: true
+
+  - type: textarea
+    id: freeze
+    attributes:
+      label: Premeasurement freeze
+      description: Link the timestamped plan, immutable revision, data digest, prompts, hypotheses, metrics, and stopping rule if one exists.
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Reproducible evidence
+      description: Link code, environment locks, complete ledgers, aggregate results, confidence intervals, and retained failures.
+    validations:
+      required: true
+
+  - type: textarea
+    id: independence
+    attributes:
+      label: Independence and assistance disclosure
+      description: Identify copied project components, shared or oracle-derived vectors, agent/model assistance, paid calls, and accountable submitters.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: integrity
+    attributes:
+      label: Integrity declarations
+      options:
+        - label: The result includes failures, repairs, refusals, and cold costs in its declared denominator.
+          required: true
+        - label: I have the right to publish every linked artifact and dataset transformation.
+          required: true
+        - label: I am not presenting a same-project run as external independent reproduction.
+          required: true

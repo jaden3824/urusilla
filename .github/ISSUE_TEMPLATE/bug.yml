@@ -1,0 +1,38 @@
+name: Reproducible bug
+description: Report a codec, conformance, translator, or documentation defect.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Describe the defect without including secrets, personal data, or private messages.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Minimal reproduction
+    validations:
+      required: true
+  - type: input
+    id: revision
+    attributes:
+      label: Repository revision
+    validations:
+      required: true
+  - type: input
+    id: runtime
+    attributes:
+      label: Runtime and platform
+    validations:
+      required: true
+  - type: checkboxes
+    id: security
+    attributes:
+      label: Security check
+      options:
+        - label: This report does not disclose a security vulnerability. I will use private vulnerability reporting for security-sensitive details.
+          required: true
+

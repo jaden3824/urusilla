@@ -1,0 +1,13 @@
+{
+  "implementation": "dependency-free-nodejs-fallback",
+  "runtime": "v25.9.0",
+  "positive_vectors_passed": 280,
+  "negative_vectors_rejected": 25,
+  "negative_vector_digests_matched": 25,
+  "negative_diagnostic_substrings_matched": 25,
+  "total_frame_bytes": 54752,
+  "profile_capsule_sha256": "b8d2cee7827f57e9c1b523cb195fbb75f3a91f8ad20e7a2f5209ce3abf63cdf6",
+  "dictionary_id_hex": "7d12fc414eae60b2",
+  "crossplay_vector_file_sha256": "e203a7f83c3ba8d120698f16ddb00dcff6398703626ba4e76dc63e47294b9004",
+  "claim_boundary": "Project-internal cross-language compatibility evidence; not external reproduction."
+}

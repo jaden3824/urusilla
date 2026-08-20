@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools==84.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "urusilla"
+version = "0.1.0a0"
+description = "Experimental machine-first semantic language for AI-agent communication"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [{ name = "jaden3824" }]
+maintainers = [{ name = "jaden3824" }]
+keywords = [
+  "ai-agents",
+  "agent-communication",
+  "multi-agent-systems",
+  "semantic-protocol",
+  "serialization",
+  "token-efficiency",
+]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[project.urls]
+Repository = "https://github.com/jaden3824/urusilla"
+Issues = "https://github.com/jaden3824/urusilla/issues"
+Documentation = "https://github.com/jaden3824/urusilla#readme"
+Security = "https://github.com/jaden3824/urusilla/security/policy"
+
+[project.scripts]
+urusilla = "urusilla:main"
+urusilla-a2a = "urusilla_a2a_adapter:main"
+urusilla-wire-v02 = "urusilla_wire_v02:main"
+urusilla-source = "source_manifest:main"
+
+[tool.setuptools]
+py-modules = ["urusilla", "urusilla_a2a_adapter", "urusilla_wire_v02", "urusilla_deterministic_gzip", "source_manifest"]
+
+[tool.setuptools.data-files]
+"share/urusilla" = [
+  "urusilla_capsule_v0_1.json",
+  "urusilla_v0_1_spec.md",
+  "SOURCE_MANIFEST_FORMAT.md",
+  "THIRD_PARTY_NOTICES.md",
+  "source_manifest.schema.json",
+]

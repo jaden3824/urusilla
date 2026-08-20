@@ -1,0 +1,44 @@
+{
+  "captured_at_utc": "2026-08-20T00:00:00.000Z",
+  "platform": "darwin",
+  "os_release": "24.0.0",
+  "architecture": "arm64",
+  "node": "v25.9.0",
+  "node_executable": "/opt/homebrew/Cellar/node/25.9.0_1/bin/node",
+  "npm": {
+    "available": true,
+    "exit_status": 0,
+    "stdout": "11.12.1",
+    "stderr": "",
+    "error_code": null
+  },
+  "rustc": {
+    "available": false,
+    "exit_status": null,
+    "stdout": "",
+    "stderr": "",
+    "error_code": "ENOENT"
+  },
+  "cargo": {
+    "available": false,
+    "exit_status": null,
+    "stdout": "",
+    "stderr": "",
+    "error_code": "ENOENT"
+  },
+  "rustup": {
+    "available": false,
+    "exit_status": null,
+    "stdout": "",
+    "stderr": "",
+    "error_code": "ENOENT"
+  },
+  "git_head": {
+    "available": true,
+    "exit_status": 128,
+    "stdout": "HEAD",
+    "stderr": "fatal: ambiguous argument 'HEAD': unknown revision or path not in the working tree.\nUse '--' to separate paths from revisions, like this:\n'git <command> [<revision>...] -- [<file>...]'",
+    "error_code": null
+  },
+  "third_party_runtime_dependencies": []
+}

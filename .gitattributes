@@ -1,0 +1,13 @@
+* text=auto eol=lf
+
+*.ursl binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+
+independent_impl/rust/vectors/*.json linguist-generated=true
+performance_v07/frozen_results.json linguist-generated=true
+evidence/** linguist-generated=true
+decoder_qa/qa_results.json linguist-generated=true

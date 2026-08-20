@@ -1,0 +1,17 @@
+{
+  "schema_version": 2,
+  "fixture_policy": "No binary failing frame is persisted. Each checksum-valid frame is rebuilt deterministically in memory from a public demo fixture, and exact observed frame digests are recorded in qa_results.json.",
+  "resolved_regression_ids": [
+    "DQA-001",
+    "DQA-002",
+    "DQA-003",
+    "DQA-004",
+    "DQA-005",
+    "DQA-006",
+    "DQA-007",
+    "DQA-008",
+    "DQA-009",
+    "DQA-010"
+  ],
+  "cases": []
+}

@@ -1,0 +1,208 @@
+{
+  "claim_boundary": "Generated deterministically with the same-project Python oracle. Error wording is diagnostic only; the compatibility contract is fail-closed rejection.",
+  "format": "urusilla-v02-negative-cross-language-vectors-v1",
+  "source_frame_sha256": "209d32108f5849b24a209bb280178aca893071811868d57c42c78fd29f99c5fe",
+  "status": "project-authored-python-oracle-derived-fixture",
+  "vectors": [
+    {
+      "bytes_base64": "WlpYWAI=",
+      "bytes_sha256": "a05a2cb955e8416b68a7b06ca410ed913c8a89cec2f70acfd93ea8d76007c019",
+      "id": "header-invalid-magic",
+      "kind": "frame",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "unsupported magic or UrusillaWire version"
+    },
+    {
+      "bytes_base64": "VVJTTAIBAA==",
+      "bytes_sha256": "c9e6e236363ff019c5db040e1dbcf53dd20e31c69cd257d6167cfe60dc29c4fc",
+      "id": "header-profile-id-zero",
+      "kind": "frame",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "profile ID is out of range"
+    },
+    {
+      "bytes_base64": "VVJTTAIBgQA=",
+      "bytes_sha256": "29620e3bd9024fe28c78240a5c21b45e2b73b033ed4d9eec47a81bdaa95df4e7",
+      "id": "header-overlong-profile-varint",
+      "kind": "frame",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "non-canonical uvarint"
+    },
+    {
+      "bytes_base64": "VVJTTAIB////////////Ag==",
+      "bytes_sha256": "e59d12275843f349c002eb9a570125efa676fb547118e0137c2e4fd22ae77882",
+      "id": "header-overflow-profile-varint",
+      "kind": "frame",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "uvarint overflow"
+    },
+    {
+      "bytes_base64": "VVJTTAIBgICAgICAgICAgA==",
+      "bytes_sha256": "8042c4526ab844cb7d05c01894698e01a5b7e436b08b146b0499688d75402554",
+      "id": "header-too-long-profile-varint",
+      "kind": "frame",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "uvarint exceeds 10 bytes"
+    },
+    {
+      "bytes_base64": "VVJTTAIBAX0S/EFOrmCygYCACA==",
+      "bytes_sha256": "139988e18a65519ba62e0782256b865c90f387a01f1f7cf2a4d907eb8e366709",
+      "id": "header-declared-payload-over-limit",
+      "kind": "frame",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "declared payload exceeds size limit"
+    },
+    {
+      "bytes_base64": "VVJTTAIBAX0S/EFOrmCyhgEidp/JLv9WE7HpEmgllf47BCca0iz9WdSTWmTaK0g7rHoBewjt6MBY4mlYS6e7P+lI5dKKfwAAAAKGBwOAUwpkGDYzYjAyZjUxNjVkNWI5ODQwM2JkZjcwZQplBDAwMDCHAwAFAAAAAAAAAACIYV5VcoGDAxQDgAQHA1wKZgEwXYIDAAIDAGHqJ8c6qExs4j3QQw3mKiA=",
+      "bytes_sha256": "cba76c3265ecceaf0fdb2136c6cbd87cb22a32f2a7455009688cbdc2b4edee43",
+      "id": "checksum-corruption",
+      "kind": "frame",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "v0.2 frame checksum mismatch"
+    },
+    {
+      "bytes_base64": "VVJTTAIBAX0S/EFOrmCyhgEidp/JLv9WE7HpEmgllf47BCca0iz9WdSTWmTaK0g7rHoBewjt6MBY4mlYS6e7P+lI5dKKfwAAAAKGBwOAUwpkGDYzYjAyZjUxNjVkNWI5ODQwM2JkZjcwZQplBDAwMDCHAwAFAAAAAAAAAACIYV5VcoGDAxQDgAQHA1wKZgEwXYIDAAIDAGHqJ8c6qExs4j3QQw3mKiEA",
+      "bytes_sha256": "02b2221590810c68f56bc1d5c45d8a1a17a2df44892dea52c14cfae861f280f0",
+      "id": "trailing-data",
+      "kind": "frame",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "payload length does not match frame length"
+    },
+    {
+      "bytes_base64": "VVJTTAIBAn0S/EFOrmCyhgEidp/JLv9WE7HpEmgllf47BCca0iz9WdSTWmTaK0g7rHoBewjt6MBY4mlYS6e7P+lI5dKKfwAAAAKGBwOAUwpkGDYzYjAyZjUxNjVkNWI5ODQwM2JkZjcwZQplBDAwMDCHAwAFAAAAAAAAAACIYV5VcoGDAxQDgAQHA1wKZgEwXYIDAAIDANprn6p/ejC/bGcyXwQF1As=",
+      "bytes_sha256": "c0f053baaa34fb82543168885feefbc8be5871a7af1da870d4e9c652e8aeda40",
+      "id": "unknown-profile",
+      "kind": "frame",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "unknown UrusillaWire v0.2 profile: 2"
+    },
+    {
+      "bytes_base64": "VVJTTAIBAXwS/EFOrmCyhgEidp/JLv9WE7HpEmgllf47BCca0iz9WdSTWmTaK0g7rHoBewjt6MBY4mlYS6e7P+lI5dKKfwAAAAKGBwOAUwpkGDYzYjAyZjUxNjVkNWI5ODQwM2JkZjcwZQplBDAwMDCHAwAFAAAAAAAAAACIYV5VcoGDAxQDgAQHA1wKZgEwXYIDAAIDAJeHUFbQ/TcbiT4cMJuSE6Q=",
+      "bytes_sha256": "8bbb8510a8321d9bbce8f133e111a28e52e4744bdea16d63b2f84b4089e7fbf4",
+      "id": "unknown-dictionary",
+      "kind": "frame",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "unknown dictionary for UrusillaWire v0.2 profile 1: 7c12fc414eae60b2"
+    },
+    {
+      "bytes_base64": "VVJTTAIA",
+      "bytes_sha256": "26341fdbfddb20b7bf3d4c377962b27954a6901920aec6a613dbee490962cd7f",
+      "id": "unsupported-flags-zero",
+      "kind": "frame",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "unsupported or non-canonical v0.2 flags"
+    },
+    {
+      "bytes_base64": "VVJTTAIC",
+      "bytes_sha256": "248c4b7ae4b9941575bf73b32bb20f1a08e02b37e2a6159fcc337f3f23423682",
+      "id": "unsupported-flags-two",
+      "kind": "frame",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "unsupported or non-canonical v0.2 flags"
+    },
+    {
+      "bytes_base64": "VVJTTAIBAX0S/A==",
+      "bytes_sha256": "3859b8364044cdfaaa7dc0ccb6330218a0fd0efb5f5d69e709ebc30f8bed0ecc",
+      "id": "truncated-header",
+      "kind": "frame",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "truncated v0.2 data"
+    },
+    {
+      "bytes_base64": "VVJTTAIBAX0S/EFOrmCyhgEidp/JLv9WE7HpEmgllf47BCca0iz9WdSTWmTaK0g7rHoBewjt6MBY4mlYS6e7P+lI5dKKfwAAAAKGBwOAUwpkGDYzYjAyZjUxNjVkNWI5ODQwM2JkZjcwZQplBDAwMDCHAwAFAAAAAAAAAACIYV5VcoGDAxQDgAQHA1wKZgEwXYIDAAIDAGHqJ8c6qExs4j3QQw3mKg==",
+      "bytes_sha256": "e077d32d02ca665772166a164c1994e0e49520bf9183e33fb5fb463dfc0fc1dd",
+      "id": "truncated-checksum",
+      "kind": "frame",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "payload length does not match frame length"
+    },
+    {
+      "bytes_base64": "VVJTTAIBAX0S/EFOrmCyhwEidp/JLv9WE7HpEmgllf47BCca0iz9WdSTWmTaK0g7rHoBewjt6MBY4mlYS6e7P+lI5dKKfwAAAAKGBwOAUwpkGDYzYjAyZjUxNjVkNWI5ODQwM2JkZjcwZQplBDAwMDCHAwAFAAAAAAAAAACIYV5VcoGDAxQDgAQHA1wKZgEwXYIDAAIDAGHqJ8c6qExs4j3QQw3mKiE=",
+      "bytes_sha256": "a71de65bfb38e90eb217dfa5c9a52608eb30403da522a4af3d311332fd7507e6",
+      "id": "declared-length-plus-one",
+      "kind": "frame",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "payload length does not match frame length"
+    },
+    {
+      "bytes_base64": "VVJTTAIBAX0S/EFOrmCyhgEjdp/JLv9WE7HpEmgllf47BCca0iz9WdSTWmTaK0g7rHoBewjt6MBY4mlYS6e7P+lI5dKKfwAAAAKGBwOAUwpkGDYzYjAyZjUxNjVkNWI5ODQwM2JkZjcwZQplBDAwMDCHAwAFAAAAAAAAAACIYV5VcoGDAxQDgAQHA1wKZgEwXYIDAAIDAGHqJ8c6qExs4j3QQw3mKiE=",
+      "bytes_sha256": "cdf6da4c4142373fd51916ae581ef541375cc9b620d64ff813d84e58ed2a7210",
+      "id": "payload-corruption-first",
+      "kind": "frame",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "v0.2 frame checksum mismatch"
+    },
+    {
+      "bytes_base64": "VVJTTAIBAX0S/EFOrmCyhgEidp/JLv9WE7HpEmgllf47BCca0iz9WdSTWmTaK0g7rHoBewjt6MBY4mlYS6e7P+lI5dKKfwAAAAKGBwOAUwpkGDYzYzAyZjUxNjVkNWI5ODQwM2JkZjcwZQplBDAwMDCHAwAFAAAAAAAAAACIYV5VcoGDAxQDgAQHA1wKZgEwXYIDAAIDAGHqJ8c6qExs4j3QQw3mKiE=",
+      "bytes_sha256": "52dd3b9509425533d046435253e3a80b3bf226ba06314f92958c28eda05f5106",
+      "id": "payload-corruption-middle",
+      "kind": "frame",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "v0.2 frame checksum mismatch"
+    },
+    {
+      "bytes_base64": "VVJTTAIBAX0S/EFOrmCyhgEidp/JLv9WE7HpEmgllf47BCca0iz9WdSTWmTaK0g7rHoBewjt6MBY4mlYS6e7P+lI5dKKfwAAAAKGBwOAUwpkGDYzYjAyZjUxNjVkNWI5ODQwM2JkZjcwZQplBDAwMDCHAwAFAAAAAAAAAACIYV5VcoGDAxQDgAQHA1wKZgEwXYIDAAIDAWHqJ8c6qExs4j3QQw3mKiE=",
+      "bytes_sha256": "8cb654c4aa73ce30abd0dcabf49b1fe1e9af601f86233d86d24b92e86ce2d2a6",
+      "id": "payload-corruption-last",
+      "kind": "frame",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "v0.2 frame checksum mismatch"
+    },
+    {
+      "bytes_base64": "VVJDUALjCgEBIXVydXNpbGxhLWNvcmUtYmVuY2htYXJrLXN0YXRpYy12MW0Ea2luZAN1cmkJY29uZGl0aW9uCWFyZ3VtZW50cwZ0YXJnZXQFdHJhY2UDcnVuBHNwYW4Hc2FtcGxlZAZidWRnZXQKd2lyZV9ieXRlcw1jb21wdXRlX3VuaXRzBHRhZ3MFc2NvcGUEbW9kZQ5sYXRlbmN5X21zX2x0ZQdyZWdpb25zCXJldHJ5X2x0ZQp3ZWlnaHRfcHBtCXByZWRpY2F0ZQdhdHRlbXB0BXNjb3JlB2NvbnRleHQGbG9jYWxlBWxhYmVsBW93bmVyCHByaW9yaXR5C2NvbnN0cmFpbnRzDGFuc3dlcl9saW1pdApjYXBhYmlsaXR5B2RyeV9ydW4PY2FuZGlkYXRlX25vZGVzEGRlY2xhcmVkX2VmZmVjdHMEZ29hbAZkZWJ0b3IJY3JlZGl0b3JzCWV4cGlyeV9tcwh2ZXJpZmllcgZzdGF0dXMGcmVzdWx0CGFydGlmYWN0BmNoZWNrcwZzdGFuY2UGZGlnZXN0CnByb3ZlbmFuY2UOb2JzZXJ2ZWRfYXRfbXMFbW9kZWwKcGFyYW1ldGVycwViYXNpcwVhbHBoYQRiZXRhA3JlZgpjb25zdHJhaW50BWNsYWltBGhhcmQEc29mdAlleGVjdXRpb24Gb3V0cHV0DmFwLW5vcnRoZWFzdC0yCXVzLWVhc3QtMQliZW5jaG1hcmsM7JeQ7J207KCE7Yq4BWtvLUtSBWVuLVVTBWphLUpQBuqygOymnQdyb3V0aW5nCXLDqXN1bHRhdAZhY3Rpb24KY29tbWl0bWVudApyZXNvbHV0aW9uCGV2aWRlbmNlC3VuY2VydGFpbnR5CHN1cHBvcnRzC2NvbnRyYWRpY3RzC2NhdGVnb3JpY2FsCXNxY2NlZWRlZAZmYWlsZWQHZXhwaXJlZA1sZWRnZXIuYXBwZW5kD2FydGlmYWN0LmNyZWF0ZRVhbnN3ZXIubWF0Y2hlcy5zY2hlbWEVcHJvb2YuY2FuZGlkYXRlLnZhbGlkF3dlYXRoZXIuY2FuZGlkYXRlLnZhbGlkGWludmVudG9yeS5jYW5kaWRhdGUudmFsaWQXcm91dGluZy5jYW5kaWRhdGUudmFsaWQXZmluYW5jZS5jYW5kaWRhdGUudmFsaWQMdmVyaWZ5LnByb29mDXJvdXRlLnBhY2thZ2UNcmVzZXJ2ZS5zdG9jaxNwbGFubmVyLmFscGhhLmFnZW50E3ZlcmlmaWVyLmJldGEuYWdlbnQUZXhlY3V0b3IuZ2FtbWEuYWdlbnQTYXVkaXRvci5kZWx0YS5hZ2VudBRicm9rZXIuZXBzaWxvbi5hZ2VudCF1cm46dXJ1c2lsbGE6cHJvb2YtdmVyaWZpY2F0aW9uOjEWdXJuOnVydXNpbGxhOnJvdXRpbmc6MiR1cm46dXJ1c2lsbGE6aW52ZW50b3J5LXJlc2VydmF0aW9uOjEgdXJuOnVydXNpbGxhOmZvcmVjYXN0LWV2aWRlbmNlOjMidXJuOnVydXNpbGxhOmNvbnRyYWN0LXJlc29sdXRpb246MQdzaGEyNTY6CmNhbmRpZGF0ZS0HZG9tYWluLQV0ZWFtLQd3b3JrZXItCXZlcmlmaWVyLQ9zZW5zb3IuY2x1c3Rlci8LdXJuOmFuc3dlcjoSdXJuOmxlZGdlcjpyZWNvcmQ6EwIAAQMJDAUDBggHAgsKBQIADg0SAw8QEQQDFgATAhQVAhgXBQIbABkaBBwDABMEAx0gAAMfHiEGIyIkIQAlBAAnJgQCKCkGKwAtLCoEBTAALi8EAjEyGQlnc135ZsO7xdXsiZK2ng==",
+      "bytes_sha256": "991a531f5e21c185dfaf488f550abe70026b312d4fb69b1a05e5340864f2c949",
+      "id": "capsule-checksum-corruption",
+      "kind": "capsule",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "profile capsule checksum mismatch"
+    },
+    {
+      "bytes_base64": "VVJDUAINAgEIYm91bmRhcnkAAAeYySNj3EpcJ/waBxWXBrY=",
+      "bytes_sha256": "416345154d02e9624f5e2bf25b6a09c09e7e65dda1ce51d0bdcc1e387de54506",
+      "id": "capsule-unsupported-format",
+      "kind": "capsule",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "unsupported profile capsule format"
+    },
+    {
+      "bytes_base64": "VVJDUAINAQAIYm91bmRhcnkAAAh0ym3oOBt8P4/x0b4Wq74=",
+      "bytes_sha256": "bb8303c13450dd758e8a38060777b3e410272cba12b0507a4a3a440b9bbb57aa",
+      "id": "capsule-profile-id-zero",
+      "kind": "capsule",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "profile ID is out of range"
+    },
+    {
+      "bytes_base64": "VVJDUAIRAQEIYm91bmRhcnkCAWEBYQA7hWBtJPfJmfKe9Lchzm6V",
+      "bytes_sha256": "5609f28d49189d5ef154ef550d73b4f3eba69e893bdc617b99323278185349b9",
+      "id": "capsule-duplicate-strings",
+      "kind": "capsule",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "static dictionary contains duplicate strings"
+    },
+    {
+      "bytes_base64": "VVJDUAIRAQEIYm91bmRhcnkBAWEBAQEKTiY8Wdyf4TR0SmJvR+uW",
+      "bytes_sha256": "235251afd715837960943f422a32e6d61bc113aa12a2f8864642fb7e24fbd70a",
+      "id": "capsule-shape-key-out-of-range",
+      "kind": "capsule",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "profile shape key reference is out of range"
+    },
+    {
+      "bytes_base64": "VVJDUAIUAQEIYm91bmRhcnkCAWEBYgECAQCE4U7W9CupDqZ6MvR+ImLi",
+      "bytes_sha256": "e01f800243362fd44a91980ad6593c8ca49cb6feb2d495a3c8b0b2e3f028b180",
+      "id": "capsule-shape-noncanonical-order",
+      "kind": "capsule",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "invalid static profile: profile map-shape keys must be unique and UTF-8 sorted"
+    },
+    {
+      "bytes_base64": "VVJDUAIOAQEIYm91bmRhcnkAAAC1UArPG2ldcsBgDM8ol5Zs",
+      "bytes_sha256": "27c8e2af63112daa9cbfa811cccaf420aeb75ceea0a9101d3d1bee8dfdb85c2c",
+      "id": "capsule-payload-trailing-data",
+      "kind": "capsule",
+      "oracle_error_class": "DecodeError",
+      "oracle_error_contains": "unexpected trailing data: 1 byte(s)"
+    }
+  ]
+}

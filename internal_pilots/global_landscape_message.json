@@ -1,0 +1,40 @@
+{
+  "act": "ASSERT",
+  "body": {
+    "digest": "sha256:ffd48cb27a37340b757f9aab1740372483fbc922e05d6fcd3d46d9ab9c8bae3d",
+    "kind": "evidence",
+    "provenance": "urusilla_landscape_2026.md",
+    "stance": "supports",
+    "target": {
+      "arguments": [
+        "urusilla_landscape_2026.md",
+        "2026-08-20",
+        "primary-and-official-sources-only"
+      ],
+      "kind": "claim",
+      "predicate": "global_agent_language_landscape.completed"
+    }
+  },
+  "confidence_ppm": 1000000,
+  "id": "0198c9ee-2f9b-7a42-9c8f-9bf32cb01901",
+  "logical_clock": 1,
+  "meta": {
+    "artifact": {
+      "path": "urusilla_landscape_2026.md",
+      "sha256": "ffd48cb27a37340b757f9aab1740372483fbc922e05d6fcd3d46d9ab9c8bae3d"
+    },
+    "evidence_scope": "internal-pilot-only",
+    "external_adopter_claim": false,
+    "provenance": {
+      "implementation_mode": "bridge",
+      "semantic_version": "0.1.0",
+      "source_repository": "https://github.com/jaden3824/urusilla"
+    }
+  },
+  "recipients": [
+    "root.orchestrator"
+  ],
+  "schema": "urn:urusilla:landscape-report:0.1.0-experimental",
+  "sender": "landscape.research.agent",
+  "session": "0198c9ed-ae62-7ff1-a3f2-0e5925f63802"
+}

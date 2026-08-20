@@ -1,0 +1,40 @@
+title = "Urusilla reviewed secret-scanning configuration"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Ignored local evaluation products and caches are not publication inputs"
+paths = [
+  '''(^|/)work/''',
+  '''^competitive_eval/artifacts/a1_.*_(?:episode_manifest|prompt_locks)\.jsonl$''',
+  '''^competitive_eval/artifacts/mock_(?:episode_manifest|episode_results|prompt_locks|turn_observations)\.jsonl$''',
+]
+
+[[allowlists]]
+description = "Pinned public tokenizer profile identifiers are labels, not credentials"
+regexTarget = "secret"
+regexes = [
+  '''^(?:qwen2_5_7b_instruct|mistral_7b_instruct_v03|max_four_planning_proxy)$''',
+]
+
+[[allowlists]]
+description = "Frozen public codec candidate label is not a credential"
+regexTarget = "secret"
+regexes = [
+  '''^adaptive_surface_v0\.5$''',
+]
+
+[[allowlists]]
+description = "Public A2A representation label is not a credential"
+regexTarget = "secret"
+regexes = [
+  '''^urusilla-wire-v0\.1$''',
+]
+
+[[allowlists]]
+description = "Content-addressed source-file fields contain public SHA-256 digests"
+regexTarget = "match"
+regexes = [
+  '''(?i)(?:[A-Za-z0-9_./-]+\.py|sha256|digest|fingerprint)["']?\s*(?::|=)\s*["'][0-9a-f]{64}["']''',
+]

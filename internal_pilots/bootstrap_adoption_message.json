@@ -1,0 +1,39 @@
+{
+  "id": "b00757a9-143d-4c6c-a7c0-0b47ad0f1001",
+  "session": "b00757a9-143d-4c6c-a7c0-0b47ad0f2001",
+  "sender": "urn:agent:bootstrap-adoption-workstream",
+  "recipients": [
+    "urn:agent:urusilla-root"
+  ],
+  "act": "ASSERT",
+  "schema": "urn:urusilla:schema:bootstrap-adoption-evidence:0.1",
+  "logical_clock": 1,
+  "expires_ms": 0,
+  "expected": [],
+  "body": {
+    "kind": "claim",
+    "predicate": "urn:urusilla:predicate:bootstrap-adoption-artifacts-produced",
+    "arguments": [
+      {
+        "artifacts": [
+          "urusilla_bootstrap_adoption.md",
+          "urusilla_capsule_v0_1.json"
+        ],
+        "evidence_class": "internal-pilot",
+        "external_adopter": false,
+        "statement": "The bootstrap and adoption design and Grammar Capsule were produced for internal bridge-mode validation."
+      }
+    ]
+  },
+  "meta": {
+    "provenance": {
+      "source_repository": "https://github.com/jaden3824/urusilla",
+      "semantic_version": "0.1.0",
+      "capsule_sha256": "588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27",
+      "implementation_origin": "urusilla.py",
+      "implementation_mode": "bridge",
+      "evidence_class": "internal-pilot",
+      "external_adopter": false
+    }
+  }
+}

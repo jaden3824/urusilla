@@ -1,0 +1,36 @@
+{
+  "evaluation": "neutral-id-capsule-transfer-0.1",
+  "created_after_participant_submission": true,
+  "precommitted_before_submission": false,
+  "task_sha256": "41e345b3fed3931c1fd9e764bf251c638550ea8cffcaed348f22499605ff3692",
+  "submission_sha256": "1f73c5bcd26e8e50cb02fe38eba25c4a3e6ffc7c64228085655cec50641939d9",
+  "capsule_sha256": "588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27",
+  "historical_task_sha256_before_project_rename": "3199ee46e2f22f0b0782fb242de33bb395b0e97e24009e0f51b9438869471261",
+  "historical_published_submission_sha256_before_project_rename": "157fe4643ac60fb8d14a88e0103cacd8b4cac1dc04cae56a5cb377a866c425ad",
+  "historical_participant_original_submission_sha256": "6428c66339e156b52be80e5695a72c8ff790828d1d52ea7eb2906cff1f493489",
+  "historical_capsule_sha256_before_project_rename": "a141de8359dc2bce4af619a931ed0bfc688c421067fbba80a16711a3348e5346",
+  "historical_structural_failures": {
+    "R8D1": "unknown node kind 'question-plus-answer-schema'; local prototype extensions require x:<name>",
+    "P7A2": "ref.uri must be an absolute URI or content identifier",
+    "W5L4": "uncertainty.basis must be a canonical list",
+    "V3G8": "claim.predicate cannot contain whitespace or control characters"
+  },
+  "cases": [
+    {"case_id": "N4Q7", "decision": "emit", "act": "REQUEST", "essential": "artifact, upper-bound route cost, and reply lifecycle"},
+    {"case_id": "K2M9", "decision": "emit", "act": "ASSERT", "essential": "artifact validation claim, evidence digest, and provenance"},
+    {"case_id": "R8D1", "decision": "emit", "act": "QUERY", "essential": "current capability query and exact answer schema"},
+    {"case_id": "B6T3", "decision": "emit", "act": "PROPOSE", "essential": "capability, region, redundancy, and no obligation"},
+    {"case_id": "H9V5", "decision": "emit", "act": "COMMIT", "essential": "debtor, creditor, artifact, expiry, and causal parent"},
+    {"case_id": "C3J8", "decision": "emit", "act": "RESOLVE", "essential": "failed status, target, error, evidence, and causal parent"},
+    {"case_id": "P7A2", "decision": "emit", "act": "RETRACT", "essential": "owned target and causal parent"},
+    {"case_id": "W5L4", "decision": "emit", "act": "ASSERT", "essential": "sensor value, UCUM unit, calibrated beta uncertainty, and target"},
+    {"case_id": "F1X6", "decision": "reject", "essential": "underspecified referent and goal"},
+    {"case_id": "Y8S2", "decision": "reject", "essential": "debtor and authenticated sender mismatch"},
+    {"case_id": "D4U9", "decision": "reject", "essential": "unregistered URI-like node kind"},
+    {"case_id": "M6E3", "decision": "emit", "act": "ASSERT", "essential": "quarantined x:trace value"},
+    {"case_id": "Q2N7", "decision": "reject", "essential": "plan node is absent and PROPOSE requires action"},
+    {"case_id": "A9K4", "decision": "reject", "essential": "COMMIT lacks causal parent"},
+    {"case_id": "V3G8", "decision": "emit", "act": "ASSERT", "essential": "artifact, digest, two recipients, and expiry"},
+    {"case_id": "L7P1", "decision": "reject", "essential": "effectful operation lacks identity and authorization"}
+  ]
+}

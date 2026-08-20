@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:urusilla:telemetry:event:1",
+  "title": "Urusilla Adoption Kit content-free observation event",
+  "description": "An opt-in, content-free, locally authenticated observation. This schema deliberately has no message, user, account, device, IP, source URI, prompt, answer, or session identifier field.",
+  "$comment": "This JSON Schema is structural documentation only. adoption_kit/telemetry.py is the normative validator for event/outcome/mode conditionals, lifecycle order, HMACs, replay, rate limits, evidence treatment, and completion-attestation binding.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "telemetry_opt_in",
+    "event_type",
+    "coarse_time_bucket",
+    "rotating_install_pseudonym",
+    "deployment_class",
+    "implementation_version",
+    "mode",
+    "outcome",
+    "event_nonce",
+    "sequence",
+    "signature"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "urusilla-adoption-telemetry/1"
+    },
+    "telemetry_opt_in": {
+      "const": true,
+      "description": "The deployment owner made an explicit local opt-in choice."
+    },
+    "event_type": {
+      "enum": [
+        "profile_discovered",
+        "manifest_verified",
+        "negotiation_accepted",
+        "negotiation_rejected",
+        "fallback_succeeded",
+        "fallback_exhausted",
+        "safe_message_completed",
+        "message_failed",
+        "profile_disabled"
+      ]
+    },
+    "coarse_time_bucket": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[01])$",
+      "description": "A UTC calendar-day bucket; no precise event time is permitted."
+    },
+    "rotating_install_pseudonym": {
+      "type": "string",
+      "pattern": "^rp1:[0-9]{4}-(0[1-9]|1[0-2]):[0-9a-f]{32}$",
+      "description": "A monthly HMAC-derived pseudonym. It is not a user, message, device, or session identifier."
+    },
+    "deployment_class": {
+      "enum": ["internal", "external", "test"]
+    },
+    "implementation_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._+/-]*$"
+    },
+    "mode": {
+      "enum": [
+        "bridge",
+        "native",
+        "json_fallback",
+        "terse_english_fallback"
+      ]
+    },
+    "outcome": {
+      "enum": ["observed", "succeeded", "failed", "abstained", "disabled"]
+    },
+    "reason_code": {
+      "enum": [
+        "UNSUPPORTED_EXTENSION",
+        "MANIFEST_FETCH_FAILED",
+        "MANIFEST_SIGNATURE_INVALID",
+        "CAPSULE_DIGEST_MISMATCH",
+        "SCHEMA_UNSUPPORTED",
+        "CODEC_UNSUPPORTED",
+        "POLICY_DENIED",
+        "RIGHTS_SCOPE_DENIED",
+        "RESOURCE_LIMIT",
+        "SEMANTIC_VALIDATION_FAILED",
+        "PROVENANCE_INVALID",
+        "FRESHNESS_UNSATISFIED",
+        "FALLBACK_EXHAUSTED",
+        "TASK_FAILED",
+        "PROFILE_DEPRECATED",
+        "OPERATOR_DISABLED"
+      ]
+    },
+    "public_profile_digest": {
+      "$ref": "#/$defs/sha256Ref"
+    },
+    "metric_buckets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cache_state",
+        "wire_delta",
+        "token_delta",
+        "latency",
+        "repair_turns"
+      ],
+      "properties": {
+        "cache_state": {
+          "enum": ["cold", "warm", "not_applicable"]
+        },
+        "wire_delta": {
+          "enum": [
+            "regressed",
+            "neutral",
+            "saved_lt256",
+            "saved_256_1023",
+            "saved_1024_plus",
+            "not_measured"
+          ]
+        },
+        "token_delta": {
+          "enum": [
+            "regressed",
+            "neutral",
+            "saved_lt32",
+            "saved_32_127",
+            "saved_128_plus",
+            "not_measured"
+          ]
+        },
+        "latency": {
+          "enum": ["lt10ms", "10_99ms", "100_999ms", "gte1000ms", "not_measured"]
+        },
+        "repair_turns": {
+          "enum": ["0", "1", "2_3", "4_plus", "not_measured"]
+        }
+      }
+    },
+    "evidence_refs": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "conformance": {
+          "$ref": "#/$defs/sha256Ref"
+        },
+        "crossplay": {
+          "$ref": "#/$defs/sha256Ref"
+        }
+      }
+    },
+    "completion_attestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attestation_version", "issuer_id", "signature"],
+      "properties": {
+        "attestation_version": {
+          "const": "urusilla-local-completion-attestation/1"
+        },
+        "issuer_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "pattern": "^[a-z0-9][a-z0-9.-]*$"
+        },
+        "signature": {
+          "type": "string",
+          "pattern": "^hmac-sha256:[0-9a-f]{64}$"
+        }
+      },
+      "description": "Optional local/synthetic collector attestation. Its HMAC is verified by telemetry.py against an explicitly configured local issuer and never proves independent external adoption."
+    },
+    "event_nonce": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{32}$",
+      "description": "A one-use anti-replay nonce for this telemetry event only."
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4294967295
+    },
+    "signature": {
+      "type": "string",
+      "pattern": "^hmac-sha256:[0-9a-f]{64}$",
+      "description": "A local HMAC authenticity check; it is not public identity or release provenance."
+    }
+  },
+  "$defs": {
+    "sha256Ref": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}

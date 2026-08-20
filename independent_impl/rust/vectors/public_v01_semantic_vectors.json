@@ -1,0 +1,99 @@
+{
+  "computed_manifest_bytes": 3681,
+  "computed_recursive_sorted_compact_manifest_sha256": "d4edf0ab4d8c572f81cf5e723388ce130b9a786bbe787c385fb781c970e0ad7f",
+  "declared_semantic_kernel_manifest_digest": "sha256:d4edf0ab4d8c572f81cf5e723388ce130b9a786bbe787c385fb781c970e0ad7f",
+  "digest_match": true,
+  "format": "urusilla-public-v01-semantic-vectors-v1",
+  "negative_vectors": [
+    {
+      "error_class": "ValidationError",
+      "error_contains": "COMMIT requires reply_to",
+      "expected": "reject-before-ledger-mutation",
+      "id": "commit-without-causal-reference",
+      "mutation_of": "request-goal-001",
+      "mutations": {
+        "act": "COMMIT",
+        "reply_to": null
+      }
+    },
+    {
+      "error_class": "ValidationError",
+      "error_contains": "local prototype extensions require x:<name>",
+      "expected": "reject-before-ledger-mutation",
+      "id": "unknown-bare-node-kind",
+      "mutation_of": "request-goal-001",
+      "mutations": {
+        "body.kind": "future-node"
+      }
+    },
+    {
+      "error_class": "DecodeError",
+      "error_contains": "checksum mismatch",
+      "expected": "reject-before-decode",
+      "id": "one-bit-corruption",
+      "mutation": "flip one payload bit without recomputing checksum",
+      "mutation_of": "request-goal-001-wire"
+    },
+    {
+      "error_class": "DecodeError",
+      "error_contains": "payload length does not match frame length",
+      "expected": "reject-before-decode",
+      "id": "non-canonical-trailing-data",
+      "mutation": "append one zero byte",
+      "mutation_of": "request-goal-001-wire"
+    }
+  ],
+  "pass_rule": "Every positive vector MUST round-trip to byte equality and every negative vector MUST be rejected before ledger mutation or side effect.",
+  "positive_vectors": [
+    {
+      "id": "request-goal-001",
+      "input": {
+        "act": "REQUEST",
+        "body": {
+          "condition": {
+            "arguments": [
+              2,
+              3,
+              5
+            ],
+            "kind": "claim",
+            "predicate": "urn:example:sum-equals"
+          },
+          "kind": "goal"
+        },
+        "expected": [
+          "PROPOSE",
+          "COMMIT",
+          "RESOLVE"
+        ],
+        "expires_ms": 0,
+        "id": "00000000-0000-0000-0000-000000000001",
+        "logical_clock": 1,
+        "meta": {},
+        "recipients": [
+          "urn:agent:beta"
+        ],
+        "schema": "urn:urusilla:schema:core:0.1",
+        "sender": "urn:agent:alpha",
+        "session": "00000000-0000-0000-0000-000000000101"
+      },
+      "normalized_additions": {
+        "confidence_ppm": null,
+        "reply_to": null
+      },
+      "wire_base64": "VVJTTAEBxQEKBGtpbmQEZ29hbAVjbGFpbQlhcmd1bWVudHMJY29uZGl0aW9uCXByZWRpY2F0ZQ51cm46YWdlbnQ6YmV0YQ91cm46YWdlbnQ6YWxwaGEWdXJuOmV4YW1wbGU6c3VtLWVxdWFscxx1cm46dXJ1c2lsbGE6c2NoZW1hOmNvcmU6MC4xAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAQEHAQYCAAkBAAA4CQIECQMDCAMDAgMDAwUABgIFBggABgEJAFjdyWIjWtz3tsYJIbMIJ+A=",
+      "wire_bytes": 221,
+      "wire_sha256": "b84cd6ac927d4098651397141a9759103b3dcd3142e37aefcdfb07b1738839d1"
+    }
+  ],
+  "release_policy": {
+    "effect_authorizing_requires_signature_and_policy": true,
+    "lifecycle_status": "experimental-unsigned",
+    "publisher_status": "unsigned",
+    "unsigned_external_effects_forbidden": true,
+    "unsigned_operation_scope": "local-read-only",
+    "unsigned_public_source_distribution_allowed": true
+  },
+  "source_file": "urusilla_capsule_v0_1.json",
+  "source_file_sha256": "588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27"
+}

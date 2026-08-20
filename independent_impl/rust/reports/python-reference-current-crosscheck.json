@@ -1,0 +1,35 @@
+{
+  "captured_at_utc": "2026-08-20T00:00:00Z",
+  "current_reference_reexecution": {
+    "all_frames_equal": true,
+    "corpus_messages": 280,
+    "default_capsule_bytes": 1402,
+    "default_capsule_sha256": "b8d2cee7827f57e9c1b523cb195fbb75f3a91f8ad20e7a2f5209ce3abf63cdf6",
+    "four_byte_length_prefixed_sequence_sha256": "f06cb86e36095780ca6a89e26b36469a8cad8854ca34ddbf102c1385189598ce",
+    "frames_equal_to_frozen_fixtures": 280,
+    "total_frame_bytes": 54752
+  },
+  "current_root_sha256": {
+    "urusilla.py": "3cb84380149a522bdadd94e866e39a848fa23c8b666382c4f88ce341147fbdcf",
+    "urusilla_benchmark.py": "b5e2885f7e17097643c1e93ba3326f285cd37aa8199cf1cc3b234227e515b5f8",
+    "urusilla_wire_v02.py": "166b1090b536bfff942667d43be583b2345eeb14b9da5d1535b7a16bb6bab2e7"
+  },
+  "format": "project-python-reference-current-crosscheck-v2",
+  "frozen_vector_origin_sha256": {
+    "urusilla.py": "3cb84380149a522bdadd94e866e39a848fa23c8b666382c4f88ce341147fbdcf",
+    "urusilla_benchmark.py": "b5e2885f7e17097643c1e93ba3326f285cd37aa8199cf1cc3b234227e515b5f8",
+    "urusilla_wire_v02.py": "166b1090b536bfff942667d43be583b2345eeb14b9da5d1535b7a16bb6bab2e7"
+  },
+  "implementation_runtime_dependency": false,
+  "interpretation": "Current-output agreement within one project; not independent external reproduction.",
+  "purpose": "Deterministic current-oracle re-execution against regenerated same-project fixtures.",
+  "root_files_modified": false,
+  "runtime": {
+    "platform": "macOS-15.0-arm64-arm-64bit-Mach-O",
+    "python": "3.14.7"
+  },
+  "source_drift": {
+    "detected": false,
+    "reason": "fixtures were regenerated from the current pinned root inputs"
+  }
+}

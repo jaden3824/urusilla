@@ -1,0 +1,28 @@
+# Fully provisioned research environment used on 2026-08-20.
+# Verified with CPython 3.12.14 on macOS arm64.
+# The dependency-free reference runtime does not require this file.
+Brotli==1.2.0
+PyYAML==6.0.3
+cbor2==6.1.4
+certifi==2026.7.22
+charset-normalizer==3.5.1
+coverage==7.15.4
+filelock==3.32.3
+fsspec==2026.7.0
+grpcio==1.83.0
+grpcio-tools==1.83.0
+hf-xet==1.6.0
+huggingface-hub==0.36.2
+idna==3.19
+msgpack==1.2.1
+packaging==26.3
+protobuf==7.35.1
+regex==2026.7.19
+requests==2.34.2
+setuptools==84.0.0
+tiktoken==0.11.0
+tokenizers==0.21.4
+tqdm==4.70.0
+typing-extensions==4.16.0
+urllib3==2.7.0
+zstandard==0.25.0

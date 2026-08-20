@@ -1,0 +1,61 @@
+{
+  "act": "REQUEST",
+  "body": {
+    "condition": {
+      "arguments": [
+        {
+          "kind": "ref",
+          "uri": "sha256:aa04e9d98f45"
+        },
+        "theorem-42"
+      ],
+      "kind": "claim",
+      "predicate": "proof.valid"
+    },
+    "constraints": [
+      {
+        "condition": {
+          "latency_ms_lte": 1500
+        },
+        "kind": "constraint",
+        "mode": "hard",
+        "scope": "verification"
+      },
+      {
+        "condition": {
+          "must_include": [
+            "evidence_digest",
+            "counterexample"
+          ]
+        },
+        "kind": "constraint",
+        "mode": "hard",
+        "scope": "output"
+      }
+    ],
+    "kind": "goal"
+  },
+  "confidence_ppm": 930000,
+  "expected": [
+    "COMMIT",
+    "RESOLVE"
+  ],
+  "expires_ms": 1500,
+  "id": "018f4f2e-1d33-7b62-8af8-5a09497d34b1",
+  "logical_clock": 17,
+  "meta": {
+    "budget": {
+      "output_units": 120,
+      "wire_bytes": 2048
+    },
+    "provenance": [
+      "planner.run:881"
+    ]
+  },
+  "recipients": [
+    "verifier.agent"
+  ],
+  "schema": "urn:urusilla:proof-verification:1",
+  "sender": "planner.agent",
+  "session": "018f4f2e-0ea2-7cad-a224-b98558052765"
+}

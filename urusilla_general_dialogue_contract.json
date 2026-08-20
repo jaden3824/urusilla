@@ -1,0 +1,141 @@
+{
+  "artifact_policy": {
+    "cold_accounting": "Charge the exact UTF-8 bytes and tokenizer count of this complete contract once per independently cold source-family session.",
+    "implementation_installation": "Compression implementations are assumed to be locally available and are not counted as transferable artifacts. This prevents the cold result from being presented as a no-install deployment result.",
+    "warm_accounting": "Do not charge the contract again after verified session activation."
+  },
+  "corpus": {
+    "file_sha256": "3bede9398786dcb7de72a5bf2648105c62ba3b0f9339d7c86b774f937b104854",
+    "manifest_sha256": "6fba633e286527303afd180b0221362365a20efd9325686631df022fc6cf9fec",
+    "records": 256,
+    "sequence_sha256": "349e57a679815aa343815117ac8ed0e753f516871152c46a38fa31484fcd82bd",
+    "source_freeze_sha256": "888bbdd680a22faa2e30e457d5559ad4042184ec2e0e5b7f7b7832ef6ebd2921",
+    "turns": 2542
+  },
+  "format": "urusilla-general-dialogue-evaluation-contract-v1",
+  "lossless_lane": {
+    "candidate_modes": [
+      {
+        "artifact": null,
+        "id": "raw",
+        "meaning": "The original Unicode string, delivered byte-for-byte as UTF-8."
+      },
+      {
+        "artifact": "this contract",
+        "id": "raw_checked",
+        "meaning": "Original UTF-8 bytes carried uncompressed inside the same integrity-checked Base64url envelope as every generic compressor control. This is the integrity-matched control, not the receiver-token baseline."
+      },
+      {
+        "artifact": "this contract plus a pre-existing RFC 1951 implementation",
+        "id": "deflate64",
+        "meaning": "Raw DEFLATE level 9 encoded in the fixed integrity-checked text envelope."
+      },
+      {
+        "artifact": "this contract plus pre-existing Brotli 1.2.0",
+        "id": "brotli64",
+        "meaning": "Brotli generic mode, quality 11, lgwin 22 encoded in the same fixed integrity-checked text envelope."
+      },
+      {
+        "artifact": "this contract plus pre-existing zstandard 0.25.0",
+        "id": "zstd64",
+        "meaning": "Zstandard level 19 with content size and checksum encoded in the same fixed integrity-checked text envelope."
+      },
+      {
+        "artifact": "this contract plus a pre-existing RFC 1951 implementation and exact prior session text",
+        "id": "history_deflate64",
+        "meaning": "Raw DEFLATE level 9 with the last 32,768 prior UTF-8 session bytes as a causal preset dictionary, encoded in the fixed integrity-checked text envelope."
+      }
+    ],
+    "cold_rule": "For each family and tokenizer, activate the profile only when the warm selected carrier tokens plus one complete contract artifact are strictly below all-raw tokens; otherwise use raw for the full family. Raw wins ties.",
+    "compact_coverage_rule": "Only deflate64, brotli64, zstd64, and history_deflate64 count as compact choices. raw_checked is an integrity-matched control and never counts as compact coverage.",
+    "dependency_rule": "Brotli and Zstandard candidates are mandatory in the frozen run. Fail closed unless Brotli 1.2.0 and zstandard 0.25.0 are installed; do not silently remove a candidate after seeing data.",
+    "envelope": "~U1 + mode byte R, D, B, Z, or H + eight lowercase hexadecimal original-byte-length digits + sixteen lowercase hexadecimal SHA-256 prefix digits + colon + unpadded Base64url payload bytes",
+    "exactness": "Every candidate must decode to the exact original UTF-8 bytes and deterministic re-encoding must reproduce the same carrier text.",
+    "history_rule": "History contains complete prior turns from only the same record, each appended as eight big-endian length bytes followed by UTF-8 text. The dictionary is the last 32,768 history bytes. No evaluated or future turn trains a profile.",
+    "mandatory_fallback": "For each negotiated tokenizer and turn, choose a compact candidate only when its complete carrier text has strictly fewer tokens than raw. Raw wins ties, failures, and unsupported states.",
+    "measurement_boundary": "Receiver tokens mean tokens in the complete text carrier presented to the deterministic receiver codec. The codec decodes before a model call, so post-decode model-input tokens equal raw text and no API-token saving is claimed.",
+    "mode_order": [
+      "raw",
+      "raw_checked",
+      "deflate64",
+      "brotli64",
+      "zstd64",
+      "history_deflate64"
+    ]
+  },
+  "no_tuning_rule": "This project-internal rule fixed candidate algorithms, constants, ordering, and gates before the first recorded measurement. It is not an externally registered preregistration, the project authors could access the frozen corpus while implementing the evaluator, and it cannot establish the absence of informal corpus influence. The auditable narrower fact is that no evaluated corpus-derived dictionary or learned profile is used.",
+  "oracle_sgd_lane": {
+    "baseline": "A fixed next-action instruction followed by the exact preceding raw dialogue history.",
+    "comparison": "The same instruction followed by canonical JSON containing only the immediately preceding user turn's gold service, action, and cumulative state annotations.",
+    "input_scope": "Assistant turns in the 64 frozen Schema-Guided Dialogue records that immediately follow a user turn.",
+    "measurement_boundary": "Prompt input bytes and pinned-tokenizer counts only; no model or provider call and no accuracy result.",
+    "status": "Oracle semantic and task-level opportunity upper bound. It is not lossless prose, not an implementable parser result, not a deployment mode, and not evidence of task non-inferiority."
+  },
+  "urusilla_external_profile_control": {
+    "canonical_shape": {
+      "profile": "urn:urusilla:external-profile:raw-dialogue:0.1",
+      "role": "the frozen user or assistant role",
+      "session": "the frozen corpus_id",
+      "text": "the exact original Unicode turn text",
+      "turn": "the zero-based turn index"
+    },
+    "measurement": "Report its complete canonical minified JSON bytes and tokens separately from the lossless chooser, relative to bare raw text and the integrity-matched raw carrier.",
+    "status": "Experimental external carrier profile only. It is not the core language, not UrusillaIR, not a model-native surface, and not eligible for a saving claim."
+  },
+  "predeclared_hypotheses": {
+    "h1_lossless_no_regret": "raw-text fallback produces no positive receiver-token regret per turn",
+    "h2_general_compact_value": "strict compact choices cover at least 10 percent of turns and reduce aggregate receiver tokens by at least 5 percent in every source family",
+    "h3_repeated_context_value": "multi-turn reference or delta mode reduces aggregate receiver tokens by at least 20 percent in both task-oriented dialogue families",
+    "h4_end_to_end_gate": "a later model trial must preserve task success within a one-percentage-point non-inferiority margin and reduce total task tokens by at least 20 percent before a general-use claim"
+  },
+  "postmeasurement_reproducibility_amendment": {
+    "chronology_boundary": "The source and method chronology is a project-internal freeze, not an externally registered or independently witnessed preregistration.",
+    "date": "2026-08-20",
+    "effect_on_results": "Candidate algorithms, selection ordering, hypotheses, pass/fail gates, and previously reported non-latency outcome numbers are unchanged. The amended contract is larger, but cold selection remains inactive and the cold outcome remains zero saving.",
+    "reason": "After the first measurement, reproducibility review required cl100k and o200k vocabularies to load only from explicit local hash-pinned assets and required exact zlib 1.2.12 compile and runtime versions.",
+    "tuning_boundary": "The corpus was frozen before the recorded measurement, but evaluator authors had access during implementation. This amendment makes no claim that the study was blinded or free from all tuning influence."
+  },
+  "result_gates": {
+    "h1": "Pass only if warm selected carrier tokens are no greater than raw for every one of 10,168 turn-tokenizer pairs and all selected carriers recover exact UTF-8 bytes.",
+    "h2": "Pass only if compact warm coverage is at least 10 percent and aggregate warm carrier-token saving is at least 5 percent for every one of the four source families under every one of the four tokenizers.",
+    "h3": "Pass only if the no-regret raw-or-history_deflate64 chooser reduces aggregate warm carrier tokens by at least 20 percent for Taskmaster and Schema-Guided Dialogue under every tokenizer.",
+    "h4": "Not evaluated. It cannot pass without a separately frozen real-model end-to-end task-success and total-token study."
+  },
+  "runtime_pins": {
+    "zlib_compile_version": "1.2.12",
+    "zlib_runtime_version": "1.2.12"
+  },
+  "source_status": "The repository records that sources were frozen before project codec or tokenizer import and before the first measurement. This is project-internal chronology, not external preregistration; the evaluator is project-authored, not independently blinded, and the frozen corpus was accessible during implementation.",
+  "tokenizer_asset_files": {
+    "cl100k_base": {
+      "acquisition_url": "https://openaipublic.blob.core.windows.net/encodings/cl100k_base.tiktoken",
+      "bytes": 1681126,
+      "relative_path": "work/tokenizer_assets/cl100k_base/cl100k_base.tiktoken",
+      "sha256": "223921b76ee99bde995b7ff738513eef100fb51d18c93597a113bcffe865b2a7"
+    },
+    "mistral_7b_instruct_v03": {
+      "acquisition_url": "https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.3/resolve/c170c708c41dac9275d15a8fff4eca08d52bab71/tokenizer.json?download=true",
+      "bytes": 1961548,
+      "relative_path": "work/tokenizer_assets/mistral_7b_instruct_v03/tokenizer.json",
+      "sha256": "e553af6fff7d7ad76e830608b218c5c0b0822998d5a1a96099a74cd3c1cb1a49"
+    },
+    "o200k_base": {
+      "acquisition_url": "https://openaipublic.blob.core.windows.net/encodings/o200k_base.tiktoken",
+      "bytes": 3613922,
+      "relative_path": "work/tokenizer_assets/o200k_base/o200k_base.tiktoken",
+      "sha256": "446a9538cb6c348e3516120d7c08b09f57c36495e2acfffe59a5bf8b0cfb1a2d"
+    },
+    "qwen2_5_7b_instruct": {
+      "acquisition_url": "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct/resolve/a09a35458c702b33eeacc393d103063234e8bc28/tokenizer.json?download=true",
+      "bytes": 7031645,
+      "relative_path": "work/tokenizer_assets/qwen2_5_7b_instruct/tokenizer.json",
+      "sha256": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539"
+    }
+  },
+  "tokenizers": {
+    "cl100k_base": "71ced6cb6d5ceaae87e197590efe6fdd17dd24d4de21d70d2fdb55c521be664d",
+    "mistral_7b_instruct_v03": "e553af6fff7d7ad76e830608b218c5c0b0822998d5a1a96099a74cd3c1cb1a49",
+    "o200k_base": "09311460aa0d9f00d1bc48745675297643886c99663fca8d60cb8b021bd3ecdc",
+    "qwen2_5_7b_instruct": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539"
+  }
+}

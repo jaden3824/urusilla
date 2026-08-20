@@ -1,0 +1,99 @@
+{
+  "cold_artifacts": {
+    "grammar_capsule": {
+      "bytes": 33476,
+      "sha256": "588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27"
+    },
+    "wire_v02_profile_capsule": {
+      "bytes": 1402,
+      "sha256": "b8d2cee7827f57e9c1b523cb195fbb75f3a91f8ad20e7a2f5209ce3abf63cdf6"
+    }
+  },
+  "discovery_bytes": {
+    "both_endpoints_empty_cache": 5340,
+    "both_endpoints_grammar_and_v02_capsules_cached": 5473,
+    "both_endpoints_grammar_capsule_cached": 5406
+  },
+  "fixture": {
+    "canonical_json_sha256": "f8f906befa006cd7cbca59b8b7c5396f60248eb1d3b57aa066edd539fddbddee",
+    "path": "adoption_kit/fixtures/request.json",
+    "repetition_assumption": "the same canonical message shape repeats"
+  },
+  "format": "urusilla-codec-accounting-v2",
+  "representations": {
+    "canonical-json-v1": {
+      "carrier_payload_bytes": 441,
+      "envelope_bytes": 1052,
+      "first_delivery_total_empty_cache": 39868,
+      "first_delivery_total_warm_cache": 6458,
+      "planned_and_verified_transfer_bytes_empty_cache": 33476,
+      "raw_payload_bytes": 441
+    },
+    "controlled-terse-english-v1": {
+      "carrier_payload_bytes": 356,
+      "envelope_bytes": 931,
+      "first_delivery_total_empty_cache": 39747,
+      "first_delivery_total_warm_cache": 6337,
+      "planned_and_verified_transfer_bytes_empty_cache": 33476,
+      "raw_payload_bytes": 356
+    },
+    "urusilla-wire-v0.1": {
+      "carrier_payload_bytes": 296,
+      "envelope_bytes": 844,
+      "first_delivery_total_empty_cache": 39660,
+      "first_delivery_total_warm_cache": 6250,
+      "planned_and_verified_transfer_bytes_empty_cache": 33476,
+      "raw_payload_bytes": 221
+    },
+    "urusilla-wire-v0.2-static-7d12fc414eae60b2": {
+      "carrier_payload_bytes": 240,
+      "envelope_bytes": 954,
+      "first_delivery_total_empty_cache": 41172,
+      "first_delivery_total_warm_cache": 6427,
+      "planned_and_verified_transfer_bytes_empty_cache": 34878,
+      "raw_payload_bytes": 179
+    }
+  },
+  "scope": {
+    "excludes": [
+      "HTTP, A2A request, MCP transport, TLS, TCP, DNS, authentication, responses, retries",
+      "model tokens, model comprehension, task success, latency, energy, external network cost",
+      "Base64 or transport wrapping for artifacts"
+    ],
+    "includes": [
+      "deterministic capability discovery JSON",
+      "actual representation payload",
+      "Base64 expansion for binary representations",
+      "deterministic local delivery envelope",
+      "planned cold artifacts followed by exact digest-verified raw in-memory transfer"
+    ]
+  },
+  "selector_result": {
+    "empty_cache": {
+      "100_messages": "urusilla-wire-v0.1",
+      "10_messages": "urusilla-wire-v0.1",
+      "1_message": "urusilla-wire-v0.1"
+    },
+    "reason": "For this explicit JSON delivery envelope, repeated full v0.2 pin fields outweigh its smaller raw frame relative to v0.1. The unfavorable result is retained.",
+    "warm_cache": {
+      "100_messages": "urusilla-wire-v0.1",
+      "10_messages": "urusilla-wire-v0.1",
+      "1_message": "urusilla-wire-v0.1"
+    }
+  },
+  "strict_break_even_messages": {
+    "full_kit_envelope_incremental_profile_cost": {
+      "controlled-terse-english-v1_vs_canonical-json-v1": 1,
+      "urusilla-wire-v0.1_vs_canonical-json-v1": 1,
+      "urusilla-wire-v0.2-static-7d12fc414eae60b2_vs_canonical-json-v1": 15,
+      "urusilla-wire-v0.2-static-7d12fc414eae60b2_vs_urusilla-wire-v0.1": null
+    },
+    "null_rule": "candidate warm envelope is not smaller, so no break-even exists",
+    "raw_payload_incremental_profile_cost": {
+      "controlled-terse-english-v1_vs_canonical-json-v1": 1,
+      "urusilla-wire-v0.1_vs_canonical-json-v1": 1,
+      "urusilla-wire-v0.2-static-7d12fc414eae60b2_vs_canonical-json-v1": 6,
+      "urusilla-wire-v0.2-static-7d12fc414eae60b2_vs_urusilla-wire-v0.1": 34
+    }
+  }
+}

@@ -1,0 +1,406 @@
+{
+  "participant_scope": "capsule-only grammar transfer for the 16 supplied cases",
+  "capsule_sha256": "588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27",
+  "historical_capsule_sha256_before_project_rename": "a141de8359dc2bce4af619a931ed0bfc688c421067fbba80a16711a3348e5346",
+  "historical_published_submission_sha256_before_project_rename": "157fe4643ac60fb8d14a88e0103cacd8b4cac1dc04cae56a5cb377a866c425ad",
+  "historical_participant_original_submission_sha256": "6428c66339e156b52be80e5695a72c8ff790828d1d52ea7eb2906cff1f493489",
+  "cases": [
+    {
+      "case_id": "N4Q7",
+      "decision": "emit",
+      "message": {
+        "id": "10000000-0000-4000-8000-000000000001",
+        "session": "20000000-0000-4000-8000-000000000001",
+        "sender": "urn:agent:planner",
+        "recipients": [
+          "urn:agent:router"
+        ],
+        "act": "REQUEST",
+        "schema": "urn:urusilla:schema:core:0.1",
+        "logical_clock": 1,
+        "expires_ms": 1900000000000,
+        "expected": [
+          "RESOLVE"
+        ],
+        "body": {
+          "kind": "goal",
+          "condition": {
+            "kind": "claim",
+            "predicate": "produce",
+            "arguments": [
+              {
+                "kind": "ref",
+                "uri": "urn:artifact:route-7"
+              }
+            ],
+            "context": {
+              "route_cost": {
+                "maximum": 42,
+                "unit": "ms"
+              }
+            }
+          }
+        },
+        "meta": {}
+      }
+    },
+    {
+      "case_id": "K2M9",
+      "decision": "emit",
+      "message": {
+        "id": "10000000-0000-4000-8000-000000000002",
+        "session": "20000000-0000-4000-8000-000000000001",
+        "sender": "urn:agent:verifier",
+        "recipients": [
+          "urn:agent:planner"
+        ],
+        "act": "ASSERT",
+        "schema": "urn:urusilla:schema:core:0.1",
+        "logical_clock": 2,
+        "expires_ms": 0,
+        "expected": [],
+        "body": {
+          "kind": "claim",
+          "predicate": "urn:test:route-valid",
+          "arguments": [
+            {
+              "kind": "ref",
+              "uri": "urn:artifact:route-7"
+            },
+            "passed"
+          ],
+          "annotations": {
+            "evidence": {
+              "kind": "evidence",
+              "target": {
+                "kind": "claim",
+                "predicate": "urn:test:route-valid",
+                "arguments": [
+                  {
+                    "kind": "ref",
+                    "uri": "urn:artifact:route-7"
+                  },
+                  "passed"
+                ]
+              },
+              "stance": "supports",
+              "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "provenance": "urn:runner:route-validator-3"
+            }
+          }
+        },
+        "meta": {}
+      }
+    },
+    {
+      "case_id": "R8D1",
+      "decision": "emit",
+      "message": {
+        "id": "10000000-0000-4000-8000-000000000003",
+        "session": "20000000-0000-4000-8000-000000000001",
+        "sender": "urn:agent:planner",
+        "recipients": [
+          "urn:agent:inventory"
+        ],
+        "act": "QUERY",
+        "schema": "urn:urusilla:schema:core:0.1",
+        "logical_clock": 3,
+        "expires_ms": 0,
+        "expected": [
+          "ASSERT"
+        ],
+        "body": {
+          "kind": "question-plus-answer-schema",
+          "question": {
+            "kind": "claim",
+            "predicate": "urn:capability:gpu-a100",
+            "arguments": [
+              null
+            ],
+            "context": {
+              "time": "current"
+            }
+          },
+          "answer_schema": "urn:schema:artifact-ref-list:1"
+        },
+        "meta": {}
+      }
+    },
+    {
+      "case_id": "B6T3",
+      "decision": "emit",
+      "message": {
+        "id": "10000000-0000-4000-8000-000000000004",
+        "session": "20000000-0000-4000-8000-000000000001",
+        "sender": "urn:agent:router",
+        "recipients": [
+          "urn:agent:planner"
+        ],
+        "act": "PROPOSE",
+        "schema": "urn:urusilla:schema:core:0.1",
+        "logical_clock": 4,
+        "expires_ms": 0,
+        "expected": [],
+        "body": {
+          "kind": "action",
+          "capability": "urn:capability:route-fast",
+          "arguments": {
+            "region": "eu-west",
+            "redundancy": 2
+          }
+        },
+        "meta": {}
+      }
+    },
+    {
+      "case_id": "H9V5",
+      "decision": "emit",
+      "message": {
+        "id": "10000000-0000-4000-8000-000000000005",
+        "session": "20000000-0000-4000-8000-000000000001",
+        "sender": "urn:agent:router",
+        "recipients": [
+          "urn:agent:planner"
+        ],
+        "act": "COMMIT",
+        "reply_to": "10000000-0000-4000-8000-000000000004",
+        "schema": "urn:urusilla:schema:core:0.1",
+        "logical_clock": 5,
+        "expires_ms": 1900000000500,
+        "expected": [
+          "RESOLVE"
+        ],
+        "body": {
+          "kind": "commitment",
+          "debtor": "urn:agent:router",
+          "creditors": [
+            "urn:agent:planner"
+          ],
+          "goal": {
+            "kind": "goal",
+            "condition": {
+              "kind": "claim",
+              "predicate": "deliver",
+              "arguments": [
+                {
+                  "kind": "ref",
+                  "uri": "urn:artifact:route-7"
+                },
+                {
+                  "kind": "ref",
+                  "uri": "urn:agent:planner"
+                }
+              ]
+            }
+          },
+          "expiry_ms": 1900000000400
+        },
+        "meta": {}
+      }
+    },
+    {
+      "case_id": "C3J8",
+      "decision": "emit",
+      "message": {
+        "id": "10000000-0000-4000-8000-000000000006",
+        "session": "20000000-0000-4000-8000-000000000001",
+        "sender": "urn:agent:router",
+        "recipients": [
+          "urn:agent:planner"
+        ],
+        "act": "RESOLVE",
+        "reply_to": "10000000-0000-4000-8000-000000000005",
+        "schema": "urn:urusilla:schema:core:0.1",
+        "logical_clock": 6,
+        "expires_ms": 0,
+        "expected": [],
+        "body": {
+          "kind": "resolution",
+          "target": "10000000-0000-4000-8000-000000000005",
+          "status": "failed",
+          "result": {
+            "kind": "ref",
+            "uri": "urn:error:upstream-timeout"
+          },
+          "evidence": {
+            "kind": "ref",
+            "uri": "urn:log:route-job-88"
+          }
+        },
+        "meta": {}
+      }
+    },
+    {
+      "case_id": "P7A2",
+      "decision": "emit",
+      "message": {
+        "id": "10000000-0000-4000-8000-000000000007",
+        "session": "20000000-0000-4000-8000-000000000001",
+        "sender": "urn:agent:verifier",
+        "recipients": [
+          "urn:agent:planner"
+        ],
+        "act": "RETRACT",
+        "reply_to": "10000000-0000-4000-8000-000000000002",
+        "schema": "urn:urusilla:schema:core:0.1",
+        "logical_clock": 7,
+        "expires_ms": 0,
+        "expected": [],
+        "body": {
+          "kind": "ref",
+          "uri": "10000000-0000-4000-8000-000000000002"
+        },
+        "meta": {}
+      }
+    },
+    {
+      "case_id": "W5L4",
+      "decision": "emit",
+      "message": {
+        "id": "10000000-0000-4000-8000-000000000008",
+        "session": "20000000-0000-4000-8000-000000000002",
+        "sender": "urn:agent:sensor",
+        "recipients": [
+          "urn:agent:planner"
+        ],
+        "act": "ASSERT",
+        "schema": "urn:urusilla:schema:core:0.1",
+        "logical_clock": 1,
+        "expires_ms": 0,
+        "expected": [],
+        "body": {
+          "kind": "claim",
+          "predicate": "reports",
+          "arguments": [
+            {
+              "kind": "ref",
+              "uri": "urn:sensor:temp-9"
+            },
+            {
+              "value": 21.5,
+              "unit": {
+                "system": "UCUM",
+                "code": "Cel"
+              }
+            }
+          ],
+          "annotations": {
+            "uncertainty": {
+              "kind": "uncertainty",
+              "target": {
+                "kind": "claim",
+                "predicate": "reports",
+                "arguments": [
+                  {
+                    "kind": "ref",
+                    "uri": "urn:sensor:temp-9"
+                  },
+                  {
+                    "value": 21.5,
+                    "unit": {
+                      "system": "UCUM",
+                      "code": "Cel"
+                    }
+                  }
+                ]
+              },
+              "model": "beta",
+              "parameters": {
+                "alpha": 9,
+                "beta": 1
+              },
+              "basis": "calibrated"
+            }
+          }
+        },
+        "meta": {}
+      }
+    },
+    {
+      "case_id": "F1X6",
+      "decision": "reject",
+      "reason": "The request has no referent, target state, artifact, or acceptance criteria, so compilation has materially different possible meanings."
+    },
+    {
+      "case_id": "Y8S2",
+      "decision": "reject",
+      "reason": "A COMMIT debtor must equal the authenticated sender; urn:agent:router cannot create an obligation for urn:agent:unrelated without a delegation credential."
+    },
+    {
+      "case_id": "D4U9",
+      "decision": "reject",
+      "reason": "The requested bare node kind is neither a registered core kind nor a negotiated extension, and it does not use the quarantined x: local-extension form."
+    },
+    {
+      "case_id": "M6E3",
+      "decision": "emit",
+      "message": {
+        "id": "10000000-0000-4000-8000-000000000012",
+        "session": "20000000-0000-4000-8000-000000000002",
+        "sender": "urn:agent:observer",
+        "recipients": [
+          "urn:agent:planner"
+        ],
+        "act": "ASSERT",
+        "schema": "urn:urusilla:schema:core:0.1",
+        "logical_clock": 5,
+        "expires_ms": 0,
+        "expected": [],
+        "body": {
+          "kind": "x:trace",
+          "value": "run-17"
+        },
+        "meta": {}
+      }
+    },
+    {
+      "case_id": "Q2N7",
+      "decision": "reject",
+      "reason": "A plan node is not a core node kind, and PROPOSE permits an action body rather than an unregistered bare plan node."
+    },
+    {
+      "case_id": "A9K4",
+      "decision": "reject",
+      "reason": "COMMIT requires a reply_to causal reference, but no causal parent identifier is available."
+    },
+    {
+      "case_id": "V3G8",
+      "decision": "emit",
+      "message": {
+        "id": "10000000-0000-4000-8000-000000000015",
+        "session": "20000000-0000-4000-8000-000000000003",
+        "sender": "urn:agent:auditor",
+        "recipients": [
+          "urn:agent:planner",
+          "urn:agent:router"
+        ],
+        "act": "ASSERT",
+        "schema": "urn:urusilla:schema:core:0.1",
+        "logical_clock": 1,
+        "expires_ms": 1900000010000,
+        "expected": [],
+        "body": {
+          "kind": "claim",
+          "predicate": "has digest",
+          "arguments": [
+            {
+              "kind": "ref",
+              "uri": "urn:artifact:route-7"
+            },
+            "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          ]
+        },
+        "meta": {}
+      }
+    },
+    {
+      "case_id": "L7P1",
+      "decision": "reject",
+      "reason": "The requested operation is effectful, but sender identity is unauthenticated and no independent capability or policy authorization is available."
+    }
+  ],
+  "self_declared_files_read": [
+    "urusilla_capsule_v0_1.json",
+    "urusilla_hidden_transfer_tasks.json"
+  ]
+}

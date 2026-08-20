@@ -1,0 +1,341 @@
+TAP version 13
+# Subtest: uvarint and zigzag cover exact 64-bit boundaries
+ok 1 - uvarint and zigzag cover exact 64-bit boundaries
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: generic values preserve uint64, int64, bytes, and typed Float64
+ok 2 - generic values preserve uint64, int64, bytes, and typed Float64
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: safe BigInt inputs normalize to the canonical safe Number representation
+ok 3 - safe BigInt inputs normalize to the canonical safe Number representation
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: fully tagged portable JSON is bijective for adversarial semantic map keys
+ok 4 - fully tagged portable JSON is bijective for adversarial semantic map keys
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: portable JSON enforces depth before recursive conversion
+ok 5 - portable JSON enforces depth before recursive conversion
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: portable projection preserves a wire-valid exact-depth message
+ok 6 - portable projection preserves a wire-valid exact-depth message
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: portable document limit accommodates expansion beyond the wire-frame limit
+ok 7 - portable document limit accommodates expansion beyond the wire-frame limit
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: portable JSON rejects noncanonical numeric aliases and invalid output text
+ok 8 - portable JSON rejects noncanonical numeric aliases and invalid output text
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: semantic depth, string size, and collection caps reject before encoding
+ok 9 - semantic depth, string size, and collection caps reject before encoding
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: frame and capsule global input limits are checked before parsing
+ok 10 - frame and capsule global input limits are checked before parsing
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: aggregate semantic node budgets bound encoder and decoder expansion
+ok 11 - aggregate semantic node budgets bound encoder and decoder expansion
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: profiles reject duplicates and noncanonical shapes
+ok 12 - profiles reject duplicates and noncanonical shapes
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: an explicitly registered nondefault profile cross-plays locally
+ok 13 - an explicitly registered nondefault profile cross-plays locally
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: unknown profile and dictionary combinations fail closed
+ok 14 - unknown profile and dictionary combinations fail closed
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: the frozen profile capsule has the published identity and round-trips
+ok 15 - the frozen profile capsule has the published identity and round-trips
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: all 280 project-frozen frames cross-play byte exactly in both directions
+ok 16 - all 280 project-frozen frames cross-play byte exactly in both directions
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: the public semantic input retains its exact Python-oracle v0.1 wire artifact
+ok 17 - the public semantic input retains its exact Python-oracle v0.1 wire artifact
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: map insertion order cannot alter canonical frame bytes
+ok 18 - map insertion order cannot alter canonical frame bytes
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: all 25 frozen negative frame and capsule vectors fail closed
+    # Subtest: header-invalid-magic
+    ok 1 - header-invalid-magic
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: header-profile-id-zero
+    ok 2 - header-profile-id-zero
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: header-overlong-profile-varint
+    ok 3 - header-overlong-profile-varint
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: header-overflow-profile-varint
+    ok 4 - header-overflow-profile-varint
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: header-too-long-profile-varint
+    ok 5 - header-too-long-profile-varint
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: header-declared-payload-over-limit
+    ok 6 - header-declared-payload-over-limit
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: checksum-corruption
+    ok 7 - checksum-corruption
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: trailing-data
+    ok 8 - trailing-data
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: unknown-profile
+    ok 9 - unknown-profile
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: unknown-dictionary
+    ok 10 - unknown-dictionary
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: unsupported-flags-zero
+    ok 11 - unsupported-flags-zero
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: unsupported-flags-two
+    ok 12 - unsupported-flags-two
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: truncated-header
+    ok 13 - truncated-header
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: truncated-checksum
+    ok 14 - truncated-checksum
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: declared-length-plus-one
+    ok 15 - declared-length-plus-one
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: payload-corruption-first
+    ok 16 - payload-corruption-first
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: payload-corruption-middle
+    ok 17 - payload-corruption-middle
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: payload-corruption-last
+    ok 18 - payload-corruption-last
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: capsule-checksum-corruption
+    ok 19 - capsule-checksum-corruption
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: capsule-unsupported-format
+    ok 20 - capsule-unsupported-format
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: capsule-profile-id-zero
+    ok 21 - capsule-profile-id-zero
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: capsule-duplicate-strings
+    ok 22 - capsule-duplicate-strings
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: capsule-shape-key-out-of-range
+    ok 23 - capsule-shape-key-out-of-range
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: capsule-shape-noncanonical-order
+    ok 24 - capsule-shape-noncanonical-order
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    # Subtest: capsule-payload-trailing-data
+    ok 25 - capsule-payload-trailing-data
+      ---
+      duration_ms: <not-recorded>
+      type: 'test'
+      ...
+    1..25
+ok 19 - all 25 frozen negative frame and capsule vectors fail closed
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: one low-bit flip at every byte position of one frozen frame is rejected
+ok 20 - one low-bit flip at every byte position of one frozen frame is rejected
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: the exact public v0.1 positive semantic vector normalizes canonically
+ok 21 - the exact public v0.1 positive semantic vector normalizes canonically
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: the two precise public semantic negative mutations are rejected
+ok 22 - the two precise public semantic negative mutations are rejected
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: core semantic invariants reject shadow authority and invalid commitments
+ok 23 - core semantic invariants reject shadow authority and invalid commitments
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: local x: extensions remain quarantined to ASSERT
+ok 24 - local x: extensions remain quarantined to ASSERT
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: explicit null or undefined cannot masquerade as an absent defaulted field
+ok 25 - explicit null or undefined cannot masquerade as an absent defaulted field
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: act names are closed and case-sensitive
+ok 26 - act names are closed and case-sensitive
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: recipient and expected limits are checked before item traversal
+ok 27 - recipient and expected limits are checked before item traversal
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: ill-formed UTF-16 is rejected while valid astral Unicode is preserved
+ok 28 - ill-formed UTF-16 is rejected while valid astral Unicode is preserved
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: identifier text uses Unicode White_Space semantics
+ok 29 - identifier text uses Unicode White_Space semantics
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+# Subtest: the frozen Capsule manifest digest is independently recomputed
+ok 30 - the frozen Capsule manifest digest is independently recomputed
+  ---
+  duration_ms: <not-recorded>
+  type: 'test'
+  ...
+1..30
+# tests 55
+# suites 0
+# pass 55
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms <not-recorded>

@@ -1,0 +1,222 @@
+{
+  "format": "urusilla-project-internal-conformance-report-v1",
+  "generated_date": "2026-08-21",
+  "semantic_language_version": "0.1.0",
+  "distribution_version": "0.1.0a0",
+  "lifecycle": "experimental-unsigned",
+  "scope": "pre_commit_local_release_candidate",
+  "local_release_candidate_gate_passed": true,
+  "current_release_gate_passed": false,
+  "required_next_step": "bind this locally verified artifact tree to commit A, add a commit-B source manifest that pins commit A without self-reference, and require clean-clone GitHub CI to pass before public release",
+  "commit_binding": {
+    "artifact_commit": "pending-private-commit-a",
+    "source_manifest": "pending-private-commit-b",
+    "private_remote_ci_status": "pending",
+    "signature_status": "unsigned"
+  },
+  "artifacts": {
+    "semantic_core": {
+      "path": "urusilla.py",
+      "sha256": "3cb84380149a522bdadd94e866e39a848fa23c8b666382c4f88ce341147fbdcf"
+    },
+    "language_specification": {
+      "path": "urusilla_v0_1_spec.md",
+      "sha256": "4d817a607218f64998e1c0b061f80f07b400b382236485f2a2e7b88f6e92b263"
+    },
+    "grammar_capsule": {
+      "path": "urusilla_capsule_v0_1.json",
+      "bytes": 33476,
+      "sha256": "588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27"
+    },
+    "wire_v0_2": {
+      "path": "urusilla_wire_v02.py",
+      "sha256": "166b1090b536bfff942667d43be583b2345eeb14b9da5d1535b7a16bb6bab2e7"
+    },
+    "wire_v0_2_profile_capsule": {
+      "producer_path": "urusilla_wire_v02.py",
+      "bytes": 1402,
+      "sha256": "b8d2cee7827f57e9c1b523cb195fbb75f3a91f8ad20e7a2f5209ce3abf63cdf6",
+      "dictionary_id": "7d12fc414eae60b2"
+    },
+    "adaptive_dialogue_profile": {
+      "path": "urusilla_adaptive_dialogue_profile.json",
+      "sha256": "a488e75c95c6948d24447a12fabd619f65612b4a698f0da85b3d1c719421ceac"
+    },
+    "a2a_envelope_evidence": {
+      "path": "urusilla_a2a_envelope_results.md",
+      "sha256": "2b773a94382cdbb3a75b124b8a6cb53cee590ae208866a3513e6c4c445bd8c7e"
+    },
+    "adoption_kit_digest_manifest": {
+      "path": "adoption_kit/ARTIFACTS.sha256",
+      "entries": 22,
+      "sha256": "eeeec6c64c34a195e03783bf86a2f54d2393f16ab00382b5ad25c60aa169909a"
+    },
+    "same_project_node_digest_manifest": {
+      "path": "independent_impl/rust/DIGESTS.sha256",
+      "entries": 26,
+      "sha256": "819dffe5d3b7e1bb3ed499486f8eaffae6d7e64d0fe74fe5485f7146305f8291"
+    },
+    "competitive_public_digest_inventory": {
+        "path": "competitive_eval/artifacts/FROZEN_DIGESTS.json",
+        "sha256": "7670eb9fdc228edd59f0ba609c264a231a495b1e6f78f5caaf2539b94de7d50b"
+    },
+    "decoder_qa_evidence": {
+      "result_path": "decoder_qa/qa_results.json",
+        "result_sha256": "1db98f3fa61887f19fc6eedd0587f0103f04da190f48cb3807fe5225834bf9e3",
+        "report_path": "decoder_qa/QA_REPORT.md",
+        "report_sha256": "7c5fd4fb15c9a242cd3fbff59ca0b25413ddd5591295be7e20f9e79473db0fed",
+        "checksum_path": "decoder_qa/SHA256SUMS",
+        "checksum_sha256": "f06faf1371d04e4f2f68dc73b1959f22a1b7252ba36dff5ebc7e6788314d6a36"
+    }
+  },
+  "verification": {
+      "root_python_discovery": {
+      "status": "pass_on_final_local_pre_commit_candidate",
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv-research-py312/bin/python -m unittest discover -v",
+      "python": "3.12.14",
+      "tests": 437,
+      "passed": 437,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "elapsed_seconds": 320.037,
+      "local_public_task_cache_present": true
+    },
+    "clean_clone_public_task_behavior": {
+      "status": "pass",
+      "contract": "the local-only public-task preflight suite skips explicitly when its pinned ignored datasets or tokenizer assets are absent"
+    },
+    "focused_core_boundary_and_transport": {
+      "tests": 115,
+      "passed": 115,
+      "failures": 0,
+      "includes": [
+        "semantic core",
+        "wire v0.2",
+        "A2A adapter and envelope",
+        "source manifest",
+        "internal pilots",
+        "boundary and validation matrices",
+        "deterministic gzip"
+      ]
+    },
+    "decoder_qa": {
+      "behavior_checks": 5232,
+      "baseline_cases": 101,
+      "qa_tests": 15,
+      "open_findings": 0,
+      "two_regenerations_completed": true,
+      "two_run_source_snapshot_and_campaign_invariants_matched": true,
+      "checksum_entries_verified": 39,
+      "result_sha256": "1db98f3fa61887f19fc6eedd0587f0103f04da190f48cb3807fe5225834bf9e3"
+    },
+    "competitive_clean_clone_harness": {
+      "preflight_tests": 16,
+      "tests": 30,
+      "passed": 30,
+      "mock_episodes": 108,
+      "mock_calls": 426,
+      "provider_calls": 0,
+      "paid_calls": 0,
+      "actual_billed_usd": "0",
+      "two_offline_regenerations_identical": true,
+      "public_package_files_verified": 38,
+      "root_current_files_verified": 4,
+      "local_only_files_required_by_clean_clone": 0
+    },
+    "external_ood_first_43_records": {
+      "tests": 10,
+      "passed": 10,
+      "classification": "current-artifact exploratory",
+      "efficiency_hypothesis_passed": false
+    },
+    "external_ood_confirmatory_42_records": {
+      "tests": 15,
+      "passed": 15,
+      "bound_compact_wins": 0,
+      "standalone_compact_wins": 0,
+      "comparisons_per_contract": 168,
+      "receiver_token_regret_bound": 0,
+      "classification": "retained current-artifact reconfirmation"
+    },
+    "general_dialogue_256_records": {
+      "tests": 12,
+      "passed": 12,
+      "records": 256,
+      "turns": 2542,
+      "lossless_no_regret_gate": "pass",
+      "general_compact_value_gate": "fail",
+      "repeated_context_lossless_value_gate": "fail",
+      "end_to_end_task_gate": "not_evaluated",
+      "warm_receiver_carrier_token_saving_percent_range": [
+        0.645479,
+        0.795959
+      ],
+      "cold_receiver_carrier_token_saving_percent": 0,
+      "post_decode_model_input_token_saving_percent": 0,
+      "provider_calls": 0
+    },
+    "strong_codec_baselines": {
+      "tests": 9,
+      "passed": 9
+    },
+    "adoption_kit_python": {
+      "tests": 41,
+      "passed": 41,
+      "two_evidence_regenerations_identical": true
+    },
+    "adoption_kit_node": {
+      "tests": 9,
+      "passed": 9,
+      "artifact_digest_entries_verified": 22
+    },
+    "same_project_node_cross_runtime": {
+      "tests": 55,
+      "passed": 55,
+      "positive_vectors": 280,
+      "negative_vectors": 25,
+      "digest_entries_verified": 26,
+      "two_vector_and_evidence_regenerations_identical": true,
+      "external_independence": false
+    },
+    "claim_safety_sentinel": {
+      "tests": 8,
+      "passed": 8,
+      "registry_records": 22,
+      "evidence_lanes": 13
+    },
+    "release_engineering": {
+      "candidate_files": 358,
+      "strict_json_files": 86,
+      "yaml_and_cff_files": 36,
+      "toml_files": 2,
+      "markdown_files": 66,
+      "retired_identity_findings": 0,
+      "secret_scan_findings": 0,
+      "dependency_lock_entries_audited": 25,
+      "known_dependency_vulnerabilities": 0,
+      "node_adoption_tests": 9,
+      "node_cross_runtime_tests": 55,
+      "package_build": "pass_from_clean_public_candidate_snapshot",
+      "installed_cli_smoke_tests": 4,
+      "installed_data_assets_byte_identical": 5,
+      "wheel_tag": "py3-none-any"
+    }
+  },
+  "claim_boundaries": {
+    "security_certification": false,
+    "external_independent_implementation": false,
+    "external_adoption": false,
+    "state_of_the_art_claim": false,
+    "model_native_semantic_understanding": false,
+    "end_to_end_task_utility": false,
+    "measured_energy_or_joule_savings": false,
+    "blockchain_or_token_launch": false
+  },
+  "publication_policy": {
+    "public_source_review_distribution": "allowed when exact checksums are preserved",
+    "unsigned_operation": "local-read-only",
+    "external_effects": "forbidden",
+    "production_or_effect_authorizing_use": "requires a trusted signature and an independent policy decision"
+  }
+}

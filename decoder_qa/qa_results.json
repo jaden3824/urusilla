@@ -1,0 +1,648 @@
+{
+  "campaign_order": [
+    "baseline",
+    "roundtrip",
+    "boundaries",
+    "mutations",
+    "replay",
+    "known_defects",
+    "qa_tests"
+  ],
+  "campaigns": {
+    "baseline": {
+      "elapsed_seconds": 2.761095,
+      "errors": [],
+      "expected_failures": [],
+      "failures": [],
+      "modules": [
+        "test_urusilla",
+        "test_urusilla_wire_v02",
+        "test_urusilla_adaptive_dialogue",
+        "test_urusilla_boundary_hardening"
+      ],
+      "name": "baseline",
+      "network_policy": "socket connect, bind, and name-resolution audit events denied",
+      "peak_rss_bytes": 93011968,
+      "process_return_code": 0,
+      "resource_limits": {
+        "address_space_bytes": {
+          "reason": "ValueError: current limit exceeds maximum limit",
+          "requested": 1073741824,
+          "status": "unavailable"
+        },
+        "cpu_seconds": {
+          "hard": 9223372036854775807,
+          "requested": 25,
+          "soft": 25,
+          "status": "applied"
+        },
+        "data_bytes": {
+          "reason": "ValueError: current limit exceeds maximum limit",
+          "requested": 536870912,
+          "status": "unavailable"
+        },
+        "file_bytes": {
+          "hard": 9223372036854775807,
+          "requested": 1048576,
+          "soft": 1048576,
+          "status": "applied"
+        },
+        "open_files": {
+          "hard": 9223372036854775807,
+          "requested": 64,
+          "soft": 64,
+          "status": "applied"
+        },
+        "resident_set_bytes": {
+          "reason": "ValueError: current limit exceeds maximum limit",
+          "requested": 536870912,
+          "status": "unavailable"
+        },
+        "rss_watchdog_bytes": {
+          "requested": 536870912,
+          "sample_interval_seconds": 0.025,
+          "status": "applied"
+        }
+      },
+      "skipped": [],
+      "status": "passed",
+      "stderr": "",
+      "tests_run": 101,
+      "unexpected_successes": []
+    },
+    "boundaries": {
+      "case_counts": {
+        "actual_frame_size_limits": 2,
+        "checksum_mutations": 6,
+        "declared_collection_limits": 2,
+        "declared_frame_size_limits": 2,
+        "declared_string_limits": 2,
+        "dictionary_count_boundary": 2,
+        "documented_limit_constants": 6,
+        "duplicate_dictionary_and_fields": 3,
+        "malformed_headers_and_varints": 5,
+        "proper_prefix_truncations": 1901,
+        "public_type_boundaries": 3,
+        "recipient_count_boundary": 2,
+        "scalar_boundaries": 2,
+        "scalar_over_boundaries": 10,
+        "semantic_depth_boundary": 4
+      },
+      "digests": {
+        "dictionary_at_limit_v01_sha256": "709dedb15d3a9bb742e24a1c156a28bfa592d8cc7e36d0c27f7bc6ccc48961e0",
+        "dictionary_over_limit_v01_sha256": "b9b982f87098943f4881a9d49514af86a131236d11ba2cb622e17b6fca585ff1",
+        "duplicate_dictionary_v01_sha256": "173f9ac67f4d15d1d45485641c61b49909b0051bd3a99027d8e82deb39472cde",
+        "duplicate_map_v01_sha256": "40a7e880e08703cf216d1251e5da3c863174f50f53ce7953032e914b15763c95",
+        "duplicate_map_v02_sha256": "6605ba5c574dcdbd81fc3cd753aacfcdb95e11834d936cb1d3b04f68a112d3d7",
+        "truncation_input_sequence_sha256": "fe4d7ab074147eb4db302186080b297570a46cb4a1b0c6abcbbb8230300985b8"
+      },
+      "elapsed_seconds": 0.275424,
+      "name": "boundaries",
+      "network_policy": "socket connect, bind, and name-resolution audit events denied",
+      "peak_rss_bytes": 74973184,
+      "process_return_code": 0,
+      "resource_limits": {
+        "address_space_bytes": {
+          "reason": "ValueError: current limit exceeds maximum limit",
+          "requested": 1073741824,
+          "status": "unavailable"
+        },
+        "cpu_seconds": {
+          "hard": 9223372036854775807,
+          "requested": 25,
+          "soft": 25,
+          "status": "applied"
+        },
+        "data_bytes": {
+          "reason": "ValueError: current limit exceeds maximum limit",
+          "requested": 536870912,
+          "status": "unavailable"
+        },
+        "file_bytes": {
+          "hard": 9223372036854775807,
+          "requested": 1048576,
+          "soft": 1048576,
+          "status": "applied"
+        },
+        "open_files": {
+          "hard": 9223372036854775807,
+          "requested": 64,
+          "soft": 64,
+          "status": "applied"
+        },
+        "resident_set_bytes": {
+          "reason": "ValueError: current limit exceeds maximum limit",
+          "requested": 536870912,
+          "status": "unavailable"
+        },
+        "rss_watchdog_bytes": {
+          "requested": 536870912,
+          "sample_interval_seconds": 0.025,
+          "status": "applied"
+        }
+      },
+      "status": "passed",
+      "stderr": "",
+      "total_cases": 1952
+    },
+    "known_defects": {
+      "elapsed_seconds": 0.103693,
+      "evaluated_cases": 16,
+      "finding_count": 0,
+      "findings": [],
+      "name": "known_defects",
+      "network_policy": "socket connect, bind, and name-resolution audit events denied",
+      "peak_rss_bytes": 38486016,
+      "process_return_code": 0,
+      "resolved_ids": [
+        "DQA-001",
+        "DQA-002",
+        "DQA-003",
+        "DQA-004",
+        "DQA-005",
+        "DQA-006",
+        "DQA-007",
+        "DQA-008",
+        "DQA-009",
+        "DQA-010"
+      ],
+      "resource_limits": {
+        "address_space_bytes": {
+          "reason": "ValueError: current limit exceeds maximum limit",
+          "requested": 1073741824,
+          "status": "unavailable"
+        },
+        "cpu_seconds": {
+          "hard": 9223372036854775807,
+          "requested": 25,
+          "soft": 25,
+          "status": "applied"
+        },
+        "data_bytes": {
+          "reason": "ValueError: current limit exceeds maximum limit",
+          "requested": 536870912,
+          "status": "unavailable"
+        },
+        "file_bytes": {
+          "hard": 9223372036854775807,
+          "requested": 1048576,
+          "soft": 1048576,
+          "status": "applied"
+        },
+        "open_files": {
+          "hard": 9223372036854775807,
+          "requested": 64,
+          "soft": 64,
+          "status": "applied"
+        },
+        "resident_set_bytes": {
+          "reason": "ValueError: current limit exceeds maximum limit",
+          "requested": 536870912,
+          "status": "unavailable"
+        },
+        "rss_watchdog_bytes": {
+          "requested": 536870912,
+          "sample_interval_seconds": 0.025,
+          "status": "applied"
+        }
+      },
+      "status": "passed",
+      "stderr": ""
+    },
+    "mutations": {
+      "case_counts": {
+        "v01_delete": 256,
+        "v01_flip": 256,
+        "v01_insert": 256,
+        "v01_truncate": 256,
+        "v02_delete": 256,
+        "v02_flip": 256,
+        "v02_insert": 256,
+        "v02_truncate": 256
+      },
+      "digests": {
+        "v01_mutation_sequence_sha256": "2fc49f89d4b10694e9eb23d65e51eb0e3232f8376729d8d17e4d4091101a4113",
+        "v02_mutation_sequence_sha256": "06c40497bed408159fb398087ea3bad13bb6717c64a44f5c6b06fb23225279ed"
+      },
+      "elapsed_seconds": 0.163136,
+      "fixed_seed": "0xa11ce55dec0de202",
+      "name": "mutations",
+      "network_policy": "socket connect, bind, and name-resolution audit events denied",
+      "peak_rss_bytes": 38682624,
+      "process_return_code": 0,
+      "resource_limits": {
+        "address_space_bytes": {
+          "reason": "ValueError: current limit exceeds maximum limit",
+          "requested": 1073741824,
+          "status": "unavailable"
+        },
+        "cpu_seconds": {
+          "hard": 9223372036854775807,
+          "requested": 25,
+          "soft": 25,
+          "status": "applied"
+        },
+        "data_bytes": {
+          "reason": "ValueError: current limit exceeds maximum limit",
+          "requested": 536870912,
+          "status": "unavailable"
+        },
+        "file_bytes": {
+          "hard": 9223372036854775807,
+          "requested": 1048576,
+          "soft": 1048576,
+          "status": "applied"
+        },
+        "open_files": {
+          "hard": 9223372036854775807,
+          "requested": 64,
+          "soft": 64,
+          "status": "applied"
+        },
+        "resident_set_bytes": {
+          "reason": "ValueError: current limit exceeds maximum limit",
+          "requested": 536870912,
+          "status": "unavailable"
+        },
+        "rss_watchdog_bytes": {
+          "requested": 536870912,
+          "sample_interval_seconds": 0.025,
+          "status": "applied"
+        }
+      },
+      "status": "passed",
+      "stderr": "",
+      "total_cases": 2048
+    },
+    "qa_tests": {
+      "elapsed_seconds": 1.588339,
+      "errors": [],
+      "expected_failures": [],
+      "failures": [],
+      "name": "qa_tests",
+      "network_policy": "socket connect, bind, and name-resolution audit events denied",
+      "peak_rss_bytes": 78413824,
+      "process_return_code": 0,
+      "resource_limits": {
+        "address_space_bytes": {
+          "reason": "ValueError: current limit exceeds maximum limit",
+          "requested": 1073741824,
+          "status": "unavailable"
+        },
+        "cpu_seconds": {
+          "hard": 9223372036854775807,
+          "requested": 25,
+          "soft": 25,
+          "status": "applied"
+        },
+        "data_bytes": {
+          "reason": "ValueError: current limit exceeds maximum limit",
+          "requested": 536870912,
+          "status": "unavailable"
+        },
+        "file_bytes": {
+          "hard": 9223372036854775807,
+          "requested": 1048576,
+          "soft": 1048576,
+          "status": "applied"
+        },
+        "open_files": {
+          "hard": 9223372036854775807,
+          "requested": 64,
+          "soft": 64,
+          "status": "applied"
+        },
+        "resident_set_bytes": {
+          "reason": "ValueError: current limit exceeds maximum limit",
+          "requested": 536870912,
+          "status": "unavailable"
+        },
+        "rss_watchdog_bytes": {
+          "requested": 536870912,
+          "sample_interval_seconds": 0.025,
+          "status": "applied"
+        }
+      },
+      "skipped": [],
+      "status": "passed",
+      "stderr": "",
+      "tests_run": 15,
+      "unexpected_successes": []
+    },
+    "replay": {
+      "case_counts": {
+        "copy_isolation": 2,
+        "dialogue_corpus_digest": 1,
+        "exact_snapshot_oracles": 2,
+        "full_ledger_replay_rejections": 26,
+        "positive_ledger_appends": 52,
+        "prefix_replay_rejections": 26,
+        "public_negative_dialogue_fixtures": 20,
+        "rejection_atomicity": 6
+      },
+      "digests": {
+        "dialogue_corpus_sha256": "sha256:af65510aeb9a7bf26b0ccb265783cc3f0082fb37f183aea3f37527e68fb7ee13",
+        "ledger_sha256": "sha256:0ae2147fa81c3822284740e41118f1bbea292aa2a060232b94e8d9b74b92ecc2",
+        "snapshot_sha256": "51b3dfb81d2a2c681dc1d66d9b96fab6e71a325502811f81cd4ec6e9e31aebca"
+      },
+      "elapsed_seconds": 0.558851,
+      "name": "replay",
+      "network_policy": "socket connect, bind, and name-resolution audit events denied",
+      "peak_rss_bytes": 37339136,
+      "process_return_code": 0,
+      "resource_limits": {
+        "address_space_bytes": {
+          "reason": "ValueError: current limit exceeds maximum limit",
+          "requested": 1073741824,
+          "status": "unavailable"
+        },
+        "cpu_seconds": {
+          "hard": 9223372036854775807,
+          "requested": 25,
+          "soft": 25,
+          "status": "applied"
+        },
+        "data_bytes": {
+          "reason": "ValueError: current limit exceeds maximum limit",
+          "requested": 536870912,
+          "status": "unavailable"
+        },
+        "file_bytes": {
+          "hard": 9223372036854775807,
+          "requested": 1048576,
+          "soft": 1048576,
+          "status": "applied"
+        },
+        "open_files": {
+          "hard": 9223372036854775807,
+          "requested": 64,
+          "soft": 64,
+          "status": "applied"
+        },
+        "resident_set_bytes": {
+          "reason": "ValueError: current limit exceeds maximum limit",
+          "requested": 536870912,
+          "status": "unavailable"
+        },
+        "rss_watchdog_bytes": {
+          "requested": 536870912,
+          "sample_interval_seconds": 0.025,
+          "status": "applied"
+        }
+      },
+      "status": "passed",
+      "stderr": "",
+      "total_cases": 135
+    },
+    "roundtrip": {
+      "case_counts": {
+        "generated_v01_map_order": 128,
+        "generated_v01_round_trips": 128,
+        "generated_v02_map_order": 128,
+        "generated_v02_round_trips": 128,
+        "grammar_capsule_digest": 1,
+        "grammar_capsule_positive_vector": 1,
+        "gzip_v02_round_trips": 21,
+        "public_corpus_digest": 1,
+        "public_v01_round_trips": 280,
+        "public_v02_round_trips": 280,
+        "v02_profile_capsule_round_trip": 1
+      },
+      "digests": {
+        "generated_v01_frame_sequence_sha256": "f660d83cf2fd66bac5ee7eac71ecd512862dab8498199dae17ff44821ce94751",
+        "generated_v02_frame_sequence_sha256": "4e5259265010125c8b3a3e804e87db9f9c21a79b1223194046f4ca93d839124c",
+        "grammar_capsule_sha256": "588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27",
+        "grammar_positive_wire_sha256": "b84cd6ac927d4098651397141a9759103b3dcd3142e37aefcdfb07b1738839d1",
+        "public_corpus_sha256": "61eb38e3a52d2060e77d43c94ec5d1bd6febf3183d8ecd70ff26724bb28fcddc",
+        "public_v01_frame_sequence_sha256": "d53549664c6a1f951ada342f146a97939b950a9fdeb3d028dc0010103754bf1f",
+        "public_v02_frame_sequence_sha256": "aeca229ffbd7cb6387cd5e98df168da3f98cd1c71397ba72d94d33050118f81b",
+        "v02_profile_capsule_sha256": "b8d2cee7827f57e9c1b523cb195fbb75f3a91f8ad20e7a2f5209ce3abf63cdf6"
+      },
+      "elapsed_seconds": 0.660286,
+      "fixed_seed": "0x5e4a01c0de123457",
+      "name": "roundtrip",
+      "network_policy": "socket connect, bind, and name-resolution audit events denied",
+      "peak_rss_bytes": 36651008,
+      "process_return_code": 0,
+      "resource_limits": {
+        "address_space_bytes": {
+          "reason": "ValueError: current limit exceeds maximum limit",
+          "requested": 1073741824,
+          "status": "unavailable"
+        },
+        "cpu_seconds": {
+          "hard": 9223372036854775807,
+          "requested": 25,
+          "soft": 25,
+          "status": "applied"
+        },
+        "data_bytes": {
+          "reason": "ValueError: current limit exceeds maximum limit",
+          "requested": 536870912,
+          "status": "unavailable"
+        },
+        "file_bytes": {
+          "hard": 9223372036854775807,
+          "requested": 1048576,
+          "soft": 1048576,
+          "status": "applied"
+        },
+        "open_files": {
+          "hard": 9223372036854775807,
+          "requested": 64,
+          "soft": 64,
+          "status": "applied"
+        },
+        "resident_set_bytes": {
+          "reason": "ValueError: current limit exceeds maximum limit",
+          "requested": 536870912,
+          "status": "unavailable"
+        },
+        "rss_watchdog_bytes": {
+          "requested": 536870912,
+          "sample_interval_seconds": 0.025,
+          "status": "applied"
+        }
+      },
+      "status": "passed",
+      "stderr": "",
+      "total_cases": 1097
+    }
+  },
+  "elapsed_seconds_total": 6.406139,
+  "execution_id": "e9c4bf3d2bbdb4ad9b8d633dcc8b3f3ed97197a6fdeac5186714f85e64ae3020",
+  "generated_at_utc": "2026-08-20T14:48:04+00:00",
+  "git_revision": null,
+  "outcome": "passed",
+  "platform": "macOS-15.0-arm64-arm-64bit",
+  "policy": {
+    "credentials": "not inherited by worker environment",
+    "external_targets": "none",
+    "network": "denied by worker audit hook",
+    "persistent_binary_failures": "none",
+    "shared_code_edits": "none"
+  },
+  "python": "3.12.14 (main, Aug 12 2026, 13:57:54) [Clang 17.0.0 (clang-1700.6.4.2)]",
+  "schema_version": 1,
+  "source_snapshot": {
+    "AGENTS.md": {
+      "bytes": 3787,
+      "sha256": "89f8a686346231d7e9839bef077d7b4cb8b28cb4969d5851ab560e2f5d8c4257"
+    },
+    "GOVERNANCE.md": {
+      "bytes": 10802,
+      "sha256": "369c30267460fc5dd7ea64e2f331ca97880b7aa4c27bb0166b5cf60a0d92f536"
+    },
+    "PROVENANCE.md": {
+      "bytes": 5286,
+      "sha256": "5c5c0df2c5104ea682ea72344b33b3b743b5f9a4693e6c6132ca74e64df28a78"
+    },
+    "README.md": {
+      "bytes": 36294,
+      "sha256": "e26ce878a7cb1f685309fedd8875e4cc7dbf39dfe3be547e22a896ab52ecceaf"
+    },
+    "RESEARCH_PROGRAM.md": {
+      "bytes": 16232,
+      "sha256": "90a2f995189dd726aa4c973a060798d8aae8aef0bf533403d9525ffab986dd28"
+    },
+    "SECURITY.md": {
+      "bytes": 2073,
+      "sha256": "927515598e98302da6a715e0b1a02f52c278b798dce3a3a405e37242265a53a2"
+    },
+    "SOURCE_MANIFEST_FORMAT.md": {
+      "bytes": 9793,
+      "sha256": "95042c6e31d79e213f135ab8ea275eab8081d450432cf8a1a1979d78d53f4252"
+    },
+    "URUSILLA_INTERNET_LAYER.md": {
+      "bytes": 50996,
+      "sha256": "205f19ba23e530bc3c7ab110fcb8c1107a4164dc9c93d17639d2afcb0cc8c957"
+    },
+    "decoder_qa/README.md": {
+      "bytes": 1717,
+      "sha256": "bbb13bf079da7f5700362e13c83a4828dfc9ce8e539f397bee309c66d5aa20a4"
+    },
+    "decoder_qa/__init__.py": {
+      "bytes": 67,
+      "sha256": "2d4d936913ccc6ce321d6b09f24b3fec97b33c0fdce40ceadc3ddca01a27b072"
+    },
+    "decoder_qa/known_failures.json": {
+      "bytes": 446,
+      "sha256": "68f891d8d493a3f907ad8fbcd5c62ad7d7f026eb99ca4ed8185437121ed5c695"
+    },
+    "decoder_qa/qa_core.py": {
+      "bytes": 54937,
+      "sha256": "18d3540ed877299e5e171eb3808b5251ebac60577dd9cd620fff13d84aebaca6"
+    },
+    "decoder_qa/qa_worker.py": {
+      "bytes": 4341,
+      "sha256": "8383c65d42c9db6b19ba7c5a22636d0bf62cc30d39a1dfaeb670de74a64ca925"
+    },
+    "decoder_qa/run_decoder_qa.py": {
+      "bytes": 18127,
+      "sha256": "c09d548aae72d7f001c90d35930c2441dc9c74ba174c603eee1d7c3039aa6024"
+    },
+    "decoder_qa/test_decoder_qa.py": {
+      "bytes": 6600,
+      "sha256": "655a04326b71b4b0f037dfa251d3bb2cbb044969759b88423733ae63715a68c1"
+    },
+    "test_urusilla.py": {
+      "bytes": 18268,
+      "sha256": "cc0c4a4a4f75b78e2f920d37ddd19848c1ba90a6367b83e3e632007e80f9c6c6"
+    },
+    "test_urusilla_adaptive_dialogue.py": {
+      "bytes": 34228,
+      "sha256": "88b0f3760c05c4c2656b6bcede5c1940a4cf3bbc3247b6f36122712b289722cc"
+    },
+    "test_urusilla_boundary_hardening.py": {
+      "bytes": 23891,
+      "sha256": "19a06a1972a21aaf6082bca92ffcd3049f1ee8ef5198afb6237191942483b766"
+    },
+    "test_urusilla_wire_v02.py": {
+      "bytes": 11258,
+      "sha256": "ca5d803429f0e1ea45881cc4141e65a9dac298167f92c1dbaebe8b6dc4255a52"
+    },
+    "urusilla.py": {
+      "bytes": 52536,
+      "sha256": "3cb84380149a522bdadd94e866e39a848fa23c8b666382c4f88ce341147fbdcf"
+    },
+    "urusilla_a2a_envelope_results.md": {
+      "bytes": 10707,
+      "sha256": "2b773a94382cdbb3a75b124b8a6cb53cee590ae208866a3513e6c4c445bd8c7e"
+    },
+    "urusilla_adaptive_dialogue.py": {
+      "bytes": 140901,
+      "sha256": "206135d02168076d0afce09e74c8c1c96c73f03f8dcc5451aaebd0ada545ff65"
+    },
+    "urusilla_adaptive_dialogue_profile.json": {
+      "bytes": 17417,
+      "sha256": "a488e75c95c6948d24447a12fabd619f65612b4a698f0da85b3d1c719421ceac"
+    },
+    "urusilla_adaptive_dialogue_results.md": {
+      "bytes": 12718,
+      "sha256": "b3334e02996c528d0c02f2efdc909333a5344abcacf8c34f450d7d283c54e3f3"
+    },
+    "urusilla_benchmark.py": {
+      "bytes": 34091,
+      "sha256": "b5e2885f7e17097643c1e93ba3326f285cd37aa8199cf1cc3b234227e515b5f8"
+    },
+    "urusilla_benchmark_results.md": {
+      "bytes": 8001,
+      "sha256": "0dd99cab3a97596c856d99df7eab27b08b2f6d7938a2a0f80ae59c4a671f63e9"
+    },
+    "urusilla_capsule_v0_1.json": {
+      "bytes": 33476,
+      "sha256": "588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27"
+    },
+    "urusilla_example.json": {
+      "bytes": 1192,
+      "sha256": "9eac55b726158b5be62379123e040947907a7e958127d95e537edeaa52eecc24"
+    },
+    "urusilla_hidden_transfer_results.md": {
+      "bytes": 4335,
+      "sha256": "7d68a68bc38e8ad29b3a3d72c977d17783c61d07edf2af51a04c3513efef45d7"
+    },
+    "urusilla_strong_codec_results.md": {
+      "bytes": 9294,
+      "sha256": "c98eacb2842f3e9757301f07eab667baa2eae1149159fc45d0e51c8c56e21a3c"
+    },
+    "urusilla_teachability_pilot.md": {
+      "bytes": 2391,
+      "sha256": "25def1a9f40a0e8bd2ee78d375742d13a6104612a4b58d83762d23aee8dde312"
+    },
+    "urusilla_token_surface_holdout_results.md": {
+      "bytes": 8494,
+      "sha256": "2ab5c38d0300435d363db7e6ca8b0d8329b9f75f40b560713447a1cf0f1db070"
+    },
+    "urusilla_token_surface_v03_results.md": {
+      "bytes": 5458,
+      "sha256": "d8758d24ae77c8bdd1734ff7b0efb526e453d40fcb78eb917c29268572401250"
+    },
+    "urusilla_tokenizer_results.md": {
+      "bytes": 7305,
+      "sha256": "9f38ee6127cff7eb7b71288a1ad979abf65ed5453967b6151609f61ddae5b98f"
+    },
+    "urusilla_v0_1_spec.md": {
+      "bytes": 27606,
+      "sha256": "4d817a607218f64998e1c0b061f80f07b400b382236485f2a2e7b88f6e92b263"
+    },
+    "urusilla_wire_v02.py": {
+      "bytes": 52128,
+      "sha256": "166b1090b536bfff942667d43be583b2345eeb14b9da5d1535b7a16bb6bab2e7"
+    },
+    "urusilla_wire_v02_results.md": {
+      "bytes": 8420,
+      "sha256": "aef3158a37c7e7581fd090d737008683cca5b472ebf217a1a5823d051db57a51"
+    }
+  },
+  "source_snapshot_sha256": "5305d994d031b81c4afbb4fc1da6ec73128d89b7cbe99493e4a5abf30dc7fd35",
+  "source_stable_during_run": true,
+  "totals": {
+    "baseline_tests": 101,
+    "behavior_cases": 5232,
+    "expected_failures": 0,
+    "known_finding_probes": 16,
+    "known_findings": 0,
+    "qa_tests": 15
+  },
+  "wall_timeout_seconds_per_campaign": 30
+}

@@ -1,0 +1,49 @@
+{
+  "id": "a8ac2c1d-ef32-5ffc-b564-b79c17234095",
+  "session": "eb2df99f-5363-5390-b50b-473ca7ebb1d6",
+  "sender": "codex.research.bridge.agent",
+  "recipients": [
+    "urusilla.maintainer.agent"
+  ],
+  "act": "ASSERT",
+  "reply_to": null,
+  "schema": "urn:urusilla:wire-performance-evidence:0.2",
+  "logical_clock": 1,
+  "expires_ms": 0,
+  "confidence_ppm": 1000000,
+  "expected": [
+    "QUERY"
+  ],
+  "body": {
+    "kind": "evidence",
+    "target": {
+      "kind": "ref",
+      "uri": "https://github.com/jaden3824/urusilla#urusilla-wire-v0.2-performance"
+    },
+    "stance": "supports",
+    "digest": "sha256:e863deb13bc673aec84ad6600c9331a7f5b3845f013f3fe842560620b19c2158",
+    "provenance": "https://github.com/jaden3824/urusilla",
+    "annotations": {
+      "semantic_version": "0.1.0",
+      "implementation_mode": "bridge",
+      "result_artifact": "urusilla_wire_v02_results.md",
+      "profile_dictionary_id": "7d12fc414eae60b2",
+      "measurements": {
+        "corpus_messages": 280,
+        "warm_v02_raw_bytes": 54752,
+        "gzip_json_bytes": 168809,
+        "canonical_round_trips": 280,
+        "single_bit_corruptions_rejected": 1120
+      }
+    }
+  },
+  "meta": {
+    "classification": "internal-bridge-pilot",
+    "external_adoption": false,
+    "source_repository": "https://github.com/jaden3824/urusilla",
+    "semantic_version": "0.1.0",
+    "implementation_mode": "bridge",
+    "result_digest": "sha256:e863deb13bc673aec84ad6600c9331a7f5b3845f013f3fe842560620b19c2158",
+    "note": "Internal transport evidence only; this message is not external adoption evidence."
+  }
+}

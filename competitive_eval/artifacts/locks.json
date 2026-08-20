@@ -1,0 +1,240 @@
+{
+  "a0_adaptive_prompt_token_overhead_vs_cte": {
+    "cl100k_base": 82,
+    "mistral_7b_instruct_v03": 102,
+    "o200k_base": 85,
+    "qwen2_5_7b_instruct": 99
+  },
+  "a0_cold_artifact_bytes_per_endpoint": 16005,
+  "a0_cold_artifact_locks": {
+    "optimized_grammar": {
+      "sha256": "cb67a76a1b9537b909c2349b4df095ef69f715724f188b11c1c41f3e62618c0d",
+      "utf8_bytes": 437
+    },
+    "optimized_profile": {
+      "sha256": "f6368ee3e9ae9dd3b9a7335b5e3a0b3999e376c5a4e800f5ea8733e8f722a50d",
+      "utf8_bytes": 1358
+    },
+    "structured_bundle": {
+      "sha256": "8f864d02104783cf9adbdc2b1eb407577e7a99b8b208392ee8a2df319c493372",
+      "utf8_bytes": 13799
+    },
+    "structured_codebook": {
+      "sha256": "240986a14035049a16bbd3bb98b41bb8ba88978792b959bd3d4cc961a9703b8e",
+      "utf8_bytes": 11927
+    },
+    "structured_profile_base64": {
+      "sha256": "cac7b9839c57b4cc5656981916984c10f7c075ab9823cb340ca350a3099a98d3",
+      "utf8_bytes": 1872
+    },
+    "symbolic_grammar": {
+      "sha256": "fad7d0b4a11e25883bd6c6c48f038c01010887f38988cd9246bbd69da0ecda32",
+      "utf8_bytes": 411
+    }
+  },
+  "a0_cold_tokens": {
+    "cl100k_base": 10170,
+    "mistral_7b_instruct_v03": 11750,
+    "o200k_base": 9661,
+    "qwen2_5_7b_instruct": 10348
+  },
+  "arm_contracts": {
+    "autoform": {
+      "a0_frozen": false,
+      "current_artifact_reconfirmed": false,
+      "mock_only_until_external_lock": true,
+      "sha256": "6bef8ae3c5bfa134e4ad1a0ebf0d5cdd8a2906e342f8b02ece3c0993f4728435"
+    },
+    "canonical_minified_json": {
+      "a0_frozen": true,
+      "current_artifact_reconfirmed": false,
+      "mock_only_until_external_lock": false,
+      "sha256": "f330179b6cb10cff5c44992405d208d1a68664a45cb78a34e762db2dbc7da1a5"
+    },
+    "compact_terse_english": {
+      "a0_frozen": true,
+      "current_artifact_reconfirmed": false,
+      "mock_only_until_external_lock": false,
+      "sha256": "51d1d56aad635ff10c5883cd6f09691a1c45af3a80c9729a6439d4145443deac"
+    },
+    "current_adaptive_surface": {
+      "a0_frozen": true,
+      "current_artifact_reconfirmed": true,
+      "mock_only_until_external_lock": false,
+      "sha256": "f83489a3dca68e1eb4e94d8d20207c3e6fd8bf0d44d496f1fa4ea3cc8581ef74"
+    },
+    "oracle_free_adaptive_selector": {
+      "a0_frozen": false,
+      "current_artifact_reconfirmed": false,
+      "mock_only_until_external_lock": false,
+      "sha256": "3dd489354f726d19e712b8b7f99b7737860186e48ac558debbc5f80d62fb09db"
+    },
+    "paper_natural_language": {
+      "a0_frozen": false,
+      "current_artifact_reconfirmed": false,
+      "mock_only_until_external_lock": true,
+      "sha256": "06740cbacf8135afe76032d5db3a8a7b9f150ccaf301d2537c2d7b85ff3b668a"
+    }
+  },
+  "artifact_epoch": "2026-08-20",
+  "artifact_format": "competitive-eval-offline-artifacts-v1",
+  "bootstrap": {
+    "new_harness_convention": true,
+    "resamples": 10000,
+    "seed_hex": "ffe02c2c72341f0656e34f9e7fe171106d013790329fdb01bb381456810f1c33"
+  },
+  "format": "competitive-eval-lock-summary-v1",
+  "frozen_inputs": {
+    "a0_embedded_snapshot_sha256": "4642d1386640037edfbfcf17f8a94152847ec27217335c14100152238cc4b70b",
+    "a0_prompt_set_sha256": "1b7b8d415812a358dbe92d1fcd158f69a57884f6bb735ec0855c0f624b26c7c9",
+    "a1_item_set_sha256": "9eee61ecaeee10a0b2826bd0eaeb541fd3e6da0c047ea7043213a9b7c4ea675d",
+    "format": "competitive-eval-frozen-input-verification-v1",
+    "hotpotqa_records": 100,
+    "repository_commit": null,
+    "repository_commit_blocker": "git HEAD is unavailable; file digests only",
+    "root_report_context_blocks_text": 1702,
+    "root_report_discrepancy_retained": true,
+    "verified_cold_artifact_locks": {
+      "optimized_grammar": {
+        "sha256": "cb67a76a1b9537b909c2349b4df095ef69f715724f188b11c1c41f3e62618c0d",
+        "utf8_bytes": 437
+      },
+      "optimized_profile": {
+        "sha256": "f6368ee3e9ae9dd3b9a7335b5e3a0b3999e376c5a4e800f5ea8733e8f722a50d",
+        "utf8_bytes": 1358
+      },
+      "structured_bundle": {
+        "sha256": "8f864d02104783cf9adbdc2b1eb407577e7a99b8b208392ee8a2df319c493372",
+        "utf8_bytes": 13799
+      },
+      "structured_codebook": {
+        "sha256": "240986a14035049a16bbd3bb98b41bb8ba88978792b959bd3d4cc961a9703b8e",
+        "utf8_bytes": 11927
+      },
+      "structured_profile_base64": {
+        "sha256": "cac7b9839c57b4cc5656981916984c10f7c075ab9823cb340ca350a3099a98d3",
+        "utf8_bytes": 1872
+      },
+      "symbolic_grammar": {
+        "sha256": "fad7d0b4a11e25883bd6c6c48f038c01010887f38988cd9246bbd69da0ecda32",
+        "utf8_bytes": 411
+      }
+    },
+    "verified_file_sha256": {
+      "COMPETITIVE_PUBLIC_TASK_PREFLIGHT_REPORT.md": "b0def313c7d14218f86337a3a6fb08282cec4c10ce123402e13d58ae7fe7450b",
+      "COMPETITIVE_REPRODUCTION_PLAN.md": "4b9c2763b990e3c6c4c6c74d83ff5fad1e1df08da4264d4a81662084c2ab48fe",
+      "PERFORMANCE_TARGETS.md": "0ce3b7a42c503bfd02449dc2e8a8ed8d55708ab522b5473f944b2ac9d2996d32",
+      "competitive_public_task_preflight.py": "4cc393e2349f07f1da0ddb5ed4946b5810142783bb8f31da4e279263810f5ccb",
+      "urusilla_adaptive_dialogue_profile.json": "a488e75c95c6948d24447a12fabd619f65612b4a698f0da85b3d1c719421ceac",
+      "urusilla_capsule_v0_1.json": "588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27",
+      "urusilla_generalization_surface_v06.py": "85ab4676698acb2a887e31c297ed938d09c898a39d645b710a71149064fce753",
+      "urusilla_strong_codec_baseline.proto": "43f2b236836750779edcc9f34890f468478036172052a8ca1989d7b5108f9e5d",
+      "work/competitive_public_task_preflight/hotpotqa.jsonl": "eca49392985ba260a44ae48dd6a439d73092e021f68d4d6d433c3226a1e51284",
+      "work/competitive_public_task_preflight/preflight_snapshot.json": "0a2d8a04e44a04c226f3cca1bb0773ed46fb3572c5ed1abc2ef5e0aaed0fffb5",
+      "work/competitive_public_task_preflight/prompt_manifest.jsonl": "2013a95ca5b138719c3d19f65dcfa0ace88c5356b355ad69fb7733f4f8317ed5",
+      "work/competitive_public_task_preflight/wikihop.jsonl": "724cca64b47d0f2181170a23124cfd844c124391c76c6c867b597b6ff9195f39"
+    },
+    "wikihop_context_blocks_observed": 1630,
+    "wikihop_records": 100
+  },
+  "model_specs": {
+    "G": {
+      "family": "google-gemini",
+      "logical_model_id": "gemini-3.7-flash",
+      "runtime": "provider_adapter_required",
+      "tokenizer": "max_four_planning_proxy",
+      "tokenizer_exact_for_endpoint": false
+    },
+    "O": {
+      "family": "openai-gpt",
+      "logical_model_id": "gpt-5-mini-2025-08-07",
+      "runtime": "provider_adapter_required",
+      "tokenizer": "o200k_base",
+      "tokenizer_exact_for_endpoint": false
+    },
+    "Q": {
+      "family": "qwen",
+      "logical_model_id": "Qwen/Qwen2.5-7B-Instruct@a09a35458c702b33eeacc393d103063234e8bc28",
+      "runtime": "local_adapter_required",
+      "tokenizer": "qwen2_5_7b_instruct",
+      "tokenizer_exact_for_endpoint": true
+    }
+  },
+  "new_harness_conventions": [
+    "bootstrap seed and SHA-256 counter PRNG",
+    "inverse-ECDF percentile convention",
+    "item-by-ordered-pair cluster with item-only sensitivity",
+    "Holm family and centered-bootstrap p-value convention",
+    "call-reserve values treated as absolute safety caps",
+    "strict CTE multi-value delimiter",
+    "QA bridge to quarantined x:competitive-eval-qa-v1"
+  ],
+  "ordered_pairs": [
+    [
+      "O",
+      "O"
+    ],
+    [
+      "O",
+      "G"
+    ],
+    [
+      "O",
+      "Q"
+    ],
+    [
+      "G",
+      "O"
+    ],
+    [
+      "G",
+      "G"
+    ],
+    [
+      "G",
+      "Q"
+    ],
+    [
+      "Q",
+      "O"
+    ],
+    [
+      "Q",
+      "G"
+    ],
+    [
+      "Q",
+      "Q"
+    ]
+  ],
+  "paper_prompt_source_locks": {
+    "hotpotqa_autoform": {
+      "available_in_a0": false,
+      "path": "agentverse/tasks/tasksolving/hotpot_qa/gpt-4-cot-model/config.yaml",
+      "sha256": "315ea42f9bde3213e71a7698dc996585f5793bc124d0b17d130ddd7de6428ba0"
+    },
+    "hotpotqa_natural": {
+      "available_in_a0": false,
+      "path": "agentverse/tasks/tasksolving/hotpot_qa/gpt-4-cot/config.yaml",
+      "sha256": "be9a789971c198d5a10c540e3f9da6612425b3fcb1a573fe431a76ea4bb6748e"
+    },
+    "wikihop_autoform": {
+      "available_in_a0": false,
+      "path": "agentverse/tasks/tasksolving/wiki_hop_qa/gpt-4-cot-model/config.yaml",
+      "sha256": "a8b48472264360161dd3bd06873d0b909c951ea8bdb64a0a910ae4c9499d0bce"
+    },
+    "wikihop_natural": {
+      "available_in_a0": false,
+      "path": "agentverse/tasks/tasksolving/wiki_hop_qa/gpt-4-cot/config.yaml",
+      "sha256": "46b4700b61be124edf25fdc777517d1387288655c0b08e35b05e1e2e861b8592"
+    }
+  },
+  "representation_arms": [
+    "paper_natural_language",
+    "compact_terse_english",
+    "canonical_minified_json",
+    "autoform",
+    "current_adaptive_surface",
+    "oracle_free_adaptive_selector"
+  ]
+}

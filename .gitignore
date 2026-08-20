@@ -1,0 +1,26 @@
+__pycache__/
+*.py[cod]
+*.ursl
+.DS_Store
+.venv/
+.venv-strong/
+.venv-research/
+.venv-research-py312/
+dist/
+build/
+*.egg-info/
+work/
+.coverage
+.coverage.*
+htmlcov/
+
+# Local A1 evaluation products that embed HotpotQA/WikiHop prompt text.
+# Keep these dataset-derived artifacts outside the source distribution.
+competitive_eval/artifacts/a1_plan_episode_manifest.jsonl
+competitive_eval/artifacts/a1_plan_prompt_locks.jsonl
+competitive_eval/artifacts/a1_a0_cost_variant_episode_manifest.jsonl
+competitive_eval/artifacts/a1_a0_cost_variant_prompt_locks.jsonl
+competitive_eval/artifacts/mock_episode_manifest.jsonl
+competitive_eval/artifacts/mock_episode_results.jsonl
+competitive_eval/artifacts/mock_prompt_locks.jsonl
+competitive_eval/artifacts/mock_turn_observations.jsonl

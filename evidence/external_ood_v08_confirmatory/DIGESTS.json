@@ -1,0 +1,224 @@
+{
+  "candidate_source_files": 11,
+  "deterministic_outcome_sha256": "3bbbd740a5a22e00a794052efc224ca98f2ce0240a49abbc93c213606918247f",
+  "files": {
+    "candidate_sources/external_ood_v08_confirmatory.py": {
+      "bytes": 74232,
+      "sha256": "fcb03b568fd8babe3132a6c2556158a8eab7ba87691e10738b20a867faef5d6a"
+    },
+    "candidate_sources/urusilla.py": {
+      "bytes": 52536,
+      "sha256": "3cb84380149a522bdadd94e866e39a848fa23c8b666382c4f88ce341147fbdcf"
+    },
+    "candidate_sources/urusilla_benchmark.py": {
+      "bytes": 34091,
+      "sha256": "b5e2885f7e17097643c1e93ba3326f285cd37aa8199cf1cc3b234227e515b5f8"
+    },
+    "candidate_sources/urusilla_generalization_surface_v06.py": {
+      "bytes": 55292,
+      "sha256": "85ab4676698acb2a887e31c297ed938d09c898a39d645b710a71149064fce753"
+    },
+    "candidate_sources/urusilla_terse_english_benchmark.py": {
+      "bytes": 37470,
+      "sha256": "f528f68e22aa0c7b2fcc2ef10719648453aeda54c9c08df0e3986a7161e2c00e"
+    },
+    "candidate_sources/urusilla_token_surface_holdout.py": {
+      "bytes": 40962,
+      "sha256": "5d614c0cc601df6b378e84804eb89e4d4c443a2aaa7263a5d096524c777f18ee"
+    },
+    "candidate_sources/urusilla_token_surface_v03.py": {
+      "bytes": 37452,
+      "sha256": "059ee5eaf74ed496901607f9a8e6ff15314ca36c2ff96101365792dd9eab0365"
+    },
+    "candidate_sources/urusilla_token_surface_v04.py": {
+      "bytes": 40250,
+      "sha256": "a102d7c990e031b008782976e57579b4050176fd631f7fad9aa7abdb5a691f05"
+    },
+    "candidate_sources/urusilla_tokenizer_benchmark.py": {
+      "bytes": 23534,
+      "sha256": "b00f834c279d2cdb6bf314ecbba136f9f8e9885f1d1572a2b66efb616b43f7d3"
+    },
+    "candidate_sources/urusilla_transparent_fallback_v08.py": {
+      "bytes": 42552,
+      "sha256": "240c8b011733f925467fca9c73e86b523dd2f8758daa63bdbd9e70aa9b3fdeb2"
+    },
+    "candidate_sources/urusilla_wire_v02.py": {
+      "bytes": 52128,
+      "sha256": "166b1090b536bfff942667d43be583b2345eeb14b9da5d1535b7a16bb6bab2e7"
+    },
+    "corpus-6a00c011af8a2b264ec4e79bca84106b143439b3df4ba4e969e48e199fb9d978.json": {
+      "bytes": 184077,
+      "sha256": "6a00c011af8a2b264ec4e79bca84106b143439b3df4ba4e969e48e199fb9d978"
+    },
+    "evaluator-fcb03b568fd8babe3132a6c2556158a8eab7ba87691e10738b20a867faef5d6a.py": {
+      "bytes": 74232,
+      "sha256": "fcb03b568fd8babe3132a6c2556158a8eab7ba87691e10738b20a867faef5d6a"
+    },
+    "measurement-0f6dd299203021e60186613caede5dfeeeb8d6fad561f0dd1203d9be6563a44d.json": {
+      "bytes": 22262,
+      "sha256": "0f6dd299203021e60186613caede5dfeeeb8d6fad561f0dd1203d9be6563a44d"
+    },
+    "measurement-aae93e4d9023e83b220fe6fee481df3f032bd48891065b410ef3f226f016f619.json": {
+      "bytes": 22258,
+      "sha256": "aae93e4d9023e83b220fe6fee481df3f032bd48891065b410ef3f226f016f619"
+    },
+    "premeasurement-manifest-834047439e8bd13b244c913343c31581c2fd242b331fd259d749fb707f54ff64.json": {
+      "bytes": 63277,
+      "sha256": "834047439e8bd13b244c913343c31581c2fd242b331fd259d749fb707f54ff64"
+    },
+    "sources/04511395c549733ab3e4e59a21b61df5db70ec0223aa33b8012456f9b77b78c7.yaml": {
+      "bytes": 2585,
+      "sha256": "04511395c549733ab3e4e59a21b61df5db70ec0223aa33b8012456f9b77b78c7"
+    },
+    "sources/0dd4bea20c823a166400e31af220caca1507e1bd9f4c6350a9252bf1e63eb7d2.yml": {
+      "bytes": 1472,
+      "sha256": "0dd4bea20c823a166400e31af220caca1507e1bd9f4c6350a9252bf1e63eb7d2"
+    },
+    "sources/258b69355e7cf1ec35be4b3bd2087736217c3ab349f7b244ef749c2da45f554a.yml": {
+      "bytes": 7682,
+      "sha256": "258b69355e7cf1ec35be4b3bd2087736217c3ab349f7b244ef749c2da45f554a"
+    },
+    "sources/42174fc75c21436e3ffd10960c483c4374469059f652c1fdc4542854233ab15d.yaml": {
+      "bytes": 2158,
+      "sha256": "42174fc75c21436e3ffd10960c483c4374469059f652c1fdc4542854233ab15d"
+    },
+    "sources/43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1.license": {
+      "bytes": 11356,
+      "sha256": "43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1"
+    },
+    "sources/4836077a1c67170bc261e63ced2c9636d5187506f72ac106df435070315078d5.license": {
+      "bytes": 164,
+      "sha256": "4836077a1c67170bc261e63ced2c9636d5187506f72ac106df435070315078d5"
+    },
+    "sources/48ed935327e7138f9276cc26c7d632adacd83c403d4f33de8fda368a4a577c9d.yml": {
+      "bytes": 8748,
+      "sha256": "48ed935327e7138f9276cc26c7d632adacd83c403d4f33de8fda368a4a577c9d"
+    },
+    "sources/4948367c65e1ce06690e2cadc6e86fce1a6a6db55ef874ce4b78c0f472ce5f13.license": {
+      "bytes": 11345,
+      "sha256": "4948367c65e1ce06690e2cadc6e86fce1a6a6db55ef874ce4b78c0f472ce5f13"
+    },
+    "sources/4b7b29d7bda1cf95f8c027500c86a9eb3761dfee42f1a8aeb095c5c0b5ccde3b.yaml": {
+      "bytes": 5280,
+      "sha256": "4b7b29d7bda1cf95f8c027500c86a9eb3761dfee42f1a8aeb095c5c0b5ccde3b"
+    },
+    "sources/4bdb164fef7f74258429c7b646c1cdf3402ec53fe7ccf23162c3de936129fdb9.yml": {
+      "bytes": 3471,
+      "sha256": "4bdb164fef7f74258429c7b646c1cdf3402ec53fe7ccf23162c3de936129fdb9"
+    },
+    "sources/598136cb904e17e8eeead51ae33dd8d401fdff455d2d74f3869c4aa5f2742266.yaml": {
+      "bytes": 2772,
+      "sha256": "598136cb904e17e8eeead51ae33dd8d401fdff455d2d74f3869c4aa5f2742266"
+    },
+    "sources/5d75ba1fb9c5ec216b1add8638633eb8973022b55e720d7e264f7e292e71f16d.js": {
+      "bytes": 4652,
+      "sha256": "5d75ba1fb9c5ec216b1add8638633eb8973022b55e720d7e264f7e292e71f16d"
+    },
+    "sources/5da7283e6772026408341cb45054c7c90cdc9674bd083bcfa6b586341dc3f7a4.json": {
+      "bytes": 2718,
+      "sha256": "5da7283e6772026408341cb45054c7c90cdc9674bd083bcfa6b586341dc3f7a4"
+    },
+    "sources/6106d84b08694df64d6a4c4c8b327ea0bc72fc1ef62d6417db5a13e3f1852345.yml": {
+      "bytes": 8907,
+      "sha256": "6106d84b08694df64d6a4c4c8b327ea0bc72fc1ef62d6417db5a13e3f1852345"
+    },
+    "sources/657308e25e73a7e5f79dc9a6552782091bbc43dfaf9130bbe838eb7e5d803d2d.yml": {
+      "bytes": 10315,
+      "sha256": "657308e25e73a7e5f79dc9a6552782091bbc43dfaf9130bbe838eb7e5d803d2d"
+    },
+    "sources/714f0635858eef8ed5e54262c073aea93309a087291da959f8932158ca9efa83.yml": {
+      "bytes": 25194,
+      "sha256": "714f0635858eef8ed5e54262c073aea93309a087291da959f8932158ca9efa83"
+    },
+    "sources/76e398b8f285ae8349085c4535d94b14f0d1a4028f3c8712a59b10dd1bdb48ae.json": {
+      "bytes": 2130,
+      "sha256": "76e398b8f285ae8349085c4535d94b14f0d1a4028f3c8712a59b10dd1bdb48ae"
+    },
+    "sources/77fa6907335b5d98186e05f041adc8d2c205e2ea043ecc86af5a886c7d22c412.yaml": {
+      "bytes": 1580,
+      "sha256": "77fa6907335b5d98186e05f041adc8d2c205e2ea043ecc86af5a886c7d22c412"
+    },
+    "sources/82c01805f3f134412962497726077d9580dd320207bb5f4fc023590545f6f259.yml": {
+      "bytes": 2504,
+      "sha256": "82c01805f3f134412962497726077d9580dd320207bb5f4fc023590545f6f259"
+    },
+    "sources/8c171115aa448ea485aedbbe6f17448290aaeefd05d4f04c28edc175549cbc18.yaml": {
+      "bytes": 7743,
+      "sha256": "8c171115aa448ea485aedbbe6f17448290aaeefd05d4f04c28edc175549cbc18"
+    },
+    "sources/8e41e7dac419f2d3718f0676af34e788843e87aa858ef5c004a73d43cb8f321a.yml": {
+      "bytes": 6351,
+      "sha256": "8e41e7dac419f2d3718f0676af34e788843e87aa858ef5c004a73d43cb8f321a"
+    },
+    "sources/8fcbe903a4630d4c8ed7a73726dd603d56c2a98d109498bea1574f0d819d5a92.yml": {
+      "bytes": 744,
+      "sha256": "8fcbe903a4630d4c8ed7a73726dd603d56c2a98d109498bea1574f0d819d5a92"
+    },
+    "sources/916c6d5a3c16ce9d2837f24ffc27509044de4fe8c2685de50917438b0d5b2076.yml": {
+      "bytes": 6354,
+      "sha256": "916c6d5a3c16ce9d2837f24ffc27509044de4fe8c2685de50917438b0d5b2076"
+    },
+    "sources/9d942900ed25d25fc8aa5e0da37b998aafac43c5c198cbbe2501e77c893a8c19.yml": {
+      "bytes": 1314,
+      "sha256": "9d942900ed25d25fc8aa5e0da37b998aafac43c5c198cbbe2501e77c893a8c19"
+    },
+    "sources/b1633b6309c065c43d56be7c659b0f2c4be03be5a4013b7c3f74b32bd33f62eb.yaml": {
+      "bytes": 5479,
+      "sha256": "b1633b6309c065c43d56be7c659b0f2c4be03be5a4013b7c3f74b32bd33f62eb"
+    },
+    "sources/b40977696f743f556b9556eb5e716425c4c1b4369f078a3504615e605cf21bff.json": {
+      "bytes": 4134,
+      "sha256": "b40977696f743f556b9556eb5e716425c4c1b4369f078a3504615e605cf21bff"
+    },
+    "sources/b490002680f7aec53f4e1e80a7b8ebb99139bb48da67f03f1eb14af2015fe6db.yml": {
+      "bytes": 5336,
+      "sha256": "b490002680f7aec53f4e1e80a7b8ebb99139bb48da67f03f1eb14af2015fe6db"
+    },
+    "sources/b552a2acd6bd44a6f7e7fe511e97bc9c943b39d7a2079957724ce9b0dd7c1bb4.yml": {
+      "bytes": 1487,
+      "sha256": "b552a2acd6bd44a6f7e7fe511e97bc9c943b39d7a2079957724ce9b0dd7c1bb4"
+    },
+    "sources/b785a62b0543950f7eceeb504577683c4a5fae3b5cedf4c7b517cf95052706ed.yaml": {
+      "bytes": 1029,
+      "sha256": "b785a62b0543950f7eceeb504577683c4a5fae3b5cedf4c7b517cf95052706ed"
+    },
+    "sources/c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4.license": {
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    "sources/cb6296ac842a02d949268467ff72eda43990c9c813e7c462ed2e0d590f52384a.yml": {
+      "bytes": 1562,
+      "sha256": "cb6296ac842a02d949268467ff72eda43990c9c813e7c462ed2e0d590f52384a"
+    },
+    "sources/cc2861313d6da3ddf1d00e39e1b2b047eaaca4832555485ad4dd682573d8a295.yml": {
+      "bytes": 13060,
+      "sha256": "cc2861313d6da3ddf1d00e39e1b2b047eaaca4832555485ad4dd682573d8a295"
+    },
+    "sources/e1b7c5c37afa3b6aad9f3f551aef85a5a3d9684e4b6430ca96fc2c82c0833bd9.yaml": {
+      "bytes": 993,
+      "sha256": "e1b7c5c37afa3b6aad9f3f551aef85a5a3d9684e4b6430ca96fc2c82c0833bd9"
+    },
+    "sources/e8cc862b28f98995cfbba81bdff9302d92093f39cbb3ce628a71d2666fe427cf.yaml": {
+      "bytes": 961,
+      "sha256": "e8cc862b28f98995cfbba81bdff9302d92093f39cbb3ce628a71d2666fe427cf"
+    },
+    "sources/f2959a74309baf0927c5e7c968bc70640f0af29d04244d27498bb620bcb10b6d.yml": {
+      "bytes": 751,
+      "sha256": "f2959a74309baf0927c5e7c968bc70640f0af29d04244d27498bb620bcb10b6d"
+    },
+    "sources/f64369546376e3c19a1ea3f2bdbc137ef2ab2348be4eb6a4fe9b2dda820bd534.yml": {
+      "bytes": 12597,
+      "sha256": "f64369546376e3c19a1ea3f2bdbc137ef2ab2348be4eb6a4fe9b2dda820bd534"
+    },
+    "sources/f7dc3d69f69ca11ae3e7e6ee702aff13fee3faca565033058d9fd073a15d9d45.yaml": {
+      "bytes": 6444,
+      "sha256": "f7dc3d69f69ca11ae3e7e6ee702aff13fee3faca565033058d9fd073a15d9d45"
+    },
+    "sources/f8f2870852b247f734a53ca7f022d4d942bd29732df54440494948af181bd373.json": {
+      "bytes": 1229,
+      "sha256": "f8f2870852b247f734a53ca7f022d4d942bd29732df54440494948af181bd373"
+    }
+  },
+  "format": "external-ood-v08-post-cutover-evidence-inventory-v1",
+  "source_and_license_files": 38
+}

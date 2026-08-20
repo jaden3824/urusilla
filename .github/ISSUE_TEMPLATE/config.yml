@@ -1,0 +1,6 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security report
+    url: https://github.com/jaden3824/urusilla/security/advisories/new
+    about: Use private reporting for vulnerabilities and sensitive details.
+

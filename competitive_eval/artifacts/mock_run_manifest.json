@@ -1,0 +1,73 @@
+{
+  "actual_billed_usd_required": 0,
+  "approved_call_cap": 0,
+  "approved_paid_call_cap": 0,
+  "approved_usd_cap": 0,
+  "arms": [
+    "autoform",
+    "canonical_minified_json",
+    "compact_terse_english",
+    "current_adaptive_surface",
+    "oracle_free_adaptive_selector",
+    "paper_natural_language"
+  ],
+  "claim_blockers": [
+    "deterministic mock uses gold answers",
+    "no model or provider was called",
+    "paper/AutoForm source locks are absent",
+    "hosted endpoint tokenizers are planning proxies",
+    "power audit is not frozen or complete",
+    "repository has no immutable git revision"
+  ],
+  "claim_eligible": false,
+  "episode_count": 108,
+  "episode_sequence_sha256": "5717f0026cc6fa9dd92cd597e7a3abc7413e04099501f5fea15bd3b4456c990e",
+  "execution_mode": "offline_mock",
+  "format": "competitive-eval-run-v1",
+  "harness_format": "competitive-eval-harness-v1",
+  "mock_uses_gold": true,
+  "network_allowed": false,
+  "ordered_pairs": [
+    [
+      "G",
+      "G"
+    ],
+    [
+      "G",
+      "O"
+    ],
+    [
+      "G",
+      "Q"
+    ],
+    [
+      "O",
+      "G"
+    ],
+    [
+      "O",
+      "O"
+    ],
+    [
+      "O",
+      "Q"
+    ],
+    [
+      "Q",
+      "G"
+    ],
+    [
+      "Q",
+      "O"
+    ],
+    [
+      "Q",
+      "Q"
+    ]
+  ],
+  "paid_calls_allowed": false,
+  "primary_baseline": "compact_terse_english",
+  "provider_calls_allowed": false,
+  "run_id": "3ab4a31b4cb67c2951579b425de2086164868d2b452f3aaa65a52d2307798644",
+  "stage": "A0"
+}

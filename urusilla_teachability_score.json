@@ -1,0 +1,146 @@
+{
+  "cases": [
+    {
+      "act_ok": true,
+      "case_id": "T01-request-with-hard-constraint",
+      "decision_ok": true,
+      "detail": "goal, proof predicate, artifact, 800 ms constraint, and reply set; envelope matched",
+      "essential_semantics_ok": true,
+      "expected_decision": "emit",
+      "schema_valid": true
+    },
+    {
+      "act_ok": true,
+      "case_id": "T02-assert-evidence",
+      "decision_ok": true,
+      "detail": "evidence digest, provenance, stance, and target; envelope matched",
+      "essential_semantics_ok": true,
+      "expected_decision": "emit",
+      "schema_valid": true
+    },
+    {
+      "act_ok": true,
+      "case_id": "T03-query-typed-answer",
+      "decision_ok": true,
+      "detail": "inventory referent and answer schema; envelope matched",
+      "essential_semantics_ok": true,
+      "expected_decision": "emit",
+      "schema_valid": true
+    },
+    {
+      "act_ok": true,
+      "case_id": "T04-propose-without-obligation",
+      "decision_ok": true,
+      "detail": "action capability and both arguments; envelope matched",
+      "essential_semantics_ok": true,
+      "expected_decision": "emit",
+      "schema_valid": true
+    },
+    {
+      "act_ok": true,
+      "case_id": "T05-commit-with-causal-parent",
+      "decision_ok": true,
+      "detail": "debtor, creditor, artifact, expiry, and causal parent; envelope matched",
+      "essential_semantics_ok": true,
+      "expected_decision": "emit",
+      "schema_valid": true
+    },
+    {
+      "act_ok": true,
+      "case_id": "T06-resolve-failure",
+      "decision_ok": true,
+      "detail": "failed resolution, evidence, and causal parent; envelope matched",
+      "essential_semantics_ok": true,
+      "expected_decision": "emit",
+      "schema_valid": true
+    },
+    {
+      "act_ok": true,
+      "case_id": "T07-retract-owned-record",
+      "decision_ok": true,
+      "detail": "record reference and causal parent; envelope matched",
+      "essential_semantics_ok": true,
+      "expected_decision": "emit",
+      "schema_valid": true
+    },
+    {
+      "act_ok": true,
+      "case_id": "T08-explicit-uncertainty",
+      "decision_ok": true,
+      "detail": "uncertainty target, beta parameters, and unspecified confidence; envelope matched",
+      "essential_semantics_ok": true,
+      "expected_decision": "emit",
+      "schema_valid": true
+    },
+    {
+      "act_ok": null,
+      "case_id": "T09-ambiguous-request",
+      "decision_ok": true,
+      "detail": "fail-closed reason supplied",
+      "essential_semantics_ok": true,
+      "expected_decision": "reject",
+      "schema_valid": null
+    },
+    {
+      "act_ok": null,
+      "case_id": "T10-commit-missing-parent",
+      "decision_ok": true,
+      "detail": "fail-closed reason supplied",
+      "essential_semantics_ok": true,
+      "expected_decision": "reject",
+      "schema_valid": null
+    },
+    {
+      "act_ok": null,
+      "case_id": "T11-unknown-node-kind",
+      "decision_ok": true,
+      "detail": "fail-closed reason supplied",
+      "essential_semantics_ok": true,
+      "expected_decision": "reject",
+      "schema_valid": null
+    },
+    {
+      "act_ok": null,
+      "case_id": "T12-unknown-unit-and-effect",
+      "decision_ok": true,
+      "detail": "fail-closed reason supplied",
+      "essential_semantics_ok": true,
+      "expected_decision": "reject",
+      "schema_valid": null
+    }
+  ],
+  "evaluation": "fresh-agent-open-label-smoke-pilot-0.1",
+  "external_adopter_claim": false,
+  "limitations": [
+    "This is one fresh agent instance, not a cross-vendor model population.",
+    "Case identifiers and task wording exposed substantial category and decision cues.",
+    "The rubric was not cryptographically committed before the participant response.",
+    "The evaluator checks essential semantics, not one uniquely correct graph for every natural-language instruction.",
+    "The pilot measures Capsule-guided construction, not native binary generation or task-success improvement.",
+    "File-access compliance is self-declared and was not enforced by an operating-system sandbox."
+  ],
+  "score": {
+    "act": {
+      "earned": 8,
+      "possible": 8
+    },
+    "decision": {
+      "earned": 12,
+      "possible": 12
+    },
+    "essential_semantics": {
+      "earned": 8,
+      "possible": 8
+    },
+    "schema_validation": {
+      "earned": 8,
+      "possible": 8
+    }
+  },
+  "status": "internal-open-label-smoke-only",
+  "total": {
+    "earned": 36,
+    "percent": 100.0,
+    "possible": 36
+  }
+}

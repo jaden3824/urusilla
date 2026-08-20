@@ -1,0 +1,17 @@
+{
+  "name": "urusilla-v02-cross-language-fallback",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Dependency-free same-project Node.js cross-runtime implementation for Urusilla fixtures.",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "generate": "python3 tools/generate_python_oracle_vectors.py",
+    "test": "node --test --test-reporter=spec",
+    "verify": "node src/cli.mjs verify-vectors",
+    "freeze": "SOURCE_DATE_EPOCH=1787184000 node tools/freeze_evidence.mjs",
+    "check-digests": "node tools/check_digests.mjs"
+  }
+}

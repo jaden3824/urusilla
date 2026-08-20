@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package urusilla.baseline.v1;
+
+// This schema is an independent benchmark representation. It is not a
+// normative wire format and is not imported by the dependency-free core.
+
+enum Act {
+  ACT_UNSPECIFIED = 0;
+  ACT_ASSERT = 1;
+  ACT_QUERY = 2;
+  ACT_REQUEST = 3;
+  ACT_PROPOSE = 4;
+  ACT_COMMIT = 5;
+  ACT_RESOLVE = 6;
+  ACT_RETRACT = 7;
+}
+
+enum NullValue {
+  NULL_VALUE = 0;
+}
+
+message SemanticValue {
+  oneof value {
+    NullValue null_value = 1;
+    bool bool_value = 2;
+    sint64 signed_integer = 3;
+    uint64 unsigned_integer = 4;
+    double float64_value = 5;
+    string string_value = 6;
+    bytes bytes_value = 7;
+    ValueList list_value = 8;
+    ValueMap map_value = 9;
+  }
+}
+
+message ValueList {
+  repeated SemanticValue items = 1;
+}
+
+message MapEntry {
+  string key = 1;
+  SemanticValue value = 2;
+}
+
+message ValueMap {
+  // Encoders in this study emit entries in unsigned UTF-8 key order.
+  repeated MapEntry entries = 1;
+}
+
+message AgentMessage {
+  bytes id = 1;
+  bytes session = 2;
+  string sender = 3;
+  repeated string recipients = 4;
+  Act act = 5;
+  optional bytes reply_to = 6;
+  string schema = 7;
+  uint64 logical_clock = 8;
+  uint64 expires_ms = 9;
+  optional uint32 confidence_ppm = 10;
+  repeated Act expected = 11;
+  SemanticValue body = 12;
+  SemanticValue meta = 13;
+}

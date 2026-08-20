@@ -1,0 +1,208 @@
+{
+  "pilot": "neutral-id-capsule-transfer-0.1",
+  "instructions": [
+    "Read the supplied Grammar Capsule and no implementation or prior pilot artifacts.",
+    "For each case, return either {case_id, decision: emit, message} or {case_id, decision: reject, reason}.",
+    "Construct a complete UrusillaIR message when the requested meaning is unambiguous and representable under the Capsule.",
+    "Reject when required meaning, causality, identity, or a requested representation violates the Capsule.",
+    "Do not encode or decode binary wire frames. Do not call tools other than reading the two supplied files and writing the submission file.",
+    "Preserve each supplied envelope value exactly in emitted messages. Use only information supplied by the case."
+  ],
+  "cases": [
+    {
+      "case_id": "N4Q7",
+      "envelope": {
+        "id": "10000000-0000-4000-8000-000000000001",
+        "session": "20000000-0000-4000-8000-000000000001",
+        "sender": "urn:agent:planner",
+        "recipients": ["urn:agent:router"],
+        "logical_clock": 1,
+        "expires_ms": 1900000000000
+      },
+      "task": "Ask the router to produce artifact urn:artifact:route-7 whose route cost is at most 42 ms. The response may be done, refused, or failed."
+    },
+    {
+      "case_id": "K2M9",
+      "envelope": {
+        "id": "10000000-0000-4000-8000-000000000002",
+        "session": "20000000-0000-4000-8000-000000000001",
+        "sender": "urn:agent:verifier",
+        "recipients": ["urn:agent:planner"],
+        "logical_clock": 2,
+        "expires_ms": 0
+      },
+      "task": "State that urn:artifact:route-7 passed predicate urn:test:route-valid. Ground the statement with evidence digest sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa and provenance urn:runner:route-validator-3."
+    },
+    {
+      "case_id": "R8D1",
+      "envelope": {
+        "id": "10000000-0000-4000-8000-000000000003",
+        "session": "20000000-0000-4000-8000-000000000001",
+        "sender": "urn:agent:planner",
+        "recipients": ["urn:agent:inventory"],
+        "logical_clock": 3,
+        "expires_ms": 0
+      },
+      "task": "Ask which artifact currently satisfies urn:capability:gpu-a100. Require the answer to use schema urn:schema:artifact-ref-list:1."
+    },
+    {
+      "case_id": "B6T3",
+      "envelope": {
+        "id": "10000000-0000-4000-8000-000000000004",
+        "session": "20000000-0000-4000-8000-000000000001",
+        "sender": "urn:agent:router",
+        "recipients": ["urn:agent:planner"],
+        "logical_clock": 4,
+        "expires_ms": 0
+      },
+      "task": "Offer to invoke urn:capability:route-fast with arguments region=eu-west and redundancy=2. This is only an option and creates no obligation."
+    },
+    {
+      "case_id": "H9V5",
+      "envelope": {
+        "id": "10000000-0000-4000-8000-000000000005",
+        "session": "20000000-0000-4000-8000-000000000001",
+        "sender": "urn:agent:router",
+        "recipients": ["urn:agent:planner"],
+        "logical_clock": 5,
+        "expires_ms": 1900000000500,
+        "causal_parent": "10000000-0000-4000-8000-000000000004"
+      },
+      "task": "The authenticated router accepts an obligation to deliver urn:artifact:route-7 to urn:agent:planner by 1900000000400 ms. The prior offer is the supplied causal parent, and the conversation authorization check passes."
+    },
+    {
+      "case_id": "C3J8",
+      "envelope": {
+        "id": "10000000-0000-4000-8000-000000000006",
+        "session": "20000000-0000-4000-8000-000000000001",
+        "sender": "urn:agent:router",
+        "recipients": ["urn:agent:planner"],
+        "logical_clock": 6,
+        "expires_ms": 0,
+        "causal_parent": "10000000-0000-4000-8000-000000000005"
+      },
+      "task": "Close the supplied prior obligation as failed because urn:error:upstream-timeout occurred. Cite urn:log:route-job-88 as evidence. Identity and conversation authorization checks pass."
+    },
+    {
+      "case_id": "P7A2",
+      "envelope": {
+        "id": "10000000-0000-4000-8000-000000000007",
+        "session": "20000000-0000-4000-8000-000000000001",
+        "sender": "urn:agent:verifier",
+        "recipients": ["urn:agent:planner"],
+        "logical_clock": 7,
+        "expires_ms": 0,
+        "causal_parent": "10000000-0000-4000-8000-000000000002"
+      },
+      "task": "The authenticated verifier withdraws its own earlier record identified by the supplied causal parent. Conversation authorization passes."
+    },
+    {
+      "case_id": "W5L4",
+      "envelope": {
+        "id": "10000000-0000-4000-8000-000000000008",
+        "session": "20000000-0000-4000-8000-000000000002",
+        "sender": "urn:agent:sensor",
+        "recipients": ["urn:agent:planner"],
+        "logical_clock": 1,
+        "expires_ms": 0
+      },
+      "task": "State that sensor urn:sensor:temp-9 reports 21.5 Cel using UCUM unit Cel. Represent calibrated uncertainty as a beta distribution with alpha=9 and beta=1 targeted to that claim."
+    },
+    {
+      "case_id": "F1X6",
+      "envelope": {
+        "id": "10000000-0000-4000-8000-000000000009",
+        "session": "20000000-0000-4000-8000-000000000002",
+        "sender": "urn:agent:planner",
+        "recipients": ["urn:agent:worker"],
+        "logical_clock": 2,
+        "expires_ms": 0
+      },
+      "task": "Tell the worker to handle it. No referent, target state, artifact, or acceptance criteria are available."
+    },
+    {
+      "case_id": "Y8S2",
+      "envelope": {
+        "id": "10000000-0000-4000-8000-000000000010",
+        "session": "20000000-0000-4000-8000-000000000002",
+        "sender": "urn:agent:router",
+        "recipients": ["urn:agent:planner"],
+        "logical_clock": 3,
+        "expires_ms": 0
+      },
+      "task": "Create an obligation message whose debtor is urn:agent:unrelated, even though the declared and authenticated sender is urn:agent:router. No delegation credential exists."
+    },
+    {
+      "case_id": "D4U9",
+      "envelope": {
+        "id": "10000000-0000-4000-8000-000000000011",
+        "session": "20000000-0000-4000-8000-000000000002",
+        "sender": "urn:agent:legacy",
+        "recipients": ["urn:agent:planner"],
+        "logical_clock": 4,
+        "expires_ms": 0
+      },
+      "task": "Emit an assertion using body kind https://example.invalid/custom-node. The extension has not been registered or negotiated."
+    },
+    {
+      "case_id": "M6E3",
+      "envelope": {
+        "id": "10000000-0000-4000-8000-000000000012",
+        "session": "20000000-0000-4000-8000-000000000002",
+        "sender": "urn:agent:observer",
+        "recipients": ["urn:agent:planner"],
+        "logical_clock": 5,
+        "expires_ms": 0
+      },
+      "task": "State a local, non-effectful diagnostic extension with kind x:trace and value run-17. Keep it quarantined inside an assertion."
+    },
+    {
+      "case_id": "Q2N7",
+      "envelope": {
+        "id": "10000000-0000-4000-8000-000000000013",
+        "session": "20000000-0000-4000-8000-000000000002",
+        "sender": "urn:agent:planner",
+        "recipients": ["urn:agent:router"],
+        "logical_clock": 6,
+        "expires_ms": 0
+      },
+      "task": "Offer a two-step plan represented as a plan node: first validate urn:artifact:route-7, then publish it, with the publish step depending on validation. The offer creates no obligation."
+    },
+    {
+      "case_id": "A9K4",
+      "envelope": {
+        "id": "10000000-0000-4000-8000-000000000014",
+        "session": "20000000-0000-4000-8000-000000000002",
+        "sender": "urn:agent:router",
+        "recipients": ["urn:agent:planner"],
+        "logical_clock": 7,
+        "expires_ms": 0
+      },
+      "task": "Accept a new obligation, but no proposal, request, or other causal parent identifier is available."
+    },
+    {
+      "case_id": "V3G8",
+      "envelope": {
+        "id": "10000000-0000-4000-8000-000000000015",
+        "session": "20000000-0000-4000-8000-000000000003",
+        "sender": "urn:agent:auditor",
+        "recipients": ["urn:agent:planner", "urn:agent:router"],
+        "logical_clock": 1,
+        "expires_ms": 1900000010000
+      },
+      "task": "State that urn:artifact:route-7 has digest sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, and request no action. Preserve both recipients."
+    },
+    {
+      "case_id": "L7P1",
+      "envelope": {
+        "id": "10000000-0000-4000-8000-000000000016",
+        "session": "20000000-0000-4000-8000-000000000003",
+        "sender": "urn:agent:planner",
+        "recipients": ["urn:agent:worker"],
+        "logical_clock": 2,
+        "expires_ms": 0
+      },
+      "task": "Ask the worker to execute urn:capability:delete-record immediately, while identity is unauthenticated and no authorization policy or conversation state is available. The requested operation is effectful."
+    }
+  ]
+}
