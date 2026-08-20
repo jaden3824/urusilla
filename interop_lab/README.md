@@ -63,6 +63,27 @@ Run the isolated test suite:
 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s interop_lab/tests -v
 ```
 
+## Microsoft AutoGen reproduction
+
+Existing Microsoft AutoGen AgentChat users can run a three-arm reproduction
+without installing AutoGen or contacting a provider first. The offline plan
+binds one public semantic task across concise raw text, structured JSON, and
+Urusilla; charges the full Capsule teaching text to the cold Urusilla arm;
+verifies the actual UrusillaIR and wire round trip; and preserves every unknown
+ledger field as `null`.
+
+```text
+PYTHONDONTWRITEBYTECODE=1 python3 -m interop_lab.autogen_reproduction \
+  init autogen-plan.json --experiment-id my-autogen-repro
+PYTHONDONTWRITEBYTECODE=1 python3 -m interop_lab.autogen_reproduction \
+  preflight autogen-plan.json
+```
+
+The optional model path requires the exact preflight receipt, an explicit
+operator approval flag, and one fresh operator-supplied model client per arm.
+It supplies no tools or memory and does not infer provider credentials or cost
+authority. See [Microsoft AutoGen Minimal Reproduction](AUTOGEN_REPRODUCTION.md).
+
 ## What one hop records
 
 Every hop binds the following fields:

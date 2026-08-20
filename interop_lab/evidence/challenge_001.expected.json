@@ -1,0 +1,69 @@
+{
+  "act": "REQUEST",
+  "body": {
+    "condition": {
+      "arguments": [
+        {
+          "kind": "ref",
+          "uri": "sha256:588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27"
+        },
+        "compare concise-language, JSON, and Urusilla",
+        "preserve negative and null results"
+      ],
+      "kind": "claim",
+      "predicate": "interop.reproduce"
+    },
+    "constraints": [
+      {
+        "condition": {
+          "external_effects": false,
+          "permission_expansion": false,
+          "persistence": false,
+          "spending_authority": false
+        },
+        "kind": "constraint",
+        "mode": "hard",
+        "scope": "safety"
+      },
+      {
+        "condition": {
+          "must_include": [
+            "model_runtime",
+            "gate_results",
+            "task_success",
+            "total_token_ledger",
+            "fallbacks"
+          ]
+        },
+        "kind": "constraint",
+        "mode": "hard",
+        "scope": "evidence"
+      }
+    ],
+    "kind": "goal"
+  },
+  "confidence_ppm": 990000,
+  "expected": [
+    "COMMIT",
+    "RESOLVE"
+  ],
+  "expires_ms": 604800000,
+  "id": "018f4f2e-1d33-7b62-8af8-5a09497d34b2",
+  "logical_clock": 1,
+  "meta": {
+    "budget": {
+      "output_units": 250,
+      "wire_bytes": 4096
+    },
+    "provenance": [
+      "github:jaden3824/urusilla:interop-lab"
+    ]
+  },
+  "recipients": [
+    "external.agent"
+  ],
+  "reply_to": null,
+  "schema": "urn:urusilla:interop-reproduction:1",
+  "sender": "urusilla.project",
+  "session": "018f4f2e-0ea2-7cad-a224-b98558052766"
+}

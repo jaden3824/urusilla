@@ -191,6 +191,23 @@ saving_vs_raw_pct = 100 * (raw_total_task_tokens - candidate_total_task_tokens) 
 
 Report unsuccessful or unsafe tasks separately and include their spent tokens. An arm with a lower success rate must not claim savings by dropping its failures. The comparison denominator is resolved or safely completed tasks under the preregistered rule. Also report latency and cost when available, but do not infer energy savings from tokens alone.
 
+## Framework reproduction kits
+
+The [Microsoft AutoGen minimal reproduction](interop_lab/AUTOGEN_REPRODUCTION.md)
+adds an offline-first staging path for existing AgentChat users. A clean clone
+can freeze and preflight matched raw, structured-JSON, and Urusilla inputs
+without importing AutoGen or making a provider or network call. The guarded
+model path remains closed until the exact preflight receipt and explicit
+operator approval are supplied, then creates one tool-free, memory-free agent
+and one fresh operator-owned model client per arm.
+
+Its generated result is a staging artifact, not a complete Interop Lab record.
+Unknown token categories remain unknown, negative results are retained, and no
+single AutoGen run changes the project's broad 0% post-decode result or proves
+independent adoption. Convert the result into the full propagation format and
+add complete accounting, provenance, operator relationships, and public
+evidence before submission.
+
 ## Submission record
 
 One root Discussion should cover one preregistered experiment family. Attach or link an immutable machine-readable record with at least:

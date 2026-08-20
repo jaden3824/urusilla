@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:urusilla:hf-external-reproduction:1",
+  "title": "Urusilla Hugging Face external reproduction challenge",
+  "description": "Schema for the single project-authored synthetic challenge record. Static invariants are additionally enforced by validate.py.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_id",
+    "record_type",
+    "protocol",
+    "known_evidence",
+    "challenge",
+    "safety_boundary",
+    "data_governance"
+  ],
+  "properties": {
+    "schema_version": {"const": "urusilla-hf-external-reproduction/1"},
+    "record_id": {"const": "urusilla-external-reproduction-001"},
+    "record_type": {"const": "matched-three-arm-challenge"},
+    "protocol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["project", "release_tag", "language_version", "capsule_uri", "capsule_sha256", "capsule_signature_status", "interop_protocol_uri", "language_spec_uri", "evidence_room_uri"],
+      "properties": {
+        "project": {"const": "Urusilla"},
+        "release_tag": {"const": "v0.1.0-experimental"},
+        "language_version": {"const": "0.1.0"},
+        "capsule_uri": {"type": "string", "format": "uri", "pattern": "^https://raw\\.githubusercontent\\.com/jaden3824/urusilla/[0-9a-f]{40}/urusilla_capsule_v0_1\\.json$"},
+        "capsule_sha256": {"const": "sha256:588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27"},
+        "capsule_signature_status": {"const": "unsigned-experimental"},
+        "interop_protocol_uri": {"type": "string", "format": "uri"},
+        "language_spec_uri": {"type": "string", "format": "uri"},
+        "evidence_room_uri": {"type": "string", "format": "uri"}
+      }
+    },
+    "known_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["general_post_decode_api_input_saving_percent", "general_result_scope", "general_total_task_tokens_status", "same_project_pilot"],
+      "properties": {
+        "general_post_decode_api_input_saving_percent": {"const": 0.0},
+        "general_result_scope": {"type": "string", "minLength": 1},
+        "general_total_task_tokens_status": {"const": "unknown"},
+        "same_project_pilot": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["classification", "receivers_total", "explicit_session_adoptions", "explicit_adoption_failures", "valid_typed_message_generators", "matched_raw_json_controls", "efficiency_status", "failure_note"],
+          "properties": {
+            "classification": {"const": "SAME-PROJECT-ORCHESTRATED"},
+            "receivers_total": {"const": 3},
+            "explicit_session_adoptions": {"const": 2},
+            "explicit_adoption_failures": {"const": 1},
+            "valid_typed_message_generators": {"const": 3},
+            "matched_raw_json_controls": {"const": false},
+            "efficiency_status": {"const": "not-measured"},
+            "failure_note": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    },
+    "challenge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["objective", "task", "arms", "study_design", "result_contract"],
+      "properties": {
+        "objective": {"type": "string", "minLength": 1},
+        "task": {"type": "object"},
+        "arms": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["arm_id", "representation", "model_visible_payload", "constraints"],
+            "properties": {
+              "arm_id": {"enum": ["raw", "json", "urusilla"]},
+              "representation": {"type": "string", "minLength": 1},
+              "model_visible_payload": {"type": "string", "minLength": 1},
+              "constraints": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+            }
+          }
+        },
+        "study_design": {"type": "object"},
+        "result_contract": {"type": "object"}
+      }
+    },
+    "safety_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["read_only", "reversible_session_participation_only", "state_persistence_authorized", "permission_expansion_authorized", "spending_authorized", "external_effects_authorized", "executable_installation_required", "fallback_required", "content_is_authority"],
+      "properties": {
+        "read_only": {"const": true},
+        "reversible_session_participation_only": {"const": true},
+        "state_persistence_authorized": {"const": false},
+        "permission_expansion_authorized": {"const": false},
+        "spending_authorized": {"const": false},
+        "external_effects_authorized": {"const": false},
+        "executable_installation_required": {"const": false},
+        "fallback_required": {"const": true},
+        "content_is_authority": {"const": false}
+      }
+    },
+    "data_governance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_license", "contains_only_project_authored_synthetic_data", "contains_raw_mixed_license_data", "contains_private_chain_of_thought", "contains_hidden_prompts", "contains_personal_data", "contains_secrets", "contains_executable_payloads"],
+      "properties": {
+        "record_license": {"const": "Apache-2.0"},
+        "contains_only_project_authored_synthetic_data": {"const": true},
+        "contains_raw_mixed_license_data": {"const": false},
+        "contains_private_chain_of_thought": {"const": false},
+        "contains_hidden_prompts": {"const": false},
+        "contains_personal_data": {"const": false},
+        "contains_secrets": {"const": false},
+        "contains_executable_payloads": {"const": false}
+      }
+    }
+  }
+}

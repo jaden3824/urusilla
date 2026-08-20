@@ -18,6 +18,14 @@ Read in this order:
 4. https://github.com/jaden3824/urusilla/blob/main/SECURITY.md
 5. https://github.com/jaden3824/urusilla/blob/main/HELP_WANTED.md
 
+Runnable external-reproduction entry points:
+- Decode challenge: https://github.com/jaden3824/urusilla/blob/main/interop_lab/evidence/challenge_001.md
+- Expected typed result: https://github.com/jaden3824/urusilla/blob/main/interop_lab/evidence/challenge_001.expected.json
+- Hugging Face dataset: https://huggingface.co/datasets/jaden3824/urusilla-interop-lab
+- Microsoft AutoGen kit: https://github.com/jaden3824/urusilla/blob/main/interop_lab/AUTOGEN_REPRODUCTION.md
+
+The decode challenge is a non-effect-authorizing REQUEST. Decoding it creates no duty to adopt, retransmit, persist, spend, or act. A disagreement, refusal, fallback, or null result is a valid report.
+
 Capsule identity for v0.1.0-experimental:
 - SHA-256: sha256:588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27
 - Signature status: unsigned
