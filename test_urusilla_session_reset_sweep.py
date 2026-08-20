@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import platform
+from pathlib import Path
 import unittest
 
 import urusilla_session_reset_sweep as sweep
@@ -29,6 +31,15 @@ EXPECTED_GRID = (
     280,
 )
 EXPECTED_MATRIX_SHA256 = "f3d1376dffbf7f51c2fe02fff724cdc7338c7220afd6a9a731d75d88369cbdd5"
+FROZEN_MEASUREMENT_RUNTIME = (
+    platform.python_implementation() == "CPython"
+    and platform.python_version() == "3.12.14"
+    and platform.platform() == "macOS-15.0-arm64-arm-64bit"
+)
+FROZEN_RUNTIME_REASON = (
+    "exact compressed-byte anchors are frozen on "
+    "CPython 3.12.14 / macOS-15.0-arm64-arm-64bit"
+)
 EXPECTED_ANCHORS = {
     (1, "canonical JSON", "gzip-6"): (
         173023,
@@ -93,11 +104,13 @@ class SessionResetSweepTests(unittest.TestCase):
         self.assertTrue(all(result.cached_deterministic for result in self.results))
         self.assertTrue(all(result.cold_deterministic for result in self.results))
 
+    @unittest.skipUnless(FROZEN_MEASUREMENT_RUNTIME, FROZEN_RUNTIME_REASON)
     def test_deterministic_matrix_digest(self) -> None:
         self.assertEqual(
             sweep.measurement_digest(self.results), EXPECTED_MATRIX_SHA256
         )
 
+    @unittest.skipUnless(FROZEN_MEASUREMENT_RUNTIME, FROZEN_RUNTIME_REASON)
     def test_frozen_endpoint_anchors(self) -> None:
         observed = {
             (result.chunk_size, result.family, result.compression): (
@@ -175,7 +188,11 @@ class SessionResetSweepTests(unittest.TestCase):
         self.assertIn("not a task-utility result or a state-of-the-art claim", normalized)
         self.assertIn("Bare JSON has no independent per-record checksum", normalized)
         self.assertIn("No result establishes a world record", normalized)
-        self.assertIn(EXPECTED_MATRIX_SHA256, normalized)
+        self.assertIn(sweep.measurement_digest(self.results), normalized)
+        published = Path(__file__).with_name("SESSION_RESET_SWEEP_RESULTS.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(EXPECTED_MATRIX_SHA256, published)
 
 
 if __name__ == "__main__":

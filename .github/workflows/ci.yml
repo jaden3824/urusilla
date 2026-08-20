@@ -193,7 +193,15 @@ jobs:
           test_urusilla_token_surface_holdout.py
       - name: Run receiver-negotiated surface tests
         timeout-minutes: 25
-        run: python -m unittest -v performance_v07.test_receiver_negotiated_surface_v07
+        run: >-
+          python -m unittest -v
+          test_urusilla_terse_english_benchmark.py
+          test_urusilla_token_surface_v04.py
+          test_urusilla_adaptive_surface_v05.py
+          test_urusilla_generalization_surface_v06.py
+          test_urusilla_transparent_fallback_v08.py
+          test_urusilla_session_delta_v09.py
+          performance_v07.test_receiver_negotiated_surface_v07
 
   offline-integration-suites:
     runs-on: ubuntu-latest
