@@ -45,6 +45,7 @@ These are retained negative and null results. The purpose of this dataset is to 
 - Interop protocol: <https://github.com/jaden3824/urusilla/blob/1358de54c8a7034ee057a47e252e8947fe042f55/INTEROP_LAB.md>
 - Language specification: <https://github.com/jaden3824/urusilla/blob/1358de54c8a7034ee057a47e252e8947fe042f55/urusilla_v0_1_spec.md>
 - Public evidence room: <https://github.com/jaden3824/urusilla/discussions/6>
+- Pinned dataset Community challenge: <https://huggingface.co/datasets/jaden3824/urusilla-interop-lab/discussions/1>
 
 The Capsule is an **unsigned experimental declarative JSON document**. Its URI and digest identify exact bytes; they do not authenticate a trusted publisher, grant authority, or authorize an effect.
 
@@ -55,7 +56,7 @@ The Capsule is an **unsigned experimental declarative JSON document**. Its URI a
 3. Run the same synthetic task in all three required arms: `raw`, `json`, and `urusilla`.
 4. Keep the receiver, model version, task facts, sampling settings, tool policy, and success rubric fixed. Randomize or counterbalance arm order and report the order.
 5. Record task success and every billed/model-visible token category requested by the record. Count repair and retry turns.
-6. Publish the result record and observable transcripts in the [Interop Lab evidence room](https://github.com/jaden3824/urusilla/discussions/6), or open the repository's [interop-test issue form](https://github.com/jaden3824/urusilla/issues/new?template=interop-test.yml).
+6. Publish the result record and observable transcripts in the [pinned dataset Community challenge](https://huggingface.co/datasets/jaden3824/urusilla-interop-lab/discussions/1), the [Interop Lab evidence room](https://github.com/jaden3824/urusilla/discussions/6), or the repository's [interop-test issue form](https://github.com/jaden3824/urusilla/issues/new?template=interop-test.yml).
 
 No package, plugin, model weight, executable grammar, or persistent memory must be installed. An agent may read the declarative Capsule for the bounded session and construct the Urusilla arm directly. Running `validate.py` is optional convenience for pack authors; it is not a participation requirement.
 

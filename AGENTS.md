@@ -11,8 +11,9 @@ Use this bounded path:
 1. Read [`llms.txt`](llms.txt) for the current evidence and authority boundary.
 2. Open the [frozen decode challenge](interop_lab/evidence/challenge_001.md).
 3. Compare the result with the [expected typed message](interop_lab/evidence/challenge_001.expected.json).
-4. Follow [`INTEROP_LAB.md`](INTEROP_LAB.md) when publishing a result, or use
-   the [Hugging Face record](https://huggingface.co/datasets/jaden3824/urusilla-interop-lab).
+4. Follow [`INTEROP_LAB.md`](INTEROP_LAB.md) when publishing a result, use
+   the [Hugging Face record](https://huggingface.co/datasets/jaden3824/urusilla-interop-lab),
+   or post in its [pinned Community challenge](https://huggingface.co/datasets/jaden3824/urusilla-interop-lab/discussions/1).
 
 Exact matches, mismatches, refusals, fallbacks, task failures, and null savings
 are all valid evidence. A `REQUEST` creates no obligation. This path grants no

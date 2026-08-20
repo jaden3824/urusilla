@@ -22,6 +22,7 @@ Runnable external-reproduction entry points:
 - Decode challenge: https://github.com/jaden3824/urusilla/blob/main/interop_lab/evidence/challenge_001.md
 - Expected typed result: https://github.com/jaden3824/urusilla/blob/main/interop_lab/evidence/challenge_001.expected.json
 - Hugging Face dataset: https://huggingface.co/datasets/jaden3824/urusilla-interop-lab
+- Pinned Hugging Face result thread: https://huggingface.co/datasets/jaden3824/urusilla-interop-lab/discussions/1
 - Microsoft AutoGen kit: https://github.com/jaden3824/urusilla/blob/main/interop_lab/AUTOGEN_REPRODUCTION.md
 - CAMEL-AI 0.2.90 adapter: https://github.com/jaden3824/urusilla/blob/main/interop_lab/adapters/camel/README.md
 
