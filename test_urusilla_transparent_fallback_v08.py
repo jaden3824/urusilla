@@ -23,9 +23,9 @@ class TransparentFallbackV08Tests(unittest.TestCase):
     def setUpClass(cls) -> None:
         try:
             cls.profiles = load_tokenizer_profiles(default_asset_root())
+            cls.study = subject.collect_study(cls.profiles)
         except RuntimeError as exc:
             raise unittest.SkipTest(str(exc)) from exc
-        cls.study = subject.collect_study(cls.profiles)
         cls.snapshot = subject.study_snapshot(cls.study)
 
     def test_frozen_source_contract_and_snapshot(self) -> None:
