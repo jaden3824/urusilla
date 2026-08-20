@@ -1,0 +1,8 @@
+{
+  "languageVersion": "0.1.0",
+  "languageSpecUri": "https://github.com/jaden3824/urusilla/blob/b845f7f2a5eae7a7a82ef8bb3e659e50c002b561/urusilla_v0_1_spec.md",
+  "capsuleSha256": "588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27",
+  "implementationOrigin": "https://github.com/jaden3824/urusilla/tree/b845f7f2a5eae7a7a82ef8bb3e659e50c002b561",
+  "conformanceReportUrl": "https://github.com/jaden3824/urusilla/blob/b845f7f2a5eae7a7a82ef8bb3e659e50c002b561/conformance_report.json",
+  "conformanceReportSha256": "350be30f1d80432f07b5117819df4c0ae8b30484a0cefc1ce4c45d8050168180"
+}
