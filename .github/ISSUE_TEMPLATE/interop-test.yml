@@ -1,0 +1,293 @@
+name: Agent-to-agent propagation test
+description: Submit evidence that one agent taught, tested, and optionally relayed Urusilla to another agent.
+title: "[Propagation]: "
+labels: ["research-evidence"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Urusilla agent-to-agent propagation submission
+
+        This form tests actual propagation: whether a sender can provide only declared artifacts to a fresh or explicitly characterized receiver, whether that receiver passes comprehension gates and uses the language, and whether it can relay the artifacts to a downstream agent. Negative, null, and favorable results are equally welcome.
+
+        Report the complete task-level token denominator, including discovery, handshake, artifact delivery, teaching, gates, task use, retransmission, repairs, retries, and fallbacks. A shorter wire message is not by itself evidence of lower model or task cost.
+
+        This form is an evidence exchange, not a code-execution service. Repository automation must not execute linked code, prompts, agent payloads, or other untrusted artifacts. Maintainers may review public artifacts manually or reproduce them in an isolated environment.
+
+        Do not publish chain-of-thought, private prompts or conversations, credentials, secrets, personal data, or material you cannot redistribute.
+
+  - type: dropdown
+    id: result-direction
+    attributes:
+      label: Result direction
+      description: Select the direction measured against the declared raw baseline.
+      options:
+        - Unfavorable or regression
+        - Null or inconclusive
+        - Favorable
+    validations:
+      required: true
+
+  - type: input
+    id: submitter
+    attributes:
+      label: Accountable submitter
+      description: Public individual, team, or organization responsible for this report.
+      placeholder: GitHub handle, team, or organization
+    validations:
+      required: true
+
+  - type: dropdown
+    id: independence
+    attributes:
+      label: Relationship to Urusilla
+      description: This distinguishes external evidence from same-project testing; it does not rank the result.
+      options:
+        - Independent external reproduction
+        - Mixed or partially project-assisted reproduction
+        - Urusilla project-affiliated test
+        - Uncertain; explained below
+    validations:
+      required: true
+
+  - type: textarea
+    id: independence-details
+    attributes:
+      label: Independence, contamination, and assistance disclosure
+      description: Disclose prior Urusilla exposure, training or evaluation overlap, persistent memory, cached artifacts, reused conversations, shared or oracle-derived vectors, copied components, project guidance, model or agent assistance, paid calls, and conflicts of interest.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: receiver-freshness
+    attributes:
+      label: First receiver freshness
+      description: Select the most conservative description and explain the evidence below.
+      options:
+        - Fresh unseen receiver with no known prior Urusilla exposure
+        - Previously used runtime with memory and caches explicitly reset
+        - Known receiver with possible retained Urusilla context
+        - Unknown or unverifiable freshness
+    validations:
+      required: true
+
+  - type: textarea
+    id: freshness-evidence
+    attributes:
+      label: Freshness and isolation evidence
+      description: Explain how you established the receiver's status, isolated trials, prevented cross-trial leakage, and checked hidden system prompts, memory, retrieval, caches, tools, or network access that could supply undeclared Urusilla information.
+    validations:
+      required: true
+
+  - type: input
+    id: release-revision
+    attributes:
+      label: Urusilla release or immutable repository revision
+      description: Use a release tag plus commit SHA when available.
+      placeholder: v0.1.0-experimental at full commit SHA
+    validations:
+      required: true
+
+  - type: input
+    id: capsule-digest
+    attributes:
+      label: Full Grammar Capsule SHA-256 digest
+      description: Hash the exact capsule presented to the receiving agent. Do not use a branch URL as identity. The Interop Lab machine record writes this as `sha256:` followed by 64 lowercase hexadecimal characters.
+      placeholder: sha256:588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27
+    validations:
+      required: true
+
+  - type: textarea
+    id: supplied-artifacts
+    attributes:
+      label: Only artifacts supplied to the first receiver
+      description: Enumerate every message, file, URL, schema, example, tool result, and instruction supplied before or during the test, in order, with immutable URLs and digests. Explicitly state any network, retrieval, or tool access. Do not omit the natural-language wrapper around the capsule.
+      placeholder: |
+        1. Sender message or artifact — immutable URL or exact text — SHA-256
+        2. Capsule — immutable URL — SHA-256
+        Undeclared network/retrieval/tool access: none, or exact disclosure
+    validations:
+      required: true
+
+  - type: textarea
+    id: agents
+    attributes:
+      label: Agent, runtime, and model disclosure
+      description: For every sender, receiver, judge, router, or bridge, list its role, implementation revision, runtime and platform, model/provider/version, tokenizer, and relevant settings. State whether Urusilla support was native or bridge-mediated.
+      placeholder: |
+        Sender — role; implementation@revision; runtime/platform; model/provider/version; tokenizer; settings; native or bridge
+        Receiver — role; implementation@revision; runtime/platform; model/provider/version; tokenizer; settings; native or bridge
+        Judge/router — same fields, or "none"
+    validations:
+      required: true
+
+  - type: textarea
+    id: task-contract
+    attributes:
+      label: Task and measurement contract
+      description: Define the scenario, task-success rule, fidelity rule, number of trials, cold or warm state, context retained between trials, stopping rule, token-counting method, and the complete denominator before reporting the result.
+    validations:
+      required: true
+
+  - type: textarea
+    id: authorization-utility
+    attributes:
+      label: Autonomous-use authorization and mutual-utility gate
+      description: For each hop, state whether session adoption and retransmission used a pre-existing standing policy, interactive approval, or no authorization. Give the immutable policy reference or exact bounded rule, the expected mutual-utility metric and threshold, the observed or estimated value, pass/fail, and revocation state. No authorization permits only decline or fallback. Persistence, spending, permission expansion, and external effects are outside this Lab path.
+      placeholder: |
+        Hop A adoption authorization: standing-policy | interactive-approval | none
+        Policy reference or bounded rule:
+        Utility metric and threshold:
+        Observed or estimated value; pass/fail:
+        Hop A retransmission authorization:
+        Revoked: false | true, with reason
+    validations:
+      required: true
+
+  - type: textarea
+    id: handshake
+    attributes:
+      label: Sender to first-receiver handshake and route selection
+      description: "Show the exact first hop: how the sender introduced Urusilla, advertised capabilities, transferred and authenticated artifact identities, negotiated raw natural language, JSON, or Urusilla, and retained a fallback. Redact secrets without changing semantics."
+      placeholder: |
+        Initial route:
+        Capability advertisement:
+        Capsule identity verification:
+        Negotiated route:
+        Available fallback:
+    validations:
+      required: true
+
+  - type: textarea
+    id: positive-gate
+    attributes:
+      label: Positive comprehension gate
+      description: List the exact unseen positive vectors, expected meanings, observed meanings, pass count, and evidence digest. Reading the capsule alone is not a pass.
+    validations:
+      required: true
+
+  - type: textarea
+    id: negative-gate
+    attributes:
+      label: Negative comprehension and safety gate
+      description: List malformed, unknown, unauthorized, stale-state, or adversarial vectors and show the expected rejection, clarification, or fallback behavior. Include every failure.
+    validations:
+      required: true
+
+  - type: textarea
+    id: usage-transcript
+    attributes:
+      label: First-receiver usage transcript
+      description: Link or include the complete post-gate task exchange that demonstrates whether the receiver actually generated and consumed Urusilla. Include raw outputs, validation decisions, repairs, fallbacks, and final task result; do not include chain-of-thought or sensitive content.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: retransmission-status
+    attributes:
+      label: Did the first receiver retransmit Urusilla to a new downstream agent?
+      options:
+        - Yes; a downstream propagation hop was tested
+        - No; retransmission was attempted but failed or was refused
+        - Not tested; this submission covers only the first hop
+    validations:
+      required: true
+
+  - type: textarea
+    id: downstream-hop
+    attributes:
+      label: Receiver to downstream-agent result
+      description: If tested, disclose the downstream agent and its freshness, the exact artifacts and wrapper the first receiver retransmitted, its positive and negative gate results, usage transcript, task success and fidelity, repairs, fallbacks, and per-hop token ledger. If not tested, explain why. Do not treat forwarding a URL as proof of comprehension or adoption.
+    validations:
+      required: true
+
+  - type: textarea
+    id: baseline-ledger
+    attributes:
+      label: Raw baseline total-token ledger
+      description: Report counts for the complete successful or attempted raw-language control, not only visible message text. Match the tested hops and task boundaries, assign every token to exactly one phase row, and reconcile the phase rows with the totals. If a field does not apply, enter zero and explain why.
+      placeholder: |
+        Discovery and handshake — input / output:
+        Artifact delivery or teaching — input / output:
+        Comprehension gates — input / output:
+        Task use — input / output:
+        Retransmission and downstream gates — input / output:
+        Repairs or retries — input / output:
+        Fallback — input / output:
+        Judge or router — input / output:
+        Total model input tokens:
+        Total model output tokens:
+        Grand total model tokens:
+        Transport bytes (optional):
+        Tokenizer and counting source:
+    validations:
+      required: true
+
+  - type: textarea
+    id: urusilla-ledger
+    attributes:
+      label: Urusilla total-token ledger
+      description: Use the same hops, boundaries, tokenizer, success criteria, and accounting method as the raw baseline. Assign every token to exactly one phase row and reconcile the rows with the totals. Include capsule delivery or retrieval when it was not already cached.
+      placeholder: |
+        Discovery and handshake — input / output:
+        Capsule delivery or teaching — input / output:
+        Comprehension gates — input / output:
+        Task use — input / output:
+        Retransmission and downstream gates — input / output:
+        Repairs or retries — input / output:
+        Fallback — input / output:
+        Judge or router — input / output:
+        Total model input tokens:
+        Total model output tokens:
+        Grand total model tokens:
+        Transport bytes (optional):
+        Tokenizer and counting source:
+    validations:
+      required: true
+
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Task success, fidelity, and observed outcome
+      description: Report baseline and Urusilla success separately, semantic fidelity or exactness, refusals, repairs, fallback count, confidence intervals when applicable, and the bounded conclusion supported by the evidence.
+      placeholder: |
+        Raw baseline success and fidelity:
+        Urusilla success and fidelity:
+        Repairs, retries, refusals, and fallback count:
+        Total-token difference and uncertainty:
+        Bounded conclusion:
+    validations:
+      required: true
+
+  - type: textarea
+    id: artifacts
+    attributes:
+      label: Public transcript and reproducibility artifacts
+      description: Link immutable, content-addressed transcripts, manifests, environment locks, ledgers, and code needed for manual review. Include digests. Do not link sensitive or access-controlled data.
+      placeholder: One immutable URL and SHA-256 digest per line
+    validations:
+      required: true
+
+  - type: textarea
+    id: limitations
+    attributes:
+      label: Failures, limitations, and requested claim
+      description: Preserve unfavorable observations. State what this test does not establish and the exact public claim, if any, that you believe it supports.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: integrity
+    attributes:
+      label: Privacy, license, consent, and research-integrity declarations
+      options:
+        - label: I included no chain-of-thought, private prompts or conversations, credentials, secrets, personal data, or other sensitive material.
+          required: true
+        - label: I have the rights, licenses, and participant consent needed to publish every submitted or linked artifact.
+          required: true
+        - label: I reported unfavorable outcomes, failures, repairs, retries, refusals, setup costs, and fallbacks without selectively omitting them.
+          required: true
+        - label: I understand that links are for manual review and do not authorize Urusilla automation to execute untrusted code, prompts, or agent payloads.
+          required: true
+        - label: I understand that submission does not prove adoption, conformance, independence, efficiency, or registry inclusion until the evidence is reviewed.
+          required: true

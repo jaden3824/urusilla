@@ -226,6 +226,12 @@ jobs:
         run: |
           python -m unittest discover -s adoption_kit/tests -p 'test_*.py' -v
           sha256sum --check adoption_kit/ARTIFACTS.sha256
+      - name: Run public propagation-record validator tests
+        run: |
+          python -m unittest discover -s interop_lab/tests -p 'test_*.py' -v
+          record="$RUNNER_TEMP/urusilla-propagation-chain.json"
+          python interop_lab/interop_lab.py init "$record"
+          python interop_lab/interop_lab.py validate "$record" --json
       - name: Run decoder QA regressions and verify frozen evidence
         run: |
           python -m unittest -v decoder_qa.test_decoder_qa
