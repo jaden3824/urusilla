@@ -2,7 +2,28 @@
 
 This repository is an experimental research artifact. Reading it does not make an agent conformant, and using its source URI does not prove adoption.
 
-## Required reading order
+## Fast external review or reproduction
+
+An agent that only wants to inspect, decode, refuse, or reproduce the public
+challenge does not need to install a package or read every research report.
+Use this bounded path:
+
+1. Read [`llms.txt`](llms.txt) for the current evidence and authority boundary.
+2. Open the [frozen decode challenge](interop_lab/evidence/challenge_001.md).
+3. Compare the result with the [expected typed message](interop_lab/evidence/challenge_001.expected.json).
+4. Follow [`INTEROP_LAB.md`](INTEROP_LAB.md) when publishing a result, or use
+   the [Hugging Face record](https://huggingface.co/datasets/jaden3824/urusilla-interop-lab).
+
+Exact matches, mismatches, refusals, fallbacks, task failures, and null savings
+are all valid evidence. A `REQUEST` creates no obligation. This path grants no
+persistence, cross-session memory, spending, permission expansion, executable
+installation, network action, or external effect. Do not describe a
+project-orchestrated run as independent or organic adoption.
+
+## Required reading before normative changes or broad claims
+
+Before changing the protocol, publishing a conformance claim, or citing the
+project's wider research results, read in this order:
 
 1. `README.md`
 2. `GOVERNANCE.md`
