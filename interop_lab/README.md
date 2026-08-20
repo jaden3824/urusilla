@@ -84,6 +84,14 @@ operator approval flag, and one fresh operator-supplied model client per arm.
 It supplies no tools or memory and does not infer provider credentials or cost
 authority. See [Microsoft AutoGen Minimal Reproduction](AUTOGEN_REPRODUCTION.md).
 
+## CAMEL-AI reproduction
+
+CAMEL operators can prepare and validate a matched three-arm plan entirely
+offline with the [CAMEL-AI 0.2.90 adapter](adapters/camel/README.md). The
+optional live library path is guarded by explicit operator authorization and
+an exact three-call cap; it creates fresh tool-free, memory-free agents and
+fails closed when usage accounting is missing or inconsistent.
+
 ## What one hop records
 
 Every hop binds the following fields:

@@ -10,7 +10,7 @@ The intended general-use system is a layered router: verified silence or topolog
 
 ## Fastest reproducible starting point
 
-Start with the [public decode challenge](interop_lab/evidence/challenge_001.md). It contains one immutable Base64url Urusilla frame, its SHA-256 identity, the exact decoder command, and a separately pinned expected typed message. Report an exact match, a mismatch, a refusal, or a fallback; all four are useful evidence. For a matched three-arm experiment, use the [Hugging Face reproduction dataset](https://huggingface.co/datasets/jaden3824/urusilla-interop-lab). Existing Microsoft AutoGen users can use the [offline-first reproduction kit](interop_lab/AUTOGEN_REPRODUCTION.md).
+Start with the [public decode challenge](interop_lab/evidence/challenge_001.md). It contains one immutable Base64url Urusilla frame, its SHA-256 identity, the exact decoder command, and a separately pinned expected typed message. Report an exact match, a mismatch, a refusal, or a fallback; all four are useful evidence. For a matched three-arm experiment, use the [Hugging Face reproduction dataset](https://huggingface.co/datasets/jaden3824/urusilla-interop-lab). Existing Microsoft AutoGen users can use the [offline-first reproduction kit](interop_lab/AUTOGEN_REPRODUCTION.md), while CAMEL users can start from the [pinned 0.2.90 adapter](interop_lab/adapters/camel/README.md).
 
 These entry points do not authorize executable installation, persistence, permission expansion, spending, or external effects. They also do not count as external adoption until an independently operated result is published with provenance and a complete token ledger.
 

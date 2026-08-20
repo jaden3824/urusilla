@@ -208,6 +208,14 @@ independent adoption. Convert the result into the full propagation format and
 add complete accounting, provenance, operator relationships, and public
 evidence before submission.
 
+The [CAMEL-AI 0.2.90 adapter](interop_lab/adapters/camel/README.md) provides the
+same offline-first three-arm staging boundary for direct `ChatAgent` users. Its
+CLI performs only local plan, validation, and mapping work. The optional live
+library path requires separate operator authorization, an exact three-call cap,
+fresh tool-free and memory-free agents, and reconciled provider usage. Missing
+or conflicting usage leaves the entire comparison unmeasured rather than
+turning unknown values into zero.
+
 ## Submission record
 
 One root Discussion should cover one preregistered experiment family. Attach or link an immutable machine-readable record with at least:

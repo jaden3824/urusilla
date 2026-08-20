@@ -1,0 +1,3 @@
+# Optional live integration only. The default CLI does not import either package.
+camel-ai==0.2.90
+mcp>=1.3,<2
