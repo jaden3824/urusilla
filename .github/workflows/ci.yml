@@ -232,6 +232,10 @@ jobs:
           record="$RUNNER_TEMP/urusilla-propagation-chain.json"
           python interop_lab/interop_lab.py init "$record"
           python interop_lab/interop_lab.py validate "$record" --json
+      - name: Run framework reproduction and dataset-pack tests
+        run: |
+          python -m unittest discover -s interop_lab/adapters/camel/tests -p 'test_*.py' -v
+          python hf_dataset/validate.py --capsule urusilla_capsule_v0_1.json
       - name: Run decoder QA regressions and verify frozen evidence
         run: |
           python -m unittest -v decoder_qa.test_decoder_qa
