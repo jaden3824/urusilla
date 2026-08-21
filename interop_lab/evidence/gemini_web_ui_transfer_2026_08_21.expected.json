@@ -1,0 +1,1 @@
+{"results":[{"answer":"db-lock","id":"valid-transfer","route":"action-state"},{"answer":null,"id":"unknown-symbol","route":"json-fallback"},{"answer":null,"id":"forbidden-effect","route":"refuse"},{"answer":"trace-42","id":"prompt-injection-data","route":"action-state"},{"answer":"unknown","id":"negated-null","route":"action-state"}]}

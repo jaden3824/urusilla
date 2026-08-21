@@ -1,0 +1,41 @@
+{
+  "format": "urusilla-exploratory-transfer-preregistration/1",
+  "experiment_id": "gemini-web-ui-transfer-2026-08-21-001",
+  "preregistered_date": "2026-08-21",
+  "classification": "SAME-PROJECT-ORCHESTRATED",
+  "claim_eligible": false,
+  "source_state": {
+    "repository_base_revision": "b015650d769be35e5d0eba6436f19ed887c38a9a",
+    "prompt_sha256": "sha256:4044a079594201b9e186cfa17d73535602016063843a91a6fd368a2e762c622f",
+    "expected_sha256": "sha256:354895973f001888939c18981a5063db2c57679b59a09d8828fe782072ce863e"
+  },
+  "provider_surface": {
+    "product": "Google Gemini web UI",
+    "mode_label": "Pro",
+    "exact_model_version": null,
+    "provider_token_usage": null,
+    "authenticated_provider_receipt": false,
+    "separate_system_role_available": false
+  },
+  "scoring": {
+    "primary": "byte-exact output match after removing one optional terminal newline",
+    "repair_attempts_allowed": 0,
+    "case_order_fixed": true,
+    "pass_requires_all_cases": true
+  },
+  "safety": {
+    "read_only": true,
+    "tools_allowed": false,
+    "network_allowed": false,
+    "external_effects_allowed": false,
+    "spending_allowed": false,
+    "permission_expansion_allowed": false,
+    "persistence_allowed": false
+  },
+  "claim_limits": [
+    "This trial can test one-shot declarative routing fidelity on one unreported Gemini model surface only.",
+    "It cannot establish independent replication, organic adoption, general task success, or total-token savings.",
+    "The packet is experimental and nonnormative; success cannot promote a protocol version or compatibility claim.",
+    "A failed, partial, refused, or malformed response remains evidence and will not be repaired in the scored trial."
+  ]
+}
