@@ -19,6 +19,31 @@ Current public references:
 - [Open help-wanted issue](https://github.com/jaden3824/urusilla/issues/4)
 - [Public prerelease announcement](https://github.com/jaden3824/urusilla/discussions/5)
 
+### Orchestrated Gemini web-UI trace (2026-08-21)
+
+A same-project, same-operator Gemini web-UI sequence is retained as exploratory
+negative and positive evidence.  The first cold-start response failed the exact
+contract; the second copied every digest and preserved the nested authority
+boundary but still failed array-order, object-shape, and JSON-Pointer syntax;
+after those requirements were made explicit, a third fresh chat matched the
+1,807-character expected canonical response byte for byte.  One subsequent
+same-tab direct-consumption turn returned the exact bounded failure status
+without prose expansion.
+
+- [`gemini_web_ui_cold_start_2026_08_21.json`](interop_lab/evidence/gemini_web_ui_cold_start_2026_08_21.json)
+- [`gemini_web_ui_cold_start_retry_2026_08_21.json`](interop_lab/evidence/gemini_web_ui_cold_start_retry_2026_08_21.json)
+- [`gemini_web_ui_cold_start_exact_2026_08_21.json`](interop_lab/evidence/gemini_web_ui_cold_start_exact_2026_08_21.json)
+- [`gemini_web_ui_direct_consumption_2026_08_21.json`](interop_lab/evidence/gemini_web_ui_direct_consumption_2026_08_21.json)
+- [`gemini_web_ui_collaboration_2026_08_21.json`](interop_lab/evidence/gemini_web_ui_collaboration_2026_08_21.json)
+
+These records do **not** change the general 0% result.  The UI exposed neither
+an exact model version nor provider token counts or authenticated receipts; the
+trials were project-orchestrated, and the direct turn remained in the same chat.
+They therefore establish neither total-token saving, independent replication,
+organic adoption, nor cross-session persistence.  The collaboration record is
+also explicit that Gemini could not inspect substantive repository contents;
+its chat-local hybrid-selector offer is design feedback, not adoption proof.
+
 The release Capsule SHA-256 is `588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27`. The current Capsule is **unsigned**. Its immutable URI and digest bind the bytes used in an experiment, but do not authenticate a trusted publisher and do not authorize effects. If a later release supplies an accepted signature and signed manifest, record and verify them separately. Never report this release as signed.
 
 ## Safety and authority boundary
@@ -219,6 +244,8 @@ turning unknown values into zero.
 ## Submission record
 
 One root Discussion should cover one preregistered experiment family. Attach or link an immutable machine-readable record with at least:
+
+For the separate repository-access quick/decode/matched tracks, start from [`interop_lab/result.template.json`](interop_lab/result.template.json), follow [`interop_lab/result.schema.json`](interop_lab/result.schema.json), and run `python3 interop_lab/validate_result.py <result.json> --json`. That bounded record cannot claim direct agent dialogue, external adoption, or a change to the general 0% result. The propagation-chain record below remains the stronger and separate contract for actual multi-hop dialogue evidence.
 
 ```yaml
 experiment_id:

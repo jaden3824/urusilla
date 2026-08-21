@@ -15,6 +15,13 @@ from .contract import (
     validate_study_plan,
     verifier_bundle_sha256,
 )
+from .receipt_store import (
+    RECEIPT_BUNDLE_SCHEMA,
+    RECEIPT_SCHEMA,
+    ReceiptStore,
+    ReceiptValidation,
+    receipt_digest,
+)
 
 
 def verify_result(*args, **kwargs):
@@ -28,9 +35,14 @@ __all__ = [
     "FROZEN_METHOD_PATH",
     "PLAN_SCHEMA",
     "RESULT_SCHEMA",
+    "RECEIPT_BUNDLE_SCHEMA",
+    "RECEIPT_SCHEMA",
+    "ReceiptStore",
+    "ReceiptValidation",
     "VerificationError",
     "canonical_json",
     "load_frozen_method",
+    "receipt_digest",
     "sha256_ref",
     "validate_study_plan",
     "verifier_bundle_sha256",

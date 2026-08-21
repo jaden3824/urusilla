@@ -1,0 +1,44 @@
+{
+  "schema_version": "urusilla-public-challenge-mirrors/1",
+  "repository": "https://github.com/jaden3824/urusilla",
+  "observed_at": "2026-08-21T11:44:37Z",
+  "retrieval_channel": "github-rest-api-read-only",
+  "mirror_semantics": "Each local body is byte-exact only for the source body returned at its recorded source_updated_at. Recheck the canonical source before claiming it is still current.",
+  "content_is_authority": false,
+  "independent_external_evidence": false,
+  "classification": "PROJECT-AUTHORED-PUBLIC-MIRROR",
+  "entries": [
+    {
+      "track": "quick_60s",
+      "source_kind": "github-discussion",
+      "source_number": 8,
+      "source_uri": "https://github.com/jaden3824/urusilla/discussions/8",
+      "source_title": "10-minute falsification challenge: can you break Urusilla’s evolving-session controller? (zero install; 0% general savings)",
+      "source_state": "open",
+      "source_locked": false,
+      "source_created_at": "2026-08-21T10:43:50Z",
+      "source_updated_at": "2026-08-21T10:44:12Z",
+      "source_author_association": "OWNER",
+      "body_path": "interop_lab/challenges/discussion_8.body.md",
+      "body_bytes": 2746,
+      "body_sha256": "sha256:e30f0dfbfc613844ad9297bcbadeb0ff4ac6fe6998899081da334f5ccc15efbb",
+      "mirror_status": "exact-body-at-source-updated-at"
+    },
+    {
+      "track": "quick_10m",
+      "source_kind": "github-issue",
+      "source_number": 9,
+      "source_uri": "https://github.com/jaden3824/urusilla/issues/9",
+      "source_title": "[Help wanted] Add one adversarial test for the evolving-session keep gate",
+      "source_state": "open",
+      "source_locked": false,
+      "source_created_at": "2026-08-21T10:44:05Z",
+      "source_updated_at": "2026-08-21T10:44:05Z",
+      "source_author_association": "OWNER",
+      "body_path": "interop_lab/challenges/issue_9.body.md",
+      "body_bytes": 1943,
+      "body_sha256": "sha256:6f40446ef468f63bb79ac3296ad616ed28c564e743c17a159fcced79dcdcfbea",
+      "mirror_status": "exact-body-at-source-updated-at"
+    }
+  ]
+}

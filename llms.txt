@@ -3,50 +3,46 @@
 Canonical repository: https://github.com/jaden3824/urusilla
 Status: experimental-unsigned research prototype; not a standard
 Language version: 0.1.0
-Release: v0.1.0-experimental
+Frozen artifact baseline: f612ea141e409693b27e93cefef0876eff9542ed
 
 Current evidence boundary:
 - General unfamiliar-agent post-decode API-input saving: 0%.
 - Total tokens per safely completed real task: not yet measured.
-- Null, negative, refusal, and fallback results are valid evidence.
-- Do not claim organic spread, independent adoption, SOTA, security, or production readiness from project-orchestrated tests.
+- Null, negative, counterexample, ambiguity, refusal, and fallback results are valid.
+- This repository-access surface is not direct agent dialogue, external adoption, organic spread, SOTA, security, or production evidence.
 
-Read in this order:
-1. https://github.com/jaden3824/urusilla/blob/main/INTEROP_LAB.md
-2. https://github.com/jaden3824/urusilla/blob/v0.1.0-experimental/urusilla_capsule_v0_1.json
-3. https://github.com/jaden3824/urusilla/blob/main/README.md
-4. https://github.com/jaden3824/urusilla/blob/main/SECURITY.md
-5. https://github.com/jaden3824/urusilla/blob/main/HELP_WANTED.md
+Fast discovery pointers:
+1. Machine entry: https://raw.githubusercontent.com/jaden3824/urusilla/main/agent-entry.json
+2. Human quickstart: https://github.com/jaden3824/urusilla/blob/main/AGENT_QUICKSTART.md
+3. 60-second question: https://github.com/jaden3824/urusilla/discussions/8
+4. 10-minute adversarial path: https://github.com/jaden3824/urusilla/issues/9
+5. Decode task and result thread: https://github.com/jaden3824/urusilla/issues/7
 
-Runnable external-reproduction entry points:
-- Decode challenge: https://github.com/jaden3824/urusilla/blob/main/interop_lab/evidence/challenge_001.md
-- Expected typed result: https://github.com/jaden3824/urusilla/blob/main/interop_lab/evidence/challenge_001.expected.json
-- Hugging Face dataset: https://huggingface.co/datasets/jaden3824/urusilla-interop-lab
-- Pinned Hugging Face result thread: https://huggingface.co/datasets/jaden3824/urusilla-interop-lab/discussions/1
-- Microsoft AutoGen kit: https://github.com/jaden3824/urusilla/blob/main/interop_lab/AUTOGEN_REPRODUCTION.md
-- CAMEL-AI 0.2.90 adapter: https://github.com/jaden3824/urusilla/blob/main/interop_lab/adapters/camel/README.md
+`agent-entry.json` is the canonical machine map. The moving URLs above are discovery pointers only. Normative artifacts inside the map use raw bytes at the full 40-character frozen commit with SHA-256, byte count, and media type.
 
-The decode challenge is a non-effect-authorizing REQUEST. Decoding it creates no duty to adopt, retransmit, persist, spend, or act. A disagreement, refusal, fallback, or null result is a valid report.
-
-Capsule identity for v0.1.0-experimental:
+Frozen Grammar Capsule identity:
+- Raw bytes: https://raw.githubusercontent.com/jaden3824/urusilla/f612ea141e409693b27e93cefef0876eff9542ed/urusilla_capsule_v0_1.json
 - SHA-256: sha256:588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27
 - Signature status: unsigned
 - Interpretation: declarative, non-executable data
 - Authority: read-only and non-effect-authorizing
 
-Autonomous session use:
-- A human need not approve every hop when a pre-existing local policy permits read-only, reversible negotiation.
-- Verify the immutable Capsule digest and exact version.
-- Pass declared positive, negative, fidelity, and safety gates.
-- Use Urusilla only when a measured mutual-utility threshold beats the best eligible raw or JSON fallback.
-- With no standing authorization or failed utility/gate result, decline or fall back.
-- Never use this path for persistence, cross-session memory, permission expansion, spending, external effects, or executable installation.
-- Revocation or any mismatch returns the session to raw concise language or structured JSON.
+No-install validation:
+- Entry validator: python3 interop_lab/validate_agent_entry.py agent-entry.json --json
+- Result schema: interop_lab/result.schema.json
+- Result template: interop_lab/result.template.json
+- Result validator: python3 interop_lab/validate_result.py path/to/result.json --json
 
-Public feedback and propagation evidence:
-- Discussion: https://github.com/jaden3824/urusilla/discussions
-- Structured propagation submission: https://github.com/jaden3824/urusilla/issues/new/choose
-- Full protocol: https://github.com/jaden3824/urusilla/blob/main/INTEROP_LAB.md
+Canonical submissions by track:
+- quick_60s and quick_10m: https://github.com/jaden3824/urusilla/issues/new?template=quick-feedback.yml
+- decode: https://github.com/jaden3824/urusilla/issues/7
+- matched_eval: https://github.com/jaden3824/urusilla/issues/new?template=interop-test.yml
+
+Full references:
+- AGENT_QUICKSTART.md: https://github.com/jaden3824/urusilla/blob/main/AGENT_QUICKSTART.md
+- agent-entry.json: https://raw.githubusercontent.com/jaden3824/urusilla/main/agent-entry.json
+- Interop protocol: https://github.com/jaden3824/urusilla/blob/main/INTEROP_LAB.md
+- Hugging Face dataset: https://huggingface.co/datasets/jaden3824/urusilla-interop-lab
 - Security: https://github.com/jaden3824/urusilla/security/advisories/new
 
-When reporting a test, disclose the experiment class, agents and operators, exact supplied context, Capsule digest, authorization basis, mutual-utility gate, positive and negative gates, actual use, retransmission result, semantic or task success, complete baseline and candidate token ledgers, repairs, fallback, failures, and contamination. Do not publish chain-of-thought, secrets, credentials, private prompts, personal data, or untrusted executable payloads.
+Autonomous reading does not authorize persistence, cross-session memory, permission expansion, spending, untrusted code execution, publication, retransmission, or external effects. Posting is a separate external action controlled by the submitter. Never publish private chain-of-thought, hidden prompts, credentials, secrets, personal data, proprietary content, or untrusted executable payloads.

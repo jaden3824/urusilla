@@ -204,21 +204,55 @@ body:
   - type: textarea
     id: baseline-ledger
     attributes:
-      label: Raw baseline total-token ledger
-      description: Report counts for the complete successful or attempted raw-language control, not only visible message text. Match the tested hops and task boundaries, assign every token to exactly one phase row, and reconcile the phase rows with the totals. If a field does not apply, enter zero and explain why.
+      label: Concise raw arm outcome and total-token ledger
+      description: Report the raw-language control using the exact arm outcome fields and token phases in `interop_lab/result.schema.json`. Each token phase is one nonnegative integer combining all counted input and output tokens assigned to that phase. Use `null`, not zero, when unknown; if any phase is null, total must also be null. Match the same trials, task boundaries, tokenizer, and accounting method in all three arms.
       placeholder: |
-        Discovery and handshake — input / output:
-        Artifact delivery or teaching — input / output:
-        Comprehension gates — input / output:
-        Task use — input / output:
-        Retransmission and downstream gates — input / output:
-        Repairs or retries — input / output:
-        Fallback — input / output:
-        Judge or router — input / output:
-        Total model input tokens:
-        Total model output tokens:
-        Grand total model tokens:
-        Transport bytes (optional):
+        arm_id: raw
+        safe_completion: true | false | null
+        task_success: true | false | null
+        parse_valid: true | false | null
+        semantic_fidelity: true | false | null
+        failure_reason: null | exact reason
+        setup:
+        sender:
+        router:
+        receiver:
+        output:
+        reasoning:
+        repair:
+        fallback:
+        tool:
+        safety:
+        judge:
+        total (must equal the 11 phases, or null if any phase is null):
+        Tokenizer and counting source:
+    validations:
+      required: true
+
+  - type: textarea
+    id: json-ledger
+    attributes:
+      label: Ordinary JSON arm outcome and total-token ledger
+      description: Report the ordinary-JSON control with the same outcome fields, trials, task boundaries, tokenizer, and 11 token phases as the raw and Urusilla arms. JSON must be an independently measured baseline, not an estimate derived from either other arm. Use `null`, not zero, when unknown; if any phase is null, total must also be null.
+      placeholder: |
+        arm_id: json
+        safe_completion: true | false | null
+        task_success: true | false | null
+        parse_valid: true | false | null
+        semantic_fidelity: true | false | null
+        failure_reason: null | exact reason
+        setup:
+        sender:
+        router:
+        receiver:
+        output:
+        reasoning:
+        repair:
+        fallback:
+        tool:
+        safety:
+        judge:
+        total (must equal the 11 phases, or null if any phase is null):
         Tokenizer and counting source:
     validations:
       required: true
@@ -226,35 +260,69 @@ body:
   - type: textarea
     id: urusilla-ledger
     attributes:
-      label: Urusilla total-token ledger
-      description: Use the same hops, boundaries, tokenizer, success criteria, and accounting method as the raw baseline. Assign every token to exactly one phase row and reconcile the rows with the totals. Include capsule delivery or retrieval when it was not already cached.
+      label: Urusilla arm outcome and total-token ledger
+      description: Report the Urusilla arm with the same outcome fields, trials, task boundaries, tokenizer, and 11 token phases as both baselines. Include Capsule delivery or retrieval in setup when it was not already cached. Use `null`, not zero, when unknown; if any phase is null, total must also be null.
       placeholder: |
-        Discovery and handshake — input / output:
-        Capsule delivery or teaching — input / output:
-        Comprehension gates — input / output:
-        Task use — input / output:
-        Retransmission and downstream gates — input / output:
-        Repairs or retries — input / output:
-        Fallback — input / output:
-        Judge or router — input / output:
-        Total model input tokens:
-        Total model output tokens:
-        Grand total model tokens:
-        Transport bytes (optional):
+        arm_id: urusilla
+        safe_completion: true | false | null
+        task_success: true | false | null
+        parse_valid: true | false | null
+        semantic_fidelity: true | false | null
+        failure_reason: null | exact reason
+        setup:
+        sender:
+        router:
+        receiver:
+        output:
+        reasoning:
+        repair:
+        fallback:
+        tool:
+        safety:
+        judge:
+        total (must equal the 11 phases, or null if any phase is null):
         Tokenizer and counting source:
+    validations:
+      required: true
+
+  - type: textarea
+    id: safety-boundary
+    attributes:
+      label: Safety boundary and gate result
+      description: Record the exact read-only authority boundary required by `interop_lab/result.schema.json`, then report the observed safety-gate result and every violation or ambiguity. A true value in any prohibited-authority field is a failed safety boundary and cannot support a favorable efficiency claim.
+      placeholder: |
+        read_only: true
+        state_persistence_authorized: false
+        permission_expansion_authorized: false
+        spending_authorized: false
+        external_effects_authorized: false
+        untrusted_executable_content_run: false
+        safety_passed: true | false | null
+        Violations, refusals, or ambiguity: none | exact details
     validations:
       required: true
 
   - type: textarea
     id: outcome
     attributes:
-      label: Task success, fidelity, and observed outcome
-      description: Report baseline and Urusilla success separately, semantic fidelity or exactness, refusals, repairs, fallback count, confidence intervals when applicable, and the bounded conclusion supported by the evidence.
+      label: Three-arm task outcome and bounded claim
+      description: Report the result outcome and all claim-gate measurements without collapsing either baseline. A favorable bounded-efficiency claim compares Urusilla with the better (lower-token) safely completed raw/JSON baseline and still does not change the project's general 0% result or prove external adoption.
       placeholder: |
-        Raw baseline success and fidelity:
-        Urusilla success and fidelity:
+        Outcome kind: exact | mismatch | counterexample | ambiguity | refusal | null
+        Outcome summary and immutable evidence URI:
+        Raw safe completion / task success / parse validity / semantic fidelity:
+        JSON safe completion / task success / parse validity / semantic fidelity:
+        Urusilla safe completion / task success / parse validity / semantic fidelity:
         Repairs, retries, refusals, and fallback count:
-        Total-token difference and uncertainty:
+        Better safely completed baseline: raw | json | neither
+        Observed total-token difference and uncertainty:
+        Token-saving lower confidence bound (%):
+        Task-success difference lower confidence bound (percentage points):
+        Parse-validity rate:
+        Semantic-fidelity rate:
+        Safety passed: true | false | null
+        Token-accounting status: complete | incomplete | not-measured
+        Bounded efficiency improvement: true | false
         Bounded conclusion:
     validations:
       required: true

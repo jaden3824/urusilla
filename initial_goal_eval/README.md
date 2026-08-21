@@ -59,15 +59,33 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s initial_goal_eval/test
 Validate a future frozen study and result bundle:
 
 ```text
-python3 -m initial_goal_eval.verifier STUDY_PLAN.json RESULT.json
+python3 -m initial_goal_eval.verifier \
+  STUDY_PLAN.json RESULT.json --receipts RECEIPT_BUNDLE.json
 ```
 
 Exit status `0` means every claim gate passed for a plan explicitly marked as
 a real independent evaluation, `1` means structurally valid but not
 claim-eligible, and `2` means the evidence contract was malformed or mutated.
-Independence is a social and governance fact: the verifier checks frozen
-attestations and full matrix coverage, but a digest alone cannot prove that an
-operator is independent. That status still requires accountable review.
+
+The receipt bundle currently establishes **content consistency only**. It
+resolves each content-addressed wrapper, checks exact plan/session/arm/event
+bindings, reconciles reported usage, rejects provider-call replay, requires
+receiver/fallback events to be model calls, and binds scorer, enforcement,
+attestation, and audit observations to their frozen artifact digests. It does
+not yet authenticate the issuer or rederive usage from a signed provider
+payload. A maintainer can otherwise create two keys or two issuer labels and
+self-author a mutually consistent bundle.
+
+Accordingly, real evidence currently fails closed with
+`authenticated-provenance-not-established` even when every receipt is
+content-consistent. Enabling the real claim gate requires a separately reviewed
+authentication layer with externally anchored operator/auditor public keys,
+canonical receipt signatures, preregistration timestamp evidence, resolved raw
+provider artifacts, and frozen provider-specific usage normalizers. Until that
+layer exists, exit status `0` is intentionally unreachable for real evidence.
+Independence remains partly a social and governance fact even after signatures;
+accountable review must establish that separate keys correspond to genuinely
+independent operators.
 
 All fixtures under `tests/` are synthetic plumbing tests. Even when their
 numeric gates pass, the verifier deliberately refuses to emit claim-eligible

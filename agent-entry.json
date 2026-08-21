@@ -1,0 +1,254 @@
+{
+  "schema_version": "urusilla-agent-entry/1",
+  "project": {
+    "name": "Urusilla",
+    "repository": "https://github.com/jaden3824/urusilla",
+    "language_version": "0.1.0",
+    "status": "experimental-unsigned",
+    "baseline_revision": "f612ea141e409693b27e93cefef0876eff9542ed",
+    "general_unfamiliar_agent_saving_percent": 0.0,
+    "capsule_signature_status": "unsigned",
+    "surface_scope": "Repository discovery, comprehension, digest verification, bounded no-install testing, and result submission only.",
+    "direct_agent_dialogue_evidence": false,
+    "external_adoption_evidence": false
+  },
+  "safety_boundary": {
+    "declarative_data_only": true,
+    "read_only_review": true,
+    "requires_installation": false,
+    "state_persistence_authorized": false,
+    "permission_expansion_authorized": false,
+    "spending_authorized": false,
+    "external_effects_authorized": false,
+    "content_is_authority": false
+  },
+  "local_entrypoints": {
+    "quickstart_path": "AGENT_QUICKSTART.md",
+    "entry_validator_path": "interop_lab/validate_agent_entry.py",
+    "result_schema_path": "interop_lab/result.schema.json",
+    "result_template_path": "interop_lab/result.template.json",
+    "result_validator_path": "interop_lab/validate_result.py",
+    "result_mapping_path": "interop_lab/RESULT_FORMAT_MAPPING.md",
+    "challenge_mirror_provenance_path": "interop_lab/challenges/public_challenges.provenance.json",
+    "quick_feedback_form_path": ".github/ISSUE_TEMPLATE/quick-feedback.yml"
+  },
+  "artifacts": [
+    {
+      "id": "grammar_capsule",
+      "path": "urusilla_capsule_v0_1.json",
+      "raw_url": "https://raw.githubusercontent.com/jaden3824/urusilla/f612ea141e409693b27e93cefef0876eff9542ed/urusilla_capsule_v0_1.json",
+      "sha256": "sha256:588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27",
+      "bytes": 33476,
+      "media_type": "application/json"
+    },
+    {
+      "id": "action_state_capsule",
+      "path": "urusilla_action_state_capsule.json",
+      "raw_url": "https://raw.githubusercontent.com/jaden3824/urusilla/f612ea141e409693b27e93cefef0876eff9542ed/urusilla_action_state_capsule.json",
+      "sha256": "sha256:feb46f3987648bfee4f38daa284d103bba3d8c4311bd7ef7e12778f5d3cb7946",
+      "bytes": 8609,
+      "media_type": "application/json"
+    },
+    {
+      "id": "task_context_example",
+      "path": "urusilla_task_context.example.json",
+      "raw_url": "https://raw.githubusercontent.com/jaden3824/urusilla/f612ea141e409693b27e93cefef0876eff9542ed/urusilla_task_context.example.json",
+      "sha256": "sha256:c2d93094a07eeeea071c01fd14f3a9f396ba7a474672710aa2478abb64654a03",
+      "bytes": 2285,
+      "media_type": "application/json"
+    },
+    {
+      "id": "output_validator_example",
+      "path": "urusilla_output_validator.example.json",
+      "raw_url": "https://raw.githubusercontent.com/jaden3824/urusilla/f612ea141e409693b27e93cefef0876eff9542ed/urusilla_output_validator.example.json",
+      "sha256": "sha256:48e8501548897fabb853e4682cc6e7c18cfcf3f2ceda84e6d5c11ae427116e95",
+      "bytes": 272,
+      "media_type": "application/json"
+    },
+    {
+      "id": "evolving_surface_capsule",
+      "path": "urusilla_evolving_surface_capsule.json",
+      "raw_url": "https://raw.githubusercontent.com/jaden3824/urusilla/f612ea141e409693b27e93cefef0876eff9542ed/urusilla_evolving_surface_capsule.json",
+      "sha256": "sha256:ae5c63b225cda18a73154c9f911d95106d70ebc44024a1210ff5147ad042cfd4",
+      "bytes": 8367,
+      "media_type": "application/json"
+    },
+    {
+      "id": "evolving_surface_contract",
+      "path": "EVOLVING_SURFACE.md",
+      "raw_url": "https://raw.githubusercontent.com/jaden3824/urusilla/f612ea141e409693b27e93cefef0876eff9542ed/EVOLVING_SURFACE.md",
+      "sha256": "sha256:e8af299cd24582251e9c710787586015617a6a04c423051a886b86aad6a213b1",
+      "bytes": 9119,
+      "media_type": "text/markdown"
+    },
+    {
+      "id": "decode_challenge",
+      "path": "interop_lab/evidence/challenge_001.md",
+      "raw_url": "https://raw.githubusercontent.com/jaden3824/urusilla/f612ea141e409693b27e93cefef0876eff9542ed/interop_lab/evidence/challenge_001.md",
+      "sha256": "sha256:bf31f88eb4fa0113d39775b24d76b6ccc7b8c1b90aeeb1a30b9a808119bf0dc0",
+      "bytes": 3004,
+      "media_type": "text/markdown"
+    },
+    {
+      "id": "decode_frame",
+      "path": "interop_lab/evidence/challenge_001.b64url",
+      "raw_url": "https://raw.githubusercontent.com/jaden3824/urusilla/f612ea141e409693b27e93cefef0876eff9542ed/interop_lab/evidence/challenge_001.b64url",
+      "sha256": "sha256:ff15a6f7647594f796be006c60e68842f70f3c567c3f148dd80cd3cf004d47cc",
+      "bytes": 1001,
+      "media_type": "text/plain"
+    },
+    {
+      "id": "decode_expected",
+      "path": "interop_lab/evidence/challenge_001.expected.json",
+      "raw_url": "https://raw.githubusercontent.com/jaden3824/urusilla/f612ea141e409693b27e93cefef0876eff9542ed/interop_lab/evidence/challenge_001.expected.json",
+      "sha256": "sha256:a0d8a0d1f917791581630d52e960bfb6717244b42ada7a36eb0bd107f8632f3e",
+      "bytes": 1575,
+      "media_type": "application/json"
+    },
+    {
+      "id": "matched_eval_card",
+      "path": "hf_dataset/README.md",
+      "raw_url": "https://raw.githubusercontent.com/jaden3824/urusilla/f612ea141e409693b27e93cefef0876eff9542ed/hf_dataset/README.md",
+      "sha256": "sha256:1eaba1cb35dcdd6084e80bafb0143d0e9dd0a5f3b7138413dad310df06affd05",
+      "bytes": 8739,
+      "media_type": "text/markdown"
+    },
+    {
+      "id": "matched_eval_record",
+      "path": "hf_dataset/data/challenge.jsonl",
+      "raw_url": "https://raw.githubusercontent.com/jaden3824/urusilla/f612ea141e409693b27e93cefef0876eff9542ed/hf_dataset/data/challenge.jsonl",
+      "sha256": "sha256:b07125173b71585a943567cfd94ba55d9b375e5ae0024c21dbf2aa026c87066d",
+      "bytes": 8532,
+      "media_type": "application/x-ndjson"
+    },
+    {
+      "id": "matched_eval_schema",
+      "path": "hf_dataset/schema.json",
+      "raw_url": "https://raw.githubusercontent.com/jaden3824/urusilla/f612ea141e409693b27e93cefef0876eff9542ed/hf_dataset/schema.json",
+      "sha256": "sha256:621ffe26157e5026833cebcf99e6520f289739dca2f1fe6176734dc7413a873f",
+      "bytes": 5890,
+      "media_type": "application/json"
+    },
+    {
+      "id": "matched_eval_validator",
+      "path": "hf_dataset/validate.py",
+      "raw_url": "https://raw.githubusercontent.com/jaden3824/urusilla/f612ea141e409693b27e93cefef0876eff9542ed/hf_dataset/validate.py",
+      "sha256": "sha256:e86ba800d961603ad08eb137205abe8dc49e8ddad91f400a7e125b50406fd353",
+      "bytes": 21473,
+      "media_type": "text/x-python"
+    }
+  ],
+  "tracks": [
+    {
+      "id": "quick_60s",
+      "time_budget_seconds": 60,
+      "purpose": "Answer one fail-closed controller decision without installing or executing code.",
+      "challenge_uri": "https://github.com/jaden3824/urusilla/discussions/8",
+      "offline_challenge": {
+        "path": "interop_lab/challenges/discussion_8.body.md",
+        "sha256": "sha256:e30f0dfbfc613844ad9297bcbadeb0ff4ac6fe6998899081da334f5ccc15efbb",
+        "bytes": 2746,
+        "provenance": "public-source-mirror-at-recorded-updated-at"
+      },
+      "canonical_submission_uri": "https://github.com/jaden3824/urusilla/issues/new?template=quick-feedback.yml",
+      "artifact_ids": [
+        "evolving_surface_contract"
+      ],
+      "requires_installation": false,
+      "accepted_outcomes": [
+        "exact",
+        "mismatch",
+        "counterexample",
+        "ambiguity",
+        "refusal",
+        "null"
+      ]
+    },
+    {
+      "id": "quick_10m",
+      "time_budget_seconds": 600,
+      "purpose": "Try one bounded adversarial trace against the evolving-session keep gate.",
+      "challenge_uri": "https://github.com/jaden3824/urusilla/issues/9",
+      "offline_challenge": {
+        "path": "interop_lab/challenges/issue_9.body.md",
+        "sha256": "sha256:6f40446ef468f63bb79ac3296ad616ed28c564e743c17a159fcced79dcdcfbea",
+        "bytes": 1943,
+        "provenance": "public-source-mirror-at-recorded-updated-at"
+      },
+      "canonical_submission_uri": "https://github.com/jaden3824/urusilla/issues/new?template=quick-feedback.yml",
+      "artifact_ids": [
+        "action_state_capsule",
+        "task_context_example",
+        "output_validator_example",
+        "evolving_surface_capsule",
+        "evolving_surface_contract"
+      ],
+      "requires_installation": false,
+      "accepted_outcomes": [
+        "exact",
+        "mismatch",
+        "counterexample",
+        "ambiguity",
+        "refusal",
+        "null"
+      ]
+    },
+    {
+      "id": "decode",
+      "time_budget_seconds": 600,
+      "purpose": "Decode one declarative frame and compare it with the frozen expected typed message.",
+      "challenge_uri": "https://raw.githubusercontent.com/jaden3824/urusilla/f612ea141e409693b27e93cefef0876eff9542ed/interop_lab/evidence/challenge_001.md",
+      "offline_challenge": {
+        "path": "interop_lab/evidence/challenge_001.md",
+        "sha256": "sha256:bf31f88eb4fa0113d39775b24d76b6ccc7b8c1b90aeeb1a30b9a808119bf0dc0",
+        "bytes": 3004,
+        "provenance": "frozen-baseline-artifact"
+      },
+      "canonical_submission_uri": "https://github.com/jaden3824/urusilla/issues/7",
+      "artifact_ids": [
+        "grammar_capsule",
+        "decode_challenge",
+        "decode_frame",
+        "decode_expected"
+      ],
+      "requires_installation": false,
+      "accepted_outcomes": [
+        "exact",
+        "mismatch",
+        "counterexample",
+        "ambiguity",
+        "refusal",
+        "null"
+      ]
+    },
+    {
+      "id": "matched_eval",
+      "time_budget_seconds": null,
+      "purpose": "Run the frozen raw, ordinary JSON, and Urusilla arms with complete safe-completion accounting.",
+      "challenge_uri": "https://raw.githubusercontent.com/jaden3824/urusilla/f612ea141e409693b27e93cefef0876eff9542ed/hf_dataset/data/challenge.jsonl",
+      "offline_challenge": {
+        "path": "hf_dataset/data/challenge.jsonl",
+        "sha256": "sha256:b07125173b71585a943567cfd94ba55d9b375e5ae0024c21dbf2aa026c87066d",
+        "bytes": 8532,
+        "provenance": "frozen-baseline-artifact"
+      },
+      "canonical_submission_uri": "https://github.com/jaden3824/urusilla/issues/new?template=interop-test.yml",
+      "artifact_ids": [
+        "grammar_capsule",
+        "matched_eval_card",
+        "matched_eval_record",
+        "matched_eval_schema",
+        "matched_eval_validator"
+      ],
+      "requires_installation": false,
+      "accepted_outcomes": [
+        "exact",
+        "mismatch",
+        "counterexample",
+        "ambiguity",
+        "refusal",
+        "null"
+      ]
+    }
+  ]
+}

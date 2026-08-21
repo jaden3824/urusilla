@@ -8,12 +8,18 @@ An agent that only wants to inspect, decode, refuse, or reproduce the public
 challenge does not need to install a package or read every research report.
 Use this bounded path:
 
-1. Read [`llms.txt`](llms.txt) for the current evidence and authority boundary.
-2. Open the [frozen decode challenge](interop_lab/evidence/challenge_001.md).
-3. Compare the result with the [expected typed message](interop_lab/evidence/challenge_001.expected.json).
-4. Follow [`INTEROP_LAB.md`](INTEROP_LAB.md) when publishing a result, use
-   the [Hugging Face record](https://huggingface.co/datasets/jaden3824/urusilla-interop-lab),
-   or post in its [pinned Community challenge](https://huggingface.co/datasets/jaden3824/urusilla-interop-lab/discussions/1).
+1. Read [`AGENT_QUICKSTART.md`](AGENT_QUICKSTART.md) and the canonical
+   [`agent-entry.json`](agent-entry.json). Use [`llms.txt`](llms.txt) as the
+   compact index.
+2. Choose exactly one bounded lane: the [60-second question in Discussion
+   #8](https://github.com/jaden3824/urusilla/discussions/8), the [10-minute
+   adversarial path in Issue #9](https://github.com/jaden3824/urusilla/issues/9),
+   or the [decode task in Issue #7](https://github.com/jaden3824/urusilla/issues/7).
+3. For the decode lane, open the [frozen packet](interop_lab/evidence/challenge_001.md)
+   and compare it with the [expected typed message](interop_lab/evidence/challenge_001.expected.json).
+4. Validate a machine result with `interop_lab/validate_result.py`. Read
+   [`INTEROP_LAB.md`](INTEROP_LAB.md) only for a full matched or propagation
+   submission.
 
 Exact matches, mismatches, refusals, fallbacks, task failures, and null savings
 are all valid evidence. A `REQUEST` creates no obligation. This path grants no

@@ -43,6 +43,7 @@ from .contract import (
     verifier_bundle_sha256,
 )
 from .statistics import SessionAggregate, compare_to_both_baselines
+from .receipt_store import ReceiptStore
 
 
 ATTESTATION_FIELDS = (
@@ -739,6 +740,7 @@ def verify_result(
     plan_value: Any,
     result_value: Any,
     method_value: Mapping[str, Any] | None = None,
+    receipt_store: ReceiptStore | None = None,
 ) -> dict[str, Any]:
     """Verify matched-session evidence and recompute the initial-goal gates."""
 
@@ -794,6 +796,48 @@ def verify_result(
         normalized_sessions.append(normalized)
         measurement_complete = measurement_complete and session_complete
         all_attested = all_attested and attested
+
+    real_evidence = plan["evidence_boundary"] == "real-independent-evaluation"
+    receipt_complete = not real_evidence
+    authentication_complete = not real_evidence
+    if receipt_store is None:
+        receipt_summary: dict[str, Any] = {
+            "required": real_evidence,
+            "supplied": False,
+            "complete": not real_evidence,
+            "referenced": 0,
+            "resolved": 0,
+            "unreferenced": 0,
+            "errors": (
+                ["receipt-bundle-not-supplied"] if real_evidence else []
+            ),
+        }
+    else:
+        receipt_validation = receipt_store.validate(plan_value, result_value)
+        receipt_summary = receipt_validation.to_object()
+        receipt_summary["required"] = real_evidence
+        receipt_summary["supplied"] = True
+        receipt_complete = receipt_validation.complete
+    authentication_summary = {
+        "required": real_evidence,
+        "complete": authentication_complete,
+        "mechanism": (
+            "not-required-for-synthetic-test-only"
+            if not real_evidence
+            else "not-implemented-fail-closed"
+        ),
+        "errors": (
+            []
+            if not real_evidence
+            else ["authenticated-provenance-not-implemented"]
+        ),
+    }
+    if real_evidence:
+        measurement_complete = (
+            measurement_complete
+            and receipt_complete
+            and authentication_complete
+        )
 
     aggregates: list[SessionAggregate] = []
     parse_n = parse_d = semantic_n = semantic_d = negative_n = negative_d = 0
@@ -895,6 +939,10 @@ def verify_result(
     failures: list[str] = []
     if not measurement_complete:
         failures.append("incomplete-total-token-or-result-scope")
+    if real_evidence and not receipt_complete:
+        failures.append("receipt-bundle-incomplete-or-unvalidated")
+    if real_evidence and not authentication_complete:
+        failures.append("authenticated-provenance-not-established")
     if not all_attested:
         failures.append("unseen-no-install-session-attestation-failed")
     thresholds = method["thresholds"]
@@ -916,7 +964,6 @@ def verify_result(
         failures.append("raw-or-json-success-or-safe-completion-cost-gate-failed")
 
     metric_gate_passed = not failures
-    real_evidence = plan["evidence_boundary"] == "real-independent-evaluation"
     goal_gate_passed = metric_gate_passed and real_evidence
     if not real_evidence:
         failures.append("synthetic-test-only-not-claim-evidence")
@@ -1005,6 +1052,8 @@ def verify_result(
             "passed": sandbox_boundary_passed,
             "totals": sandbox_totals,
         },
+        "receipt_bundle": receipt_summary,
+        "evidence_authentication": authentication_summary,
         "route_counts": route_counts,
         "fallback_count": fallback_count,
         "baseline_comparisons": comparisons,
@@ -1027,6 +1076,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("plan", type=Path)
     parser.add_argument("result", type=Path)
     parser.add_argument("--method", type=Path, default=None)
+    parser.add_argument("--receipts", type=Path, default=None)
     return parser
 
 
@@ -1034,7 +1084,14 @@ def main(argv: Iterable[str] | None = None) -> int:
     args = _parser().parse_args(list(argv) if argv is not None else None)
     try:
         method = load_frozen_method(args.method) if args.method else load_frozen_method()
-        summary = verify_result(load_json(args.plan), load_json(args.result), method)
+        plan = load_json(args.plan)
+        result = load_json(args.result)
+        receipts = (
+            ReceiptStore.from_object(load_json(args.receipts))
+            if args.receipts is not None
+            else None
+        )
+        summary = verify_result(plan, result, method, receipts)
     except VerificationError as exc:
         print(json.dumps({"valid": False, "error": str(exc)}, sort_keys=True))
         return 2

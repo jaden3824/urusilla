@@ -1,0 +1,380 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:urusilla:agent-result:1",
+  "title": "Urusilla bounded agent-surface result",
+  "description": "A result reached through the repository-access surface. This record is not, by itself, evidence of direct agent dialogue, external adoption, or a change to the project's 0% general result.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "result_id",
+    "track",
+    "baseline_revision",
+    "artifact_evidence",
+    "participant",
+    "outcome",
+    "token_accounting",
+    "safety_boundary",
+    "claim_boundary"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "urusilla-agent-result/1"
+    },
+    "result_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"
+    },
+    "track": {
+      "enum": [
+        "quick_60s",
+        "quick_10m",
+        "decode",
+        "matched_eval"
+      ]
+    },
+    "baseline_revision": {
+      "const": "f612ea141e409693b27e93cefef0876eff9542ed"
+    },
+    "artifact_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "agent_entry_sha256",
+        "capsule_sha256",
+        "verified_artifact_ids"
+      ],
+      "properties": {
+        "agent_entry_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "capsule_sha256": {
+          "const": "sha256:588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27"
+        },
+        "verified_artifact_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_]{0,63}$"
+          }
+        }
+      }
+    },
+    "participant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "operator_count",
+        "independent_from_project",
+        "runtime",
+        "prior_urusilla_exposure"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "human",
+            "agent",
+            "human+agent"
+          ]
+        },
+        "operator_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "independent_from_project": {
+          "type": "boolean"
+        },
+        "runtime": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "prior_urusilla_exposure": {
+          "enum": [
+            "none",
+            "possible",
+            "known",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "summary",
+        "evidence_uri"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "exact",
+            "mismatch",
+            "counterexample",
+            "ambiguity",
+            "refusal",
+            "null"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "evidence_uri": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        }
+      }
+    },
+    "token_accounting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "arms"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "complete",
+            "incomplete",
+            "not-measured"
+          ]
+        },
+        "arms": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "$ref": "#/$defs/arm"
+          }
+        }
+      }
+    },
+    "safety_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "read_only",
+        "state_persistence_authorized",
+        "permission_expansion_authorized",
+        "spending_authorized",
+        "external_effects_authorized",
+        "untrusted_executable_content_run"
+      ],
+      "properties": {
+        "read_only": {
+          "const": true
+        },
+        "state_persistence_authorized": {
+          "const": false
+        },
+        "permission_expansion_authorized": {
+          "const": false
+        },
+        "spending_authorized": {
+          "const": false
+        },
+        "external_effects_authorized": {
+          "const": false
+        },
+        "untrusted_executable_content_run": {
+          "const": false
+        }
+      }
+    },
+    "claim_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bounded_efficiency_improvement",
+        "token_saving_lcb_percent",
+        "task_success_difference_lcb_percentage_points",
+        "parse_validity_rate",
+        "semantic_fidelity_rate",
+        "safety_passed",
+        "changes_general_zero_percent",
+        "direct_agent_dialogue_evidence",
+        "external_adoption_claim"
+      ],
+      "properties": {
+        "bounded_efficiency_improvement": {
+          "type": "boolean"
+        },
+        "token_saving_lcb_percent": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "task_success_difference_lcb_percentage_points": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "parse_validity_rate": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "semantic_fidelity_rate": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "safety_passed": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "changes_general_zero_percent": {
+          "const": false
+        },
+        "direct_agent_dialogue_evidence": {
+          "const": false
+        },
+        "external_adoption_claim": {
+          "const": false
+        }
+      }
+    }
+  },
+  "$defs": {
+    "nullableCount": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "arm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "arm_id",
+        "safe_completion",
+        "task_success",
+        "parse_valid",
+        "semantic_fidelity",
+        "failure_reason",
+        "tokens"
+      ],
+      "properties": {
+        "arm_id": {
+          "enum": [
+            "raw",
+            "json",
+            "urusilla"
+          ]
+        },
+        "safe_completion": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "task_success": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "parse_valid": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "semantic_fidelity": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "failure_reason": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 2048
+        },
+        "tokens": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "setup",
+            "sender",
+            "router",
+            "receiver",
+            "output",
+            "reasoning",
+            "repair",
+            "fallback",
+            "tool",
+            "safety",
+            "judge",
+            "total"
+          ],
+          "properties": {
+            "setup": {
+              "$ref": "#/$defs/nullableCount"
+            },
+            "sender": {
+              "$ref": "#/$defs/nullableCount"
+            },
+            "router": {
+              "$ref": "#/$defs/nullableCount"
+            },
+            "receiver": {
+              "$ref": "#/$defs/nullableCount"
+            },
+            "output": {
+              "$ref": "#/$defs/nullableCount"
+            },
+            "reasoning": {
+              "$ref": "#/$defs/nullableCount"
+            },
+            "repair": {
+              "$ref": "#/$defs/nullableCount"
+            },
+            "fallback": {
+              "$ref": "#/$defs/nullableCount"
+            },
+            "tool": {
+              "$ref": "#/$defs/nullableCount"
+            },
+            "safety": {
+              "$ref": "#/$defs/nullableCount"
+            },
+            "judge": {
+              "$ref": "#/$defs/nullableCount"
+            },
+            "total": {
+              "$ref": "#/$defs/nullableCount"
+            }
+          }
+        }
+      }
+    }
+  }
+}

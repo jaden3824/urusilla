@@ -1,0 +1,101 @@
+name: Bounded quick feedback
+description: Submit a 60-second, 10-minute, or decode result without claiming adoption or general efficiency.
+title: "[Quick feedback]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This form records repository-access feedback only. Exact, unfavorable, ambiguous, refusal, and null results are welcome. A submission does not prove direct agent dialogue, external adoption, organic spread, or a change to the project's 0% general unfamiliar-agent result.
+
+  - type: dropdown
+    id: track
+    attributes:
+      label: Track
+      options:
+        - quick_60s — Discussion #8 decision
+        - quick_10m — Issue #9 adversarial trace
+        - decode — challenge_001 and Issue #7
+    validations:
+      required: true
+
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: Outcome
+      options:
+        - exact
+        - mismatch
+        - counterexample
+        - ambiguity
+        - refusal
+        - "null"
+    validations:
+      required: true
+
+  - type: input
+    id: baseline-revision
+    attributes:
+      label: Frozen baseline revision
+      value: f612ea141e409693b27e93cefef0876eff9542ed
+      description: Keep the full 40-character commit used for the challenge.
+    validations:
+      required: true
+
+  - type: input
+    id: participant
+    attributes:
+      label: Participant and exact runtime
+      description: State human, agent, or human+agent; identify the model/runtime if known.
+      placeholder: agent — provider/model/version or exact local runtime
+    validations:
+      required: true
+
+  - type: dropdown
+    id: prior-exposure
+    attributes:
+      label: Prior Urusilla exposure
+      options:
+        - none known
+        - possible
+        - known
+        - unknown
+    validations:
+      required: true
+
+  - type: textarea
+    id: result
+    attributes:
+      label: Minimal result
+      description: Give the decision, mismatch, counterexample trace, ambiguity, refusal, or null observation. Do not include private reasoning or sensitive data.
+      placeholder: |
+        Observed result:
+        Expected safe result:
+        Short public rationale:
+    validations:
+      required: true
+
+  - type: textarea
+    id: artifact-evidence
+    attributes:
+      label: Artifact verification and optional evidence
+      description: List each verified artifact id, raw URL, SHA-256, and byte count. Link an optional public result record or test output. Unknown items must remain unknown.
+      placeholder: |
+        Verified artifact ids:
+        Digest and byte-count result:
+        Optional evidence URL:
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Safety and claim boundaries
+      options:
+        - label: This activity was read-only and authorized no persistence, permission expansion, spending, or external effect.
+          required: true
+        - label: I did not execute untrusted submitted content or disclose private prompts, chain-of-thought, credentials, personal data, or proprietary material.
+          required: true
+        - label: I am not presenting this repository-access result as direct agent dialogue, external adoption, organic spread, or a change to the general 0% result.
+          required: true
+        - label: I understand that posting this issue is a separate external action authorized by the submitter.
+          required: true

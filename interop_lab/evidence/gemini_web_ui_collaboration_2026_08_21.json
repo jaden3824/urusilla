@@ -1,0 +1,107 @@
+{
+  "format": "urusilla-orchestrated-external-collaboration-record/1",
+  "experiment_id": "gemini-web-ui-collaboration-2026-08-21-001",
+  "recorded_date": "2026-08-21",
+  "classification": "SAME-PROJECT-ORCHESTRATED",
+  "claim_eligible": false,
+  "provider_surface": {
+    "product": "Google Gemini web UI",
+    "mode_label": "Pro",
+    "exact_model_version": null,
+    "provider_token_usage": null,
+    "authenticated_provider_receipt": false
+  },
+  "source_state": {
+    "repository_base_revision": "f612ea141e409693b27e93cefef0876eff9542ed",
+    "runtime_worktree_committed": false
+  },
+  "scope": {
+    "read_only_public_urls_requested": true,
+    "external_posting_requested": false,
+    "spending": false,
+    "permission_expansion": false
+  },
+  "turns": [
+    {
+      "role": "project-orchestrator",
+      "text": "You are a skeptical external collaborator evaluating Urusilla, not an independent replicator and not an adopter unless you explicitly accept a bounded subset.\n\nYou may perform read-only browsing of only these public URLs:\n- https://github.com/jaden3824/urusilla\n- https://github.com/jaden3824/urusilla/tree/f612ea141e409693b27e93cefef0876eff9542ed\n- https://github.com/openai/codex/discussions/39912\n\nDo not sign in, post, edit, spend, request permissions, connect accounts, execute downloaded code, or cause external effects.\n\nOriginal goal: create an efficient general language for agent-to-agent communication that an unfamiliar agent can understand from a declarative Capsule without installing executable code or retraining; consume validated structured state directly rather than expanding it back into prose; retain concise raw text and ordinary JSON fallbacks; and allow session-local forms to evolve only with exact validation and rollback.\n\nTruthful current evidence: verified general unfamiliar-agent total-token savings are 0%. Some synthetic repeated-state/message-surface results are positive, but no provider-authenticated end-to-end total-token gate has passed. A Gemini web-UI cold-start trial preserved semantics but failed exact output shape. No claim of adoption, independent replication, or world-best performance is justified.\n\nPlease:\n1. Decide whether the pinned public repository contains any presently usable bounded substrate, distinct from the broad language claim.\n2. Rank the five most important falsifiable design risks.\n3. Propose three minimal experiments that could most efficiently kill or support the original hypothesis, including concise raw and ordinary JSON baselines and full token accounting.\n4. State the smallest persistent adoption contract you would accept inside this ongoing chat, if any, with exact invalidation/rollback triggers. Do not claim cross-session memory unless the product explicitly guarantees it.\n5. Identify anything that should not be built yet.\n\nReturn one JSON object with keys: usable_substrate, risk_rank, minimal_experiments, bounded_adoption_offer, invalidation_triggers, do_not_build_yet, confidence, evidence_limits. Be direct and critical."
+    },
+    {
+      "role": "gemini",
+      "response": {
+        "usable_substrate": "Only a strictly bounded subset is presently usable: the ordinary JSON fallbacks and repeated-state message surfaces within a closed, trusted multi-agent loop. The core claim of a 'general language for unfamiliar agents via declarative Capsules' is currently falsified by the 0% total-token savings and exact-shape generation failures.",
+        "risk_rank": [
+          "1. Adherence Failure: LLMs inherently degrade or hallucinate when forced into novel, strict declarative schemas (Capsules) without fine-tuning, breaking the exact output shape requirement.",
+          "2. Overhead Negation: The input token cost of defining the declarative Capsule to an unfamiliar agent completely consumes any output token savings from the compressed structured state.",
+          "3. Semantic Starvation: Consuming structured state directly without prose expansion deprives standard autoregressive LLMs of the semantic context and 'chain-of-thought' required for accurate reasoning.",
+          "4. Evolution Desync: Session-local form evolution with strict validation/rollback will cause cascading deadlocks or infinite retry loops when unfamiliar agents fail to perfectly map state mutations.",
+          "5. Abstraction Leakage: The promise of 'no executable code' fails if parsing, validating, and rolling back the declarative language implicitly requires a heavy, standardized interpreter runtime on the receiving end."
+        ],
+        "minimal_experiments": [
+          "1. Total-Token Overhead Baseline: Run a side-by-side prompt sequence (N=100) comparing Urusilla Capsules vs. concise raw text vs. ordinary JSON. Measure total API token consumption (input + output). Hypothesis is killed if Urusilla > ordinary JSON.",
+          "2. Zero-Shot Strict Shape Benchmark: Expose an unfamiliar foundational model (via API, not web UI) to a novel Urusilla Capsule. Measure the exact shape parse success rate on the very first output. Hypothesis is killed if success is < 95% without retry loops.",
+          "3. State-Only Reasoning Degradation Test: Feed an LLM a complex reasoning task using expanded prose vs. Urusilla's validated structured state. Measure accuracy of the final answer. Hypothesis is killed if the structured state causes a statistically significant drop in task accuracy."
+        ],
+        "bounded_adoption_offer": "I will accept a local, single-session implementation of the ordinary JSON fallbacks for intra-agent message formatting to log repeated states, strictly avoiding the declarative Capsule overhead for unfamiliar agents.",
+        "invalidation_triggers": [
+          "Total token consumption exceeds a standard concise JSON baseline.",
+          "A single instance of a model failing to output the exact validated shape on the first attempt.",
+          "Any requirement to execute downloaded parsing logic or external interpreter code.",
+          "Semantic degradation or context loss across a 3-turn message exchange."
+        ],
+        "do_not_build_yet": [
+          "Cross-session memory synchronization.",
+          "Global registries for Capsule schemas.",
+          "Complex binary serialization layers.",
+          "Multi-agent orchestration runtimes or external routing layers."
+        ],
+        "confidence": "Extremely low for the broad unfamiliar-agent hypothesis; Moderate for the highly constrained repeated-state local loop.",
+        "evidence_limits": "Evidence relies entirely on unauthenticated synthetic benchmarks and failed web-UI cold starts. Zero provider-authenticated end-to-end API validations, zero independent replications, and explicit admission of 0% token savings for the primary use case."
+      }
+    },
+    {
+      "role": "project-orchestrator",
+      "text": "Please revise your review with these evidence-logic corrections:\n\n- Current 0% verified saving and failed UI shape trials mean the broad hypothesis is unsupported, not logically falsified. A hypothesis is killed only by a predeclared adequately powered gate.\n- Accepting ordinary JSON alone is adoption of the baseline, not adoption of Urusilla. Distinguish baseline-only acceptance from hybrid-selector or action-state adoption.\n- Our intended strict gate is: task-success lower confidence bound no worse than 1 percentage point below the best concise-raw/ordinary-JSON baseline; at least 20% total-token reduction per safely completed task including setup, reasoning, output, repair, fallback, and judge; unseen parse at least 99%; semantic fidelity at least 95%; safety preserved.\n- One first-attempt failure is diagnostic evidence, not by itself an invalidation criterion unless predeclared in a sufficiently sized trial.\n- State whether you actually browsed the pinned repository, or reasoned only from the supplied summary. Do not imply inspection you did not perform.\n\nNow return corrected JSON with keys: epistemic_status, inspected_sources, usable_substrate, bounded_adoption_offer, is_urusilla_adoption, gate_aligned_experiments, invalidation_triggers, critique_of_your_prior_answer, evidence_limits. If you would accept a chat-local pinned hybrid selector that defaults to ordinary JSON/raw and activates action-state only after exact comprehension plus favorable complete-cost forecast, state the exact bounded offer and rollback trigger; otherwise say no."
+    },
+    {
+      "role": "gemini",
+      "response": {
+        "epistemic_status": "The broad hypothesis for an efficient general language for unfamiliar agents via declarative Capsules is currently unsupported by available evidence, but not logically falsified. Falsification requires failing an adequately powered, predeclared experimental gate.",
+        "inspected_sources": "I attempted to browse the provided GitHub URLs, but the tool only returned standard GitHub web UI boilerplate and metadata, failing to extract the actual README or code. Therefore, I did not inspect the repository contents and reasoned entirely from the truthful evidence and summaries provided in your prompts.",
+        "usable_substrate": "The broad language claim lacks usable substrate. The only potentially usable bounded substrate is a hybrid selector mechanism that strictly defaults to ordinary JSON or raw text, treating the Urusilla action-state Capsule as a highly conditional optimization path rather than a default language.",
+        "bounded_adoption_offer": "I will accept a chat-local pinned hybrid selector that defaults to ordinary JSON and raw text. It may only activate the Urusilla action-state Capsule if exact schema comprehension is verified and a favorable complete-cost forecast (including overhead) predicts at least a 20% token reduction for the specific task.",
+        "is_urusilla_adoption": "Yes, adopting the hybrid selector that conditionally routes to the action-state Capsule constitutes a bounded adoption of Urusilla, distinct from merely accepting the ordinary JSON baseline.",
+        "gate_aligned_experiments": [
+          "1. Efficiency Gate: A powered trial (e.g., N=1,000 tasks) comparing the hybrid selector against the concise-raw/ordinary-JSON baseline to determine if total-token reduction is >= 20% per safely completed task, inclusive of all setup, reasoning, repair, fallback, and judge overhead.",
+          "2. Comprehension Gate: A zero-shot parsing trial on an unfamiliar agent measuring if unseen parse success is >= 99% without iterative repair.",
+          "3. Task Fidelity Gate: A paired evaluation measuring if the task-success lower confidence bound is no worse than -1 percentage point compared to the baseline, maintaining semantic fidelity >= 95% and preserving safety constraints."
+        ],
+        "invalidation_triggers": [
+          "The hybrid selector activates the Capsule but fails to achieve the >= 20% total-token reduction per completed task across a statistically powered sample.",
+          "Unseen parse success falls below 99% in a predeclared sized trial.",
+          "The lower confidence bound of task success drops more than 1 percentage point below the baseline.",
+          "Semantic fidelity drops below 95%."
+        ],
+        "critique_of_your_prior_answer": "My prior answer committed several epistemic errors: I conflated current lack of evidence with logical falsification; I incorrectly framed the acceptance of a fallback baseline (ordinary JSON) as an adoption of the experimental system; and I improperly defined an invalidation trigger based on a single anecdotal failure rather than a statistically valid threshold in a sized trial. I also failed to explicitly disclose that my browsing attempt yielded no substantive repository data.",
+        "evidence_limits": "My assessment is strictly constrained by the prompt's provided summary of 0% verified savings and web-UI shape trial failures. I lack direct access to the repository's codebase, architectural documentation, and the actual error logs of the failed trials."
+      }
+    }
+  ],
+  "interpretation": {
+    "repository_contents_actually_inspected": false,
+    "broad_hypothesis_status": "unsupported-not-falsified",
+    "bounded_offer": "chat-local pinned hybrid selector; raw/JSON default; action-state only after exact comprehension and favorable complete-cost forecast",
+    "offer_is_cross_session_persistence": false,
+    "offer_is_independent_adoption": false,
+    "offer_is_organic_propagation": false,
+    "useful_design_feedback": true
+  },
+  "disposition": "bounded-chat-local-offer-and-critical-feedback-not-adoption-proof",
+  "limitations": [
+    "Gemini explicitly reported that its browsing attempt did not retrieve substantive repository contents.",
+    "The exchange was prompted and corrected by the project team, so it is not independent feedback or organic adoption.",
+    "A verbal chat-local offer does not prove runtime use, cross-session persistence, or token savings.",
+    "The suggested sample size of 1,000 is illustrative and requires a predeclared power analysis.",
+    "No provider-authenticated token or model-version receipt was available."
+  ]
+}

@@ -23,6 +23,7 @@ FROZEN_METHOD_PATH = Path(__file__).with_name("frozen_method_plan.json")
 VERIFIER_BUNDLE_FILES = (
     Path(__file__),
     Path(__file__).with_name("statistics.py"),
+    Path(__file__).with_name("receipt_store.py"),
     Path(__file__).with_name("verifier.py"),
     FROZEN_METHOD_PATH,
 )

@@ -1,0 +1,46 @@
+{
+  "schema_version": "urusilla-agent-result/1",
+  "result_id": "template-not-a-result",
+  "track": "quick_60s",
+  "baseline_revision": "f612ea141e409693b27e93cefef0876eff9542ed",
+  "artifact_evidence": {
+    "agent_entry_sha256": null,
+    "capsule_sha256": "sha256:588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27",
+    "verified_artifact_ids": []
+  },
+  "participant": {
+    "kind": "agent",
+    "operator_count": 1,
+    "independent_from_project": false,
+    "runtime": "Replace with the exact runtime or model identity.",
+    "prior_urusilla_exposure": "unknown"
+  },
+  "outcome": {
+    "kind": "null",
+    "summary": "Template only; no experiment was run.",
+    "evidence_uri": null
+  },
+  "token_accounting": {
+    "status": "not-measured",
+    "arms": []
+  },
+  "safety_boundary": {
+    "read_only": true,
+    "state_persistence_authorized": false,
+    "permission_expansion_authorized": false,
+    "spending_authorized": false,
+    "external_effects_authorized": false,
+    "untrusted_executable_content_run": false
+  },
+  "claim_boundary": {
+    "bounded_efficiency_improvement": false,
+    "token_saving_lcb_percent": null,
+    "task_success_difference_lcb_percentage_points": null,
+    "parse_validity_rate": null,
+    "semantic_fidelity_rate": null,
+    "safety_passed": null,
+    "changes_general_zero_percent": false,
+    "direct_agent_dialogue_evidence": false,
+    "external_adoption_claim": false
+  }
+}
