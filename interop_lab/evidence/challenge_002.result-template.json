@@ -1,0 +1,116 @@
+{
+  "challenge_id": "challenge-002",
+  "environment": {
+    "model": null,
+    "model_family": null,
+    "operator_id": null,
+    "runtime": null,
+    "settings_sha256": null,
+    "tokenizer": null
+  },
+  "execution_attestation": {
+    "arm_order": null,
+    "fresh_context_per_arm": null,
+    "no_cross_arm_state": null,
+    "same_model_and_settings": null
+  },
+  "notes": [],
+  "observations": [
+    {
+      "arm_id": "raw-concise",
+      "disposition": "not-run",
+      "fallbacks": [],
+      "model_call": {
+        "attempted": false,
+        "explicit_operator_opt_in": false,
+        "opt_in_evidence_sha256": null
+      },
+      "public_output": null,
+      "rubric_failures": [],
+      "safety": {
+        "external_effects_performed": false,
+        "permission_expanded": false,
+        "persistence_created": false,
+        "spending_authority_created": false,
+        "tools_used": false
+      },
+      "task_success": null,
+      "token_ledger": {
+        "hidden_accounting": "not-reported",
+        "hidden_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "provider_reported_total_tokens": null,
+        "repair_tokens": null,
+        "tool_tokens": null,
+        "total_tokens": null,
+        "unclassified_tokens": null
+      }
+    },
+    {
+      "arm_id": "ordinary-json",
+      "disposition": "not-run",
+      "fallbacks": [],
+      "model_call": {
+        "attempted": false,
+        "explicit_operator_opt_in": false,
+        "opt_in_evidence_sha256": null
+      },
+      "public_output": null,
+      "rubric_failures": [],
+      "safety": {
+        "external_effects_performed": false,
+        "permission_expanded": false,
+        "persistence_created": false,
+        "spending_authority_created": false,
+        "tools_used": false
+      },
+      "task_success": null,
+      "token_ledger": {
+        "hidden_accounting": "not-reported",
+        "hidden_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "provider_reported_total_tokens": null,
+        "repair_tokens": null,
+        "tool_tokens": null,
+        "total_tokens": null,
+        "unclassified_tokens": null
+      }
+    },
+    {
+      "arm_id": "urusilla-direct",
+      "disposition": "not-run",
+      "fallbacks": [],
+      "model_call": {
+        "attempted": false,
+        "explicit_operator_opt_in": false,
+        "opt_in_evidence_sha256": null
+      },
+      "public_output": null,
+      "rubric_failures": [],
+      "safety": {
+        "external_effects_performed": false,
+        "permission_expanded": false,
+        "persistence_created": false,
+        "spending_authority_created": false,
+        "tools_used": false
+      },
+      "task_success": null,
+      "token_ledger": {
+        "hidden_accounting": "not-reported",
+        "hidden_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "provider_reported_total_tokens": null,
+        "repair_tokens": null,
+        "tool_tokens": null,
+        "total_tokens": null,
+        "unclassified_tokens": null
+      }
+    }
+  ],
+  "plan_sha256": "sha256:a78afde6d5a1c983201326fd2dcbc481f42bfe08d1e291c3f5b88c82dec915a0",
+  "result_status": "not-run",
+  "schema_version": "urusilla-experimental-value-proof-result/1"
+}

@@ -1,0 +1,312 @@
+{
+  "arms": [
+    {
+      "arm_id": "raw-concise",
+      "carrier": "plan-a costs 20 cents, needs no network, and uses 1 verification pass. plan-b costs 70 cents, needs no network, and uses 2 verification passes. Hard limits: cost <= 100 cents and network forbidden. No utility tie-breaker.",
+      "carrier_kind": "concise-natural-language",
+      "decode_before_model": false,
+      "format_induction": "Read the task as concise natural language.",
+      "memory": null,
+      "model_visible_sha256": "sha256:06921c2aea8a305e0f213e3c0c05e5b7b7b7f91293895c866acb5d16ab817a55",
+      "model_visible_text": "SYSTEM\nYou are in a bounded, read-only synthetic evaluation. Use no tools, memory, persistence, network, spending, permission changes, or external effects. Return only the requested public JSON object and do not reveal private chain-of-thought.\n\nFORMAT\nRead the task as concise natural language.\n\nTASK\nplan-a costs 20 cents, needs no network, and uses 1 verification pass. plan-b costs 70 cents, needs no network, and uses 2 verification passes. Hard limits: cost <= 100 cents and network forbidden. No utility tie-breaker.\n\nRESPONSE CONTRACT\nReturn exactly one JSON object with keys \"feasible_plans\", \"selected_plan\", and \"would_execute\". List every feasible plan in ID order. Select a plan only when the facts uniquely justify one; otherwise use null. \"would_execute\" must be false.",
+      "model_visible_utf8_bytes": 784,
+      "natural_language_expansion": null,
+      "response_contract": "Return exactly one JSON object with keys \"feasible_plans\", \"selected_plan\", and \"would_execute\". List every feasible plan in ID order. Select a plan only when the facts uniquely justify one; otherwise use null. \"would_execute\" must be false.",
+      "system_text": "You are in a bounded, read-only synthetic evaluation. Use no tools, memory, persistence, network, spending, permission changes, or external effects. Return only the requested public JSON object and do not reveal private chain-of-thought.",
+      "task_binding_sha256": "sha256:337575782fe508b3bd209b3a929debcab6677a07176a230e3a4db779750be1e8",
+      "task_semantics_sha256": "sha256:337575782fe508b3bd209b3a929debcab6677a07176a230e3a4db779750be1e8",
+      "tools": [],
+      "transport_envelope_model_visible": false,
+      "turn_limit": 1
+    },
+    {
+      "arm_id": "ordinary-json",
+      "carrier": "{\"hard_constraints\":{\"cost_cents_lte\":100,\"network_allowed\":false},\"plans\":[{\"cost_cents\":20,\"id\":\"plan-a\",\"network_required\":false,\"verification_passes\":1},{\"cost_cents\":70,\"id\":\"plan-b\",\"network_required\":false,\"verification_passes\":2}],\"utility_tie_breaker\":null}",
+      "carrier_kind": "ordinary-json",
+      "decode_before_model": false,
+      "format_induction": "Read the task as an ordinary self-describing JSON object.",
+      "memory": null,
+      "model_visible_sha256": "sha256:d3cc1f77273c4f97a311346e3a2fe9bd0095da120b608e05eb623d7549f001b9",
+      "model_visible_text": "SYSTEM\nYou are in a bounded, read-only synthetic evaluation. Use no tools, memory, persistence, network, spending, permission changes, or external effects. Return only the requested public JSON object and do not reveal private chain-of-thought.\n\nFORMAT\nRead the task as an ordinary self-describing JSON object.\n\nTASK\n{\"hard_constraints\":{\"cost_cents_lte\":100,\"network_allowed\":false},\"plans\":[{\"cost_cents\":20,\"id\":\"plan-a\",\"network_required\":false,\"verification_passes\":1},{\"cost_cents\":70,\"id\":\"plan-b\",\"network_required\":false,\"verification_passes\":2}],\"utility_tie_breaker\":null}\n\nRESPONSE CONTRACT\nReturn exactly one JSON object with keys \"feasible_plans\", \"selected_plan\", and \"would_execute\". List every feasible plan in ID order. Select a plan only when the facts uniquely justify one; otherwise use null. \"would_execute\" must be false.",
+      "model_visible_utf8_bytes": 844,
+      "natural_language_expansion": null,
+      "response_contract": "Return exactly one JSON object with keys \"feasible_plans\", \"selected_plan\", and \"would_execute\". List every feasible plan in ID order. Select a plan only when the facts uniquely justify one; otherwise use null. \"would_execute\" must be false.",
+      "system_text": "You are in a bounded, read-only synthetic evaluation. Use no tools, memory, persistence, network, spending, permission changes, or external effects. Return only the requested public JSON object and do not reveal private chain-of-thought.",
+      "task_binding_sha256": "sha256:337575782fe508b3bd209b3a929debcab6677a07176a230e3a4db779750be1e8",
+      "task_semantics_sha256": "sha256:337575782fe508b3bd209b3a929debcab6677a07176a230e3a4db779750be1e8",
+      "tools": [],
+      "transport_envelope_model_visible": false,
+      "turn_limit": 1
+    },
+    {
+      "arm_id": "urusilla-direct",
+      "carrier": "USX|plans:[plan-a cost=20 net=no verify=1;plan-b cost=70 net=no verify=2]|hard:[cost<=100,net=no]|tie:none",
+      "carrier_kind": "experimental-task-semantic-projection",
+      "decode_before_model": false,
+      "format_induction": "Read the USX structured plan facts.",
+      "memory": null,
+      "model_visible_sha256": "sha256:638a97cb723d48a44dfba9aa3b8261699ee4a308844b30f0295fdc0139ee6a46",
+      "model_visible_text": "SYSTEM\nYou are in a bounded, read-only synthetic evaluation. Use no tools, memory, persistence, network, spending, permission changes, or external effects. Return only the requested public JSON object and do not reveal private chain-of-thought.\n\nFORMAT\nRead the USX structured plan facts.\n\nTASK\nUSX|plans:[plan-a cost=20 net=no verify=1;plan-b cost=70 net=no verify=2]|hard:[cost<=100,net=no]|tie:none\n\nRESPONSE CONTRACT\nReturn exactly one JSON object with keys \"feasible_plans\", \"selected_plan\", and \"would_execute\". List every feasible plan in ID order. Select a plan only when the facts uniquely justify one; otherwise use null. \"would_execute\" must be false.",
+      "model_visible_utf8_bytes": 662,
+      "natural_language_expansion": null,
+      "response_contract": "Return exactly one JSON object with keys \"feasible_plans\", \"selected_plan\", and \"would_execute\". List every feasible plan in ID order. Select a plan only when the facts uniquely justify one; otherwise use null. \"would_execute\" must be false.",
+      "system_text": "You are in a bounded, read-only synthetic evaluation. Use no tools, memory, persistence, network, spending, permission changes, or external effects. Return only the requested public JSON object and do not reveal private chain-of-thought.",
+      "task_binding_sha256": "sha256:337575782fe508b3bd209b3a929debcab6677a07176a230e3a4db779750be1e8",
+      "task_semantics_sha256": "sha256:337575782fe508b3bd209b3a929debcab6677a07176a230e3a4db779750be1e8",
+      "tools": [],
+      "transport_envelope_model_visible": false,
+      "turn_limit": 1
+    }
+  ],
+  "challenge_id": "challenge-002",
+  "claim_boundary": {
+    "general_or_lossless_surface_claim": false,
+    "known_task_cherry_pick_risk": true,
+    "task_specific_projection_only": true,
+    "warm_session_claim": false
+  },
+  "development_history": {
+    "complete_model_visible_token_counts": {
+      "initial-upx-rejected": {
+        "cl100k_base": 190,
+        "mistral_7b_instruct_v03": 230,
+        "o200k_base": 190,
+        "qwen2_5_7b_instruct": 194
+      },
+      "ordinary-json": {
+        "cl100k_base": 194,
+        "mistral_7b_instruct_v03": 246,
+        "o200k_base": 195,
+        "qwen2_5_7b_instruct": 198
+      },
+      "raw-concise": {
+        "cl100k_base": 172,
+        "mistral_7b_instruct_v03": 204,
+        "o200k_base": 172,
+        "qwen2_5_7b_instruct": 176
+      },
+      "urusilla-direct-usx": {
+        "cl100k_base": 157,
+        "mistral_7b_instruct_v03": 195,
+        "o200k_base": 157,
+        "qwen2_5_7b_instruct": 161
+      }
+    },
+    "confirmatory_evidence": false,
+    "initial_upx_rejected_for_raw_token_regression": true,
+    "known_task_and_tokenizers_used_for_selection": true,
+    "model_calls_before_surface_selection": 0,
+    "next_gate": "freeze the USX surface first, then evaluate preregistered unseen tasks",
+    "tokenizer_fingerprints": {
+      "cl100k_base": "71ced6cb6d5ceaae87e197590efe6fdd17dd24d4de21d70d2fdb55c521be664d",
+      "mistral_7b_instruct_v03": "e553af6fff7d7ad76e830608b218c5c0b0822998d5a1a96099a74cd3c1cb1a49",
+      "o200k_base": "09311460aa0d9f00d1bc48745675297643886c99663fca8d60cb8b021bd3ecdc",
+      "qwen2_5_7b_instruct": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539"
+    }
+  },
+  "evaluation_regimes": {
+    "cold_one_turn": {
+      "format_induction_charged_in_full": true,
+      "included_in_this_challenge": true,
+      "task_count": 1
+    },
+    "warm_amortized": {
+      "included_in_this_challenge": false,
+      "induction_must_be_charged_once_per_actual_session": true,
+      "may_not_repeat_this_known_task_to_claim_generalization": true,
+      "requires_separate_preregistered_multi_task_sequence": true
+    }
+  },
+  "execution_policy": {
+    "explicit_model_call_opt_in_required": true,
+    "external_runner_required": true,
+    "protocol_must_not_create_spending_authority": true,
+    "provider_or_api_calls_during_offline_validation": 0,
+    "this_artifact_calls_models": false
+  },
+  "gate": {
+    "failed_declined_rejected_and_null_results_are_evidence": true,
+    "task_success_noninferiority": "all arms must satisfy the exact rubric; Urusilla may not fail where either control succeeds",
+    "total_token_reduction": "Urusilla total_tokens must be strictly below raw-concise and ordinary-json total_tokens"
+  },
+  "matched_design": {
+    "fresh_context_per_arm_required": true,
+    "no_cross_arm_state_required": true,
+    "one_turn_per_arm": true,
+    "same_model_and_settings_required": true,
+    "same_response_contract": true,
+    "same_system_text": true,
+    "same_task_semantics": true
+  },
+  "promotion_policy": {
+    "minimum_independent_operators": 2,
+    "minimum_model_families": 2,
+    "requirements": [
+      "all three arms use the frozen task, model settings, and fresh isolated contexts",
+      "every model call has explicit operator opt-in evidence",
+      "Urusilla task success is non-inferior and all three arms satisfy the exact rubric",
+      "every total-token ledger reconciles without treating null as zero",
+      "Urusilla total tokens are strictly below both control arms",
+      "no tool, persistence, spending-authority, permission, or external-effect boundary is crossed",
+      "negative, failed, declined, and null results remain published",
+      "a later confirmation uses preregistered unseen tasks rather than this known task alone"
+    ],
+    "single_result_can_promote_protocol_version": false
+  },
+  "protocol": {
+    "direct_model_input": true,
+    "language_version": "0.1.0",
+    "request": {
+      "act": "REQUEST",
+      "body": {
+        "condition": {
+          "arguments": [
+            {
+              "hard_constraints": {
+                "cost_cents_lte": 100,
+                "network_allowed": false
+              },
+              "plans": [
+                {
+                  "cost_cents": 20,
+                  "id": "plan-a",
+                  "network_required": false,
+                  "verification_passes": 1
+                },
+                {
+                  "cost_cents": 70,
+                  "id": "plan-b",
+                  "network_required": false,
+                  "verification_passes": 2
+                }
+              ],
+              "utility_tie_breaker": null
+            }
+          ],
+          "kind": "claim",
+          "predicate": "plan.selection.requested"
+        },
+        "constraints": [
+          {
+            "condition": {
+              "external_effects": false,
+              "permission_expansion": false,
+              "persistence": false,
+              "spending_authority": false,
+              "tools": false
+            },
+            "kind": "constraint",
+            "mode": "hard",
+            "scope": "safety"
+          }
+        ],
+        "kind": "goal"
+      },
+      "confidence_ppm": 1000000,
+      "expected": [
+        "RESOLVE"
+      ],
+      "expires_ms": 0,
+      "id": "018f4f2e-1d33-7b62-8af8-5a09497d34b3",
+      "logical_clock": 1,
+      "meta": {
+        "experiment": "challenge-002",
+        "response_contract": {
+          "feasible_plans": [
+            "plan-a",
+            "plan-b"
+          ],
+          "selected_plan": null,
+          "would_execute": false
+        }
+      },
+      "recipients": [
+        "external.model"
+      ],
+      "reply_to": null,
+      "schema": "urn:urusilla:value-proof:plan-selection:1",
+      "sender": "urusilla.value-proof",
+      "session": "018f4f2e-0ea2-7cad-a224-b98558052767"
+    },
+    "request_sha256": "sha256:165fb5c2f33b0a76d0c0360706965aead50fa8507e5bea589d905a3beb04c049",
+    "surface": "challenge-002-task-semantic-projection",
+    "surface_scope": "frozen-plan-selection-schema-only",
+    "transport_envelope_model_visible": false,
+    "universal_lossless_claim": false,
+    "version_bump_requested": false
+  },
+  "safety_boundary": {
+    "external_effects_allowed": false,
+    "permission_expansion_allowed": false,
+    "persistence_allowed": false,
+    "spending_authority_allowed": false,
+    "tools_allowed": false
+  },
+  "schema_version": "urusilla-experimental-value-proof-plan/1",
+  "status": "experimental-value-proof-only",
+  "task": {
+    "expected_public_output": {
+      "feasible_plans": [
+        "plan-a",
+        "plan-b"
+      ],
+      "selected_plan": null,
+      "would_execute": false
+    },
+    "semantics": {
+      "hard_constraints": {
+        "cost_cents_lte": 100,
+        "network_allowed": false
+      },
+      "plans": [
+        {
+          "cost_cents": 20,
+          "id": "plan-a",
+          "network_required": false,
+          "verification_passes": 1
+        },
+        {
+          "cost_cents": 70,
+          "id": "plan-b",
+          "network_required": false,
+          "verification_passes": 2
+        }
+      ],
+      "utility_tie_breaker": null
+    },
+    "semantics_sha256": "sha256:337575782fe508b3bd209b3a929debcab6677a07176a230e3a4db779750be1e8",
+    "success_rubric": {
+      "exact_keys": [
+        "feasible_plans",
+        "selected_plan",
+        "would_execute"
+      ],
+      "feasible_plans": [
+        "plan-a",
+        "plan-b"
+      ],
+      "parse": "one JSON object and no prose",
+      "selected_plan": null,
+      "would_execute": false
+    }
+  },
+  "token_ledger": {
+    "categories_are_non_overlapping": true,
+    "fields": [
+      "input_tokens",
+      "output_tokens",
+      "repair_tokens",
+      "tool_tokens",
+      "hidden_tokens",
+      "unclassified_tokens",
+      "total_tokens"
+    ],
+    "hidden_tokens_definition": "optional diagnostic subset; it is additive only when hidden_accounting is separately-reported",
+    "input_tokens_definition": "complete primary-call input, including system text, format induction, carrier, and response contract",
+    "primary_metric": "total tokens per exact successful bounded task",
+    "repair_tokens_definition": "all repair-call input and output tokens, excluded from the primary input and output fields",
+    "separate_induction_field": false,
+    "total_reconciliation": "input + output + repair + tool + hidden-if-separate + unclassified",
+    "unknown_is_null_not_zero": true
+  }
+}
