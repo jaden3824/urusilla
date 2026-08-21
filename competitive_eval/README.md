@@ -112,18 +112,60 @@ One JSON bundle is capped at 128 MiB. This supports bounded pilot exchanges but
 is not the final large-study storage format; A2/A3-scale runs need a future
 content-addressed sharded or JSONL store rather than silently raising this cap.
 
+### Hybrid cold-request capture
+
+`hybrid_external_replay.py` adds one narrow vertical slice over the same
+exchange. It freezes a validated, fully cold `DirectReceiverRequest` as two
+exact submitted provider-neutral roles: the existing system contract and the
+existing user data. That user data contains the canonical public task context,
+declarative Capsule, and payload strings. It does not substitute a digest for
+content or expand the payload into prose. These are the submitted role
+contents, not proof of provider-templated or truly model-visible bytes; hidden
+prefixes, provider normalization, and role mapping are not reverified here.
+
+The projection digest also binds host-only proof identities, inclusion flags,
+delivery disposition, receiver binding, and execution-profile digest. Cached
+task or Capsule requests are rejected until an exact provider conversation or
+context-continuity proof exists. The separately bound neutral settings remain
+temperature zero, a 250-output-token maximum, and no tools, web, or grounding.
+
+`build_pending_hybrid_receiver_call()` emits an artifact only after the exact
+response is proven absent. It explicitly records that provider input tokens
+were not preflighted, the host total-token ceiling was not enforced before a
+call, provider role mapping was not reverified, and the artifact itself grants
+no execution authority. A real provider operator therefore still needs a
+separately authorized, provider-specific input counter and cap-aware request
+adapter before execution.
+
+After a bundle is imported, `resolve_hybrid_receiver_external_capture()`
+requires structurally complete, content-bound input/output/total counts and
+maps no unknown to zero. Those fields remain operator supplied: this module
+does not renormalize the raw receipt or authenticate the provider. The result
+is a `HybridExternalReplayCapture`, never an ordinary `ReceiverModelReply` or
+`ReceiverExecution`; it records `precall_total_ceiling_enforced: false`,
+`delivery_eligible: false`, and `claim_eligible: false`. Over-ceiling usage is
+reported as a post-hoc observation, not mislabeled as preventive enforcement.
+
+This capture path has no provider SDK, credential reader, process client, or
+network client. It accepts only cold, non-surface action-state requests; cached
+and sealed evolving-surface paths remain separate. The reused v1 `CallRequest`
+still names its content-binding field `mock_metadata`; that field carries only
+the projection digest and `gold_answer_present: false` here, not a mock answer.
+
 Raw provider receipts can contain private prompts, account metadata, or other
 sensitive material. Keep response bundles outside the public tree unless an
 operator has reviewed their complete contents. Redacting a receipt creates a
 different artifact and must not retain the original digest or be relabeled as
 an exact provider capture.
 
-This exchange is only the first bridge. `OfflineRunner` still rejects it until
-provider token partitioning, external call ledgers, and the actual cold Capsule
-delivery to the receiver are implemented. The current adaptive competitive arm
-therefore remains bridge-mode plumbing with unmeasured model comprehension.
-Content hashes also do not authenticate the provider or prove operator
-independence.
+This exchange is still only a bridge. It can construct the exact submitted
+provider-neutral cold-request contents and retain one bound capture, but no
+provider task run has been performed through this module; its current tests use
+project-authored synthetic captures. `OfflineRunner` does not consume the path
+or assemble provider token partitions and the complete authenticated task
+ledger. The current adaptive competitive arm therefore remains bridge-mode
+plumbing with unmeasured model comprehension. Content hashes also do not
+authenticate the provider or prove operator independence.
 
 ## Dataset-derived artifact boundary
 

@@ -44,7 +44,8 @@ CLAIM_BLOCKERS = (
     "raw provider observation was not re-normalized by this module",
     "content hashes do not authenticate a provider or operator",
     "research token partition and full task ledger are not assembled",
-    "the competitive runner has no external replay or direct cold Capsule lane",
+    "the competitive runner does not consume the hybrid capture path or assemble "
+    "it into the authenticated full-task study ledger",
     "cross-bundle provider receipt replay is not indexed",
 )
 
