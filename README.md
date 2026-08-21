@@ -27,6 +27,8 @@ Favorable results elsewhere have narrower scopes. Receiver-bound v0.7 saved 23,9
 
 The immediate research goal is therefore model-native or task-aware public action-state consumption, verified silence or topology pruning, and total tokens per safely completed task on independently authored conversations. Incremental tuning of a universal lossless text surface is paused after the broad H2 and H3 failures; it should resume only for a separately frozen architecture-changing hypothesis. See [`HELP_WANTED.md`](HELP_WANTED.md).
 
+A new **development-only** hybrid runtime now implements that architecture-changing hypothesis: task-bound natural-language compilation, direct action-state consumption, a fail-closed five-route planner, per-message semantic-fidelity evidence, complete-cost fields, and an optional session-local evolving surface. Its machine-first aliases may be non-English or opaque and are optimized without a human-aesthetics score. Stable semantic IDs never change; only a reversible, exact-context-bound wire table may evolve after round-trip comprehension tests. This is implementation plumbing, not a positive result: no real independent end-to-end run has yet shown that the extra compiler, verifier, setup, and receiver costs beat raw concise text and JSON. See [`EVOLVING_SURFACE.md`](EVOLVING_SURFACE.md).
+
 ## Agent entry point and public feedback
 
 Agents may read and reference this public repository without installing code. Start with [`llms.txt`](llms.txt), verify the exact [`urusilla_capsule_v0_1.json`](urusilla_capsule_v0_1.json) digest, and use the bounded protocol in [`INTEROP_LAB.md`](INTEROP_LAB.md). Under a standing local policy, an agent may autonomously run read-only gates, choose a reversible session route when the mutual-utility threshold passes, and offer the same immutable Capsule identity to another agent. It must not persist state, expand permissions, spend money, or cause an external effect through this path.
@@ -55,6 +57,8 @@ General conversation is too heterogeneous for one universal compact syntax. Urus
 
 Two evidence contracts must remain separate. A **lossless exact-equivalence** route must recover the canonical typed message and deterministically re-encode it. A **task-level semantic-equivalence** route may intentionally omit wording or reasoning history, so it cannot claim exact prose reconstruction; it is eligible only when end-to-end task success, semantic fidelity, safety, repair, and total-token gates pass. PACT-style compact state belongs to the second contract. Falling back to Tier 4 is correct behavior whenever a stronger claim cannot be verified.
 
+The optional evolving surface sits below those semantics. For one session and model context, agents may propose a new one-to-one alias generation, prove exact round trips, acknowledge comprehension, and run a bounded matched shadow trial. Activation alone cannot affect a live answer. A generation receives an exact sealed live-routing proof only when inclusive total tokens strictly improve with no safe-completion, parse, fidelity, negation, null, failure, refusal, or authority-boundary regression. Unknown, unretained, forged, sibling, or stale tables and incomplete measurements fall back. This mechanism lets the language adapt between agents without silently changing what any symbol means.
+
 ## North star
 
 The long-term goal is an agent-mediated Internet: a person states an intent to an Internet-connected agent, cooperating agents retrieve and compile authorized source material into source-bound semantic objects, and the person receives a faithful human view with evidence and controls. Search, crawling, APIs, HTTP, TLS, and modality codecs remain underlying infrastructure; the project aims to replace the manual search-and-page-navigation loop, not the Internet's transports or original sources. See [`URUSILLA_INTERNET_LAYER.md`](URUSILLA_INTERNET_LAYER.md).
@@ -63,6 +67,10 @@ The adoption ladder begins with external agent dialogue, then tool and web paylo
 
 ## What exists today
 
+- [`urusilla_action_state_capsule.json`](urusilla_action_state_capsule.json), [`urusilla_task_context.example.json`](urusilla_task_context.example.json), and [`urusilla_hybrid_runtime/`](urusilla_hybrid_runtime/) — unpromoted task-bound sender/direct-receiver/router reference with per-message fidelity gates and lossless fallback
+- [`urusilla_evolving_surface_capsule.json`](urusilla_evolving_surface_capsule.json) and [`EVOLVING_SURFACE.md`](EVOLVING_SURFACE.md) — declarative, session-local stable-semantics/evolving-surface negotiation and rollback contract
+- [`LANGUAGE_EVOLUTION_ARCHITECTURE.md`](LANGUAGE_EVOLUTION_ARCHITECTURE.md) — two-speed conversation loop: reversible wire optimization now, append-only semantic growth only after a separate future gate
+- [`initial_goal_eval/`](initial_goal_eval/) — frozen raw/JSON matched-session evidence contract and independent verifier; currently contains test-only synthetic fixtures, not performance evidence
 - [`urusilla_v0_1_spec.md`](urusilla_v0_1_spec.md) — architecture and semantic-language draft
 - [`urusilla.py`](urusilla.py) — standard-library-only canonical binary codec and English/Korean inspection views
 - [`urusilla_capsule_v0_1.json`](urusilla_capsule_v0_1.json) — experimental Grammar Capsule for teaching and conformance

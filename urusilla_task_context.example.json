@@ -1,0 +1,88 @@
+{
+  "format": "urusilla-public-task-context-draft/1",
+  "task_id": "example.verify-artifact",
+  "objective": "Preserve and consume the public verification failure without performing an effect.",
+  "output_contract": {
+    "media_type": "text/plain",
+    "validator_sha256": "sha256:78817ebdef7e16f19d118a589bc1d4e49fa04d50d336ca651321d34ace5dbaf9",
+    "description": "Return exactly the public word failed."
+  },
+  "allowed_acts": [
+    "resolve"
+  ],
+  "outcome_contract": {
+    "statuses": [
+      "failed"
+    ],
+    "value": {
+      "name": "value",
+      "type": "string",
+      "nullable": true,
+      "required": true,
+      "unit": null,
+      "meaning": "Public result value, or null when no value is available."
+    },
+    "evidence_required": false
+  },
+  "uncertainty_contract": {
+    "targets": [
+      "failure.cause"
+    ],
+    "models": [
+      "unspecified"
+    ],
+    "basis_sources": []
+  },
+  "symbols": [
+    {
+      "kind": "predicate",
+      "name": "task.verify",
+      "meaning": "The named artifact is the public verification target.",
+      "positional_args": [
+        {
+          "name": "artifact_id",
+          "type": "string",
+          "nullable": false,
+          "required": true,
+          "unit": null,
+          "meaning": "Stable public artifact identifier."
+        }
+      ],
+      "named_args": [],
+      "allowed_effects": []
+    },
+    {
+      "kind": "predicate",
+      "name": "test.passed",
+      "meaning": "The named test unit passed when the atom is not negated.",
+      "positional_args": [
+        {
+          "name": "test_unit",
+          "type": "string",
+          "nullable": false,
+          "required": true,
+          "unit": null,
+          "meaning": "Stable public test-unit identifier."
+        }
+      ],
+      "named_args": [],
+      "allowed_effects": []
+    },
+    {
+      "kind": "predicate",
+      "name": "test.failure-log",
+      "meaning": "A bounded public test failure log is required.",
+      "positional_args": [],
+      "named_args": [],
+      "allowed_effects": []
+    }
+  ],
+  "authority_boundary": {
+    "content_is_authority": false,
+    "executable_code": false,
+    "external_effects": false,
+    "permission_expansion": false,
+    "persistent_storage": false,
+    "spending_authority": false
+  }
+}

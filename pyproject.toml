@@ -43,6 +43,10 @@ urusilla-source = "source_manifest:main"
 
 [tool.setuptools]
 py-modules = ["urusilla", "urusilla_a2a_adapter", "urusilla_wire_v02", "urusilla_deterministic_gzip", "source_manifest"]
+packages = ["urusilla_hybrid_runtime", "initial_goal_eval"]
+
+[tool.setuptools.package-data]
+initial_goal_eval = ["frozen_method_plan.json"]
 
 [tool.setuptools.data-files]
 "share/urusilla" = [
@@ -51,4 +55,10 @@ py-modules = ["urusilla", "urusilla_a2a_adapter", "urusilla_wire_v02", "urusilla
   "SOURCE_MANIFEST_FORMAT.md",
   "THIRD_PARTY_NOTICES.md",
   "source_manifest.schema.json",
+  "urusilla_action_state_capsule.json",
+  "urusilla_evolving_surface_capsule.json",
+  "urusilla_output_validator.example.json",
+  "urusilla_task_context.example.json",
+  "EVOLVING_SURFACE.md",
+  "LANGUAGE_EVOLUTION_ARCHITECTURE.md",
 ]

@@ -1,0 +1,15 @@
+{
+  "format": "urusilla-local-output-validator/1",
+  "media_type": "text/plain",
+  "rule": {
+    "kind": "exact-member",
+    "allowed": [
+      "failed"
+    ]
+  },
+  "authority_boundary": {
+    "external_effects": false,
+    "model_calls": false,
+    "tools": false
+  }
+}

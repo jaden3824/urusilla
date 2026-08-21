@@ -35,6 +35,10 @@ jobs:
         run: |
           mapfile -t modules < <(find . -maxdepth 1 -type f -name 'test_*.py' -printf '%f\n' | LC_ALL=C sort)
           python -m unittest -v "${modules[@]%.py}"
+      - name: Run task-bound hybrid runtime and initial-goal evidence tests
+        run: |
+          python -m unittest discover -s urusilla_hybrid_runtime/tests -p 'test_*.py' -v
+          python -m unittest discover -s initial_goal_eval/tests -p 'test_*.py' -v
       - name: Run deterministic benchmark smoke test
         run: python urusilla_benchmark.py --messages 100 --repeats 2 --warmups 1 --corruptions 1 --output /tmp/benchmark.md
       - name: Run warm-profile benchmark smoke test
@@ -54,7 +58,13 @@ jobs:
             echo "No commit-bound release source manifest is present in this revision."
           fi
       - name: Validate Grammar Capsule JSON
-        run: python -m json.tool urusilla_capsule_v0_1.json >/dev/null
+        run: |
+          python -m json.tool urusilla_capsule_v0_1.json >/dev/null
+          python -m json.tool urusilla_action_state_capsule.json >/dev/null
+          python -m json.tool urusilla_evolving_surface_capsule.json >/dev/null
+          python -m json.tool urusilla_task_context.example.json >/dev/null
+          python -m json.tool urusilla_output_validator.example.json >/dev/null
+          python -m json.tool initial_goal_eval/frozen_method_plan.json >/dev/null
       - name: Enforce English-only documentation
         shell: bash
         run: |
@@ -283,28 +293,57 @@ jobs:
           urusilla-source --help >/dev/null
           python - <<'PY'
           import importlib.metadata
+          from pathlib import Path
+          import sysconfig
           import urusilla
+          import urusilla_hybrid_runtime
           import urusilla_wire_v02
+          import initial_goal_eval
           import source_manifest
 
           assert importlib.metadata.version("urusilla") == "0.1.0a0"
           assert urusilla.MAGIC == b"URSL\x01"
           assert urusilla_wire_v02.MAGIC == b"URSL\x02"
           assert source_manifest.LANGUAGE_VERSION == "0.1.0"
-          distribution_files = {
-              str(path) for path in importlib.metadata.files("urusilla") or ()
-          }
+          assert (
+              urusilla_hybrid_runtime.load_capsule().sha256
+              == "sha256:7942bb348c3b2b839a3f87304b7d850796c837afdc66177eb1a48e5a45f0f778"
+          )
+          assert (
+              urusilla_hybrid_runtime.EVOLVING_SURFACE_CAPSULE_SHA256
+              == "sha256:97f5a7027deeb9f70c71880a9d0c0102cfdc75626b058d9009839a904207f49e"
+          )
           expected_data = {
               "urusilla_capsule_v0_1.json",
               "urusilla_v0_1_spec.md",
               "SOURCE_MANIFEST_FORMAT.md",
               "THIRD_PARTY_NOTICES.md",
               "source_manifest.schema.json",
+              "urusilla_action_state_capsule.json",
+              "urusilla_evolving_surface_capsule.json",
+              "urusilla_output_validator.example.json",
+              "urusilla_task_context.example.json",
+              "EVOLVING_SURFACE.md",
+              "LANGUAGE_EVOLUTION_ARCHITECTURE.md",
           }
+          installed_data_dir = (
+              Path(sysconfig.get_path("data")) / "share" / "urusilla"
+          )
           installed_data = {
-              path.rsplit("/", 1)[-1]
-              for path in distribution_files
-              if "/share/urusilla/" in path
+              path.name for path in installed_data_dir.iterdir() if path.is_file()
           }
           assert installed_data == expected_data
+          PY
+          target_dir="$RUNNER_TEMP/target-install"
+          python -m pip install --no-deps --target "$target_dir" "$wheel"
+          cd "$RUNNER_TEMP"
+          PYTHONPATH="$target_dir" python - <<'PY'
+          import urusilla_hybrid_runtime
+
+          capsule = urusilla_hybrid_runtime.load_capsule()
+          assert (
+              capsule.sha256
+              == "sha256:7942bb348c3b2b839a3f87304b7d850796c837afdc66177eb1a48e5a45f0f778"
+          )
+          assert "target-install" in str(capsule.path)
           PY

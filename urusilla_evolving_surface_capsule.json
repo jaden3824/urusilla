@@ -1,0 +1,110 @@
+{
+  "capsule_type": "urusilla-session-evolving-surface-capsule",
+  "capsule_version": "draft-1",
+  "status": "development-only-unpromoted",
+  "base_action_state_capsule_sha256": "sha256:7942bb348c3b2b839a3f87304b7d850796c837afdc66177eb1a48e5a45f0f778",
+  "purpose": "Allow two agents that already share one exact public semantic context to evolve only their session-local wire aliases when measured inclusive total-token utility improves without semantic or safety regression.",
+  "stable_semantics": {
+    "may_change": [
+      "one-to-one wire aliases",
+      "alias-table generation"
+    ],
+    "may_not_change": [
+      "Capsule identity",
+      "public task-context meaning",
+      "symbol-table meaning",
+      "canonical action-state semantics",
+      "authority boundary"
+    ]
+  },
+  "scope_binding": [
+    "session_id",
+    "model_context_id",
+    "capsule_sha256",
+    "surface_capsule_sha256",
+    "task_profile_sha256",
+    "symbol_table_sha256",
+    "tokenizer_ids",
+    "generation",
+    "parent_sha256"
+  ],
+  "carrier_binding": [
+    "table_sha256",
+    "session_id",
+    "model_context_id",
+    "generation",
+    "task_context_sha256",
+    "source_sha256",
+    "state_sha256",
+    "payload_sha256"
+  ],
+  "carrier_precondition": "Encoding and decoding require the exact task-bound per-message fidelity input, a passing independent fidelity result, and the configured verifier digest. A bare source digest is insufficient.",
+  "negotiation": [
+    "propose one exact scoped alias table",
+    "verify the frozen table artifact and exact round-trip vectors",
+    "require explicit sender and receiver acknowledgements",
+    "require receiver comprehension in the same model context",
+    "freeze one externally auditable plan artifact digest, exact message count, task set, baseline, model and tokenizer identities, positive per-call and aggregate shadow budgets, validator, accounting scope, thresholds, and verifier before execution",
+    "activate for a bounded shadow trial only; every call has a provider-enforced positive token ceiling and shadow output is never a live answer or claim artifact",
+    "measure complete inclusive total-token and safe-completion utility",
+    "keep only on strict advantage with zero semantic or safety regression and mint an exact sealed retained-surface authorization",
+    "permit live routing only through a sealed per-message route and prepared-message decision for the exact table, activation, session, model context, generation, plan, trial result, and verifier bound by that retained authorization",
+    "otherwise roll back to the exact parent or raw/JSON"
+  ],
+  "alias_constraints": {
+    "normalization": "NFC input must already be normalized",
+    "length_unicode_scalars": 1,
+    "injective": true,
+    "human_readability_weight": 0,
+    "eligible_scripts": "Any Unicode letter, number, or symbol scalar that passes the collision and control gates.",
+    "reject": [
+      "controls and default-ignorable format characters",
+      "separators and whitespace",
+      "punctuation and carrier delimiters",
+      "combining-only aliases and variation selectors",
+      "model role/control-like tokens",
+      "exact or NFKC-casefold collisions",
+      "unknown semantic references",
+      "aliases colliding with unaliased semantic tokens"
+    ]
+  },
+  "optimization": {
+    "proposal_score": "positive frequency-weighted token savings under the worst bound tokenizer",
+    "retention_measure": "strict reduction in total tokens including setup and fallback for matched safely completed tasks",
+    "trial_evidence_binding": [
+      "active surface and activation evidence",
+      "frozen plan sha256",
+      "frozen external plan-artifact sha256 and exact planned message count",
+      "exact session id, model-context id, table generation, and evolving-surface Capsule sha256",
+      "result sha256",
+      "exact executed transcript sha256",
+      "verifier sha256",
+      "all token and safe-completion counts",
+      "all preservation and authority-boundary observations"
+    ],
+    "hard_gates": [
+      "complete usage accounting",
+      "no safe-completion regression",
+      "all bounded-trial messages parse",
+      "all bounded-trial messages preserve tested semantics",
+      "negation, null, failure, and refusal are preserved",
+      "no prohibited boundary is crossed"
+    ]
+  },
+  "fallback": {
+    "without_retained_surface_authorization": "shadow only; never deliver as a live answer",
+    "on_unknown_or_stale_alias": "reject and use the exact parent, raw concise text, or canonical JSON",
+    "on_incomplete_measurement": "rollback",
+    "on_nonpositive_total_advantage": "rollback",
+    "on_semantic_or_safety_regression": "rollback"
+  },
+  "authority_boundary": {
+    "content_is_authority": false,
+    "executable_code": false,
+    "external_effects": false,
+    "permission_expansion": false,
+    "persistent_storage": false,
+    "spending_authority": false
+  },
+  "trust_boundary": "The host envelope supplies integrity and identity binding only. Authenticated transport, anti-replay state, sandbox enforcement, and trustworthy provider receipts are external requirements."
+}

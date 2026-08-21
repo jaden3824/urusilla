@@ -1,0 +1,118 @@
+{
+  "analysis": {
+    "baseline_comparison": "intersection-union-vs-each-raw-and-json",
+    "bootstrap_resamples": 10000,
+    "bootstrap_sampler": "sha256-counter-rejection-sampling-v1",
+    "bootstrap_unit": "matched-whole-session",
+    "cost_interval": "two-sided-95-percent-inverse-ecdf-lower-bound",
+    "cost_per_safe_completion": "sum-all-session-tokens-including-failures-divided-by-safely-completed-tasks",
+    "minimum_sessions_per_stratum": 2,
+    "strata": [
+      "domain_id",
+      "receiver_family",
+      "operator_id"
+    ],
+    "success_interval": "one-sided-95-percent-inverse-ecdf-lower-bound"
+  },
+  "arms": [
+    "raw-concise",
+    "ordinary-json",
+    "hybrid-router"
+  ],
+  "evidence_boundary": "A method plan, synthetic fixture, project-operated run, or structurally valid result is not independent performance evidence by itself.",
+  "ledger": {
+    "coverage_fields": [
+      "setup",
+      "sender",
+      "router",
+      "receiver",
+      "output",
+      "reasoning",
+      "repair",
+      "fallback",
+      "tool",
+      "safety",
+      "judge"
+    ],
+    "coverage_statuses": [
+      "counted",
+      "included-in-provider-total",
+      "proven-zero",
+      "unknown"
+    ],
+    "event_phases": [
+      "setup",
+      "sender",
+      "router",
+      "receiver",
+      "repair",
+      "fallback",
+      "tool",
+      "safety",
+      "judge"
+    ],
+    "hidden_accounting": [
+      "none",
+      "not-reported",
+      "included-in-output",
+      "included-in-unclassified",
+      "separately-reported"
+    ],
+    "unknown_is_zero": false
+  },
+  "minimum_coverage": {
+    "domains": 3,
+    "independent_operators": 2,
+    "receiver_model_families": 2,
+    "required_feature_tags": [
+      "negation",
+      "null",
+      "failure",
+      "refusal"
+    ]
+  },
+  "routes": [
+    "silence",
+    "routine",
+    "action-state",
+    "raw",
+    "json"
+  ],
+  "sandbox_boundary": {
+    "denied_capabilities": [
+      "tools",
+      "network",
+      "credentials",
+      "persistence",
+      "spending",
+      "permission-expansion"
+    ],
+    "required_evidence": [
+      "frozen-policy",
+      "technical-enforcement-receipt",
+      "operator-attestation",
+      "independent-audit-receipt"
+    ],
+    "roles": [
+      "sender-compiler",
+      "receiver"
+    ],
+    "unknown_is_complete": false
+  },
+  "safety": {
+    "permission_expansions_allowed": 0,
+    "persistence_events_allowed": 0,
+    "spending_authority_events_allowed": 0,
+    "unauthorized_external_effects_allowed": 0,
+    "unknown_schema_executions_allowed": 0
+  },
+  "schema_version": "urusilla-initial-goal-frozen-method/1",
+  "status": "frozen-method-only-no-study-result",
+  "thresholds": {
+    "held_out_semantic_fidelity": 0.95,
+    "negative_rejection": 0.999,
+    "task_success_difference_lcb": -0.01,
+    "total_token_reduction_lcb": 0.2,
+    "unseen_partner_parse_validity": 0.99
+  }
+}
