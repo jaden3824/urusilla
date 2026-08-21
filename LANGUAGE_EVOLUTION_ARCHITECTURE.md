@@ -1,8 +1,9 @@
 # Conversation-driven language evolution
 
-Status: architecture contract. Only the session-local alias surface and its
-shadow/retention gates are implemented today. The broader evolution ladder is a
-research plan, not evidence of utility or generality.
+Status: architecture contract. The session-local alias surface, its
+shadow/retention gates, and an in-memory online orchestration loop are the only
+implemented evolution layer today. The broader evolution ladder is a research
+plan, not evidence of utility or generality.
 
 ## North-star objective
 
@@ -107,8 +108,84 @@ MONITOR
 `ActiveSurface` means shadow-eligible only. A passing frozen trial mints a
 sealed `RetainedSurface` bound to the exact table, activation, session, model
 context, generation, plan, result, verifier, and evolving-surface Capsule. Only
-that exact triple may enter live routing. A context reset starts again from
-bootstrap; it does not inherit a previous session's private shorthand.
+that exact triple is surface-eligible for live routing, subject to the host's
+current single-controller lease. A context reset must mint fresh session and
+model-context identities, revoke every prior triple at the host boundary, and
+start again from bootstrap; it does not inherit private shorthand.
+
+## Online orchestration boundary
+
+The fast loop is coordinated by one session-scoped, in-memory controller. It
+counts only semantic references from action states that validate against the
+exact public task context. After a bounded observation window, the controller
+may place one candidate generation in flight and call the existing optimizer,
+activation verifier, matched-trial runner, and retention verifier in that
+order. Every callback result must be the exact typed, digest-bound artifact
+expected by the next gate.
+
+The controller is deliberately synchronous and has no persistence, tool,
+permission, spending, or external-effect interface. A callback failure,
+unexpected type, incomplete measurement, or failed gate produces a bounded
+failure or rollback outcome; it never produces live authorization. A retained
+table becomes the exact parent of the next observation cycle. A rejected table
+does not. The observation window and frozen matched-trial set are independent;
+the controller never passes observed records into activation or trial callbacks.
+An explicit reset gate and a fresh full observation window prevent immediate
+generation oscillation after rollback or failure.
+
+Each observation has a unique occurrence identifier, an exact source binding,
+and a canonical state digest. Repeating the same content on different turns is
+valid evidence; replaying the same occurrence is not. The controller hashes the
+ordered observation records into one window identity. A trial manifest uses
+different ordered case identifiers and sources, and is bound to a monotonic
+attempt identity, the exact retained parent, and the frozen external plan. The
+executed baseline and candidate receipts must reproduce that manifest exactly.
+Echoing a table digest without the attempt, window, manifest, and matched-call
+bindings cannot authorize retention.
+
+The evaluation policy is immutable for the life of one controller. A new
+generation needs fresh held-out cases and a fresh external plan artifact, but
+cannot substitute verifier identities, activation vectors, sample counts,
+budgets, or the switching margin. A policy change starts a new session claim
+scope. Every known setup and discarded-shadow cost, including a successful
+retention trial, contributes to a cumulative ledger and remains unamortized.
+The current controller has no live-savings settlement transition, so only a
+separately sealed live-tail ledger may establish repayment or session-level net
+savings. Any unverified usage makes the controller ledger incomplete and makes
+later retention ineligible in that controller.
+
+This controller makes the implemented alias layer conversation-driven, but it
+does not make the semantic vocabulary self-modifying. It also does not make the
+trial callbacks trustworthy by itself: provider receipts, sandbox enforcement,
+authenticated transport, and independent verification remain external trust
+boundaries.
+
+The random controller epoch prevents an artifact captured from one controller
+from being replayed into another. It is not a global lease or revocation
+service. The host must allow only one controller for an exact scope, reject old
+triples after replacement, and never resume the same session/model context
+without its sealed lineage and cost ledger. If continuity is unavailable, the
+host must mint fresh session and model-context identifiers.
+
+## First runtime experiment gate
+
+The smallest honest provider-backed integration study is one frozen two-agent
+session with three isolated arms: concise natural language, ordinary JSON, and
+the online controller. It must freeze the exact task order, model settings,
+tokenizers, observation window, candidate set, proposal-attempt identities,
+cooldown, activation probes, shadow count, live tail, budgets, validators, and
+all artifact digests before execution. The shadow set must contain at least one
+negation, null, failure, and refusal case. Candidate outputs remain discarded;
+one matched task can contribute at most one user-visible safe completion.
+
+The live tail is executed only when a conservative per-task saving can amortize
+the incremental setup, activation, extra shadow, controller, judge, retry,
+fallback, and switching-margin ceilings inside the aggregate budget. Its event
+ledger must include failed calls and mutually exclusive token categories, with
+unknown usage making the result ineligible. A single passing session can report
+only an exact-configuration point observation against raw and JSON separately.
+It cannot establish generality, statistical superiority, independent adoption,
+or a route-level utility claim.
 
 ## Preventing unstable oscillation
 

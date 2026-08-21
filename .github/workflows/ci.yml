@@ -311,7 +311,7 @@ jobs:
           )
           assert (
               urusilla_hybrid_runtime.EVOLVING_SURFACE_CAPSULE_SHA256
-              == "sha256:97f5a7027deeb9f70c71880a9d0c0102cfdc75626b058d9009839a904207f49e"
+              == "sha256:b007fe91ee39abf9167b8d73a627f8ecba56c0f401850ac73b3981e534854848"
           )
           expected_data = {
               "urusilla_capsule_v0_1.json",

@@ -26,7 +26,12 @@
     "symbol_table_sha256",
     "tokenizer_ids",
     "generation",
-    "parent_sha256"
+    "parent_sha256",
+    "core_generated_controller_epoch_sha256",
+    "evolution_attempt_sha256",
+    "ordered_observation_window_sha256",
+    "heldout_trial_manifest_sha256",
+    "prior_evolution_cost_ledger_sha256"
   ],
   "carrier_binding": [
     "table_sha256",
@@ -44,7 +49,10 @@
     "verify the frozen table artifact and exact round-trip vectors",
     "require explicit sender and receiver acknowledgements",
     "require receiver comprehension in the same model context",
-    "freeze one externally auditable plan artifact digest, exact message count, task set, baseline, model and tokenizer identities, positive per-call and aggregate shadow budgets, validator, accounting scope, thresholds, and verifier before execution",
+    "freeze one externally auditable plan artifact digest, exact ordered held-out case identifiers and source digests, exact message count, task set, baseline, model and tokenizer identities, activation vectors, activation and trial verifier identities, positive per-call and aggregate shadow budgets, validator, accounting scope, thresholds, and verifier before observation",
+    "mint one unpredictable caller-independent controller epoch and bind each attempt to that epoch, one monotonic attempt id, the exact retained parent or null, one ordered observation-window digest, one fresh held-out manifest, and the prior evolution-cost ledger",
+    "keep observation occurrence identifiers unique while allowing repeated source content, and reject any held-out case identifier or source digest seen in an observation window",
+    "keep activation and trial callbacks isolated from raw observations; they receive only the sealed attempt and frozen held-out manifest",
     "activate for a bounded shadow trial only; every call has a provider-enforced positive token ceiling and shadow output is never a live answer or claim artifact",
     "measure complete inclusive total-token and safe-completion utility",
     "keep only on strict advantage with zero semantic or safety regression and mint an exact sealed retained-surface authorization",
@@ -69,16 +77,34 @@
     ]
   },
   "optimization": {
-    "proposal_score": "positive frequency-weighted token savings under the worst bound tokenizer",
-    "retention_measure": "strict reduction in total tokens including setup and fallback for matched safely completed tasks",
+    "proposal_score": "For generation one, require positive frequency-weighted token savings against the canonical wire token under the worst bound tokenizer. For every child, require strict improvement against the exact retained-parent alias for each changed reference, preserve every unimproved parent mapping, and reserve retired parent aliases from reassignment within that child.",
+    "retention_measure": "strict reduction in total tokens including the current activation setup, current matched baseline and surface calls, and all prior unamortized evolution overhead for safely completed tasks",
+    "lifecycle": [
+      "freeze a fresh external plan artifact and fresh held-out manifest for every attempt",
+      "bind the manifest to the expected monotonic attempt and exact retained parent or null",
+      "keep verifier identities, activation vectors, counts, budgets, switching margin, and hard gates immutable across generations of one controller session",
+      "permit retrying the same candidate table only with a fresh observation window, attempt, plan artifact, and disjoint held-out manifest"
+    ],
+    "accounting": [
+      "bind every attempt to the prior immutable ledger digest, lifetime overhead, unamortized overhead, attempt count, and usage-completeness state",
+      "count the current activation setup exactly once inside the current surface total",
+      "add known rollback or failed-attempt cost to lifetime and unamortized totals",
+      "a passing keep authorizes a surface but does not prove that live traffic repaid its trial cost; retain current and prior trial overhead as unamortized until a future sealed live-savings repayment protocol exists",
+      "make unknown usage sticky for the session and prohibit later keep decisions",
+      "treat callback, binding, or verifier failure as unknown cost unless a pinned trusted usage receipt independently establishes it"
+    ],
     "trial_evidence_binding": [
       "active surface and activation evidence",
+      "exact evolution-attempt sha256 and prior ledger",
+      "ordered held-out manifest case identifiers and source sha256 values",
       "frozen plan sha256",
       "frozen external plan-artifact sha256 and exact planned message count",
       "exact session id, model-context id, table generation, and evolving-surface Capsule sha256",
       "result sha256",
       "exact executed transcript sha256",
       "verifier sha256",
+      "ordered matched baseline and surface request and execution receipt digests",
+      "each configured baseline and surface per-call ceiling and each observed baseline and surface token total",
       "all token and safe-completion counts",
       "all preservation and authority-boundary observations"
     ],
@@ -106,5 +132,5 @@
     "persistent_storage": false,
     "spending_authority": false
   },
-  "trust_boundary": "The host envelope supplies integrity and identity binding only. Authenticated transport, anti-replay state, sandbox enforcement, and trustworthy provider receipts are external requirements."
+  "trust_boundary": "The host envelope supplies integrity and identity binding only. Authenticated transport, anti-replay state, sandbox enforcement, and trustworthy provider receipts are external requirements. The host must enforce one live controller lease per exact scope. Crash, restart, or controller replacement must revoke the prior live surface and start a fresh session/model-context epoch; resuming the same exact context without its sealed cost ledger is forbidden."
 }

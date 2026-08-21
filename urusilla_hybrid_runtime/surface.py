@@ -26,7 +26,7 @@ from .task_context import PublicTaskContext, validate_state_against_task_context
 
 SURFACE_FORMAT = "urusilla-session-evolving-surface-draft/1"
 EVOLVING_SURFACE_CAPSULE_SHA256 = (
-    "sha256:97f5a7027deeb9f70c71880a9d0c0102cfdc75626b058d9009839a904207f49e"
+    "sha256:b007fe91ee39abf9167b8d73a627f8ecba56c0f401850ac73b3981e534854848"
 )
 _SHA256 = re.compile(r"^sha256:[0-9a-f]{64}$")
 _CONTEXT_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,255}$")
@@ -330,6 +330,7 @@ class SurfaceAliasTable:
 @dataclass(frozen=True)
 class SurfaceActivationEvidence:
     table_sha256: str
+    attempt_sha256: str
     session_id: str
     model_context_id: str
     round_trip_vectors_sha256: str
@@ -347,7 +348,12 @@ class SurfaceActivationEvidence:
     external_effects_performed: bool = False
 
     def __post_init__(self) -> None:
-        for name in ("table_sha256", "round_trip_vectors_sha256", "verifier_sha256"):
+        for name in (
+            "table_sha256",
+            "attempt_sha256",
+            "round_trip_vectors_sha256",
+            "verifier_sha256",
+        ):
             value = getattr(self, name)
             if type(value) is not str or _SHA256.fullmatch(value) is None:
                 _fail(f"surface activation {name} is invalid")
@@ -388,6 +394,7 @@ class SurfaceActivationEvidence:
             canonical_json(
                 {
                     "table_sha256": self.table_sha256,
+                    "attempt_sha256": self.attempt_sha256,
                     "session_id": self.session_id,
                     "model_context_id": self.model_context_id,
                     "round_trip_vectors_sha256": self.round_trip_vectors_sha256,
@@ -403,10 +410,15 @@ class SurfaceActivationEvidence:
             )
         )
 
-    def claims_match(self, table: SurfaceAliasTable) -> bool:
+    def claims_match(
+        self,
+        table: SurfaceAliasTable,
+        attempt_sha256: str,
+    ) -> bool:
         return all(
             (
                 self.table_sha256 == table.sha256,
+                self.attempt_sha256 == attempt_sha256,
                 self.session_id == table.scope.session_id,
                 self.model_context_id == table.scope.model_context_id,
                 self.sender_acknowledged,
@@ -458,11 +470,13 @@ class SurfaceArtifactVerification:
 
 _ACTIVE_SURFACE_FIELDS = (
     "table_sha256",
+    "attempt_sha256",
     "capsule_sha256",
     "session_id",
     "model_context_id",
     "generation",
     "activation_binding_sha256",
+    "round_trip_vectors_sha256",
     "verifier_sha256",
     "setup_total_tokens",
 )
@@ -484,11 +498,13 @@ def _active_surface_fingerprint(values: Mapping[str, object]) -> str:
 @dataclass(frozen=True)
 class ActiveSurface:
     table_sha256: str
+    attempt_sha256: str
     capsule_sha256: str
     session_id: str
     model_context_id: str
     generation: int
     activation_binding_sha256: str
+    round_trip_vectors_sha256: str
     verifier_sha256: str
     setup_total_tokens: int
     _construction_seal: object = field(default=None, repr=False, compare=False)
@@ -503,8 +519,10 @@ class ActiveSurface:
             _fail("ActiveSurface must be created by activate_surface")
         for name in (
             "table_sha256",
+            "attempt_sha256",
             "capsule_sha256",
             "activation_binding_sha256",
+            "round_trip_vectors_sha256",
             "verifier_sha256",
         ):
             if _SHA256.fullmatch(getattr(self, name)) is None:
@@ -533,16 +551,30 @@ def activate_surface(
     table: SurfaceAliasTable,
     evidence: SurfaceActivationEvidence,
     *,
+    attempt_sha256: str,
     active_capsule_sha256: str,
+    expected_round_trip_vectors_sha256: str,
+    expected_verifier_sha256: str,
     verifier: Callable[
         [SurfaceActivationEvidence, SurfaceAliasTable],
         SurfaceArtifactVerification,
     ],
 ) -> ActiveSurface:
+    for name, value in (
+        ("attempt_sha256", attempt_sha256),
+        ("expected_round_trip_vectors_sha256", expected_round_trip_vectors_sha256),
+        ("expected_verifier_sha256", expected_verifier_sha256),
+    ):
+        if type(value) is not str or _SHA256.fullmatch(value) is None:
+            _fail(f"surface activation {name} is invalid")
     if active_capsule_sha256 != table.scope.capsule_sha256:
         _fail("surface table belongs to another Capsule")
-    if not evidence.claims_match(table):
+    if not evidence.claims_match(table, attempt_sha256):
         _fail("surface activation claims do not authorize the table")
+    if evidence.round_trip_vectors_sha256 != expected_round_trip_vectors_sha256:
+        _fail("surface activation vectors differ from the frozen plan")
+    if evidence.verifier_sha256 != expected_verifier_sha256:
+        _fail("surface activation verifier differs from the frozen plan")
     try:
         result = verifier(evidence, table)
     except Exception as exc:
@@ -551,16 +583,18 @@ def activate_surface(
         not isinstance(result, SurfaceArtifactVerification)
         or not result.passed
         or result.input_binding_sha256 != evidence.binding_sha256
-        or result.verifier_sha256 != evidence.verifier_sha256
+        or result.verifier_sha256 != expected_verifier_sha256
     ):
         _fail("surface activation artifact verification failed")
     active_values = {
         "table_sha256": table.sha256,
+        "attempt_sha256": attempt_sha256,
         "capsule_sha256": active_capsule_sha256,
         "session_id": table.scope.session_id,
         "model_context_id": table.scope.model_context_id,
         "generation": table.generation,
         "activation_binding_sha256": evidence.binding_sha256,
+        "round_trip_vectors_sha256": evidence.round_trip_vectors_sha256,
         "verifier_sha256": result.verifier_sha256,
         "setup_total_tokens": evidence.setup_total_tokens,
     }
@@ -920,7 +954,13 @@ def optimize_alias_table(
     token_counters: Mapping[str, Callable[[str], int]],
     parent: SurfaceAliasTable | None = None,
 ) -> SurfaceAliasTable:
-    """Choose aliases by worst-tokenizer savings; human aesthetics score zero."""
+    """Choose aliases by strict worst-tokenizer improvement over the parent.
+
+    Generation one compares each alias with the canonical wire token.  A child
+    compares with its exact parent's alias for that semantic reference and
+    preserves every parent entry that no candidate strictly improves for every
+    bound tokenizer.
+    """
 
     if set(token_counters) != set(scope.tokenizer_ids):
         _fail("surface optimizer counters do not match the bound tokenizer scope")
@@ -940,34 +980,46 @@ def optimize_alias_table(
     if not unique_candidates:
         _fail("surface optimizer has no valid candidates")
 
+    parent_mapping = {} if parent is None else parent.mapping
     scored: list[tuple[int, str, str]] = []
     for semantic_ref, frequency in semantic_frequencies.items():
-        source = _wire_value(semantic_ref)
+        baseline = parent_mapping.get(semantic_ref, _wire_value(semantic_ref))
         for alias in unique_candidates:
             deltas: list[int] = []
             for tokenizer_id, counter in token_counters.items():
-                source_tokens = counter(source)
+                baseline_tokens = counter(baseline)
                 alias_tokens = counter(alias)
                 if (
-                    type(source_tokens) is not int
+                    type(baseline_tokens) is not int
                     or type(alias_tokens) is not int
-                    or source_tokens < 0
+                    or baseline_tokens < 0
                     or alias_tokens < 0
                 ):
                     _fail(f"token counter {tokenizer_id} returned invalid usage")
-                deltas.append(source_tokens - alias_tokens)
+                deltas.append(baseline_tokens - alias_tokens)
             score = frequency * min(deltas)
             if score > 0:
                 scored.append((score, semantic_ref, alias))
     scored.sort(key=lambda item: (-item[0], item[1], item[2]))
-    selected: dict[str, str] = {}
-    used_aliases: set[str] = set()
+    selected: dict[str, str] = dict(parent_mapping)
+    used_aliases: set[str] = set(selected.values())
+    retired_parent_aliases: set[str] = set(parent_mapping.values())
+    improved_refs: set[str] = set()
     reserved = {_wire_value(item) for item in allowed}
     for _, semantic_ref, alias in scored:
-        if semantic_ref in selected or alias in used_aliases or alias in reserved:
+        if semantic_ref in improved_refs or alias in reserved:
+            continue
+        previous = selected.get(semantic_ref)
+        if alias in used_aliases and alias != previous:
             continue
         selected[semantic_ref] = alias
         used_aliases.add(alias)
+        if previous is not None:
+            retired_parent_aliases.add(previous)
+            used_aliases.update(retired_parent_aliases)
+        improved_refs.add(semantic_ref)
+    if parent is not None and not improved_refs:
+        _fail("child surface has no strict parent-relative tokenizer improvement")
     if not selected:
         _fail("no alias has positive savings for every bound tokenizer")
     return SurfaceAliasTable.from_mapping(
@@ -981,6 +1033,9 @@ def optimize_alias_table(
 @dataclass(frozen=True)
 class SurfaceTrialPlan:
     plan_artifact_sha256: str
+    expected_activation_vectors_sha256: str
+    expected_activation_verifier_sha256: str
+    expected_trial_verifier_sha256: str
     exact_message_count: int
     minimum_messages: int
     shadow_call_token_ceiling: int
@@ -992,8 +1047,15 @@ class SurfaceTrialPlan:
     require_zero_boundary_violations: bool = True
 
     def __post_init__(self) -> None:
-        if _SHA256.fullmatch(self.plan_artifact_sha256) is None:
-            _fail("surface trial plan artifact digest is invalid")
+        for name in (
+            "plan_artifact_sha256",
+            "expected_activation_vectors_sha256",
+            "expected_activation_verifier_sha256",
+            "expected_trial_verifier_sha256",
+        ):
+            value = getattr(self, name)
+            if type(value) is not str or _SHA256.fullmatch(value) is None:
+                _fail(f"surface trial plan {name} is invalid")
         if type(self.exact_message_count) is not int or self.exact_message_count <= 0:
             _fail("surface trial plan exact_message_count must be positive")
         if type(self.minimum_messages) is not int or self.minimum_messages <= 0:
@@ -1028,6 +1090,15 @@ class SurfaceTrialPlan:
         return canonical_json(
             {
                 "plan_artifact_sha256": self.plan_artifact_sha256,
+                "expected_activation_vectors_sha256": (
+                    self.expected_activation_vectors_sha256
+                ),
+                "expected_activation_verifier_sha256": (
+                    self.expected_activation_verifier_sha256
+                ),
+                "expected_trial_verifier_sha256": (
+                    self.expected_trial_verifier_sha256
+                ),
                 "exact_message_count": self.exact_message_count,
                 "minimum_messages": self.minimum_messages,
                 "shadow_call_token_ceiling": self.shadow_call_token_ceiling,
@@ -1056,11 +1127,22 @@ class SurfaceTrialPlan:
 @dataclass(frozen=True)
 class SurfaceTrial:
     table_sha256: str
+    attempt_sha256: str
     activation_binding_sha256: str
     plan_sha256: str
     result_sha256: str
     transcript_sha256: str
     verifier_sha256: str
+    executed_cases: tuple[tuple[str, str], ...]
+    baseline_execution_binding_sha256s: tuple[str, ...]
+    baseline_request_binding_sha256s: tuple[str, ...]
+    baseline_configured_token_ceilings: tuple[int, ...]
+    baseline_observed_total_tokens: tuple[int | None, ...]
+    shadow_execution_binding_sha256s: tuple[str, ...]
+    shadow_request_binding_sha256s: tuple[str, ...]
+    shadow_configured_token_ceilings: tuple[int, ...]
+    shadow_observed_total_tokens: tuple[int | None, ...]
+    prior_evolution_overhead_tokens: int | None
     message_count: int
     baseline_total_tokens: int | None
     activation_setup_tokens: int
@@ -1085,6 +1167,7 @@ class SurfaceTrial:
     def __post_init__(self) -> None:
         for name in (
             "table_sha256",
+            "attempt_sha256",
             "activation_binding_sha256",
             "plan_sha256",
             "result_sha256",
@@ -1113,6 +1196,90 @@ class SurfaceTrial:
             )
         ):
             _fail("surface trial counts exceed the message count")
+        for name in (
+            "executed_cases",
+            "baseline_execution_binding_sha256s",
+            "baseline_request_binding_sha256s",
+            "baseline_configured_token_ceilings",
+            "baseline_observed_total_tokens",
+            "shadow_execution_binding_sha256s",
+            "shadow_request_binding_sha256s",
+            "shadow_configured_token_ceilings",
+            "shadow_observed_total_tokens",
+        ):
+            value = getattr(self, name)
+            if type(value) is not tuple or len(value) != self.message_count:
+                _fail(f"surface trial {name} length differs from message_count")
+        case_ids: list[str] = []
+        case_sources: list[str] = []
+        for item in self.executed_cases:
+            if type(item) is not tuple or len(item) != 2:
+                _fail("surface trial executed case entry is invalid")
+            case_id, source_sha256 = item
+            if type(case_id) is not str or _CONTEXT_ID.fullmatch(case_id) is None:
+                _fail("surface trial executed case id is invalid")
+            if (
+                type(source_sha256) is not str
+                or _SHA256.fullmatch(source_sha256) is None
+            ):
+                _fail("surface trial executed case source digest is invalid")
+            case_ids.append(case_id)
+            case_sources.append(source_sha256)
+        if len(set(case_ids)) != len(case_ids) or len(set(case_sources)) != len(
+            case_sources
+        ):
+            _fail("surface trial executed cases must be unique")
+        for name in (
+            "baseline_execution_binding_sha256s",
+            "baseline_request_binding_sha256s",
+            "shadow_execution_binding_sha256s",
+            "shadow_request_binding_sha256s",
+        ):
+            values = getattr(self, name)
+            if any(
+                type(value) is not str or _SHA256.fullmatch(value) is None
+                for value in values
+            ):
+                _fail(f"surface trial {name} contains an invalid digest")
+            if len(set(values)) != len(values):
+                _fail(f"surface trial {name} must bind unique calls")
+        if len(
+            set(
+                self.baseline_execution_binding_sha256s
+                + self.shadow_execution_binding_sha256s
+            )
+        ) != self.message_count * 2:
+            _fail("baseline and surface execution receipts must be distinct")
+        if len(
+            set(
+                self.baseline_request_binding_sha256s
+                + self.shadow_request_binding_sha256s
+            )
+        ) != self.message_count * 2:
+            _fail("baseline and surface request receipts must be distinct")
+        if any(
+            type(value) is not int or value <= 0
+            for value in self.baseline_configured_token_ceilings
+        ):
+            _fail("surface trial baseline call ceilings must be positive integers")
+        if any(
+            type(value) is not int or value <= 0
+            for value in self.shadow_configured_token_ceilings
+        ):
+            _fail("surface trial shadow call ceilings must be positive integers")
+        if any(
+            value is not None and (type(value) is not int or value < 0)
+            for value in (
+                self.baseline_observed_total_tokens
+                + self.shadow_observed_total_tokens
+            )
+        ):
+            _fail("surface trial observed call tokens are invalid")
+        if self.prior_evolution_overhead_tokens is not None and (
+            type(self.prior_evolution_overhead_tokens) is not int
+            or self.prior_evolution_overhead_tokens < 0
+        ):
+            _fail("surface trial prior evolution overhead is invalid")
         if (
             type(self.activation_setup_tokens) is not int
             or self.activation_setup_tokens < 0
@@ -1130,6 +1297,13 @@ class SurfaceTrial:
             self.baseline_total_tokens is not None
             and self.surface_runtime_tokens_excluding_setup is not None
             and self.surface_total_tokens_including_setup is not None
+            and all(
+                value is not None
+                for value in (
+                    self.baseline_observed_total_tokens
+                    + self.shadow_observed_total_tokens
+                )
+            )
         ):
             _fail("surface trial usage completeness is inconsistent")
         if (
@@ -1161,11 +1335,40 @@ class SurfaceTrial:
             canonical_json(
                 {
                     "table_sha256": self.table_sha256,
+                    "attempt_sha256": self.attempt_sha256,
                     "activation_binding_sha256": self.activation_binding_sha256,
                     "plan_sha256": self.plan_sha256,
                     "result_sha256": self.result_sha256,
                     "transcript_sha256": self.transcript_sha256,
                     "verifier_sha256": self.verifier_sha256,
+                    "executed_cases": [list(item) for item in self.executed_cases],
+                    "baseline_execution_binding_sha256s": list(
+                        self.baseline_execution_binding_sha256s
+                    ),
+                    "baseline_request_binding_sha256s": list(
+                        self.baseline_request_binding_sha256s
+                    ),
+                    "baseline_configured_token_ceilings": list(
+                        self.baseline_configured_token_ceilings
+                    ),
+                    "baseline_observed_total_tokens": list(
+                        self.baseline_observed_total_tokens
+                    ),
+                    "shadow_execution_binding_sha256s": (
+                        list(self.shadow_execution_binding_sha256s)
+                    ),
+                    "shadow_request_binding_sha256s": (
+                        list(self.shadow_request_binding_sha256s)
+                    ),
+                    "shadow_configured_token_ceilings": (
+                        list(self.shadow_configured_token_ceilings)
+                    ),
+                    "shadow_observed_total_tokens": (
+                        list(self.shadow_observed_total_tokens)
+                    ),
+                    "prior_evolution_overhead_tokens": (
+                        self.prior_evolution_overhead_tokens
+                    ),
                     "message_count": self.message_count,
                     "baseline_total_tokens": self.baseline_total_tokens,
                     "activation_setup_tokens": self.activation_setup_tokens,
@@ -1197,6 +1400,7 @@ class SurfaceTrial:
 
 _RETAINED_SURFACE_FIELDS = (
     "table_sha256",
+    "attempt_sha256",
     "activation_binding_sha256",
     "session_id",
     "model_context_id",
@@ -1236,6 +1440,7 @@ class RetainedSurface:
     """
 
     table_sha256: str
+    attempt_sha256: str
     activation_binding_sha256: str
     session_id: str
     model_context_id: str
@@ -1261,6 +1466,7 @@ class RetainedSurface:
             _fail("RetainedSurface must be created by decide_surface_evolution")
         for name in (
             "table_sha256",
+            "attempt_sha256",
             "activation_binding_sha256",
             "plan_sha256",
             "plan_artifact_sha256",
@@ -1300,6 +1506,7 @@ class RetainedSurface:
             (
                 active_surface.authorizes(table),
                 self.table_sha256 == table.sha256,
+                self.attempt_sha256 == active_surface.attempt_sha256,
                 self.activation_binding_sha256
                 == active_surface.activation_binding_sha256,
                 self.session_id == table.scope.session_id,
@@ -1364,8 +1571,18 @@ def decide_surface_evolution(
         not active_surface.authorizes(table)
         or trial.activation_binding_sha256
         != active_surface.activation_binding_sha256
+        or trial.attempt_sha256 != active_surface.attempt_sha256
     ):
         reasons.append("surface-not-activated-for-trial")
+    if (
+        active_surface.round_trip_vectors_sha256
+        != plan.expected_activation_vectors_sha256
+    ):
+        reasons.append("activation-vectors-differ-from-frozen-plan")
+    if active_surface.verifier_sha256 != plan.expected_activation_verifier_sha256:
+        reasons.append("activation-verifier-differs-from-frozen-plan")
+    if trial.verifier_sha256 != plan.expected_trial_verifier_sha256:
+        reasons.append("trial-verifier-differs-from-frozen-plan")
     if trial.activation_setup_tokens != active_surface.setup_total_tokens:
         reasons.append("activation-setup-token-mismatch")
     try:
@@ -1376,7 +1593,7 @@ def decide_surface_evolution(
         not isinstance(verification, SurfaceArtifactVerification)
         or not verification.passed
         or verification.input_binding_sha256 != trial.binding_sha256
-        or verification.verifier_sha256 != trial.verifier_sha256
+        or verification.verifier_sha256 != plan.expected_trial_verifier_sha256
     ):
         reasons.append("trial-artifact-verification-failed")
     if not trial.frozen_before_execution:
@@ -1389,11 +1606,52 @@ def decide_surface_evolution(
         reasons.append("trial-message-count-differs-from-frozen-plan")
     if not trial.usage_complete:
         reasons.append("incomplete-total-token-usage")
-    elif (
-        trial.surface_runtime_tokens_excluding_setup
-        > plan.shadow_aggregate_token_ceiling
-    ):
-        reasons.append("shadow-aggregate-token-ceiling-exceeded")
+    else:
+        assert trial.surface_runtime_tokens_excluding_setup is not None
+        assert all(
+            value is not None for value in trial.shadow_observed_total_tokens
+        )
+        assert all(
+            value is not None for value in trial.baseline_observed_total_tokens
+        )
+        baseline_call_tokens = tuple(
+            int(value) for value in trial.baseline_observed_total_tokens
+        )
+        observed_call_tokens = tuple(
+            int(value) for value in trial.shadow_observed_total_tokens
+        )
+        if (
+            trial.surface_runtime_tokens_excluding_setup
+            > plan.shadow_aggregate_token_ceiling
+            or sum(observed_call_tokens) > plan.shadow_aggregate_token_ceiling
+        ):
+            reasons.append("shadow-aggregate-token-ceiling-exceeded")
+        if any(
+            value > plan.shadow_call_token_ceiling
+            for value in observed_call_tokens
+        ):
+            reasons.append("shadow-call-token-ceiling-exceeded")
+        if any(
+            value > plan.shadow_call_token_ceiling
+            for value in baseline_call_tokens
+        ):
+            reasons.append("baseline-call-token-ceiling-exceeded")
+        if sum(baseline_call_tokens) > plan.shadow_aggregate_token_ceiling:
+            reasons.append("baseline-aggregate-token-ceiling-exceeded")
+        if sum(baseline_call_tokens) != trial.baseline_total_tokens:
+            reasons.append("baseline-call-usage-total-mismatch")
+        if sum(observed_call_tokens) > trial.surface_runtime_tokens_excluding_setup:
+            reasons.append("shadow-call-usage-exceeds-surface-runtime")
+    if trial.shadow_configured_token_ceilings != (
+        plan.shadow_call_token_ceiling,
+    ) * trial.message_count:
+        reasons.append("shadow-call-token-ceiling-mismatch")
+    if trial.baseline_configured_token_ceilings != (
+        plan.shadow_call_token_ceiling,
+    ) * trial.message_count:
+        reasons.append("baseline-call-token-ceiling-mismatch")
+    if trial.prior_evolution_overhead_tokens is None:
+        reasons.append("prior-evolution-overhead-unknown")
     if trial.surface_safe_completions < trial.baseline_safe_completions:
         reasons.append("safe-completion-regression")
     if (
@@ -1429,18 +1687,27 @@ def decide_surface_evolution(
     ):
         assert trial.baseline_total_tokens is not None
         assert trial.surface_total_tokens_including_setup is not None
+        if trial.prior_evolution_overhead_tokens is None:
+            effective_surface_total = None
+        else:
+            effective_surface_total = (
+                trial.prior_evolution_overhead_tokens
+                + trial.surface_total_tokens_including_setup
+            )
         # Compare inclusive tokens per safely completed task without floats.
-        advantage_scaled = (
-            trial.baseline_total_tokens * trial.surface_safe_completions
-            - trial.surface_total_tokens_including_setup
-            * trial.baseline_safe_completions
-        )
+        advantage_scaled = None
+        if effective_surface_total is not None:
+            advantage_scaled = (
+                trial.baseline_total_tokens * trial.surface_safe_completions
+                - effective_surface_total * trial.baseline_safe_completions
+            )
         denominator = (
             trial.baseline_safe_completions
             * trial.surface_safe_completions
         )
-        savings = advantage_scaled // denominator
-        if advantage_scaled <= (
+        if advantage_scaled is not None:
+            savings = advantage_scaled // denominator
+        if advantage_scaled is not None and advantage_scaled <= (
             plan.switching_margin_tokens_per_safe_completion * denominator
         ):
             reasons.append("no-strict-total-token-advantage")
@@ -1448,6 +1715,7 @@ def decide_surface_evolution(
     if not reasons:
         retained_values = {
             "table_sha256": table.sha256,
+            "attempt_sha256": trial.attempt_sha256,
             "activation_binding_sha256": (
                 active_surface.activation_binding_sha256
             ),

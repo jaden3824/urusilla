@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import copy
 from dataclasses import replace
+from pathlib import Path
 from unittest import TestCase
 
 import urusilla_hybrid_runtime as hybrid_package
+from urusilla_hybrid_runtime.canonical import sha256_text
 
 from urusilla_hybrid_runtime import (
     CostForecast,
@@ -66,6 +68,7 @@ TRIAL_PLAN_ARTIFACT_SHA256 = "sha256:" + "a" * 64
 TRIAL_RESULT_SHA256 = "sha256:" + "b" * 64
 TRIAL_VERIFIER_SHA256 = "sha256:" + "c" * 64
 TRIAL_TRANSCRIPT_SHA256 = "sha256:" + "d" * 64
+SURFACE_ATTEMPT_SHA256 = "sha256:" + "e" * 64
 SOURCE_TEXT = "Verify artifact seven without creating external effects."
 SOURCE_SHA256 = source_text_sha256(SOURCE_TEXT)
 
@@ -209,10 +212,12 @@ def alias_table(
 def activation_evidence(
     table: SurfaceAliasTable,
     *,
+    attempt_sha256: str = SURFACE_ATTEMPT_SHA256,
     setup_total_tokens: int = 7,
 ) -> SurfaceActivationEvidence:
     return SurfaceActivationEvidence(
         table_sha256=table.sha256,
+        attempt_sha256=attempt_sha256,
         session_id=table.scope.session_id,
         model_context_id=table.scope.model_context_id,
         round_trip_vectors_sha256=ROUND_TRIP_VECTORS_SHA256,
@@ -240,14 +245,42 @@ def verify_activation(
 def active_surface(
     table: SurfaceAliasTable,
     *,
+    attempt_sha256: str = SURFACE_ATTEMPT_SHA256,
     setup_total_tokens: int = 7,
 ):
     return activate_surface(
         table,
-        activation_evidence(table, setup_total_tokens=setup_total_tokens),
+        activation_evidence(
+            table,
+            attempt_sha256=attempt_sha256,
+            setup_total_tokens=setup_total_tokens,
+        ),
+        attempt_sha256=attempt_sha256,
         active_capsule_sha256=table.scope.capsule_sha256,
+        expected_round_trip_vectors_sha256=ROUND_TRIP_VECTORS_SHA256,
+        expected_verifier_sha256=ACTIVATION_VERIFIER_SHA256,
         verifier=verify_activation,
     )
+
+
+def digest_series(start: int, count: int) -> tuple[str, ...]:
+    return tuple(f"sha256:{value:064x}" for value in range(start, start + count))
+
+
+def case_series(tag: str, count: int) -> tuple[tuple[str, str], ...]:
+    return tuple(
+        (
+            f"{tag}-{index}",
+            source_text_sha256(f"{tag} source {index}"),
+        )
+        for index in range(count)
+    )
+
+
+def token_partition(total: int, count: int) -> tuple[int, ...]:
+    values = [total // count] * count
+    values[-1] += total - sum(values)
+    return tuple(values)
 
 
 def positive_state() -> PublicActionState:
@@ -347,6 +380,22 @@ def replace_carrier_payload(
 
 
 class SurfaceAliasAndOptimizerTests(TestCase):
+    def test_evolving_surface_capsule_file_matches_pinned_digest(self) -> None:
+        project_root = Path(__file__).resolve().parents[2]
+        capsule_path = project_root / "urusilla_evolving_surface_capsule.json"
+        parsed = strict_json_loads(capsule_path.read_text(encoding="utf-8"))
+        self.assertEqual(
+            sha256_text(canonical_json(parsed)),
+            EVOLVING_SURFACE_CAPSULE_SHA256,
+        )
+        public_document = (project_root / "EVOLVING_SURFACE.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            f"`{EVOLVING_SURFACE_CAPSULE_SHA256}`",
+            public_document,
+        )
+
     def test_scope_rejects_unknown_surface_capsule_digest(self) -> None:
         with self.assertRaises(SurfaceError):
             SurfaceScope(
@@ -394,8 +443,8 @@ class SurfaceAliasAndOptimizerTests(TestCase):
             semantic_frequencies={"predicate:task.verify": 1},
             candidate_aliases=("乙",),
             token_counters={
-                "tok-a": lambda text: 2 if text == "task.verify" else 1,
-                "tok-b": lambda text: 2 if text == "task.verify" else 1,
+                "tok-a": {"task.verify": 3, "甲": 2, "乙": 1}.__getitem__,
+                "tok-b": {"task.verify": 3, "甲": 2, "乙": 1}.__getitem__,
             },
             parent=parent,
         )
@@ -415,6 +464,84 @@ class SurfaceAliasAndOptimizerTests(TestCase):
                 },
                 parent=parent,
             )
+
+    def test_child_requires_strict_parent_relative_improvement(self) -> None:
+        scope = surface_scope()
+        parent = alias_table(
+            {
+                "predicate:task.verify": "甲",
+                "predicate:test.passed": "乙",
+            },
+            scope=scope,
+        )
+        costs = {
+            "task.verify": 10,
+            "test.passed": 10,
+            "甲": 1,
+            "乙": 1,
+            "丙": 2,
+        }
+        with self.assertRaises(SurfaceError):
+            optimize_alias_table(
+                scope=scope,
+                task_context=TASK_CONTEXT,
+                semantic_frequencies={"predicate:task.verify": 1},
+                candidate_aliases=("丙",),
+                token_counters={
+                    "tok-a": costs.__getitem__,
+                    "tok-b": costs.__getitem__,
+                },
+                parent=parent,
+            )
+
+        improving_costs = dict(costs, **{"丙": 0})
+        child = optimize_alias_table(
+            scope=scope,
+            task_context=TASK_CONTEXT,
+            semantic_frequencies={"predicate:task.verify": 1},
+            candidate_aliases=("丙",),
+            token_counters={
+                "tok-a": improving_costs.__getitem__,
+                "tok-b": improving_costs.__getitem__,
+            },
+            parent=parent,
+        )
+        self.assertEqual(child.mapping["predicate:task.verify"], "丙")
+        self.assertEqual(child.mapping["predicate:test.passed"], "乙")
+
+    def test_retired_parent_alias_cannot_migrate_within_one_child(self) -> None:
+        scope = surface_scope()
+        parent = alias_table(
+            {
+                "predicate:task.verify": "甲",
+                "predicate:test.passed": "乙",
+            },
+            scope=scope,
+        )
+        costs = {
+            "task.verify": 10,
+            "test.passed": 10,
+            "甲": 1,
+            "乙": 4,
+            "丙": 0,
+        }
+        child = optimize_alias_table(
+            scope=scope,
+            task_context=TASK_CONTEXT,
+            semantic_frequencies={
+                "predicate:task.verify": 10,
+                "predicate:test.passed": 1,
+            },
+            candidate_aliases=("丙", "甲"),
+            token_counters={
+                "tok-a": costs.__getitem__,
+                "tok-b": costs.__getitem__,
+            },
+            parent=parent,
+        )
+        self.assertEqual(child.mapping["predicate:task.verify"], "丙")
+        self.assertEqual(child.mapping["predicate:test.passed"], "乙")
+        self.assertNotEqual(child.mapping["predicate:test.passed"], "甲")
 
     def test_role_reserved_and_unsafe_unicode_aliases_are_rejected(self) -> None:
         cases = {
@@ -474,7 +601,10 @@ class SurfaceActivationAndCarrierTests(TestCase):
         active = activate_surface(
             self.table,
             self.evidence,
+            attempt_sha256=SURFACE_ATTEMPT_SHA256,
             active_capsule_sha256=self.table.scope.capsule_sha256,
+            expected_round_trip_vectors_sha256=ROUND_TRIP_VECTORS_SHA256,
+            expected_verifier_sha256=ACTIVATION_VERIFIER_SHA256,
             verifier=verify_activation,
         )
         self.assertTrue(active.authorizes(self.table))
@@ -501,7 +631,12 @@ class SurfaceActivationAndCarrierTests(TestCase):
                 activate_surface(
                     self.table,
                     self.evidence,
+                    attempt_sha256=SURFACE_ATTEMPT_SHA256,
                     active_capsule_sha256=self.table.scope.capsule_sha256,
+                    expected_round_trip_vectors_sha256=(
+                        ROUND_TRIP_VECTORS_SHA256
+                    ),
+                    expected_verifier_sha256=ACTIVATION_VERIFIER_SHA256,
                     verifier=verifier,
                 )
 
@@ -513,8 +648,53 @@ class SurfaceActivationAndCarrierTests(TestCase):
                 activate_surface(
                     self.table,
                     self.evidence,
+                    attempt_sha256=SURFACE_ATTEMPT_SHA256,
                     active_capsule_sha256=self.table.scope.capsule_sha256,
+                    expected_round_trip_vectors_sha256=(
+                        ROUND_TRIP_VECTORS_SHA256
+                    ),
+                    expected_verifier_sha256=ACTIVATION_VERIFIER_SHA256,
                     verifier=lambda *_args, value=raw_result: value,
+                )
+
+    def test_activation_vectors_verifier_and_attempt_are_externally_pinned(
+        self,
+    ) -> None:
+        wrong_digest = "sha256:" + "f" * 64
+        for label, evidence, attempt in (
+            (
+                "vectors",
+                replace(
+                    self.evidence,
+                    round_trip_vectors_sha256=wrong_digest,
+                ),
+                SURFACE_ATTEMPT_SHA256,
+            ),
+            (
+                "verifier",
+                replace(self.evidence, verifier_sha256=wrong_digest),
+                SURFACE_ATTEMPT_SHA256,
+            ),
+            ("attempt", self.evidence, wrong_digest),
+        ):
+            def echo_verifier(item, _table):
+                return SurfaceArtifactVerification(
+                    passed=True,
+                    input_binding_sha256=item.binding_sha256,
+                    verifier_sha256=item.verifier_sha256,
+                )
+
+            with self.subTest(label=label), self.assertRaises(SurfaceError):
+                activate_surface(
+                    self.table,
+                    evidence,
+                    attempt_sha256=attempt,
+                    active_capsule_sha256=self.table.scope.capsule_sha256,
+                    expected_round_trip_vectors_sha256=(
+                        ROUND_TRIP_VECTORS_SHA256
+                    ),
+                    expected_verifier_sha256=ACTIVATION_VERIFIER_SHA256,
+                    verifier=echo_verifier,
                 )
 
     def test_exact_round_trip_preserves_negation_null_failure_and_refusal(self) -> None:
@@ -809,6 +989,9 @@ class SurfaceRouterIntegrationTests(TestCase):
     def retain(self, table: SurfaceAliasTable, active) -> RetainedSurface:
         plan = SurfaceTrialPlan(
             plan_artifact_sha256=TRIAL_PLAN_ARTIFACT_SHA256,
+            expected_activation_vectors_sha256=ROUND_TRIP_VECTORS_SHA256,
+            expected_activation_verifier_sha256=ACTIVATION_VERIFIER_SHA256,
+            expected_trial_verifier_sha256=TRIAL_VERIFIER_SHA256,
             exact_message_count=20,
             minimum_messages=20,
             shadow_call_token_ceiling=100,
@@ -817,11 +1000,22 @@ class SurfaceRouterIntegrationTests(TestCase):
         )
         trial = SurfaceTrial(
             table_sha256=table.sha256,
+            attempt_sha256=active.attempt_sha256,
             activation_binding_sha256=active.activation_binding_sha256,
             plan_sha256=plan.sha256,
             result_sha256=TRIAL_RESULT_SHA256,
             transcript_sha256=TRIAL_TRANSCRIPT_SHA256,
             verifier_sha256=TRIAL_VERIFIER_SHA256,
+            executed_cases=case_series("router-heldout", 20),
+            baseline_execution_binding_sha256s=digest_series(1_000, 20),
+            baseline_request_binding_sha256s=digest_series(1_100, 20),
+            baseline_configured_token_ceilings=(100,) * 20,
+            baseline_observed_total_tokens=(100,) * 20,
+            shadow_execution_binding_sha256s=digest_series(100, 20),
+            shadow_request_binding_sha256s=digest_series(200, 20),
+            shadow_configured_token_ceilings=(100,) * 20,
+            shadow_observed_total_tokens=(25,) * 20,
+            prior_evolution_overhead_tokens=0,
             message_count=20,
             baseline_total_tokens=2_000,
             activation_setup_tokens=active.setup_total_tokens,
@@ -1184,6 +1378,7 @@ class SurfaceRouterIntegrationTests(TestCase):
             name: getattr(retained, name)
             for name in (
                 "table_sha256",
+                "attempt_sha256",
                 "activation_binding_sha256",
                 "session_id",
                 "model_context_id",
@@ -1252,6 +1447,9 @@ class SurfaceEvolutionTests(TestCase):
         self.active = active_surface(self.table)
         self.plan = SurfaceTrialPlan(
             plan_artifact_sha256=TRIAL_PLAN_ARTIFACT_SHA256,
+            expected_activation_vectors_sha256=ROUND_TRIP_VECTORS_SHA256,
+            expected_activation_verifier_sha256=ACTIVATION_VERIFIER_SHA256,
+            expected_trial_verifier_sha256=TRIAL_VERIFIER_SHA256,
             exact_message_count=20,
             minimum_messages=20,
             shadow_call_token_ceiling=100,
@@ -1260,8 +1458,16 @@ class SurfaceEvolutionTests(TestCase):
         )
 
     def trial(self, **overrides: object) -> SurfaceTrial:
+        message_count = int(overrides.get("message_count", 20))
+        baseline_total = overrides.get("baseline_total_tokens", 2_000)
+        baseline_call_tokens = (
+            (None,) * message_count
+            if baseline_total is None
+            else token_partition(int(baseline_total), message_count)
+        )
         values: dict[str, object] = {
             "table_sha256": self.table.sha256,
+            "attempt_sha256": self.active.attempt_sha256,
             "activation_binding_sha256": (
                 self.active.activation_binding_sha256
             ),
@@ -1269,7 +1475,29 @@ class SurfaceEvolutionTests(TestCase):
             "result_sha256": TRIAL_RESULT_SHA256,
             "transcript_sha256": TRIAL_TRANSCRIPT_SHA256,
             "verifier_sha256": TRIAL_VERIFIER_SHA256,
-            "message_count": 20,
+            "executed_cases": case_series("evolution-heldout", message_count),
+            "baseline_execution_binding_sha256s": digest_series(
+                1_300,
+                message_count,
+            ),
+            "baseline_request_binding_sha256s": digest_series(
+                1_500,
+                message_count,
+            ),
+            "baseline_configured_token_ceilings": (100,) * message_count,
+            "baseline_observed_total_tokens": baseline_call_tokens,
+            "shadow_execution_binding_sha256s": digest_series(
+                300,
+                message_count,
+            ),
+            "shadow_request_binding_sha256s": digest_series(
+                400,
+                message_count,
+            ),
+            "shadow_configured_token_ceilings": (100,) * message_count,
+            "shadow_observed_total_tokens": (80,) * message_count,
+            "prior_evolution_overhead_tokens": 0,
+            "message_count": message_count,
             "baseline_total_tokens": 2_000,
             "activation_setup_tokens": self.active.setup_total_tokens,
             "surface_runtime_tokens_excluding_setup": 1_773,
@@ -1423,12 +1651,125 @@ class SurfaceEvolutionTests(TestCase):
             aggregate_overrun.reasons,
         )
 
+    def test_per_call_receipts_and_pinned_verifiers_are_hard_gates(self) -> None:
+        per_call_overrun = self.decide(
+            self.trial(
+                shadow_observed_total_tokens=(101,) + (79,) * 19,
+            )
+        )
+        self.assertEqual(per_call_overrun.action, "rollback")
+        self.assertIn(
+            "shadow-call-token-ceiling-exceeded",
+            per_call_overrun.reasons,
+        )
+        self.assertNotIn(
+            "shadow-aggregate-token-ceiling-exceeded",
+            per_call_overrun.reasons,
+        )
+
+        configured_mismatch = self.decide(
+            self.trial(
+                shadow_configured_token_ceilings=(99,) + (100,) * 19,
+            )
+        )
+        self.assertIn(
+            "shadow-call-token-ceiling-mismatch",
+            configured_mismatch.reasons,
+        )
+
+        baseline_configured_mismatch = self.decide(
+            self.trial(
+                baseline_configured_token_ceilings=(99,) + (100,) * 19,
+            )
+        )
+        self.assertIn(
+            "baseline-call-token-ceiling-mismatch",
+            baseline_configured_mismatch.reasons,
+        )
+        with self.assertRaises(SurfaceError):
+            self.trial(baseline_configured_token_ceilings=(100,) * 19)
+        with self.assertRaises(SurfaceError):
+            self.trial(
+                baseline_configured_token_ceilings=(0,) + (100,) * 19,
+            )
+
+        baseline_overrun = self.decide(
+            self.trial(
+                baseline_observed_total_tokens=(101, 99) + (100,) * 18,
+            )
+        )
+        self.assertIn(
+            "baseline-call-token-ceiling-exceeded",
+            baseline_overrun.reasons,
+        )
+
+        baseline_total_mismatch = self.decide(
+            self.trial(
+                baseline_observed_total_tokens=(99,) + (100,) * 19,
+            )
+        )
+        self.assertIn(
+            "baseline-call-usage-total-mismatch",
+            baseline_total_mismatch.reasons,
+        )
+
+        incomplete = self.decide(
+            self.trial(
+                shadow_observed_total_tokens=(None,) + (80,) * 19,
+                usage_complete=False,
+            )
+        )
+        self.assertIn("incomplete-total-token-usage", incomplete.reasons)
+
+        with self.assertRaises(SurfaceError):
+            self.trial(shadow_request_binding_sha256s=digest_series(1, 19))
+        with self.assertRaises(SurfaceError):
+            self.trial(
+                shadow_request_binding_sha256s=digest_series(1_500, 20),
+            )
+        duplicate_cases = list(case_series("duplicate", 20))
+        duplicate_cases[-1] = duplicate_cases[0]
+        with self.assertRaises(SurfaceError):
+            self.trial(executed_cases=tuple(duplicate_cases))
+
+        wrong_verifier_plan = replace(
+            self.plan,
+            expected_trial_verifier_sha256="sha256:" + "f" * 64,
+        )
+        verifier_mismatch = self.decide(
+            self.trial(plan_sha256=wrong_verifier_plan.sha256),
+            plan=wrong_verifier_plan,
+        )
+        self.assertIn(
+            "trial-verifier-differs-from-frozen-plan",
+            verifier_mismatch.reasons,
+        )
+        self.assertIn(
+            "trial-artifact-verification-failed",
+            verifier_mismatch.reasons,
+        )
+
+    def test_prior_rejected_evolution_cost_is_included_in_advantage(self) -> None:
+        decision = self.decide(
+            self.trial(
+                baseline_total_tokens=2_000,
+                prior_evolution_overhead_tokens=500,
+            )
+        )
+        self.assertEqual(decision.action, "rollback")
+        self.assertIn("no-strict-total-token-advantage", decision.reasons)
+
     def test_frozen_plan_artifact_and_exact_message_count_are_mandatory(
         self,
     ) -> None:
         with self.assertRaises(SurfaceError):
             SurfaceTrialPlan(
                 plan_artifact_sha256="not-a-digest",
+                expected_activation_vectors_sha256=ROUND_TRIP_VECTORS_SHA256,
+                expected_activation_verifier_sha256=(
+                    ACTIVATION_VERIFIER_SHA256
+                ),
+                expected_trial_verifier_sha256=TRIAL_VERIFIER_SHA256,
                 exact_message_count=20,
                 minimum_messages=20,
                 shadow_call_token_ceiling=100,
@@ -1446,6 +1787,9 @@ class SurfaceEvolutionTests(TestCase):
 
         longer_plan = SurfaceTrialPlan(
             plan_artifact_sha256=TRIAL_PLAN_ARTIFACT_SHA256,
+            expected_activation_vectors_sha256=ROUND_TRIP_VECTORS_SHA256,
+            expected_activation_verifier_sha256=ACTIVATION_VERIFIER_SHA256,
+            expected_trial_verifier_sha256=TRIAL_VERIFIER_SHA256,
             exact_message_count=21,
             minimum_messages=20,
             shadow_call_token_ceiling=100,
@@ -1500,6 +1844,7 @@ class SurfaceEvolutionTests(TestCase):
                     "baseline_total_tokens": None,
                     "surface_runtime_tokens_excluding_setup": None,
                     "surface_total_tokens_including_setup": None,
+                    "shadow_observed_total_tokens": (None,) * 20,
                     "usage_complete": False,
                 },
             ),

@@ -16,6 +16,14 @@ from .errors import (
     TaskContextError,
 )
 from .integrity import current_runtime_sha256
+from .evolution import (
+    EvolutionAttempt,
+    EvolutionCostLedger,
+    EvolutionOutcome,
+    EvolutionTrialManifest,
+    OnlineEvolutionController,
+    semantic_ref_frequencies,
+)
 from .fidelity import FidelityVerification, FidelityVerificationInput
 from .receiver import (
     DirectReceiverRequest,
@@ -123,6 +131,10 @@ __all__ = [
     "OutputValidationInput",
     "DirectReceiverRequest",
     "EVOLVING_SURFACE_CAPSULE_SHA256",
+    "EvolutionAttempt",
+    "EvolutionCostLedger",
+    "EvolutionOutcome",
+    "EvolutionTrialManifest",
     "ReceiverExecution",
     "ReceiverModelAdapter",
     "ReceiverModelReply",
@@ -130,6 +142,7 @@ __all__ = [
     "HybridExecution",
     "JsonValidationError",
     "ModelReply",
+    "OnlineEvolutionController",
     "PreparedMessage",
     "PublicActionState",
     "PublicTaskContext",
@@ -186,6 +199,7 @@ __all__ = [
     "plan_route",
     "prepare_message",
     "should_attempt_action_state",
+    "semantic_ref_frequencies",
     "source_text_sha256",
     "strict_json_loads",
     "validate_action_state",

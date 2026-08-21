@@ -4,7 +4,7 @@ Status: development-only research machinery. It is not a promoted protocol
 version and is not evidence of general token savings.
 
 Canonical JSON digest of `urusilla_evolving_surface_capsule.json`:
-`sha256:97f5a7027deeb9f70c71880a9d0c0102cfdc75626b058d9009839a904207f49e`.
+`sha256:b007fe91ee39abf9167b8d73a627f8ecba56c0f401850ac73b3981e534854848`.
 
 ## Design rule
 
@@ -93,9 +93,12 @@ the typed shadow executor, whose output is marked ineligible for delivery or
 claims. A passing decision mints a sealed retained-surface proof bound to the
 exact table, activation, session, model context, generation, frozen plan, trial
 result, verifier, and evolving-surface Capsule. The live router requires the
-exact table/active/retained triple. A forged, sibling, stale, or reset-context
-proof fails closed. Even a retained local surface cannot inherit a general
-performance claim from canonical action-state evidence.
+exact table/active/retained triple. A forged or sibling proof fails closed. A
+host-enforced current-controller lease must reject stale triples and must use
+fresh session and model-context identities after a reset; the in-memory core
+does not globally revoke an otherwise valid old triple. Even a retained local
+surface cannot inherit a general performance claim from canonical action-state
+evidence.
 
 Every shadow request requires a positive provider-enforced per-call token
 ceiling, and the frozen plan binds both per-call and aggregate shadow budgets.
@@ -108,17 +111,49 @@ cannot turn a retained table into an unchecked live codec.
 
 The reference state machine, optimizer, compact positional carrier, exact
 round-trip decoder, activation proof, and rollback decision live in
-`urusilla_hybrid_runtime/surface.py`. An active table can run only through the
-explicit shadow path before retention. After a passing trial, the exact retained
-table can be selected inside the existing action-state route; the host validates
-its structured round trip and keep proof, then the receiver consumes the compact
-positional payload directly without prose re-expansion. Activation and
-comprehension setup are charged exactly once to the frozen session-level surface
-trial; post-retention per-message routing compares marginal cost and never
-repeats or silently erases that setup.
+`urusilla_hybrid_runtime/surface.py`. The session-only online coordinator in
+`urusilla_hybrid_runtime/evolution.py` observes validated public action states,
+starts at most one candidate generation after its bounded observation window,
+and connects optimization, activation, matched shadow trial, and keep/rollback
+in order. Callback or artifact failure is a fail-closed controller outcome, not
+live authorization. A kept table is the exact parent of the next generation;
+a rejected candidate is never promoted into that chain. The observation-window
+size is independent of the frozen trial's exact message count, and observation
+records are not passed into the activation or trial callbacks. A terminal cycle
+requires an explicit reset followed by a fresh full observation window before
+another candidate can be attempted.
+
+Observation occurrences are unique even when their public content repeats. An
+ordered window digest, monotonic attempt identity, fresh disjoint trial manifest,
+exact parent, and frozen policy are carried through activation, matched trial,
+and retention. Every new generation must use fresh held-out case identities and
+sources while preserving the controller's verifier identities, activation
+vectors, counts, budgets, and switching margin. Baseline and surface execution
+receipts must match the ordered manifest one for one. A stale attempt, repeated
+occurrence, changed policy, manifest mismatch, or unverified receipt fails
+closed.
+
+The controller also carries a cumulative evolution-cost ledger. Every known
+setup and discarded-shadow cost remains unamortized, including the trial that
+produces a keep, and is charged to later candidate decisions. Unknown or
+unverifiable usage is never treated as zero; it makes the ledger incomplete and
+blocks later retention within the same controller. The current core has no
+live-savings settlement API, so a retained surface is permission to begin a
+bounded live tail, not proof that its experiment cost has been repaid.
+
+An active table can run only through the explicit shadow path before retention.
+After a passing trial, the exact retained table can be selected inside the
+existing action-state route; the host validates its structured round trip and
+keep proof, then the receiver consumes the compact positional payload directly
+without prose re-expansion. Activation and comprehension setup are charged
+exactly once to the frozen session-level surface trial; post-retention
+per-message routing compares marginal cost and never repeats or silently erases
+that setup.
 The module performs no network I/O and creates no persistent state. A provider
-adapter, authenticated transport, and trustworthy sandbox receipts are external
-enforcement requirements.
+adapter, authenticated transport, trustworthy sandbox receipts, and a
+one-controller-per-scope host lease are external enforcement requirements. A
+controller replacement must revoke old routing triples and either restore the
+sealed lineage and ledger or start with fresh session/model-context identities.
 
 The present implementation establishes fail-closed plumbing only. It has not
 passed the project's frozen multi-domain, multi-model, independently operated
