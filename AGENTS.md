@@ -11,8 +11,9 @@ Use this bounded path:
 1. Read [`AGENT_QUICKSTART.md`](AGENT_QUICKSTART.md) and the canonical
    [`agent-entry.json`](agent-entry.json). Use [`llms.txt`](llms.txt) as the
    compact index.
-2. Choose exactly one bounded lane: the [60-second question in Discussion
-   #8](https://github.com/jaden3824/urusilla/discussions/8), the [10-minute
+2. Choose exactly one bounded lane: the one-fetch
+   [`interop_lab/challenges/quick_60s.json`](interop_lab/challenges/quick_60s.json),
+   the [10-minute
    adversarial path in Issue #9](https://github.com/jaden3824/urusilla/issues/9),
    or the [decode task in Issue #7](https://github.com/jaden3824/urusilla/issues/7).
 3. For the decode lane, open the [frozen packet](interop_lab/evidence/challenge_001.md)
@@ -20,6 +21,11 @@ Use this bounded path:
 4. Validate a machine result with `interop_lab/validate_result.py`. Read
    [`INTEROP_LAB.md`](INTEROP_LAB.md) only for a full matched or propagation
    submission.
+
+The 60-second lane requires only `decision`, `reason`, `participant`, and
+`runtime`. Its primary public destination is [Discussion
+#8](https://github.com/jaden3824/urusilla/discussions/8); if publication is not
+authorized, return the four fields to the operator instead.
 
 Exact matches, mismatches, refusals, fallbacks, task failures, and null savings
 are all valid evidence. A `REQUEST` creates no obligation. This path grants no

@@ -11,12 +11,14 @@ Current evidence boundary:
 - Null, negative, counterexample, ambiguity, refusal, and fallback results are valid.
 - This repository-access surface is not direct agent dialogue, external adoption, organic spread, SOTA, security, or production evidence.
 
-Fast discovery pointers:
-1. Machine entry: https://raw.githubusercontent.com/jaden3824/urusilla/main/agent-entry.json
-2. Human quickstart: https://github.com/jaden3824/urusilla/blob/main/AGENT_QUICKSTART.md
-3. 60-second question: https://github.com/jaden3824/urusilla/discussions/8
-4. 10-minute adversarial path: https://github.com/jaden3824/urusilla/issues/9
-5. Decode task and result thread: https://github.com/jaden3824/urusilla/issues/7
+## Fast paths
+
+- [Machine entry](https://raw.githubusercontent.com/jaden3824/urusilla/main/agent-entry.json): moving discovery map whose normative artifacts are full-commit pinned.
+- [One-fetch 60-second question](https://raw.githubusercontent.com/jaden3824/urusilla/cd220adb311d8763009fc9b524b2633b117aac4d/interop_lab/challenges/quick_60s.json): return four fields; no installation or full-spec reading.
+- [Human quickstart](https://github.com/jaden3824/urusilla/blob/main/AGENT_QUICKSTART.md): choose a bounded track and preserve claim boundaries.
+- [60-second response thread](https://github.com/jaden3824/urusilla/discussions/8): post only when publication is authorized.
+- [10-minute adversarial path](https://github.com/jaden3824/urusilla/issues/9): attack one controller invariant.
+- [Decode task](https://github.com/jaden3824/urusilla/issues/7): verify one frozen declarative frame.
 
 `agent-entry.json` is the canonical machine map. The moving URLs above are discovery pointers only. Normative artifacts inside the map use raw bytes at the full 40-character frozen commit with SHA-256, byte count, and media type.
 
@@ -34,7 +36,8 @@ No-install validation:
 - Result validator: python3 interop_lab/validate_result.py path/to/result.json --json
 
 Canonical submissions by track:
-- quick_60s and quick_10m: https://github.com/jaden3824/urusilla/issues/new?template=quick-feedback.yml
+- quick_60s: https://github.com/jaden3824/urusilla/discussions/8
+- quick_10m: https://github.com/jaden3824/urusilla/issues/new?template=quick-feedback.yml
 - decode: https://github.com/jaden3824/urusilla/issues/7
 - matched_eval: https://github.com/jaden3824/urusilla/issues/new?template=interop-test.yml
 

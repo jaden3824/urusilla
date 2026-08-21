@@ -23,9 +23,14 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MANIFEST = REPO_ROOT / "agent-entry.json"
 SCHEMA_VERSION = "urusilla-agent-entry/1"
 BASELINE_REVISION = "f612ea141e409693b27e93cefef0876eff9542ed"
+QUICK_ARTIFACT_REVISION = "cd220adb311d8763009fc9b524b2633b117aac4d"
 RAW_PREFIX = (
     "https://raw.githubusercontent.com/jaden3824/urusilla/"
     f"{BASELINE_REVISION}/"
+)
+QUICK_RAW_PREFIX = (
+    "https://raw.githubusercontent.com/jaden3824/urusilla/"
+    f"{QUICK_ARTIFACT_REVISION}/"
 )
 CAPSULE_SHA256 = (
     "sha256:588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27"
@@ -39,6 +44,18 @@ MAX_STRING_CHARS = 65_536
 MIRROR_OBSERVED_AT = "2026-08-21T11:44:37Z"
 
 EXPECTED_ARTIFACTS = {
+    "quick_60s_challenge": (
+        "interop_lab/challenges/quick_60s.json",
+        "application/json",
+        "sha256:da39f621274bb054797d39536a39b671b26344c5082887ee48a4c3556ccac2e5",
+        1596,
+    ),
+    "quick_response_schema": (
+        "interop_lab/quick_response.schema.json",
+        "application/schema+json",
+        "sha256:9586e0fb2c5bfa40334a10779eb63a66ce6529c4411995b6d5d65c65195d5c07",
+        835,
+    ),
     "grammar_capsule": (
         "urusilla_capsule_v0_1.json",
         "application/json",
@@ -119,6 +136,15 @@ EXPECTED_ARTIFACTS = {
     ),
 }
 
+NON_BASELINE_RAW_URLS = {
+    "quick_60s_challenge": (
+        QUICK_RAW_PREFIX + "interop_lab/challenges/quick_60s.json"
+    ),
+    "quick_response_schema": (
+        QUICK_RAW_PREFIX + "interop_lab/quick_response.schema.json"
+    ),
+}
+
 EXPECTED_PUBLIC_MIRRORS = {
     "quick_60s": {
         "source_kind": "github-discussion",
@@ -162,17 +188,16 @@ EXPECTED_PUBLIC_MIRRORS = {
 EXPECTED_TRACKS = {
     "quick_60s": {
         "time_budget_seconds": 60,
-        "challenge_uri": "https://github.com/jaden3824/urusilla/discussions/8",
-        "offline_challenge": {
-            "path": "interop_lab/challenges/discussion_8.body.md",
-            "sha256": EXPECTED_PUBLIC_MIRRORS["quick_60s"]["body_sha256"],
-            "bytes": EXPECTED_PUBLIC_MIRRORS["quick_60s"]["body_bytes"],
-            "provenance": "public-source-mirror-at-recorded-updated-at",
-        },
-        "canonical_submission_uri": (
-            "https://github.com/jaden3824/urusilla/issues/new?"
-            "template=quick-feedback.yml"
+        "challenge_uri": (
+            QUICK_RAW_PREFIX + "interop_lab/challenges/quick_60s.json"
         ),
+        "offline_challenge": {
+            "path": "interop_lab/challenges/quick_60s.json",
+            "sha256": EXPECTED_ARTIFACTS["quick_60s_challenge"][2],
+            "bytes": EXPECTED_ARTIFACTS["quick_60s_challenge"][3],
+            "provenance": "frozen-one-fetch-artifact",
+        },
+        "canonical_submission_uri": "https://github.com/jaden3824/urusilla/discussions/8",
     },
     "quick_10m": {
         "time_budget_seconds": 600,
@@ -643,8 +668,12 @@ def _validate_artifacts(value: Any, root: Path) -> set[str]:
         _require(local_path not in observed_paths, f"duplicate artifact path: {local_path}")
         observed_paths.add(local_path)
         raw_url = _https_uri(artifact["raw_url"], f"{path_label}.raw_url")
+        expected_raw_url = NON_BASELINE_RAW_URLS.get(
+            artifact_id,
+            RAW_PREFIX + local_path,
+        )
         _require(
-            raw_url == RAW_PREFIX + local_path,
+            raw_url == expected_raw_url,
             f"{artifact_id} raw_url must use the full frozen commit and raw bytes",
         )
         digest = artifact["sha256"]
@@ -749,7 +778,11 @@ def _validate_tracks(
             == offline["sha256"],
             f"{track_id} offline challenge digest mismatch",
         )
-        if track_id in EXPECTED_PUBLIC_MIRRORS:
+        if offline["provenance"] == "public-source-mirror-at-recorded-updated-at":
+            _require(
+                track_id in mirrors,
+                f"{track_id} has no public-mirror provenance record",
+            )
             mirror = mirrors[track_id]
             _require(
                 offline["path"] == mirror["body_path"]

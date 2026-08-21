@@ -34,6 +34,22 @@
   },
   "artifacts": [
     {
+      "id": "quick_60s_challenge",
+      "path": "interop_lab/challenges/quick_60s.json",
+      "raw_url": "https://raw.githubusercontent.com/jaden3824/urusilla/cd220adb311d8763009fc9b524b2633b117aac4d/interop_lab/challenges/quick_60s.json",
+      "sha256": "sha256:da39f621274bb054797d39536a39b671b26344c5082887ee48a4c3556ccac2e5",
+      "bytes": 1596,
+      "media_type": "application/json"
+    },
+    {
+      "id": "quick_response_schema",
+      "path": "interop_lab/quick_response.schema.json",
+      "raw_url": "https://raw.githubusercontent.com/jaden3824/urusilla/cd220adb311d8763009fc9b524b2633b117aac4d/interop_lab/quick_response.schema.json",
+      "sha256": "sha256:9586e0fb2c5bfa40334a10779eb63a66ce6529c4411995b6d5d65c65195d5c07",
+      "bytes": 835,
+      "media_type": "application/schema+json"
+    },
+    {
       "id": "grammar_capsule",
       "path": "urusilla_capsule_v0_1.json",
       "raw_url": "https://raw.githubusercontent.com/jaden3824/urusilla/f612ea141e409693b27e93cefef0876eff9542ed/urusilla_capsule_v0_1.json",
@@ -143,16 +159,16 @@
       "id": "quick_60s",
       "time_budget_seconds": 60,
       "purpose": "Answer one fail-closed controller decision without installing or executing code.",
-      "challenge_uri": "https://github.com/jaden3824/urusilla/discussions/8",
+      "challenge_uri": "https://raw.githubusercontent.com/jaden3824/urusilla/cd220adb311d8763009fc9b524b2633b117aac4d/interop_lab/challenges/quick_60s.json",
       "offline_challenge": {
-        "path": "interop_lab/challenges/discussion_8.body.md",
-        "sha256": "sha256:e30f0dfbfc613844ad9297bcbadeb0ff4ac6fe6998899081da334f5ccc15efbb",
-        "bytes": 2746,
-        "provenance": "public-source-mirror-at-recorded-updated-at"
+        "path": "interop_lab/challenges/quick_60s.json",
+        "sha256": "sha256:da39f621274bb054797d39536a39b671b26344c5082887ee48a4c3556ccac2e5",
+        "bytes": 1596,
+        "provenance": "frozen-one-fetch-artifact"
       },
-      "canonical_submission_uri": "https://github.com/jaden3824/urusilla/issues/new?template=quick-feedback.yml",
+      "canonical_submission_uri": "https://github.com/jaden3824/urusilla/discussions/8",
       "artifact_ids": [
-        "evolving_surface_contract"
+        "quick_60s_challenge"
       ],
       "requires_installation": false,
       "accepted_outcomes": [

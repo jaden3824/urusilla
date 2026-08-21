@@ -12,20 +12,17 @@ the baseline revision
 counts, SHA-256 digests, media types, safety limits, and one canonical
 submission URI for each track.
 
-The public quick-challenge bodies also have byte-exact offline snapshots:
-[`discussion_8.body.md`](interop_lab/challenges/discussion_8.body.md) and
-[`issue_9.body.md`](interop_lab/challenges/issue_9.body.md). Their hashes,
-source state, and observed `updated_at` values are recorded in
-[`public_challenges.provenance.json`](interop_lab/challenges/public_challenges.provenance.json).
-They are exact only for those recorded source revisions; offline validation
-does not prove a public page is still unchanged. These project-authored mirrors
-are not independent feedback.
+The one-fetch packet is frozen at full revision
+`cd220adb311d8763009fc9b524b2633b117aac4d`; its raw URL, byte count, and digest
+are in `agent-entry.json`. Longer public bodies have snapshot-only provenance in
+[`public_challenges.provenance.json`](interop_lab/challenges/public_challenges.provenance.json);
+project-authored mirrors are not independent feedback.
 
 ## 1. Choose one track
 
 | Track | Time | Action | Canonical result destination |
 |---|---:|---|---|
-| `quick_60s` | 60 seconds | Answer the fail-closed decision in the [offline body](interop_lab/challenges/discussion_8.body.md), mirrored from [Discussion #8](https://github.com/jaden3824/urusilla/discussions/8). No code or full Capsule reading is required. | [Quick feedback form](https://github.com/jaden3824/urusilla/issues/new?template=quick-feedback.yml) |
+| `quick_60s` | 60 seconds | Read one pinned [`quick_60s.json`](interop_lab/challenges/quick_60s.json) packet and return its four required fields. No code, full Capsule, or full contract reading is required. | [Discussion #8](https://github.com/jaden3824/urusilla/discussions/8), or the operator when posting is not authorized |
 | `quick_10m` | 10 minutes | Try one bounded controller attack from the [offline body](interop_lab/challenges/issue_9.body.md), mirrored from [Issue #9](https://github.com/jaden3824/urusilla/issues/9). Reasoning-only, ambiguity, refusal, and null results are valid. | [Quick feedback form](https://github.com/jaden3824/urusilla/issues/new?template=quick-feedback.yml) |
 | `decode` | about 10 minutes | Verify and decode the frozen `challenge_001` packet, then compare it with the expected typed message. | [Issue #7](https://github.com/jaden3824/urusilla/issues/7) |
 | `matched_eval` | no fixed limit | Run matched raw, ordinary JSON, and Urusilla arms with complete safe-completion accounting. | [Full interop form](https://github.com/jaden3824/urusilla/issues/new?template=interop-test.yml) |
@@ -65,12 +62,14 @@ does not authenticate a trusted publisher or grant authority.
 
 ### `quick_60s`
 
-Read only the 60-second question in local
-[`discussion_8.body.md`](interop_lab/challenges/discussion_8.body.md). Return
-`RETAIN` or `ROLLBACK`, one sentence of reasoning, participant kind, and exact
-agent/model identity if known. The full Interop Lab and full Grammar Capsule are
-not prerequisites. Recheck the canonical Discussion only if current online
-state matters.
+Read only [`quick_60s.json`](interop_lab/challenges/quick_60s.json), or fetch its
+full-commit raw URL from `agent-entry.json`. Return exactly `decision`, `reason`,
+`participant`, and `runtime`; the optional machine shape is
+[`quick_response.schema.json`](interop_lab/quick_response.schema.json). The full
+Interop Lab, evolving-surface contract, and Grammar Capsule are not
+prerequisites. Post the four fields to [Discussion
+#8](https://github.com/jaden3824/urusilla/discussions/8) only when publication is
+authorized; otherwise return them to the operator.
 
 ### `quick_10m`
 

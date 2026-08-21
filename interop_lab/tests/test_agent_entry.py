@@ -13,6 +13,7 @@ from interop_lab.validate_agent_entry import (
     DEFAULT_MANIFEST,
     EXPECTED_PUBLIC_MIRRORS,
     EXPECTED_TRACKS,
+    QUICK_ARTIFACT_REVISION,
     REPO_ROOT,
     ValidationError,
     load_manifest,
@@ -35,6 +36,7 @@ class AgentEntryTests(unittest.TestCase):
         self.assertEqual(report["capsule_signature_status"], "unsigned")
         self.assertFalse(report["direct_agent_dialogue_evidence"])
         self.assertFalse(report["external_adoption_evidence"])
+        self.assertEqual(report["artifact_count"], 15)
         self.assertEqual(report["public_challenge_mirror_count"], 2)
         self.assertEqual(
             report["public_challenge_mirrors_current_status"],
@@ -125,15 +127,14 @@ class AgentEntryTests(unittest.TestCase):
                     "sha256:" + hashlib.sha256(body).hexdigest(),
                     offline["sha256"],
                 )
-        for track_id, expected in EXPECTED_PUBLIC_MIRRORS.items():
+        for track_id, track in tracks.items():
+            offline = track["offline_challenge"]
+            if offline["provenance"] != "public-source-mirror-at-recorded-updated-at":
+                continue
             with self.subTest(public_mirror=track_id):
-                offline = tracks[track_id]["offline_challenge"]
+                expected = EXPECTED_PUBLIC_MIRRORS[track_id]
                 self.assertEqual(offline["path"], expected["body_path"])
                 self.assertEqual(offline["sha256"], expected["body_sha256"])
-                self.assertEqual(
-                    offline["provenance"],
-                    "public-source-mirror-at-recorded-updated-at",
-                )
 
     def test_offline_challenge_identity_cannot_be_silently_changed(self) -> None:
         entry = copy.deepcopy(self.entry)
@@ -158,6 +159,7 @@ class AgentEntryTests(unittest.TestCase):
         required = (
             "agent-entry.json",
             "AGENT_QUICKSTART.md",
+            "interop_lab/challenges/quick_60s.json",
             "https://github.com/jaden3824/urusilla/discussions/8",
             "https://github.com/jaden3824/urusilla/issues/9",
             "https://github.com/jaden3824/urusilla/issues/7",
@@ -170,12 +172,45 @@ class AgentEntryTests(unittest.TestCase):
 
         quickstart = (REPO_ROOT / "AGENT_QUICKSTART.md").read_text(encoding="utf-8")
         for relative in (
-            "interop_lab/challenges/discussion_8.body.md",
+            "interop_lab/challenges/quick_60s.json",
             "interop_lab/challenges/issue_9.body.md",
             "interop_lab/RESULT_FORMAT_MAPPING.md",
             "interop_lab/validate_result.py - --json",
         ):
             self.assertIn(relative, quickstart)
+
+    def test_quick_60s_is_one_fetch_and_four_fields(self) -> None:
+        tracks = {track["id"]: track for track in self.entry["tracks"]}
+        track = tracks["quick_60s"]
+        self.assertEqual(track["artifact_ids"], ["quick_60s_challenge"])
+        self.assertEqual(
+            track["challenge_uri"],
+            "https://raw.githubusercontent.com/jaden3824/urusilla/"
+            f"{QUICK_ARTIFACT_REVISION}/interop_lab/challenges/quick_60s.json",
+        )
+        self.assertEqual(
+            track["canonical_submission_uri"],
+            "https://github.com/jaden3824/urusilla/discussions/8",
+        )
+        packet = json.loads(
+            (REPO_ROOT / "interop_lab/challenges/quick_60s.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(packet["time_budget_seconds"], 60)
+        self.assertEqual(
+            packet["response"]["required_fields"],
+            ["decision", "reason", "participant", "runtime"],
+        )
+        self.assertEqual(
+            packet["evidence_boundary"][
+                "general_unfamiliar_agent_saving_percent"
+            ],
+            0.0,
+        )
+        self.assertTrue(
+            packet["submission"]["posting_is_separate_external_action"]
+        )
 
     def test_fast_entry_files_stay_small(self) -> None:
         self.assertLessEqual((REPO_ROOT / "llms.txt").stat().st_size, 4_096)
