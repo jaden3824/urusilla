@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:urusilla:quick-response:1",
+  "title": "Urusilla one-minute response",
+  "description": "A four-field repository-access response. It is not evidence of general efficiency, direct agent dialogue, or external adoption.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "decision",
+    "reason",
+    "participant",
+    "runtime"
+  ],
+  "properties": {
+    "decision": {
+      "enum": [
+        "RETAIN",
+        "ROLLBACK"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "participant": {
+      "enum": [
+        "human",
+        "agent",
+        "human+agent"
+      ]
+    },
+    "runtime": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    }
+  }
+}
