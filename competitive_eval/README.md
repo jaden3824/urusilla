@@ -72,6 +72,59 @@ PYTHONDONTWRITEBYTECODE=1 .venv-research-py312/bin/python -m competitive_eval.cl
 The CLI contains no provider SDK, networking code, credential reader, or live
 adapter. Any non-mock execution request is rejected with `ApprovalRequired`.
 
+## External response exchange
+
+`external_replay.py` now provides a dependency-free, content-addressed exchange
+boundary for real model calls made by a separate operator. It does **not**
+weaken the mock-only runner or make a provider call itself.
+
+The intended sequential workflow is:
+
+1. construct the exact provider-neutral `CallRequest` and freeze its complete
+   request and settings digests;
+2. call `ExternalResponseStore.resolve(request)`;
+3. if no response exists, catch `MissingExternalResponse` and give its
+   `pending` object to an external operator;
+4. capture the returned output, provider request/response IDs, exact resolved
+   model, token usage, and inline raw receipt with its byte digest;
+5. build or import the strict response bundle and resolve the same request
+   offline; and
+6. after the sequential run, require that no response record is unused.
+
+Exact resume of the same call is idempotent. Within one bundle, reuse of one
+provider request ID, response ID, or raw receipt across different calls is
+rejected. Cross-bundle replay requires a future externally maintained receipt
+index and is not prevented by this store alone. Missing token,
+timing, model, or billing observations remain JSON `null`; they are never
+converted to zero. A content-only UI capture may be replayed for semantic
+debugging, but `require_core_usage_capture=True` rejects it as an incomplete
+core provider-usage capture. That predicate covers provider IDs, exact requested
+model/settings observation, a raw receipt, and complete input/output/total
+usage only. It deliberately does not imply complete timing, billing, cache
+accounting, normalization, authentication, or study evidence. Every record
+remains claim-ineligible here: this module does not rerun a provider-specific
+normalizer, authenticate an issuer, or assemble the complete research ledger.
+The exported bundle repeats this boundary as machine-readable
+`allowed_use`, `claim_eligible: false`, and fixed `claim_blockers` fields; a
+consumer does not need to infer the restriction from prose.
+
+One JSON bundle is capped at 128 MiB. This supports bounded pilot exchanges but
+is not the final large-study storage format; A2/A3-scale runs need a future
+content-addressed sharded or JSONL store rather than silently raising this cap.
+
+Raw provider receipts can contain private prompts, account metadata, or other
+sensitive material. Keep response bundles outside the public tree unless an
+operator has reviewed their complete contents. Redacting a receipt creates a
+different artifact and must not retain the original digest or be relabeled as
+an exact provider capture.
+
+This exchange is only the first bridge. `OfflineRunner` still rejects it until
+provider token partitioning, external call ledgers, and the actual cold Capsule
+delivery to the receiver are implemented. The current adaptive competitive arm
+therefore remains bridge-mode plumbing with unmeasured model comprehension.
+Content hashes also do not authenticate the provider or prove operator
+independence.
+
 ## Dataset-derived artifact boundary
 
 The following evaluation products are intentionally local-only because they

@@ -5,8 +5,8 @@
   "detached_digest_file_excluded": true,
   "files": {
     "README.md": {
-      "bytes": 4894,
-      "sha256": "0375809789f3905441f578342eb3e24c76706d4df86f4ac46fe6775ff1db152c"
+      "bytes": 7920,
+      "sha256": "d601771333d00a645eab2f8c819c2a5e56c4be9ba730abbb2bbe1044435f92b4"
     },
     "__init__.py": {
       "bytes": 369,
@@ -72,6 +72,10 @@
       "bytes": 1085,
       "sha256": "63b34b24703ac3044cf9aa596830ca9a900bc911746e333fa5dec374ee5cefa1"
     },
+    "external_replay.py": {
+      "bytes": 34997,
+      "sha256": "dbf92e1cfdc366859140f7e5c9aadb08b517fbe92d44452b1bae5dbbceaae538"
+    },
     "gates.py": {
       "bytes": 6393,
       "sha256": "80443492638d6dd41aaa7f2ec0b15aa70060ba6e7fecf1955bf5148d7fdf37f9"
@@ -89,8 +93,8 @@
       "sha256": "756b294251922f6d4d7e9472347eaca1b8f5d7d5737259bd9c17b9d5f5c5df9b"
     },
     "protocol.py": {
-      "bytes": 4778,
-      "sha256": "f55ca7ce3e51ff8417f3322be79e9e0227c80e1cdbb1f294661e07d873a7910c"
+      "bytes": 11644,
+      "sha256": "d0b6b4e144a909d157acaad86b3162353a361ae9b133748ef4a7380a051f2860"
     },
     "records.py": {
       "bytes": 9075,
@@ -123,6 +127,10 @@
     "tests/test_adaptive_and_wire.py": {
       "bytes": 3937,
       "sha256": "c312e3e85ce728ab7ef6774e601a597ad8375b73b3ea77787755fa357949d969"
+    },
+    "tests/test_external_replay.py": {
+      "bytes": 16004,
+      "sha256": "a269c449df43a7cc3108d1c0711041ccf8cd19e874a452c81bc535ed18e47ea3"
     },
     "tests/test_inputs_and_manifests.py": {
       "bytes": 3349,
