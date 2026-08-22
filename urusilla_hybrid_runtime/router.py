@@ -427,7 +427,7 @@ class UtilityEvidence:
 
     @property
     def binding_sha256(self) -> str:
-        """Canonical identity of every claim-bearing evidence field."""
+        """Canonical identity of every route-policy evidence field."""
 
         values: dict[str, object] = {}
         for item in fields(self):
