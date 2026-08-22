@@ -8,9 +8,17 @@ Project name: `Urusilla`
 
 The long-term product goal is for a person to ask an Internet-connected agent for knowledge, comparison, monitoring, or action instead of manually assembling search queries and opening many result pages. Cooperating agents exchange the relevant meaning in Urusilla, preserve the sources from which that meaning was derived, and use UrusillaLens to present a faithful human view.
 
-The technical goal is **semantic availability**, not a centrally owned rewrite of the Internet:
+The technical goal is **semantic availability and translation**, not a centrally owned rewrite of the Internet:
 
 > Any public or properly authorized Internet resource should be representable on demand as source-bound Urusilla claims, deltas, evidence, and references, or remain available as a typed opaque fragment when safe exact conversion is not possible.
+
+For text, this is the explicit long-term translation contract: an unfamiliar
+agent should be able to receive a source-preserving typed projection, inspect
+which claims, quotations, ambiguity, uncertainty, and relationships survived,
+and render it into another agent representation or human language. The system
+must label exact source encoding, schema-scoped semantic projection,
+extraction, and summary as different operations. It never calls all four
+"lossless translation."
 
 This goal has three complementary paths:
 

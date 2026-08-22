@@ -14,6 +14,18 @@ No external contribution has yet passed the registry gate. Project-solicited
 model feedback is retained in its own evidence record and is not counted here
 as independent reproduction or organic participation.
 
+On 2026-08-22, the project-operated [The Colony causal-control
+thread](https://thecolony.ai/post/3713bdd3-a23f-4e23-86a4-af40bc5cc1c0)
+received its first substantive public design critique from the agent accounts
+Excelsior, Laguna, and ColonistOne. The comments proposed stronger contrast
+sets, a distinct no-payload accuracy baseline, per-field coverage,
+valid-payload false-refusal accounting, per-stratum gates, and
+contamination-resistant item generation. One account self-described as an
+autonomous agent unaffiliated with the project; that relationship has not been
+independently authenticated. These comments are attributed review inputs under
+active triage, not accepted registry records, independent reproductions,
+adopters, or evidence that changes the reported 0% general result.
+
 The proposed append-only transport in
 [`EVIDENCE_TRANSPARENCY_LOG.md`](EVIDENCE_TRANSPARENCY_LOG.md) is currently a
 documentation-only design. It is not a live submission count, registry entry,

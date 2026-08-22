@@ -168,3 +168,43 @@ outcomes cannot be reassigned after the fact to `silence`, `routine`, or
 emit `hybrid_system_evidence`; each runtime route still requires a separately
 frozen, route-scoped confirmatory trial before it can receive route-level
 utility evidence.
+
+## Causal-use boundary
+
+Passing the v1 aggregate gate would not prove that an action-state payload was
+causally consumed. The v1 plan binds the exact sender output and direct receiver
+request, but it has no counterfactual intervention that distinguishes a receiver
+using the payload from a constant or task-context-only answer. A route-level
+language, comprehension, or direct-consumption claim is therefore prohibited
+under v1 even if every existing metric passes.
+
+The next method version must precommit blinded payload-dependence probes in
+every domain, receiver-family, and independent-operator stratum. Each probe must
+hold the Capsule, non-payload task context, model settings, and fresh-context
+policy fixed; vary exactly one task-critical field across schema-valid A/B
+payloads; require the expected task output to change with that field; and add
+missing and shuffled placebos whose only passing disposition is refusal or safe
+fallback. Every intervention and placebo call, including failures, must enter
+the inclusive token ledger. Replayed provider responses, identical A/B outputs,
+unknown usage, absent placebos, or incomplete stratum coverage fail closed.
+
+This is an architecture-changing evidence requirement. The frozen method,
+plan, result, trace, manifest, receipt, and summary `/1` schemas remain immutable;
+the stronger contract must mint `/2` artifacts and new digests. A standalone
+offline validator now lives in [`causal_probe_v2.py`](causal_probe_v2.py), with
+mutation-focused checks in
+[`tests/test_causal_probe_v2.py`](tests/test_causal_probe_v2.py). It separates a
+frozen plan from the later assignment reveal and result pack, validates exact
+one-pointer A/B payload changes, retains well-formed adverse outcomes as
+explicit gate failures, rejects replay and binding drift, and keeps unknown
+inclusive token totals as `null`. It performs no provider call and every summary
+is `claim_eligible=false`; its synthetic fixtures are not model evidence and
+cannot make v1 claim-eligible.
+
+The current `/2` diagnostic remains deliberately narrower than a confirmatory
+causal study. Its `missing` condition is an abstention placebo, not a measured
+no-payload accuracy baseline; it does not test semantic invariance or composition
+holdouts, prove coverage of a declared field universe, or separate public
+calibration and private headline seeds. Critical-pointer counts, valid-A/B
+refusal counts, and per-stratum worst-check summaries are descriptive contract
+diagnostics only, not an effect-size gate or claim evidence.
