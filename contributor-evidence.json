@@ -1,0 +1,20 @@
+{
+  "schema_version": "urusilla-contributor-evidence-registry/1",
+  "status": "experimental",
+  "updated_at_utc": "2026-08-21T20:24:00Z",
+  "validated_record_count": 0,
+  "independently_reproduced_record_count": 0,
+  "records": [],
+  "claim_boundary": {
+    "external_adoption_evidence": false,
+    "general_efficiency_evidence": false,
+    "independent_reproduction_evidence": false,
+    "changes_general_zero_percent": false
+  },
+  "notes": [
+    "The registry starts empty; no external contributor evidence has yet passed validation.",
+    "Project-solicited model feedback is retained separately and is not an independent contribution.",
+    "Negative, null, refusal, ambiguity, and favorable records are eligible for equal attribution after validation.",
+    "This registry is separate from ADOPTERS.md and does not count stars, views, forks, or repository access as adoption."
+  ]
+}

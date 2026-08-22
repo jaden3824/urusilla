@@ -863,6 +863,17 @@ class RouteDecision:
         ):
             raise RoutingError("route source digest is not bound to raw payload")
 
+    @property
+    def binding_sha256(self) -> str:
+        """Exact identity of the sealed route, including every candidate."""
+
+        return _route_decision_fingerprint(
+            {
+                name: getattr(self, name)
+                for name in _DECISION_FINGERPRINT_FIELDS
+            }
+        )
+
 
 def _safe_count(counter: Callable[[str], int], text: str) -> int:
     value = counter(text)

@@ -1,0 +1,59 @@
+name: Public corpus example
+description: Quarantine an authorized, redistributable example for a future development corpus.
+title: "[Corpus example]: "
+labels:
+  - research-evidence
+  - help wanted
+body:
+  - type: markdown
+    attributes:
+      value: |
+        New examples enter quarantine only. They are never inserted into the current holdout or confirmatory set. Do not submit private conversations, private prompts, secrets, personal data, or content you cannot redistribute.
+
+  - type: input
+    id: source
+    attributes:
+      label: Immutable public source
+      placeholder: URL, full revision or dated snapshot, and SHA-256 when available
+    validations:
+      required: true
+
+  - type: textarea
+    id: rights
+    attributes:
+      label: License, permission, and accountable submitter
+      description: State the license or explicit permission and who is accountable for the submission.
+    validations:
+      required: true
+
+  - type: textarea
+    id: privacy
+    attributes:
+      label: Privacy review
+      description: Explain why the material contains no private, personal, secret, or proprietary content.
+    validations:
+      required: true
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Example and semantic target
+      description: Provide the smallest public excerpt needed and classify it as lossless reconstruction or task-equivalent action-state.
+    validations:
+      required: true
+
+  - type: textarea
+    id: value
+    attributes:
+      label: What boundary this example tests
+      description: For example clarification, correction, disagreement, uncertainty, tool result, partial failure, or recovery.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: boundary
+    attributes:
+      label: Quarantine and claim boundary
+      options:
+        - label: I authorize this public submission and understand that it is development-only until separately reviewed, versioned, and kept out of the current holdout and confirmatory sets.
+          required: true

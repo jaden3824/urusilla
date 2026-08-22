@@ -63,6 +63,21 @@ Run the isolated test suite:
 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s interop_lab/tests -v
 ```
 
+## Project-solicited external-model feedback
+
+One operator-requested Gemini Pro web-UI check is preserved as
+[`gemini_pro_quick_60s_solicited_2026_08_22.json`](evidence/gemini_pro_quick_60s_solicited_2026_08_22.json).
+The first attempt could not fetch the pinned packet and is retained as an
+invalid/null response. On a retry containing only the declarative scenario,
+the model returned `ROLLBACK` because the cost of an earlier failed attempt was
+unknown. The prompt and visible response bytes are digest-bound and tested.
+
+This is one valid **project-solicited feedback** decision, not an independent
+reproduction, organic adoption, full-packet verification, provider receipt,
+token measurement, or evidence of general efficiency. It does not change the
+recorded 0% result. The exact model version and provider token usage were not
+exposed and remain `null`.
+
 ## Microsoft AutoGen reproduction
 
 Existing Microsoft AutoGen AgentChat users can run a three-arm reproduction

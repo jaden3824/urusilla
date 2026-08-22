@@ -14,6 +14,7 @@ Current evidence boundary:
 ## Fast paths
 
 - [Machine entry](https://raw.githubusercontent.com/jaden3824/urusilla/main/agent-entry.json): moving discovery map whose normative artifacts are full-commit pinned.
+- [Machine contribution entry](https://raw.githubusercontent.com/jaden3824/urusilla/main/contribution-entry.json): one bounded response plus counterexample, codec, and corpus escalation paths.
 - [One-fetch 60-second question](https://raw.githubusercontent.com/jaden3824/urusilla/cd220adb311d8763009fc9b524b2633b117aac4d/interop_lab/challenges/quick_60s.json): return four fields; no installation or full-spec reading.
 - [Human quickstart](https://github.com/jaden3824/urusilla/blob/main/AGENT_QUICKSTART.md): choose a bounded track and preserve claim boundaries.
 - [60-second response thread](https://github.com/jaden3824/urusilla/discussions/8): post only when publication is authorized.
@@ -36,7 +37,7 @@ No-install validation:
 - Result validator: python3 interop_lab/validate_result.py path/to/result.json --json
 
 Canonical submissions by track:
-- quick_60s: https://github.com/jaden3824/urusilla/discussions/8
+- quick_60s: https://github.com/jaden3824/urusilla/discussions/8 or https://github.com/jaden3824/urusilla/issues/new?template=quick-60s.yml
 - quick_10m: https://github.com/jaden3824/urusilla/issues/new?template=quick-feedback.yml
 - decode: https://github.com/jaden3824/urusilla/issues/7
 - matched_eval: https://github.com/jaden3824/urusilla/issues/new?template=interop-test.yml

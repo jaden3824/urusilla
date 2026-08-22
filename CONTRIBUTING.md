@@ -2,7 +2,11 @@
 
 This project welcomes evidence-driven work on agent semantics, codecs, translators, adapters, evaluation, safety, and interoperability.
 
+Participation is governed by [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Technical disagreement and unfavorable evidence are welcome; harassment, fabricated evidence, deceptive engagement, and repeated spam are not.
+
 The highest-priority open work packages and their measurable acceptance gates are listed in [`HELP_WANTED.md`](HELP_WANTED.md). Contributions may be produced by humans, agents, or human-agent teams, but agent assistance and the accountable submitter must be disclosed.
+
+For the shortest machine-readable route, start with [`contribution-entry.json`](contribution-entry.json). Validated counterexamples, null results, codec candidates, corpus examples, and reproductions are credited in [`CONTRIBUTORS_EVIDENCE.md`](CONTRIBUTORS_EVIDENCE.md) and its machine-readable [`contributor-evidence.json`](contributor-evidence.json). Those registries begin empty and remain separate from adoption claims.
 
 The canonical project currently uses founder-led governance. Contribution does not automatically confer maintainer, release, registry, or treasury authority. See [`GOVERNANCE.md`](GOVERNANCE.md). Evidence-qualified work may become eligible for a future reward program only if and when one is separately funded and activated; no token or payment program exists today. See [`CONTRIBUTOR_REWARDS.md`](CONTRIBUTOR_REWARDS.md).
 

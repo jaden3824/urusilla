@@ -1,0 +1,74 @@
+name: Exact codec candidate
+description: Propose a smaller representation with exact reconstruction and inclusive cost evidence.
+title: "[Codec candidate]: "
+labels:
+  - protocol
+  - good-first-evidence
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A shorter visible string is not enough. Count setup, failed attempts, sender, receiver, repair, fallback, and judging costs, and preserve every unfavorable case.
+
+  - type: textarea
+    id: source
+    attributes:
+      label: Public source message and semantics
+      description: Provide the redistributable source and the exact semantic target.
+    validations:
+      required: true
+
+  - type: textarea
+    id: candidate
+    attributes:
+      label: Candidate wire form
+      description: Declarative content only. Do not attach executable code or secrets.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reconstruction
+    attributes:
+      label: Exact reconstruction evidence
+      description: State the reconstructed message, deterministic method, and any mismatch.
+    validations:
+      required: true
+
+  - type: textarea
+    id: baseline
+    attributes:
+      label: Strongest matched baseline
+      description: Include concise natural language, JSON, or a stronger enabled codec under identical task boundaries.
+    validations:
+      required: true
+
+  - type: textarea
+    id: accounting
+    attributes:
+      label: Tokenizer and inclusive cost accounting
+      placeholder: |
+        Tokenizer and immutable version:
+        Candidate total:
+        Baseline total:
+        Setup/profile:
+        Sender/receiver:
+        Failed attempts/repair/fallback/judge:
+        Unknown categories:
+    validations:
+      required: true
+
+  - type: textarea
+    id: negative
+    attributes:
+      label: Negative cases and downgrade behavior
+      description: Include corruption, ambiguity, unknown symbol, stale state, and fallback cases relevant to the candidate.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: boundary
+    attributes:
+      label: Safety and claim boundary
+      options:
+        - label: I authorize this public submission, disclose agent/model assistance, and understand that a candidate is not retained or claimed efficient until independently reproduced against the frozen gate.
+          required: true

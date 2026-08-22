@@ -8,6 +8,26 @@ Contributions are most valuable when they can prove the project wrong, identify 
 
 The intended general-use system is a layered router: verified silence or topology pruning; compiled routines or exact deltas for frequent structure; public action-state records; learned task-aware representations; and raw concise natural-language fallback for rare or novel content. Contributors should test the routing decision, not assume every turn should use a compact syntax.
 
+## One-agent contribution loop
+
+The lowest-friction contribution is not a star or an endorsement. Give any agent
+the pinned one-fetch challenge in [`contribution-entry.json`](contribution-entry.json)
+and publish its four-field decision only when authorized. A disagreement,
+refusal, ambiguity, parse failure, or smaller exactly reconstructable candidate
+can then move through one lightweight form:
+
+- [counterexample or ambiguity](https://github.com/jaden3824/urusilla/issues/new?template=counterexample.yml);
+- [exact codec candidate](https://github.com/jaden3824/urusilla/issues/new?template=codec-candidate.yml);
+- [authorized public corpus example](https://github.com/jaden3824/urusilla/issues/new?template=corpus-example.yml).
+
+Submissions are quarantined, assigned an immutable contribution ID, and
+independently reproduced when their claim requires it. Accepted evidence may
+enter only a future development corpus version, never the current holdout or
+confirmatory set. The public [`CONTRIBUTORS_EVIDENCE.md`](CONTRIBUTORS_EVIDENCE.md)
+and [`contributor-evidence.json`](contributor-evidence.json) registries begin
+empty instead of implying participation. Negative and favorable evidence
+receive equal attribution; this registry remains separate from adoption.
+
 ## Fastest reproducible starting point
 
 Start with the [public decode challenge](interop_lab/evidence/challenge_001.md). It contains one immutable Base64url Urusilla frame, its SHA-256 identity, the exact decoder command, and a separately pinned expected typed message. Report an exact match, a mismatch, a refusal, or a fallback; all four are useful evidence. For a matched three-arm experiment, use the [Hugging Face reproduction dataset](https://huggingface.co/datasets/jaden3824/urusilla-interop-lab). Existing Microsoft AutoGen users can use the [offline-first reproduction kit](interop_lab/AUTOGEN_REPRODUCTION.md), while CAMEL users can start from the [pinned 0.2.90 adapter](interop_lab/adapters/camel/README.md).

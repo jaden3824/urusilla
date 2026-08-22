@@ -91,9 +91,13 @@ from .comprehension import (
 from .runtime import (
     HybridExecution,
     LocalOutputValidation,
+    ObservedExecutionLedger,
+    ObservedLocalUsage,
+    ObservedTokenEvent,
     OutputValidationInput,
     PreparedMessage,
     execute_prepared_message,
+    merge_observed_setup_event,
     prepare_message,
 )
 from .session import (
@@ -182,6 +186,9 @@ __all__ = [
     "FidelityVerificationInput",
     "LocalArtifactVerification",
     "LocalOutputValidation",
+    "ObservedExecutionLedger",
+    "ObservedLocalUsage",
+    "ObservedTokenEvent",
     "OutputValidationInput",
     "DirectReceiverRequest",
     "EVOLVING_SURFACE_CAPSULE_SHA256",
@@ -265,6 +272,7 @@ __all__ = [
     "execute_session_turn",
     "execute_shadow_surface_request",
     "load_capsule",
+    "merge_observed_setup_event",
     "not_attempted",
     "optimize_alias_table",
     "open_receiver_session",

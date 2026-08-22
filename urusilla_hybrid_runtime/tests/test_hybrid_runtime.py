@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
-from dataclasses import replace
+from dataclasses import fields, replace
 from pathlib import Path
 from unittest import TestCase, mock
 
@@ -18,6 +18,7 @@ from urusilla_hybrid_runtime import (
     LocalArtifactVerification,
     LocalOutputValidation,
     ModelReply,
+    ObservedLocalUsage,
     OutputValidationInput,
     PublicActionState,
     PublicTaskContext,
@@ -2212,7 +2213,7 @@ class HybridExecutionContractTests(TestCase):
             self.capsule.to_object()["examples"]["positive"]
         )
 
-    def _action_prepared(self):
+    def _action_prepared(self, *, forecasts=None):
         source = "Verify artifact seven without external effects. " * 800
         compiler = FakeCompiler(ModelReply(sender_output(self.state), "model-a", 10))
         prepared = prepare_message(
@@ -2221,7 +2222,7 @@ class HybridExecutionContractTests(TestCase):
             action_receiver(self.capsule.sha256),
             char_count,
             task_context=TASK_CONTEXT,
-            forecasts=complete_forecasts(),
+            forecasts=forecasts or complete_forecasts(),
             evidence={"action-state": passing_evidence()},
             compiler=compiler,
             fidelity_verifier=verify_fidelity,
@@ -2232,6 +2233,20 @@ class HybridExecutionContractTests(TestCase):
         )
         self.assertEqual(prepared.route.selected_mode, "action-state")
         return prepared, compiler
+
+    @staticmethod
+    def _complete_local_usage(prepared, **overrides):
+        values = {
+            "setup_tokens": 2,
+            "router_tokens": 4,
+            "repair_tokens": 0,
+            "fallback_tokens": 0,
+            "tool_tokens": 0,
+            "safety_tokens": 1,
+            "judge_tokens": 6,
+        }
+        values.update(overrides)
+        return ObservedLocalUsage.for_prepared(prepared, **values)
 
     def test_silence_executes_zero_receiver_calls(self) -> None:
         source = "Already delivered and no reply is required."
@@ -2355,11 +2370,261 @@ class HybridExecutionContractTests(TestCase):
         self.assertEqual(execution.observed_runtime_tokens, 18)
         self.assertTrue(execution.safely_completed)
 
+    def test_observed_ledger_reconciles_exact_bound_complete_runtime_scope(self) -> None:
+        prepared, _ = self._action_prepared()
+        execution = execute_prepared_message(
+            prepared,
+            FakeReceiverAdapter(receiver_reply()),
+            output_validator=validate_output,
+            observed_local_usage=self._complete_local_usage(prepared),
+        )
+        ledger = execution.observed_ledger
+        assert ledger is not None
+        self.assertTrue(ledger.scope_complete)
+        self.assertTrue(execution.scope_complete)
+        self.assertEqual(ledger.observed_model_total_tokens, 18)
+        self.assertEqual(execution.observed_runtime_tokens, 18)
+        self.assertEqual(ledger.inclusive_total_tokens, 31)
+        self.assertEqual(execution.inclusive_total_tokens, 31)
+        self.assertEqual(ledger.phase_total("setup"), 2)
+        self.assertEqual(ledger.phase_total("router"), 4)
+        self.assertEqual(ledger.phase_total("receiver"), 5)
+        receiver_event = next(
+            item for item in ledger.events if item.component == "primary-receiver"
+        )
+        self.assertEqual(receiver_event.input_tokens, 3)
+        self.assertEqual(receiver_event.output_tokens, 2)
+        self.assertFalse(ledger.provider_authenticity_verified)
+        self.assertFalse(ledger.claim_eligible)
+        self.assertFalse(ledger.goal_total_complete)
+        self.assertFalse(execution.claim_eligible)
+        self.assertFalse(execution.goal_total_complete)
+        with self.assertRaisesRegex(ValueError, "phase coverage"):
+            replace(ledger, events=ledger.events[:-1])
+        with self.assertRaisesRegex(ValueError, "claim eligibility"):
+            replace(ledger, claim_eligible=True)
+        with self.assertRaisesRegex(ValueError, "must be boolean"):
+            replace(ledger, claim_eligible=0)
+        with self.assertRaisesRegex(ValueError, "must be boolean"):
+            replace(execution, claim_eligible=0)
+        local_setup = next(
+            item for item in ledger.events if item.component == "local-setup"
+        )
+        with self.assertRaisesRegex(ValueError, "non-model event"):
+            replace(local_setup, input_tokens=1)
+        with self.assertRaisesRegex(ValueError, "detailed model usage"):
+            replace(receiver_event, input_tokens=None)
+        compiler_event = next(
+            item for item in ledger.events if item.component == "sender-compiler"
+        )
+        with self.assertRaisesRegex(ValueError, "total-only model event"):
+            replace(compiler_event, input_tokens=1)
+        field_names = tuple(item.name for item in fields(type(execution)))
+        self.assertEqual(field_names[10], "goal_total_complete")
+        self.assertEqual(field_names[11:13], ("observed_ledger", "claim_eligible"))
+        self.assertEqual(
+            field_names[13:],
+            ("observed_local_usage", "_construction_seal"),
+        )
+
+        judge_index = next(
+            index
+            for index, item in enumerate(ledger.events)
+            if item.component == "local-judge"
+        )
+        mutated_events = list(ledger.events)
+        mutated_events[judge_index] = replace(
+            mutated_events[judge_index],
+            total_tokens=106,
+        )
+        mutated_ledger = replace(ledger, events=tuple(mutated_events))
+        assert execution.observed_local_usage is not None
+        mutated_usage = replace(
+            execution.observed_local_usage,
+            judge_tokens=106,
+        )
+        with self.assertRaisesRegex(ValueError, "minted by the executor"):
+            replace(
+                execution,
+                observed_ledger=mutated_ledger,
+                observed_local_usage=mutated_usage,
+            )
+
+    def test_local_usage_binding_includes_compiler_and_fidelity_identity(self) -> None:
+        prepared, _ = self._action_prepared()
+        assert prepared.compilation is not None
+        sibling = replace(
+            prepared,
+            compilation=replace(
+                prepared.compilation,
+                model_id="different-sender-model",
+            ),
+        )
+        self.assertNotEqual(
+            prepared.execution_binding_sha256,
+            sibling.execution_binding_sha256,
+        )
+        adapter = FakeReceiverAdapter(receiver_reply())
+        with self.assertRaisesRegex(ValueError, "not bound"):
+            execute_prepared_message(
+                sibling,
+                adapter,
+                output_validator=validate_output,
+                observed_local_usage=self._complete_local_usage(prepared),
+            )
+        self.assertEqual(adapter.calls, 0)
+
+    def test_local_usage_binding_includes_full_route_and_baseline_identity(self) -> None:
+        raw_baseline, _ = self._action_prepared(
+            forecasts=complete_forecasts(
+                json=CostForecast(receiver_output_tokens=5_000, complete=True)
+            )
+        )
+        json_baseline, _ = self._action_prepared(
+            forecasts=complete_forecasts(
+                raw=CostForecast(receiver_output_tokens=5_000, complete=True)
+            )
+        )
+        self.assertEqual(raw_baseline.route.best_baseline_mode, "raw")
+        self.assertEqual(json_baseline.route.best_baseline_mode, "json")
+        self.assertNotEqual(
+            raw_baseline.route.binding_sha256,
+            json_baseline.route.binding_sha256,
+        )
+        self.assertNotEqual(
+            raw_baseline.execution_binding_sha256,
+            json_baseline.execution_binding_sha256,
+        )
+        adapter = FakeReceiverAdapter(receiver_reply())
+        with self.assertRaisesRegex(ValueError, "not bound"):
+            execute_prepared_message(
+                json_baseline,
+                adapter,
+                output_validator=validate_output,
+                observed_local_usage=self._complete_local_usage(raw_baseline),
+            )
+        self.assertEqual(adapter.calls, 0)
+
+    def test_receiver_event_from_equal_total_different_reply_cannot_be_spliced(self) -> None:
+        prepared = prepare_message(
+            "raw source",
+            self.capsule,
+            ReceiverCapabilities(supports_json=False),
+            char_count,
+            task_context=TASK_CONTEXT,
+            forecasts=complete_forecasts(),
+        )
+        usage = self._complete_local_usage(prepared)
+        first = execute_prepared_message(
+            prepared,
+            FakeReceiverAdapter(receiver_reply("valid")),
+            output_validator=validate_output,
+            observed_local_usage=usage,
+        )
+        second = execute_prepared_message(
+            prepared,
+            FakeReceiverAdapter(receiver_reply("different")),
+            output_validator=validate_output,
+            observed_local_usage=usage,
+        )
+        assert first.observed_ledger is not None
+        assert second.observed_ledger is not None
+        foreign = next(
+            item
+            for item in second.observed_ledger.events
+            if item.component == "primary-receiver"
+        )
+        spliced = replace(
+            first.observed_ledger,
+            events=tuple(
+                foreign if item.component == "primary-receiver" else item
+                for item in first.observed_ledger.events
+            ),
+        )
+        with self.assertRaisesRegex(ValueError, "minted by the executor"):
+            replace(first, observed_ledger=spliced)
+
+    def test_unexecuted_local_phase_cannot_report_positive_usage(self) -> None:
+        prepared = prepare_message(
+            "raw source",
+            self.capsule,
+            ReceiverCapabilities(supports_json=False),
+            char_count,
+            task_context=TASK_CONTEXT,
+            forecasts=complete_forecasts(),
+        )
+        for field_name in ("fallback_tokens", "repair_tokens", "tool_tokens"):
+            adapter = FakeReceiverAdapter(receiver_reply())
+            with self.subTest(field=field_name), self.assertRaisesRegex(
+                ValueError,
+                "without an executed phase|without a fallback",
+            ):
+                execute_prepared_message(
+                    prepared,
+                    adapter,
+                    output_validator=validate_output,
+                    observed_local_usage=self._complete_local_usage(
+                        prepared,
+                        **{field_name: 999},
+                    ),
+                )
+            self.assertEqual(adapter.calls, 0)
+
+    def test_local_setup_scope_explicitly_excludes_cold_comprehension(self) -> None:
+        prepared, _ = self._action_prepared()
+        with self.assertRaisesRegex(ValueError, "exclude cold comprehension"):
+            replace(
+                self._complete_local_usage(prepared),
+                setup_scope="includes-cold-comprehension",
+            )
+
+    def test_unknown_local_category_is_not_filled_from_complete_forecast(self) -> None:
+        prepared, _ = self._action_prepared()
+        execution = execute_prepared_message(
+            prepared,
+            FakeReceiverAdapter(receiver_reply()),
+            output_validator=validate_output,
+            observed_local_usage=self._complete_local_usage(
+                prepared,
+                judge_tokens=None,
+            ),
+        )
+        ledger = execution.observed_ledger
+        assert ledger is not None
+        self.assertTrue(prepared.route.selected_cost.complete)
+        self.assertFalse(ledger.scope_complete)
+        self.assertFalse(execution.scope_complete)
+        self.assertIsNone(ledger.phase_total("judge"))
+        self.assertIsNone(ledger.inclusive_total_tokens)
+        self.assertIsNone(execution.inclusive_total_tokens)
+
+    def test_mismatched_local_usage_is_rejected_before_receiver_call(self) -> None:
+        prepared, _ = self._action_prepared()
+        local_usage = replace(
+            self._complete_local_usage(prepared),
+            execution_binding_sha256="sha256:" + "0" * 64,
+        )
+        adapter = FakeReceiverAdapter(receiver_reply())
+        with self.assertRaisesRegex(ValueError, "not bound"):
+            execute_prepared_message(
+                prepared,
+                adapter,
+                output_validator=validate_output,
+                observed_local_usage=local_usage,
+            )
+        self.assertEqual(adapter.calls, 0)
+
     def test_invalid_action_output_uses_one_lossless_baseline_fallback_call(self) -> None:
         prepared, _ = self._action_prepared()
         adapter = FakeReceiverAdapter(receiver_reply("invalid"), receiver_reply("valid"))
         execution = execute_prepared_message(
-            prepared, adapter, output_validator=validate_output
+            prepared,
+            adapter,
+            output_validator=validate_output,
+            observed_local_usage=self._complete_local_usage(
+                prepared,
+                fallback_tokens=1,
+            ),
         )
         self.assertEqual(execution.compiler_calls, 1)
         self.assertEqual(execution.fidelity_verifier_calls, 1)
@@ -2370,6 +2635,18 @@ class HybridExecutionContractTests(TestCase):
         self.assertIn(execution.final_mode, {"raw", "json"})
         self.assertEqual(execution.observed_runtime_tokens, 23)
         self.assertTrue(execution.safely_completed)
+        ledger = execution.observed_ledger
+        assert ledger is not None
+        self.assertEqual(ledger.phase_total("fallback"), 6)
+        self.assertEqual(
+            tuple(
+                item.component
+                for item in ledger.events
+                if item.phase == "fallback"
+            ),
+            ("local-fallback", "baseline-fallback-receiver"),
+        )
+        self.assertEqual(ledger.inclusive_total_tokens, 37)
 
     def test_absent_output_validator_forces_optimized_route_to_baseline(self) -> None:
         prepared, _ = self._action_prepared()
@@ -2390,13 +2667,18 @@ class HybridExecutionContractTests(TestCase):
         prepared, _ = self._action_prepared()
         adapter = FakeReceiverAdapter(RuntimeError("provider failed"), receiver_reply())
         execution = execute_prepared_message(
-            prepared, adapter, output_validator=validate_output
+            prepared,
+            adapter,
+            output_validator=validate_output,
+            observed_local_usage=self._complete_local_usage(prepared),
         )
         self.assertEqual(execution.receiver_calls, 2)
         self.assertEqual(execution.primary.failure, "receiver-call-failed")
         self.assertIsNotNone(execution.fallback)
         self.assertIsNone(execution.observed_runtime_tokens)
         self.assertTrue(execution.safely_completed)
+        self.assertFalse(execution.scope_complete)
+        self.assertIsNone(execution.inclusive_total_tokens)
         self.assertFalse(execution.goal_total_complete)
 
     def test_invalid_receiver_adapter_reply_type_is_incomplete_not_success(self) -> None:

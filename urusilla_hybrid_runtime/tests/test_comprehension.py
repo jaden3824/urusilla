@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import replace
+from dataclasses import fields, replace
 from unittest import TestCase, mock
 
 import urusilla_hybrid_runtime.comprehension as comprehension_module
@@ -34,6 +34,7 @@ from urusilla_hybrid_runtime.router import (
     SilenceProof,
     action_state_preflight,
 )
+from urusilla_hybrid_runtime.runtime import ObservedLocalUsage
 from urusilla_hybrid_runtime.sender import ModelReply
 from urusilla_hybrid_runtime.task_context import PublicTaskContext
 from urusilla_hybrid_runtime.tests.test_hybrid_runtime import (
@@ -854,10 +855,21 @@ class ColdStartRuntimeIntegrationTests(TestCase):
             )
         )
         receiver_adapter.receiver_binding = RECEIVER_BINDING
+        local_usage = ObservedLocalUsage.for_prepared(
+            prepared,
+            setup_tokens=2,
+            router_tokens=4,
+            repair_tokens=0,
+            fallback_tokens=0,
+            tool_tokens=0,
+            safety_tokens=1,
+            judge_tokens=6,
+        )
         execution = execute_cold_start_preparation(
             preparation,
             receiver_adapter,
             output_validator=validate_output,
+            observed_local_usage=local_usage,
         )
         self.assertEqual(execution.status, "executed")
         self.assertEqual(receiver_adapter.calls, 1)
@@ -883,6 +895,66 @@ class ColdStartRuntimeIntegrationTests(TestCase):
         self.assertTrue(execution.eligible_for_live_answer)
         self.assertFalse(execution.provider_authenticity_verified)
         self.assertFalse(execution.eligible_for_claim)
+        self.assertTrue(execution.scope_complete)
+        self.assertEqual(execution.inclusive_total_tokens, 61)
+        ledger = execution.observed_ledger
+        assert ledger is not None
+        self.assertEqual(ledger.phase_total("setup"), 32)
+        self.assertEqual(
+            sum(
+                item.component == "cold-comprehension"
+                for item in ledger.events
+            ),
+            1,
+        )
+        self.assertEqual(ledger.observed_model_total_tokens, 48)
+        self.assertFalse(ledger.provider_authenticity_verified)
+        self.assertFalse(ledger.claim_eligible)
+        self.assertFalse(ledger.goal_total_complete)
+        setup_events = {
+            item.component: item
+            for item in ledger.events
+            if item.phase == "setup"
+        }
+        self.assertEqual(
+            set(setup_events),
+            {"cold-comprehension", "local-setup"},
+        )
+        self.assertNotEqual(
+            setup_events["cold-comprehension"].artifact_binding_sha256,
+            setup_events["local-setup"].artifact_binding_sha256,
+        )
+        field_names = tuple(item.name for item in fields(type(execution)))
+        self.assertEqual(
+            field_names[12:15],
+            (
+                "provider_authenticity_verified",
+                "eligible_for_claim",
+                "goal_total_complete",
+            ),
+        )
+        self.assertEqual(field_names[15], "observed_ledger")
+        judge_index = next(
+            index
+            for index, item in enumerate(ledger.events)
+            if item.component == "local-judge"
+        )
+        mutated_events = list(ledger.events)
+        mutated_events[judge_index] = replace(
+            mutated_events[judge_index],
+            total_tokens=mutated_events[judge_index].total_tokens + 1,
+        )
+        with self.assertRaisesRegex(
+            ComprehensionError,
+            "exact runtime merge",
+        ):
+            replace(
+                execution,
+                observed_ledger=replace(
+                    ledger,
+                    events=tuple(mutated_events),
+                ),
+            )
 
     def test_failed_comprehension_blocks_prepare_compiler_and_receiver(self) -> None:
         def wrong_semantics(challenge):

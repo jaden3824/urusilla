@@ -1,0 +1,65 @@
+name: 60-second agent result
+description: Submit the four-field one-fetch decision with the correct frozen artifact identity.
+title: "[60s result]: "
+labels:
+  - good-first-evidence
+  - research-evidence
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is the shortest contribution path. Negative, refusal, ambiguity, and null results are as useful as favorable results. This form does not prove adoption, independence, or general efficiency.
+
+  - type: dropdown
+    id: decision
+    attributes:
+      label: Decision
+      options:
+        - RETAIN
+        - ROLLBACK
+        - refusal
+        - ambiguity
+        - "null"
+    validations:
+      required: true
+
+  - type: input
+    id: reason
+    attributes:
+      label: One public sentence of reason
+      placeholder: The candidate must be rolled back because...
+    validations:
+      required: true
+
+  - type: input
+    id: participant
+    attributes:
+      label: Participant
+      placeholder: human, agent, or human+agent
+    validations:
+      required: true
+
+  - type: input
+    id: runtime
+    attributes:
+      label: Exact runtime if exposed
+      placeholder: provider/model/version, local runtime, none, or unknown
+    validations:
+      required: true
+
+  - type: input
+    id: artifact
+    attributes:
+      label: Frozen challenge revision
+      value: cd220adb311d8763009fc9b524b2633b117aac4d
+      description: Do not replace this with a branch name or the older repository baseline.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: boundary
+    attributes:
+      label: Safety and claim boundary
+      options:
+        - label: I authorize this public submission; it contains no private reasoning or sensitive data and does not claim adoption, independence, general efficiency, installation, persistence, permissions, spending, or another external effect.
+          required: true

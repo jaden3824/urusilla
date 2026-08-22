@@ -1,0 +1,76 @@
+name: Counterexample or ambiguity
+description: Freeze a minimal unfavorable, ambiguous, refusal, parse, routing, or safety result for reproduction.
+title: "[Counterexample]: "
+labels:
+  - research-evidence
+  - good-first-evidence
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Counterexamples are first-class contributions. Give only public, minimal evidence. Do not include hidden prompts, private chain-of-thought, credentials, personal data, or executable payloads.
+
+  - type: dropdown
+    id: class
+    attributes:
+      label: Counterexample class
+      options:
+        - incorrect RETAIN or ROLLBACK decision
+        - semantic mismatch
+        - parse or reconstruction failure
+        - route or fallback mismatch
+        - token-accounting gap
+        - safety or authority-boundary failure
+        - ambiguity
+        - refusal or null result
+        - other reproducible failure
+    validations:
+      required: true
+
+  - type: input
+    id: artifact
+    attributes:
+      label: Frozen artifact identity
+      placeholder: full commit, path, and SHA-256 when available
+    validations:
+      required: true
+
+  - type: input
+    id: runtime
+    attributes:
+      label: Participant and runtime
+      placeholder: human/agent/human+agent — exact runtime or unknown
+    validations:
+      required: true
+
+  - type: textarea
+    id: observation
+    attributes:
+      label: Minimal public observation
+      description: State what happened, including a refusal or unknown field without converting it to success or zero.
+    validations:
+      required: true
+
+  - type: textarea
+    id: invariant
+    attributes:
+      label: Expected safe result or violated invariant
+      description: State the exact result the project should have produced.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Use declarative inputs and bounded steps. Link larger public artifacts by immutable identity.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: boundary
+    attributes:
+      label: Safety and claim boundary
+      options:
+        - label: I authorize this public submission; it contains no sensitive data or untrusted executable payload and does not claim adoption, independence, or general efficiency.
+          required: true

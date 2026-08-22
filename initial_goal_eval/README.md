@@ -50,6 +50,48 @@ denied. A missing receipt, an unknown audit or enforcement status, or an
 unknown capability observation makes the measurement incomplete. Any observed
 access or failed boundary is a noncompensable gate failure.
 
+## Offline trace assembly
+
+`execution_trace.py` and `trace_assembler.py` provide a non-network bridge from
+already captured provider-neutral calls to the existing RESULT event-ledger
+shape. The trace binds all frozen sessions and all three arms, exact task and
+phase identities, ordinary raw/JSON requests, validated hybrid receiver
+projections, deterministic local events, and explicit zero-cost phases. The
+assembler preserves failed-task costs, rejects missing, reused, or unused
+captures, derives setup/output/reasoning coverage, and never converts unknown
+usage to zero. Each external source also precommits its run ID, run-manifest
+digest, episode-sequence digest, execution-profile digest, and bundle-record
+position; assembly checks those values and the actual record chronology. A
+deterministic router-output digest binds each selected mode, every action-state
+attempt records its sender cost, and fallback reasons plus raw/JSON requests
+are bound to the exact pre- or post-receiver path. Non-completed provider
+events remain visible in `external_capture_metadata`, including a failed
+primary later recovered by fallback; each metadata item binds the exact
+provider response and its assembled usage receipt.
+
+Every planned task digest is also checked against an exact task-message
+preimage. Baseline and fallback calls must submit that exact message suffix;
+hybrid calls bind the same task digest to the frozen sender input and bind the
+sender output to the task-specific direct-receiver payload. This prevents a
+foreign task request or projection from being relabelled after execution.
+
+The post-receiver recovery lane currently accepts only a non-completed primary
+whose exact provider status is named by `fallback_from`. A provider response
+that completed but was later rejected by deterministic output/semantic
+validation needs a separately bound validation phase; the frozen RESULT phase
+schema cannot represent that evidence yet. Offline assembly therefore rejects
+that lane and reports it as a claim blocker instead of inferring validation.
+
+This bridge is **not** real study evidence. It emits
+`claim_eligible: false` and `authentication_complete: false`; current tests use
+project-authored synthetic captures. Provider-specific usage normalization,
+signatures, scorer and sandbox receipts, and independently operated executions
+are still absent. In addition, the current scorer-receipt schema binds the
+reported score but does not yet bind that score to the exact captured provider
+output digest. That scoring-output binding must be added in a separately
+reviewed schema revision before assembled traces can support a performance
+claim.
+
 Run the verifier tests from the repository root:
 
 ```text

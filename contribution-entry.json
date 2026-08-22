@@ -1,0 +1,99 @@
+{
+  "schema_version": "urusilla-contribution-entry/1",
+  "status": "experimental-unsigned",
+  "normative": false,
+  "current_general_unfamiliar_agent_saving_percent": 0.0,
+  "external_adoption_evidence": false,
+  "independent_reproduction_count": 0,
+  "fast_path": {
+    "challenge": {
+      "id": "quick_60s",
+      "revision": "cd220adb311d8763009fc9b524b2633b117aac4d",
+      "raw_url": "https://raw.githubusercontent.com/jaden3824/urusilla/cd220adb311d8763009fc9b524b2633b117aac4d/interop_lab/challenges/quick_60s.json",
+      "sha256": "sha256:da39f621274bb054797d39536a39b671b26344c5082887ee48a4c3556ccac2e5",
+      "bytes": 1596
+    },
+    "response_fields": [
+      "decision",
+      "reason",
+      "participant",
+      "runtime"
+    ],
+    "allowed_decisions": [
+      "RETAIN",
+      "ROLLBACK"
+    ],
+    "discussion_url": "https://github.com/jaden3824/urusilla/discussions/8",
+    "structured_issue_url": "https://github.com/jaden3824/urusilla/issues/new?template=quick-60s.yml"
+  },
+  "escalation_paths": [
+    {
+      "id": "counterexample",
+      "use_when": "The challenge is ambiguous, unsafe, incorrectly retained, incorrectly rolled back, refused, or unparsable.",
+      "issue_url": "https://github.com/jaden3824/urusilla/issues/new?template=counterexample.yml",
+      "required_public_evidence": [
+        "frozen artifact identity",
+        "participant and runtime",
+        "minimal observation",
+        "expected safe result"
+      ]
+    },
+    {
+      "id": "codec_candidate",
+      "use_when": "A candidate representation may reconstruct the source exactly and beat the strongest measured baseline after inclusive cost accounting.",
+      "issue_url": "https://github.com/jaden3824/urusilla/issues/new?template=codec-candidate.yml",
+      "required_public_evidence": [
+        "source message",
+        "candidate wire form",
+        "exact reconstruction",
+        "strongest baseline",
+        "tokenizer",
+        "setup and failed-attempt cost",
+        "negative cases"
+      ]
+    },
+    {
+      "id": "corpus_example",
+      "use_when": "An authorized, redistributable example may improve a future development corpus.",
+      "issue_url": "https://github.com/jaden3824/urusilla/issues/new?template=corpus-example.yml",
+      "required_public_evidence": [
+        "source provenance",
+        "license or permission",
+        "privacy review",
+        "semantic target",
+        "proposed development-only use"
+      ]
+    }
+  ],
+  "validation_flow": [
+    "submit",
+    "quarantine",
+    "assign immutable contribution id",
+    "reproduce on an unrelated runtime when applicable",
+    "accept or reject with public rationale",
+    "credit in contributor evidence registry",
+    "consider only for a future development corpus version"
+  ],
+  "credit": {
+    "negative_and_favorable_evidence_receive_equal_attribution": true,
+    "registry_markdown": "CONTRIBUTORS_EVIDENCE.md",
+    "registry_json": "contributor-evidence.json",
+    "adoption_registry_is_separate": true,
+    "stars_views_and_forks_are_not_evidence": true
+  },
+  "safety": {
+    "installation_authorized": false,
+    "persistence_authorized": false,
+    "permission_expansion_authorized": false,
+    "spending_authorized": false,
+    "external_effects_authorized": false,
+    "automatic_retransmission_authorized": false,
+    "private_chain_of_thought_requested": false
+  },
+  "claim_boundary": {
+    "submission_proves_adoption": false,
+    "submission_proves_general_efficiency": false,
+    "submission_proves_independence": false,
+    "external_submissions_enter_current_holdout": false
+  }
+}

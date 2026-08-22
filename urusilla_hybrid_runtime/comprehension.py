@@ -32,9 +32,12 @@ from .router import (
 from .runtime import (
     HybridExecution,
     LocalOutputValidation,
+    ObservedExecutionLedger,
+    ObservedLocalUsage,
     OutputValidationInput,
     PreparedMessage,
     execute_prepared_message,
+    merge_observed_setup_event,
     prepare_message,
 )
 from .sender import StructuredCompiler
@@ -1775,6 +1778,7 @@ class ColdStartExecutionTrace:
     provider_authenticity_verified: bool = False
     eligible_for_claim: bool = False
     goal_total_complete: bool = False
+    observed_ledger: ObservedExecutionLedger | None = None
 
     def __post_init__(self) -> None:
         if type(self.preparation) is not ColdStartPreparationTrace:
@@ -1848,6 +1852,7 @@ class ColdStartExecutionTrace:
                 or self.safely_completed is not False
                 or not self.output_discard_required
                 or self.eligible_for_live_answer
+                or self.observed_ledger is not None
             ):
                 raise ComprehensionError(
                     "blocked cold-start execution exposed forbidden work"
@@ -1867,6 +1872,7 @@ class ColdStartExecutionTrace:
                 or self.eligible_for_live_answer
                 or self.observed_comprehension_plus_runtime_tokens
                 != _preparation_observed_model_tokens(self.preparation)
+                or self.observed_ledger is not None
             ):
                 raise ComprehensionError(
                     "receiver binding precheck did not fail closed"
@@ -1880,6 +1886,10 @@ class ColdStartExecutionTrace:
             or self.execution.prepared != self.preparation.prepared
             or self.receiver_calls != self.execution.receiver_calls
             or self.sender_compiler_calls != self.execution.compiler_calls
+            or type(self.observed_ledger) is not ObservedExecutionLedger
+            or self.execution.observed_ledger is None
+            or self.observed_ledger.execution_binding_sha256
+            != self.execution.observed_ledger.execution_binding_sha256
         ):
             raise ComprehensionError(
                 "executed cold-start trace differs from its preparation"
@@ -1893,6 +1903,56 @@ class ColdStartExecutionTrace:
         if self.observed_comprehension_plus_runtime_tokens != expected_tokens:
             raise ComprehensionError(
                 "cold-start execution token accounting differs"
+            )
+        assert self.observed_ledger is not None
+        expected_ledger = self.execution.observed_ledger
+        assert expected_ledger is not None
+        if self.preparation.comprehension_calls:
+            comprehension = self.preparation.comprehension
+            assert comprehension is not None
+            expected_ledger = merge_observed_setup_event(
+                expected_ledger,
+                component="cold-comprehension",
+                artifact_binding_sha256=(
+                    comprehension.challenge.challenge_sha256
+                ),
+                total_tokens=comprehension.total_tokens,
+                model_calls=comprehension.calls,
+                input_tokens=comprehension.input_tokens,
+                output_tokens=comprehension.output_tokens,
+                reasoning_tokens=comprehension.reasoning_tokens,
+                reasoning_accounting=comprehension.reasoning_accounting,
+            )
+        if self.observed_ledger != expected_ledger:
+            raise ComprehensionError(
+                "cold observed ledger differs from its exact runtime merge"
+            )
+        cold_setup_events = tuple(
+            item
+            for item in self.observed_ledger.events
+            if item.component == "cold-comprehension"
+        )
+        if self.preparation.comprehension_calls:
+            if (
+                len(cold_setup_events) != 1
+                or cold_setup_events[0].total_tokens
+                != self.preparation.comprehension_total_tokens
+                or cold_setup_events[0].artifact_binding_sha256
+                != self.preparation.comprehension_challenge_sha256
+            ):
+                raise ComprehensionError(
+                    "cold comprehension setup was not merged exactly once"
+                )
+        elif cold_setup_events:
+            raise ComprehensionError(
+                "skipped comprehension created a setup event"
+            )
+        if (
+            self.observed_ledger.observed_model_total_tokens
+            != self.observed_comprehension_plus_runtime_tokens
+        ):
+            raise ComprehensionError(
+                "cold observed ledger model total does not reconcile"
             )
         if self.status == "receiver-binding-failed":
             if (
@@ -1934,6 +1994,19 @@ class ColdStartExecutionTrace:
     def comprehension_evidence_sha256(self) -> str | None:
         return self.preparation.comprehension_evidence_sha256
 
+    @property
+    def scope_complete(self) -> bool:
+        return bool(
+            self.observed_ledger is not None
+            and self.observed_ledger.scope_complete
+        )
+
+    @property
+    def inclusive_total_tokens(self) -> int | None:
+        if self.observed_ledger is None:
+            return None
+        return self.observed_ledger.inclusive_total_tokens
+
 
 def _preparation_observed_model_tokens(
     preparation: ColdStartPreparationTrace,
@@ -1964,6 +2037,7 @@ def execute_cold_start_preparation(
         [OutputValidationInput], LocalOutputValidation
     ]
     | None,
+    observed_local_usage: ObservedLocalUsage | None = None,
 ) -> ColdStartExecutionTrace:
     """Execute only a successful cold-start preparation; block otherwise."""
 
@@ -2015,18 +2089,42 @@ def execute_cold_start_preparation(
         preparation.prepared,
         adapter,
         output_validator=output_validator,
+        observed_local_usage=observed_local_usage,
     )
     comprehension_tokens = (
         0
         if preparation.comprehension_calls == 0
         else preparation.comprehension_total_tokens
     )
-    observed_tokens = (
+    observed_ledger = execution.observed_ledger
+    assert observed_ledger is not None
+    if preparation.comprehension_calls:
+        comprehension = preparation.comprehension
+        assert comprehension is not None
+        observed_ledger = merge_observed_setup_event(
+            observed_ledger,
+            component="cold-comprehension",
+            artifact_binding_sha256=(
+                comprehension.challenge.challenge_sha256
+            ),
+            total_tokens=comprehension.total_tokens,
+            model_calls=comprehension.calls,
+            input_tokens=comprehension.input_tokens,
+            output_tokens=comprehension.output_tokens,
+            reasoning_tokens=comprehension.reasoning_tokens,
+            reasoning_accounting=comprehension.reasoning_accounting,
+        )
+    observed_tokens = observed_ledger.observed_model_total_tokens
+    expected_observed_tokens = (
         None
         if comprehension_tokens is None
         or execution.observed_runtime_tokens is None
         else comprehension_tokens + execution.observed_runtime_tokens
     )
+    if observed_tokens != expected_observed_tokens:
+        raise ComprehensionError(
+            "cold setup usage was not merged exactly once"
+        )
     binding_verified = True
     if preparation.bootstrap_decision == "attempted":
         assert preparation.receiver_binding is not None
@@ -2064,4 +2162,5 @@ def execute_cold_start_preparation(
         eligible_for_live_answer=(
             binding_verified and execution.safely_completed is True
         ),
+        observed_ledger=observed_ledger,
     )

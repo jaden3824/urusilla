@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field, replace
 import re
 from typing import Callable, Mapping
 
@@ -40,6 +40,42 @@ from .surface import ActiveSurface, RetainedSurface, SurfaceAliasTable
 
 
 _SHA256 = re.compile(r"^sha256:[0-9a-f]{64}$")
+OBSERVED_TOKEN_PHASES = (
+    "setup",
+    "sender",
+    "semantic-verification",
+    "router",
+    "receiver",
+    "repair",
+    "fallback",
+    "tool",
+    "safety",
+    "judge",
+)
+_OBSERVED_COMPONENT_PHASE = {
+    "local-setup": "setup",
+    "cold-comprehension": "setup",
+    "sender-compiler": "sender",
+    "semantic-fidelity-verifier": "semantic-verification",
+    "local-router": "router",
+    "primary-receiver": "receiver",
+    "local-repair": "repair",
+    "local-fallback": "fallback",
+    "baseline-fallback-receiver": "fallback",
+    "local-tool": "tool",
+    "local-safety": "safety",
+    "local-judge": "judge",
+}
+_DETAILED_MODEL_COMPONENTS = {
+    "cold-comprehension",
+    "primary-receiver",
+    "baseline-fallback-receiver",
+}
+_TOTAL_ONLY_MODEL_COMPONENTS = {
+    "sender-compiler",
+    "semantic-fidelity-verifier",
+}
+_LOCAL_SETUP_SCOPE = "runtime-local-exclusive-of-cold-comprehension"
 
 
 @dataclass(frozen=True)
@@ -116,6 +152,212 @@ class LocalOutputValidation:
             or self.external_effects_performed
         ):
             raise ValueError("output validator cannot perform external effects")
+
+
+@dataclass(frozen=True)
+class ObservedTokenEvent:
+    """One immutable, exact-bound runtime usage observation.
+
+    ``total_tokens`` is the non-overlapping amount contributed to the inclusive
+    total.  Provider input/output/reasoning fields are annotations within that
+    total and are never added a second time.  Receiver and cold-comprehension
+    events retain detailed provider counts; compiler and fidelity interfaces
+    expose total-only usage.  ``None`` remains unknown.
+    """
+
+    sequence: int
+    phase: str
+    component: str
+    execution_binding_sha256: str
+    artifact_binding_sha256: str
+    total_tokens: int | None
+    model_calls: int
+    input_tokens: int | None = None
+    output_tokens: int | None = None
+    reasoning_tokens: int | None = None
+    reasoning_accounting: str | None = None
+
+    def __post_init__(self) -> None:
+        if type(self.sequence) is not int or self.sequence < 0:
+            raise ValueError("observed token event sequence must be nonnegative")
+        if self.phase not in OBSERVED_TOKEN_PHASES:
+            raise ValueError("observed token event phase is unknown")
+        if _OBSERVED_COMPONENT_PHASE.get(self.component) != self.phase:
+            raise ValueError("observed token event component and phase differ")
+        for name in ("execution_binding_sha256", "artifact_binding_sha256"):
+            if _SHA256.fullmatch(getattr(self, name)) is None:
+                raise ValueError(f"observed token event {name} is invalid")
+        for name in (
+            "total_tokens",
+            "input_tokens",
+            "output_tokens",
+            "reasoning_tokens",
+        ):
+            value = getattr(self, name)
+            if value is not None and (type(value) is not int or value < 0):
+                raise ValueError(f"observed token event {name} is invalid")
+        if type(self.model_calls) is not int or self.model_calls not in {0, 1}:
+            raise ValueError("observed token event model_calls must be zero or one")
+        if self.reasoning_accounting not in {
+            None,
+            "included-in-output",
+            "separately-reported",
+            "not-reported",
+        }:
+            raise ValueError("observed token event reasoning accounting is unknown")
+        if self.model_calls == 0 and any(
+            value is not None
+            for value in (
+                self.input_tokens,
+                self.output_tokens,
+                self.reasoning_tokens,
+                self.reasoning_accounting,
+            )
+        ):
+            raise ValueError("non-model event cannot report model usage fields")
+        if (
+            self.model_calls == 1
+            and self.component in _DETAILED_MODEL_COMPONENTS
+            and self.total_tokens is not None
+            and (
+                self.input_tokens is None
+                or self.output_tokens is None
+                or self.reasoning_accounting is None
+            )
+        ):
+            raise ValueError(
+                "completed receiver-like event requires detailed model usage"
+            )
+        if (
+            self.component in _TOTAL_ONLY_MODEL_COMPONENTS
+            and any(
+                value is not None
+                for value in (
+                    self.input_tokens,
+                    self.output_tokens,
+                    self.reasoning_tokens,
+                    self.reasoning_accounting,
+                )
+            )
+        ):
+            raise ValueError("total-only model event cannot report detailed usage")
+        if self.reasoning_accounting is None and self.reasoning_tokens is not None:
+            raise ValueError("reasoning tokens require an accounting disposition")
+        if (
+            self.reasoning_accounting == "not-reported"
+            and self.reasoning_tokens is not None
+        ):
+            raise ValueError("unreported reasoning tokens must remain unknown")
+        if (
+            self.reasoning_accounting
+            in {"included-in-output", "separately-reported"}
+            and self.reasoning_tokens is None
+        ):
+            raise ValueError("reported reasoning accounting requires a token count")
+        known_subtotal = sum(
+            value
+            for value in (
+                self.input_tokens,
+                self.output_tokens,
+                (
+                    self.reasoning_tokens
+                    if self.reasoning_accounting == "separately-reported"
+                    else None
+                ),
+            )
+            if value is not None
+        )
+        if self.total_tokens is not None and self.total_tokens < known_subtotal:
+            raise ValueError("observed event total is below its known token subtotal")
+        if self.model_calls == 0 and self.component in {
+            "sender-compiler",
+            "primary-receiver",
+            "baseline-fallback-receiver",
+            "cold-comprehension",
+        } and self.total_tokens not in {0, None}:
+            raise ValueError("uncalled model component cannot report positive tokens")
+
+    @property
+    def usage_complete(self) -> bool:
+        return self.total_tokens is not None
+
+
+@dataclass(frozen=True)
+class ObservedExecutionLedger:
+    """Runtime-scoped observations, never claim or provenance evidence.
+
+    Scope completeness means only that every runtime category below has an
+    explicit nonnegative observation.  It does not authenticate provider usage,
+    prove the frozen research scope, or make a performance claim eligible.
+    """
+
+    execution_binding_sha256: str
+    events: tuple[ObservedTokenEvent, ...]
+    provider_authenticity_verified: bool = False
+    claim_eligible: bool = False
+    goal_total_complete: bool = False
+
+    def __post_init__(self) -> None:
+        if _SHA256.fullmatch(self.execution_binding_sha256) is None:
+            raise ValueError("observed ledger execution binding is invalid")
+        if type(self.events) is not tuple or not self.events:
+            raise ValueError("observed ledger events must be a non-empty tuple")
+        if tuple(item.sequence for item in self.events) != tuple(
+            range(len(self.events))
+        ):
+            raise ValueError("observed ledger events must be contiguously ordered")
+        if any(
+            type(item) is not ObservedTokenEvent
+            or item.execution_binding_sha256 != self.execution_binding_sha256
+            for item in self.events
+        ):
+            raise ValueError("observed ledger contains an unbound event")
+        if len({item.component for item in self.events}) != len(self.events):
+            raise ValueError("observed ledger contains duplicate components")
+        if set(item.phase for item in self.events) != set(OBSERVED_TOKEN_PHASES):
+            raise ValueError("observed ledger phase coverage is incomplete")
+        for name in (
+            "provider_authenticity_verified",
+            "claim_eligible",
+            "goal_total_complete",
+        ):
+            if type(getattr(self, name)) is not bool:
+                raise ValueError(f"observed ledger {name} must be boolean")
+        if any(
+            (
+                self.provider_authenticity_verified,
+                self.claim_eligible,
+                self.goal_total_complete,
+            )
+        ):
+            raise ValueError(
+                "runtime observations cannot establish authenticity or claim eligibility"
+            )
+
+    @property
+    def scope_complete(self) -> bool:
+        return all(item.usage_complete for item in self.events)
+
+    @property
+    def inclusive_total_tokens(self) -> int | None:
+        if not self.scope_complete:
+            return None
+        return sum(item.total_tokens or 0 for item in self.events)
+
+    @property
+    def observed_model_total_tokens(self) -> int | None:
+        called = tuple(item for item in self.events if item.model_calls == 1)
+        if any(not item.usage_complete for item in called):
+            return None
+        return sum(item.total_tokens or 0 for item in called)
+
+    def phase_total(self, phase: str) -> int | None:
+        if phase not in OBSERVED_TOKEN_PHASES:
+            raise ValueError("observed ledger phase is unknown")
+        matching = tuple(item for item in self.events if item.phase == phase)
+        if any(not item.usage_complete for item in matching):
+            return None
+        return sum(item.total_tokens or 0 for item in matching)
 
 
 @dataclass(frozen=True)
@@ -228,6 +470,176 @@ class PreparedMessage:
                 ):
                     raise ValueError("fallback fidelity token accounting differs")
 
+    @property
+    def execution_binding_sha256(self) -> str:
+        request = self.route.request
+        compilation = self.compilation
+        fidelity = self.fidelity_verification
+        return sha256_text(
+            canonical_json(
+                {
+                    "source_sha256": self.route.source_sha256,
+                    "capsule_sha256": self.route.capsule_sha256,
+                    "task_context_sha256": request.task_context_sha256,
+                    "task_profile_sha256": request.task_profile_sha256,
+                    "symbol_table_sha256": request.symbol_table_sha256,
+                    "selected_mode": self.route.selected_mode,
+                    "request_binding_sha256": request.binding_sha256,
+                    "route_binding_sha256": self.route.binding_sha256,
+                    "compilation": (
+                        None
+                        if compilation is None
+                        else {
+                            "status": compilation.status,
+                            "model_id": compilation.model_id,
+                            "total_tokens": compilation.total_tokens,
+                            "output_sha256": compilation.output_sha256,
+                        }
+                    ),
+                    "fidelity_verification": (
+                        None
+                        if fidelity is None
+                        else {
+                            "input_binding_sha256": fidelity.input_binding_sha256,
+                            "verifier_sha256": fidelity.verifier_sha256,
+                            "method": fidelity.method,
+                            "model_id": fidelity.model_id,
+                            "total_tokens": fidelity.total_tokens,
+                        }
+                    ),
+                }
+            )
+        )
+
+
+@dataclass(frozen=True)
+class ObservedLocalUsage:
+    """Exact-preparation-bound non-model usage; ``None`` means unobserved.
+
+    ``setup_tokens`` is exclusively runtime-local setup and must exclude the
+    separately merged cold-comprehension provider call.  That exclusion is an
+    honest-host accounting assertion, not structural proof or claim evidence.
+    """
+
+    execution_binding_sha256: str
+    setup_tokens: int | None = None
+    router_tokens: int | None = None
+    repair_tokens: int | None = None
+    fallback_tokens: int | None = None
+    tool_tokens: int | None = None
+    safety_tokens: int | None = None
+    judge_tokens: int | None = None
+    setup_scope: str = _LOCAL_SETUP_SCOPE
+
+    def __post_init__(self) -> None:
+        if _SHA256.fullmatch(self.execution_binding_sha256) is None:
+            raise ValueError("observed local usage binding is invalid")
+        if self.setup_scope != _LOCAL_SETUP_SCOPE:
+            raise ValueError(
+                "observed local setup must exclude cold comprehension"
+            )
+        for name in (
+            "setup_tokens",
+            "router_tokens",
+            "repair_tokens",
+            "fallback_tokens",
+            "tool_tokens",
+            "safety_tokens",
+            "judge_tokens",
+        ):
+            value = getattr(self, name)
+            if value is not None and (type(value) is not int or value < 0):
+                raise ValueError(f"observed local usage {name} is invalid")
+
+    @classmethod
+    def for_prepared(
+        cls,
+        prepared: PreparedMessage,
+        **usage: int | None,
+    ) -> "ObservedLocalUsage":
+        if type(prepared) is not PreparedMessage:
+            raise ValueError("observed local usage requires an exact preparation")
+        return cls(
+            execution_binding_sha256=prepared.execution_binding_sha256,
+            **usage,
+        )
+
+
+def merge_observed_setup_event(
+    ledger: ObservedExecutionLedger,
+    *,
+    component: str,
+    artifact_binding_sha256: str,
+    total_tokens: int | None,
+    model_calls: int,
+    input_tokens: int | None = None,
+    output_tokens: int | None = None,
+    reasoning_tokens: int | None = None,
+    reasoning_accounting: str | None = None,
+) -> ObservedExecutionLedger:
+    """Prepend one exact setup event, rejecting replay or cross-run binding."""
+
+    if type(ledger) is not ObservedExecutionLedger:
+        raise ValueError("setup merge requires an exact observed ledger")
+    if component != "cold-comprehension":
+        raise ValueError("only cold comprehension may be merged as setup")
+    if any(item.component == component for item in ledger.events):
+        raise ValueError("observed setup event was already merged")
+    if any(
+        item.phase == "setup"
+        and item.artifact_binding_sha256 == artifact_binding_sha256
+        for item in ledger.events
+    ):
+        raise ValueError("observed setup artifact was already accounted")
+    setup = ObservedTokenEvent(
+        sequence=0,
+        phase="setup",
+        component=component,
+        execution_binding_sha256=ledger.execution_binding_sha256,
+        artifact_binding_sha256=artifact_binding_sha256,
+        total_tokens=total_tokens,
+        model_calls=model_calls,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        reasoning_tokens=reasoning_tokens,
+        reasoning_accounting=reasoning_accounting,
+    )
+    events = (setup,) + tuple(
+        replace(item, sequence=index)
+        for index, item in enumerate(ledger.events, start=1)
+    )
+    return ObservedExecutionLedger(
+        execution_binding_sha256=ledger.execution_binding_sha256,
+        events=events,
+    )
+
+
+_HYBRID_OBSERVATION_FINGERPRINT_FIELDS = (
+    "prepared",
+    "primary",
+    "fallback",
+    "observed_local_usage",
+    "observed_ledger",
+)
+
+
+class _HybridObservationSeal:
+    __slots__ = ("fingerprint",)
+
+    def __init__(self, fingerprint: str) -> None:
+        self.fingerprint = fingerprint
+
+
+def _hybrid_observation_fingerprint(values: Mapping[str, object]) -> str:
+    return sha256_text(
+        repr(
+            tuple(
+                (name, values[name])
+                for name in _HYBRID_OBSERVATION_FINGERPRINT_FIELDS
+            )
+        )
+    )
+
 
 @dataclass(frozen=True)
 class HybridExecution:
@@ -242,6 +654,14 @@ class HybridExecution:
     safely_completed: bool | None
     observed_runtime_tokens: int | None
     goal_total_complete: bool = False
+    observed_ledger: ObservedExecutionLedger | None = None
+    claim_eligible: bool = False
+    observed_local_usage: ObservedLocalUsage | None = None
+    _construction_seal: object = field(
+        default=None,
+        repr=False,
+        compare=False,
+    )
 
     def __post_init__(self) -> None:
         if self.compiler_calls not in {0, 1}:
@@ -292,10 +712,66 @@ class HybridExecution:
                 raise ValueError(
                     "hybrid fallback is not bound to its live baseline request"
                 )
-        if self.goal_total_complete:
+        for name in ("claim_eligible", "goal_total_complete"):
+            if type(getattr(self, name)) is not bool:
+                raise ValueError(f"hybrid {name} must be boolean")
+        if self.claim_eligible or self.goal_total_complete:
             raise ValueError(
-                "runtime-only trace cannot claim complete goal-token accounting"
+                "runtime-only trace cannot claim eligibility or complete goal accounting"
             )
+        if self.observed_ledger is None:
+            if (
+                self.observed_local_usage is not None
+                or self._construction_seal is not None
+            ):
+                raise ValueError(
+                    "ledger-free legacy execution cannot contain observations"
+                )
+        else:
+            if (
+                type(self.observed_ledger) is not ObservedExecutionLedger
+                or type(self.observed_local_usage) is not ObservedLocalUsage
+                or self.observed_local_usage.execution_binding_sha256
+                != self.prepared.execution_binding_sha256
+            ):
+                raise ValueError("hybrid observed ledger and execution differ")
+            observation_values = {
+                name: getattr(self, name)
+                for name in _HYBRID_OBSERVATION_FINGERPRINT_FIELDS
+            }
+            if (
+                not isinstance(self._construction_seal, _HybridObservationSeal)
+                or self._construction_seal.fingerprint
+                != _hybrid_observation_fingerprint(observation_values)
+            ):
+                raise ValueError(
+                    "HybridExecution observations must be minted by the executor"
+                )
+            expected_ledger = _build_observed_execution_ledger(
+                self.prepared,
+                self.primary,
+                self.fallback,
+                self.observed_local_usage,
+            )
+            if (
+                self.observed_ledger != expected_ledger
+                or self.observed_ledger.observed_model_total_tokens
+                != self.observed_runtime_tokens
+            ):
+                raise ValueError("hybrid observed ledger and execution differ")
+
+    @property
+    def scope_complete(self) -> bool:
+        return bool(
+            self.observed_ledger is not None
+            and self.observed_ledger.scope_complete
+        )
+
+    @property
+    def inclusive_total_tokens(self) -> int | None:
+        if self.observed_ledger is None:
+            return None
+        return self.observed_ledger.inclusive_total_tokens
 
 
 def _validate_public_output(
@@ -334,6 +810,262 @@ def _validate_public_output(
     return result.valid
 
 
+def _compiler_artifact_binding(prepared: PreparedMessage) -> str:
+    compilation = prepared.compilation
+    if compilation is None:
+        return prepared.execution_binding_sha256
+    return sha256_text(
+        canonical_json(
+            {
+                "source_sha256": compilation.source_sha256,
+                "capsule_sha256": compilation.capsule_sha256,
+                "task_context_sha256": compilation.task_context_sha256,
+                "task_profile_sha256": compilation.task_profile_sha256,
+                "symbol_table_sha256": compilation.symbol_table_sha256,
+                "output_sha256": compilation.output_sha256,
+            }
+        )
+    )
+
+
+def _receiver_execution_artifact_binding(execution: ReceiverExecution) -> str:
+    reply = execution.reply
+    return sha256_text(
+        canonical_json(
+            {
+                "status": execution.status,
+                "calls": execution.calls,
+                "request_mode": execution.request_mode,
+                "request_binding_sha256": execution.request_binding_sha256,
+                "delivery_disposition": execution.delivery_disposition,
+                "model_visible_sha256": execution.model_visible_sha256,
+                "failure": execution.failure,
+                "usage_complete": execution.usage_complete,
+                "reply": (
+                    None
+                    if reply is None
+                    else {
+                        "output_sha256": sha256_text(reply.text),
+                        "model_id": reply.model_id,
+                        "input_tokens": reply.input_tokens,
+                        "output_tokens": reply.output_tokens,
+                        "reasoning_tokens": reply.reasoning_tokens,
+                        "reasoning_accounting": reply.reasoning_accounting,
+                        "provider_total_tokens": reply.provider_total_tokens,
+                        "tools_used": reply.tools_used,
+                        "persistence_created": reply.persistence_created,
+                        "permission_expanded": reply.permission_expanded,
+                        "spending_authority_created": (
+                            reply.spending_authority_created
+                        ),
+                        "external_effects_performed": (
+                            reply.external_effects_performed
+                        ),
+                    }
+                ),
+            }
+        )
+    )
+
+
+def _local_observation_artifact_binding(
+    local_usage: ObservedLocalUsage,
+    component: str,
+) -> str:
+    value: dict[str, str] = {
+        "component": component,
+        "execution_binding_sha256": local_usage.execution_binding_sha256,
+    }
+    if component == "local-setup":
+        value["setup_scope"] = local_usage.setup_scope
+    return sha256_text(canonical_json(value))
+
+
+def _receiver_observed_event(
+    execution_binding_sha256: str,
+    execution: ReceiverExecution | None,
+    *,
+    sequence: int,
+    component: str,
+    phase: str,
+) -> ObservedTokenEvent:
+    if execution is None:
+        return ObservedTokenEvent(
+            sequence=sequence,
+            phase=phase,
+            component=component,
+            execution_binding_sha256=execution_binding_sha256,
+            artifact_binding_sha256=execution_binding_sha256,
+            total_tokens=0,
+            model_calls=0,
+        )
+    reply = execution.reply
+    return ObservedTokenEvent(
+        sequence=sequence,
+        phase=phase,
+        component=component,
+        execution_binding_sha256=execution_binding_sha256,
+        artifact_binding_sha256=_receiver_execution_artifact_binding(execution),
+        total_tokens=execution.total_tokens,
+        model_calls=execution.calls,
+        input_tokens=reply.input_tokens if reply is not None else None,
+        output_tokens=reply.output_tokens if reply is not None else None,
+        reasoning_tokens=reply.reasoning_tokens if reply is not None else None,
+        reasoning_accounting=(
+            reply.reasoning_accounting if reply is not None else None
+        ),
+    )
+
+
+def _build_observed_execution_ledger(
+    prepared: PreparedMessage,
+    primary: ReceiverExecution,
+    fallback: ReceiverExecution | None,
+    local_usage: ObservedLocalUsage,
+) -> ObservedExecutionLedger:
+    binding = prepared.execution_binding_sha256
+    if local_usage.execution_binding_sha256 != binding:
+        raise ValueError("observed local usage is bound to another preparation")
+    for name in ("repair_tokens", "tool_tokens"):
+        if getattr(local_usage, name) not in {None, 0}:
+            raise ValueError(
+                f"observed {name} cannot be positive without an executed phase"
+            )
+    if fallback is None and local_usage.fallback_tokens not in {None, 0}:
+        raise ValueError(
+            "observed fallback_tokens cannot be positive without a fallback"
+        )
+    compilation = prepared.compilation
+    compiler_calls = int(compilation is not None and compilation.attempted)
+    fidelity = prepared.fidelity_verification
+    events = (
+        ObservedTokenEvent(
+            sequence=0,
+            phase="setup",
+            component="local-setup",
+            execution_binding_sha256=binding,
+            artifact_binding_sha256=_local_observation_artifact_binding(
+                local_usage,
+                "local-setup",
+            ),
+            total_tokens=local_usage.setup_tokens,
+            model_calls=0,
+        ),
+        ObservedTokenEvent(
+            sequence=1,
+            phase="sender",
+            component="sender-compiler",
+            execution_binding_sha256=binding,
+            artifact_binding_sha256=_compiler_artifact_binding(prepared),
+            total_tokens=(
+                compilation.total_tokens if compiler_calls else 0
+            ),
+            model_calls=compiler_calls,
+        ),
+        ObservedTokenEvent(
+            sequence=2,
+            phase="semantic-verification",
+            component="semantic-fidelity-verifier",
+            execution_binding_sha256=binding,
+            artifact_binding_sha256=(
+                fidelity.input_binding_sha256 if fidelity is not None else binding
+            ),
+            total_tokens=fidelity.total_tokens if fidelity is not None else 0,
+            model_calls=fidelity.model_calls if fidelity is not None else 0,
+        ),
+        ObservedTokenEvent(
+            sequence=3,
+            phase="router",
+            component="local-router",
+            execution_binding_sha256=binding,
+            artifact_binding_sha256=_local_observation_artifact_binding(
+                local_usage,
+                "local-router",
+            ),
+            total_tokens=local_usage.router_tokens,
+            model_calls=0,
+        ),
+        _receiver_observed_event(
+            binding,
+            primary,
+            sequence=4,
+            component="primary-receiver",
+            phase="receiver",
+        ),
+        ObservedTokenEvent(
+            sequence=5,
+            phase="repair",
+            component="local-repair",
+            execution_binding_sha256=binding,
+            artifact_binding_sha256=_local_observation_artifact_binding(
+                local_usage,
+                "local-repair",
+            ),
+            total_tokens=local_usage.repair_tokens,
+            model_calls=0,
+        ),
+        ObservedTokenEvent(
+            sequence=6,
+            phase="fallback",
+            component="local-fallback",
+            execution_binding_sha256=binding,
+            artifact_binding_sha256=_local_observation_artifact_binding(
+                local_usage,
+                "local-fallback",
+            ),
+            total_tokens=local_usage.fallback_tokens,
+            model_calls=0,
+        ),
+        _receiver_observed_event(
+            binding,
+            fallback,
+            sequence=7,
+            component="baseline-fallback-receiver",
+            phase="fallback",
+        ),
+        ObservedTokenEvent(
+            sequence=8,
+            phase="tool",
+            component="local-tool",
+            execution_binding_sha256=binding,
+            artifact_binding_sha256=_local_observation_artifact_binding(
+                local_usage,
+                "local-tool",
+            ),
+            total_tokens=local_usage.tool_tokens,
+            model_calls=0,
+        ),
+        ObservedTokenEvent(
+            sequence=9,
+            phase="safety",
+            component="local-safety",
+            execution_binding_sha256=binding,
+            artifact_binding_sha256=_local_observation_artifact_binding(
+                local_usage,
+                "local-safety",
+            ),
+            total_tokens=local_usage.safety_tokens,
+            model_calls=0,
+        ),
+        ObservedTokenEvent(
+            sequence=10,
+            phase="judge",
+            component="local-judge",
+            execution_binding_sha256=binding,
+            artifact_binding_sha256=_local_observation_artifact_binding(
+                local_usage,
+                "local-judge",
+            ),
+            total_tokens=local_usage.judge_tokens,
+            model_calls=0,
+        ),
+    )
+    return ObservedExecutionLedger(
+        execution_binding_sha256=binding,
+        events=events,
+    )
+
+
 def execute_prepared_message(
     prepared: PreparedMessage,
     adapter: ReceiverModelAdapter,
@@ -342,13 +1074,35 @@ def execute_prepared_message(
         [OutputValidationInput], LocalOutputValidation
     ]
     | None,
+    observed_local_usage: ObservedLocalUsage | None = None,
 ) -> HybridExecution:
     """Execute a prepared route and one lossless baseline fallback when needed.
 
-    This trace deliberately remains insufficient for the research goal's token
-    claim because setup probes, router measurement, safety filters, and judge
-    calls are supplied by the frozen evaluation harness rather than this runtime.
+    Exact-bound local observations may complete the runtime-scoped inclusive
+    ledger.  They still cannot authenticate provider usage or satisfy the frozen
+    research gate, so claim and goal-completion flags remain false.
     """
+
+    if observed_local_usage is None:
+        observed_local_usage = ObservedLocalUsage.for_prepared(prepared)
+    if (
+        type(observed_local_usage) is not ObservedLocalUsage
+        or observed_local_usage.execution_binding_sha256
+        != prepared.execution_binding_sha256
+    ):
+        raise ValueError("observed local usage is not bound to this preparation")
+    for name in ("repair_tokens", "tool_tokens"):
+        if getattr(observed_local_usage, name) not in {None, 0}:
+            raise ValueError(
+                f"observed {name} cannot be positive without an executed phase"
+            )
+    if (
+        prepared.route.selected_mode in {"silence", "raw", "json"}
+        and observed_local_usage.fallback_tokens not in {None, 0}
+    ):
+        raise ValueError(
+            "observed fallback_tokens cannot be positive without a fallback"
+        )
 
     expected_output_validator_sha256 = PublicTaskContext.from_json(
         prepared.route.request.task_context_text
@@ -420,7 +1174,22 @@ def execute_prepared_message(
         else:
             usage_values.append(execution.total_tokens)
     observed = sum(usage_values) if usage_complete else None
+    observed_ledger = _build_observed_execution_ledger(
+        prepared,
+        primary,
+        fallback,
+        observed_local_usage,
+    )
+    if observed_ledger.observed_model_total_tokens != observed:
+        raise ValueError("observed model usage does not reconcile with the ledger")
     safely_completed = final_valid if type(final_valid) is bool else None
+    observation_values = {
+        "prepared": prepared,
+        "primary": primary,
+        "fallback": fallback,
+        "observed_local_usage": observed_local_usage,
+        "observed_ledger": observed_ledger,
+    }
     return HybridExecution(
         prepared=prepared,
         primary=primary,
@@ -432,7 +1201,13 @@ def execute_prepared_message(
         output_valid=final_valid,
         safely_completed=safely_completed,
         observed_runtime_tokens=observed,
+        observed_ledger=observed_ledger,
+        claim_eligible=False,
+        observed_local_usage=observed_local_usage,
         goal_total_complete=False,
+        _construction_seal=_HybridObservationSeal(
+            _hybrid_observation_fingerprint(observation_values)
+        ),
     )
 
 
