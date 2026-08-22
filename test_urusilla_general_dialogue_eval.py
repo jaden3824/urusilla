@@ -13,7 +13,7 @@ EXPECTED_PUBLIC_DIGESTS = {
     "contract": "1cf2d1c9810ac5b94bc0adf15d2251bae30b1b1d8b36fa161a51e1bbe0f5b1c1",
     "evaluator": "5131497df97788f7caba5b716885184e0677f383341ec3547fad4513235def3c",
     "results": "b90b4673e4a5554ab3cead7d5f7489c826cad3866993483dd4cc922dd15469f9",
-    "report": "0cd29bbfed502ee49933f45f2d9f5747d68ad9a960242ac187aecbaab1f02cdc",
+    "report": "77b058547fc9b1a75bbf1970ef7128aab7577f0bfba897e142020822cccb5d01",
 }
 
 
