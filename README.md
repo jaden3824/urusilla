@@ -43,6 +43,32 @@ The immediate research goal is therefore model-native or task-aware public actio
 
 An exact request binding is not evidence that a receiver used the message. The current runtime and v1 initial-goal verifier can prove which action-state payload reached the model-visible request, but a constant-output receiver can still satisfy synthetic success plumbing without reading that payload. Therefore a v1 aggregate pass would establish hybrid-router utility only; it would **not** establish causal consumption of an action-state language. Any comprehension or route-level language claim additionally requires a preregistered, blinded payload-intervention study: identical non-payload context and settings, task-critical A/B payloads whose correct outputs must differ, missing/shuffled placebos that must refuse or fall back, inclusive accounting for every call, and per-stratum coverage. This stronger contract must use a new schema version rather than silently changing frozen v1.
 
+Two new **evaluator-only diagnostics** make that next experiment harder to
+misreport without changing the protocol version. A `/3` causal matrix validator
+requires six bound conditions for every declared field: critical A/B, semantic
+invariance, exact critical-field ablation, an independently answerable
+no-payload control, and a cross-field shuffled control. A matched-session runner
+then executes separately prepared raw, JSON, and Urusilla arms; after one passed
+cold-comprehension call, its hot Urusilla request contains only the canonical
+action state and never re-expands the Capsule or task prose. It retains failed
+primary plus fallback cost, and makes totals unknown when retry/repair attempts
+lack individual receipts. Both tools are tested only with project-authored
+records and fake adapters. Provider authenticity, callback call scope, frozen
+settings, preregistration chronology, independent operation, counterbalancing,
+and full strata remain unproved, so claim-facing totals and safe-task results
+stay null and general saving remains **0%**.
+
+A separate initial-goal zero-call feasibility screen now accepts only fully
+registered finite phase bounds for session lengths 1 through 128 and can return only
+`impossible`, `not-disproven`, or `invalid`. It uses candidate lower bounds and
+the better raw/JSON upper cost-per-safe-task bound, so equality with the 20%
+threshold is not a kill and `not-disproven` is never called a saving. No real
+row has been run: the required frozen prompt, dynamic-slot, tokenizer, and
+allowed-path bound manifests are absent from this checkout. The evaluator and
+its synthetic tests therefore add a cheap stop gate, not empirical efficiency
+evidence. This screen is separate from the SGD-20 competitive-reproduction
+protocol.
+
 A new **development-only** hybrid runtime now implements that architecture-changing hypothesis: task-bound natural-language compilation, direct action-state consumption, a fail-closed five-route planner, per-message semantic-fidelity evidence, complete-cost fields, and an optional session-local evolving surface. Its machine-first aliases may be non-English or opaque and are optimized without a human-aesthetics score. Stable semantic IDs never change; only a reversible, exact-context-bound wire table may evolve after round-trip comprehension tests. Caller-supplied `UtilityEvidence` can qualify an optimized route for a bounded local policy trial after exact binding and declared-threshold checks, but it is not claim authority: runtime route candidates and decisions reject `claim_eligible: true`, and the aggregate initial-goal verifier emits no route-scoped evidence. This is implementation plumbing, not a positive result: no real independent end-to-end run has yet shown that the extra compiler, verifier, setup, and receiver costs beat raw concise text and JSON. See [`EVOLVING_SURFACE.md`](EVOLVING_SURFACE.md).
 
 The reference runtime now also closes the local same-context execution gap. A cached receiver capability can be minted only from a passed cold-comprehension attempt and the exact still-active provider-context observation. A factory-sealed session plan then sends the validated public action state directly without prose re-expansion. Malformed state, Capsule/task/context drift, adapter failure, or invalid primary output invalidates that optimized path and invokes its already bound raw/JSON fallback; prohibited authority remains false throughout. Focused and full runtime regressions exercise this path with project-authored adapters. No provider-backed causal intervention or independently operated run has yet shown that a real model used the task-critical semantics, so this is a safer experiment runner rather than language-use or efficiency evidence. See [`urusilla_hybrid_runtime/session_runtime.py`](urusilla_hybrid_runtime/session_runtime.py).
@@ -127,7 +153,7 @@ The near-term [`EVIDENCE_LADDER.md`](EVIDENCE_LADDER.md) starts with causal payl
 - [`urusilla_action_state_capsule.json`](urusilla_action_state_capsule.json), [`urusilla_task_context.example.json`](urusilla_task_context.example.json), and [`urusilla_hybrid_runtime/`](urusilla_hybrid_runtime/) — unpromoted task-bound sender/direct-receiver/router reference with per-message fidelity gates and lossless fallback
 - [`urusilla_evolving_surface_capsule.json`](urusilla_evolving_surface_capsule.json) and [`EVOLVING_SURFACE.md`](EVOLVING_SURFACE.md) — declarative, session-local stable-semantics/evolving-surface negotiation and rollback contract
 - [`LANGUAGE_EVOLUTION_ARCHITECTURE.md`](LANGUAGE_EVOLUTION_ARCHITECTURE.md) — two-speed conversation loop: reversible wire optimization now, append-only semantic growth only after a separate future gate
-- [`initial_goal_eval/`](initial_goal_eval/) — frozen raw/JSON matched-session evidence contract and independent verifier; currently contains test-only synthetic fixtures, not performance evidence
+- [`initial_goal_eval/`](initial_goal_eval/) — frozen raw/JSON matched-session evidence contract and independent verifier, plus quarantined causal-matrix and three-arm runner diagnostics; currently contains test-only synthetic fixtures, not performance evidence
 - [`GENERAL_DIALOGUE_EVAL_PLAN.md`](GENERAL_DIALOGUE_EVAL_PLAN.md) — preregistration-ready general-dialogue, cross-model, cold-start, and drift evaluation plan; no confirmatory run yet
 - [`website/public/language-probe.json`](website/public/language-probe.json) and [`tools/validate_language_probe.py`](tools/validate_language_probe.py) — one-fetch action-state decode/encode demonstration with exact, safe-fallback, and failure classifications
 - [`interop_lab/evidence/a2a_v1_language_probe_001.message.json`](interop_lab/evidence/a2a_v1_language_probe_001.message.json), its [`manifest`](interop_lab/evidence/a2a_v1_language_probe_001.manifest.json), and [`a2a_v1_language_probe.py`](interop_lab/a2a_v1_language_probe.py) — frozen standard A2A v1 `Part.data` carriage and offline digest verifier; a bounded interoperability invitation, not an extension, conformance result, adoption record, or efficiency result

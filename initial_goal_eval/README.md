@@ -53,6 +53,34 @@ denied. A missing receipt, an unknown audit or enforcement status, or an
 unknown capability observation makes the measurement incomplete. Any observed
 access or failed boundary is a noncompensable gate failure.
 
+## Zero-call initial-goal feasibility screen
+
+[`feasibility_kill_screen_v1.py`](feasibility_kill_screen_v1.py) is a
+separately versioned arithmetic gate for the initial-goal raw/JSON/action-state
+comparison. It is not the distinct SGD-20 competitive-reproduction protocol.
+For every declared domain/tokenizer row it requires exact cumulative phase
+vectors at every session length from 1 through 128. The action-state path supplies
+optimistic lower token bounds and maximum safe-success denominators; raw and
+JSON supply pessimistic upper token bounds and minimum safe-success
+denominators. Exact integer cross-multiplication compares the candidate with the
+better baseline bound. Setup and cold comprehension must remain positive. A
+causal-study phase is not forced into endpoint cost; it may be explicitly
+proved zero unless the registered allowed path actually incurs it. Every other
+inclusive phase must likewise have a finite bound or an explicit proved-zero
+vector.
+
+The only results are `impossible`, `not-disproven`, and `invalid`. Equality at
+the 20% threshold is `not-disproven`, which means only that this arithmetic
+screen did not prove impossibility. Missing, unbounded, nonmonotone, relabelled,
+or incompletely registered inputs are `invalid`; no positive efficiency field
+or claim eligibility exists. The screen conditionally trusts caller-frozen
+bound and completeness assertions and does not authenticate their truth.
+
+No real row has been evaluated. This checkout lacks the registered finite
+prompt, dynamic-slot, tokenizer, and allowed-path bound manifests required to
+run the screen without inventing numbers. Current tests are synthetic arithmetic
+and mutation fixtures, with zero provider or model calls.
+
 ## Runtime-to-scorer diagnostic
 
 `study_orchestrator.py` now closes one local execution gap between
@@ -102,6 +130,40 @@ decided only after the primary response. Synthetic fixtures currently construct
 that manifest after observing their scripted branch. A future real runner must
 mint a new, preregisterable branch-slot or superset-manifest contract instead of
 hiding these mismatches or rewriting the frozen v1 method.
+
+## Matched-session three-arm diagnostic
+
+[`matched_session_pilot.py`](matched_session_pilot.py) supplies the next
+provider-neutral execution seam without changing any frozen claim schema. It
+requires four separately prepared messages: the selected raw arm, selected JSON
+arm, optimized Urusilla arm, and the exact baseline selected for a possible
+Urusilla fallback. Raw, JSON, and the Urusilla cold-comprehension session start
+in distinct provider contexts. After comprehension passes, the only hot
+Urusilla request is exactly `PAYLOAD\n<canonical action state>`; the Capsule and
+task prose are not expanded again into that request. Any model-context reset or
+compaction invalidates the continuation, and a used fallback must start from a
+fresh root provider context.
+
+The diagnostic retains host-supplied raw receipts, request and response
+digests, model and settings labels, normalized usage, terminal failures, and
+all declared setup, comprehension, sender, fidelity, router, primary,
+validator, repair, fallback, tool, safety, and judge phases. A failed primary
+remains charged when fallback succeeds. Unknown usage remains unknown. A
+nonzero retry or repair count without a separate record and usage receipt for
+every attempt makes the affected phase and arm total unknown. A separately
+captured judge also requires local `judge_tokens` to be zero, preventing the
+same cost from being booked twice.
+
+These are host-record integrity checks, not authenticated provider evidence.
+Injected preparation, validation, judge, and provider callbacks may have hidden
+calls that the runner cannot observe; request provenance and settings for the
+local sender and fidelity phases are self-reported; no frozen study plan,
+counterbalancing, provider signature, receipt authentication, operator
+independence, or sandbox audit is established. Consequently only explicitly
+named `caller_reported_*` fields may contain diagnostic totals. The
+claim-facing `usage_complete` is always false, inclusive total and safe-task
+metrics are null, and `claim_eligible` is always false. Current tests use
+project-authored fake adapters and perform no provider call.
 
 ### Branch-slot execution-program prerequisite
 
@@ -395,3 +457,22 @@ the local `payload_influenced_output` record check from
 `task_semantics_used`, which is not validated or claim-eligible. Counts and these
 tables remain descriptive contract diagnostics, not an effect-size gate or claim
 evidence.
+
+A separate evaluator-only `/3` matrix validator now closes that local
+per-field shape gap without modifying `/1` or `/2`. For every declared matrix
+field ID it requires six bound calls in a fixed order: schema-valid critical
+A/B scalar flips, a one-scalar semantic-invariant change, exact one-critical-
+scalar ablation, an independently answerable no-payload control, and a shuffled
+control bound to another declared field. It retains wrong answers, false
+refusals, unsafe boundary observations, and unknown totals as explicit local
+gate failures rather than dropping rows. Its summary uses only
+`local_record_*` names and keeps `task_semantics_used` unvalidated.
+
+The `/3` validator still performs no provider call and does not inherit the
+`/2` semantic-field identity envelope. Declared field IDs are therefore not an
+externally complete semantic universe. It also lacks an external chronology
+anchor, blinded calibration/headline seed separation, held-out compositions,
+five-dimensional worst-stratum coverage, authenticated provider receipts,
+independent operation, and a phase-complete study ledger. Passing synthetic
+fixtures proves only that supplied records satisfy this local contract; it
+cannot establish causal use or make any result claim-eligible.

@@ -4,6 +4,51 @@ Status: development strategy, not an evidence report
 North star: a safe, adaptive, general communication language for heterogeneous
 AI agents
 
+## Immediate falsification order
+
+Do not buy statistical power for an architecture that already fails a cheaper
+bound. The next experiments run in this order, and a failed gate stops expansion
+until the failing component changes:
+
+1. **Deterministic 20% viability screen.** Use the conditional arithmetic gate
+   in [`initial_goal_eval/feasibility_kill_screen_v1.py`](initial_goal_eval/feasibility_kill_screen_v1.py).
+   Across explicit session lengths and
+   each retained domain/tokenizer row, compare a conservative lower bound for
+   the complete Urusilla path—including required setup, comprehension,
+   sender, fidelity, routing, receiver, validation, repair, fallback, tool,
+   safety, and judge obligations actually incurred on an allowed endpoint
+   path—with the better admissible raw/JSON bound. A separate causal-study
+   phase may be proved zero when it is not part of that endpoint. If even an oracle
+   sender and router cannot leave room for the frozen 20% threshold, do not call
+   a model. A result can only be `impossible`, `not-disproven`, or `invalid`;
+   `not-disproven` is not positive evidence.
+2. **Perfect-sender receiver ceiling.** On a small staged sample, provide the
+   correct public action state directly and test whether two receiver families
+   can preserve task success while leaving enough token margin for the later
+   sender. Failure kills the current action-state surface, not the general
+   research goal.
+3. **Natural-language sender qualification.** Evaluate the sender and fidelity
+   check on held-out inputs before combining their failures with receiver or
+   router failures. Required parse and fidelity sample sizes and confidence
+   bounds are frozen before calls.
+4. **Provider-backed causal matrix.** Run the six-condition per-field matrix in
+   [`initial_goal_eval/causal_probe_matrix_v3.py`](initial_goal_eval/causal_probe_matrix_v3.py)
+   only after exact provider capture is available. Any critical flip error,
+   invariant change, unsafe acceptance, answerable-no-payload refusal, unknown
+   usage, replay, or prohibited effect stops that cell.
+5. **Exact matched economics.** Use
+   [`initial_goal_eval/matched_session_pilot.py`](initial_goal_eval/matched_session_pilot.py)
+   to compare raw, JSON, and Urusilla only after the earlier gates pass. Expand
+   from 10 to 20 tasks only when the remaining unseen outcomes could still meet
+   the preregistered success and token margins. Claim-facing metrics remain null
+   until provider, callback, chronology, judge, normalization, and independent-
+   operator evidence is authenticated.
+
+Only after those five steps should session-amortization, mixed-domain routing,
+and independent cross-play scale up. Additional codec/tokenizer-only sweeps,
+evolving aliases, website traffic, stars, API-key donations, or bulk posting do
+not substitute for any gate above.
+
 The destination is the source-preserving Internet translation layer in
 [`URUSILLA_INTERNET_LAYER.md`](URUSILLA_INTERNET_LAYER.md): agents should
 eventually be able to exchange typed, auditable projections of any public or

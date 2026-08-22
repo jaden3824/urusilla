@@ -6,6 +6,24 @@ the versioning section of the specification before comparing identifiers.
 
 ## Unreleased
 
+- An initial-goal-specific zero-call feasibility screen now compares complete action-state
+  lower bounds with the better raw/JSON upper cost-per-safe-task bound for every
+  session length from 1 through 128. It emits only `impossible`,
+  `not-disproven`, or `invalid`, binds the exact frozen evaluation reference,
+  and has no positive efficiency or claim field. It is separate from the
+  SGD-20 competitive-reproduction protocol. No real bound row has been run;
+  current coverage is synthetic arithmetic and mutation testing only.
+- Evaluator-only causal matrix `/3` now requires critical A/B flips, semantic
+  invariance, exact critical-field ablation, an independently answerable
+  no-payload control, and a bound cross-field shuffled control for every
+  declared field. A separate matched-session diagnostic executes exact raw,
+  JSON, and direct action-state arms across independent contexts and retains
+  cold comprehension, failed-primary, fallback, safety, and judge phases.
+  Missing per-attempt retry/repair receipts make totals unknown. Both paths use
+  only project-authored fixtures today; provider and callback authentication,
+  independent operation, and claim-facing total-token and safe-task metrics
+  remain absent, so this is not a protocol-version or performance promotion.
+
 - A self-contained one-fetch action-state language-use probe now requires both
   semantic decoding and encoding. Its offline validator distinguishes one
   byte-deterministic `PASS`, a closed `SAFE_FALLBACK`, and semantic or
