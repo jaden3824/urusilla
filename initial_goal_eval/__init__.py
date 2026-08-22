@@ -1,7 +1,9 @@
 """Claim-conservative evaluation contract for the Urusilla initial goal.
 
-The package validates externally produced evidence.  It does not call models,
-run the hybrid runtime, install code at a partner, or create adoption evidence.
+The default package surface validates externally produced evidence and does not
+call models.  The explicitly imported ``study_orchestrator`` diagnostic can run
+an injected hybrid adapter and scorer, but creates no adapter or authority and
+cannot produce claim-eligible or adoption evidence.
 """
 
 from .contract import (

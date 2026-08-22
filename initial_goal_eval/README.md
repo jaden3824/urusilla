@@ -1,9 +1,12 @@
 # Initial-goal evaluation contract
 
-This package is an offline evidence verifier for the Urusilla initial research
-goal. It is separate from Challenge 002 and from the hybrid runtime. It does
-not call a model, execute a tool, install code at a partner, or produce an
-adoption or performance claim.
+The default package surface is an offline evidence verifier for the Urusilla
+initial research goal. It is separate from Challenge 002 and does not call a
+model, execute a tool, install code at a partner, or produce an adoption or
+performance claim. The explicitly imported `study_orchestrator.py` diagnostic
+can invoke a caller-supplied runtime adapter and scorer; it creates
+neither capability, carries no provider credentials or SDK, and remains
+claim-ineligible.
 
 `frozen_method_plan.json` freezes the claim method, thresholds, accounting
 scope, and statistical procedure. It is a method artifact, not an executed
@@ -49,6 +52,54 @@ network, credentials, persistence, spending, and permission expansion are all
 denied. A missing receipt, an unknown audit or enforcement status, or an
 unknown capability observation makes the measurement incomplete. Any observed
 access or failed boundary is a noncompensable gate failure.
+
+## Runtime-to-scorer diagnostic
+
+`study_orchestrator.py` now closes one local execution gap between
+`HybridExecution` and the offline research artifacts. For one prepared hybrid
+task, `run_scored_hybrid_task()` executes the existing direct receiver and its
+actual bounded raw/JSON fallback, binds the runtime ledger, selects only the
+final terminal output, compares all four caller-declared scorer lock labels, and
+invokes the injected scorer exactly once. This comparison neither derives the
+callable's code hash nor authenticates its implementation. It verifies that the
+prepared natural language is the exact final user task-input preimage, then derives the
+task-result and scoring-binding objects from that observation. The returned
+observation is factory-sealed and re-derives terminal fields from the execution,
+so changing the public scoring object and its digest together is rejected. A
+caller-labelled deterministic local scorer can receive a bound `judge` event,
+but its token usage remains unknown because the helper does not authenticate the
+callable or prove that it made no hidden model call. An external-model or failed
+scorer requires a separately captured judge event and cannot be projected by
+this helper. A failed primary call remains
+unknown-cost after a successful fallback, a failed scorer remains null and
+unknown-cost, a terminal no-output failure keeps `output_sha256: null`, and an
+parse, semantic, negative, or preservation observations inconsistent with the
+caller-declared probe flags are rejected.
+
+This is a provider-neutral diagnostic bridge, not a generic study runner or a
+claim gate. Current tests use project-authored fake adapters and scorers. The
+bridge does not create or authenticate external-response records, execute the
+raw/JSON baseline arms, observe a sandbox, prove an operator independent, or
+assemble a complete study. Its task identity and probe flags are not bound to a
+complete frozen study plan, and its result exposes both
+`frozen_plan_bound: false` and `scorer_implementation_authenticated: false`.
+Accordingly, `caller_reported_inclusive_total_tokens` and
+`caller_reported_safely_completed` remain diagnostic fields, while their
+claim-facing counterparts stay null. It
+cannot elevate its own observations to
+`claim_eligible: true` or `goal_total_complete: true`.
+
+The remaining projection gap is structural and is kept explicit. The runtime
+has a separate semantic-verification phase, whereas the frozen trace has no such
+phase; one runtime fallback has both local and receiver events, whereas trace v2
+permits one fallback event per task; and an exact cold direct-request projection
+exists only for the action-state primary, not a raw/JSON runtime fallback.
+Moreover, the current plan freezes an arm manifest whose event list includes
+fallback and validator slots before execution, even though fallback existence is
+decided only after the primary response. Synthetic fixtures currently construct
+that manifest after observing their scripted branch. A future real runner must
+mint a new, preregisterable branch-slot or superset-manifest contract instead of
+hiding these mismatches or rewriting the frozen v1 method.
 
 ## Offline trace assembly
 
