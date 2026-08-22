@@ -199,6 +199,7 @@ class ReceiptStore:
         *,
         kind: str,
         issuer_id: str,
+        diagnostic_issuer_id: str | None,
         binding: Mapping[str, Any],
         found: set[str],
         errors: list[str],
@@ -218,7 +219,10 @@ class ReceiptStore:
         if receipt["kind"] != kind:
             errors.append(f"receipt-kind-mismatch:{digest}")
             valid = False
-        if receipt["issuer_id"] != issuer_id:
+        if receipt["issuer_id"] not in {
+            issuer_id,
+            diagnostic_issuer_id,
+        }:
             errors.append(f"receipt-issuer-mismatch:{digest}")
             valid = False
         if receipt["binding"] != dict(binding):
@@ -691,7 +695,23 @@ class ReceiptStore:
                 return None
         return events[0]
 
-    def validate(self, plan_value: Any, result_value: Any) -> ReceiptValidation:
+    def validate(
+        self,
+        plan_value: Any,
+        result_value: Any,
+        *,
+        diagnostic_issuer_id: str | None = None,
+    ) -> ReceiptValidation:
+        """Validate content bindings without authenticating any issuer.
+
+        ``diagnostic_issuer_id`` is an explicit opt-in for offline assemblers
+        that correctly identify themselves instead of impersonating a frozen
+        operator or auditor. The normal verifier never supplies it, so such a
+        bundle fails the evidence receipt gate by default.
+        """
+
+        if diagnostic_issuer_id is not None:
+            _identifier(diagnostic_issuer_id, "diagnostic_issuer_id")
         plan = _object(plan_value, "plan")
         result = _object(result_value, "result")
         plan_sha256 = sha256_ref(plan)
@@ -761,6 +781,7 @@ class ReceiptStore:
                         digest,
                         kind="usage",
                         issuer_id=operator_id,
+                        diagnostic_issuer_id=diagnostic_issuer_id,
                         binding=binding,
                         found=found,
                         errors=errors,
@@ -875,6 +896,7 @@ class ReceiptStore:
                         digest,
                         kind="scorer",
                         issuer_id=operator_id,
+                        diagnostic_issuer_id=diagnostic_issuer_id,
                         binding=binding,
                         found=found,
                         errors=errors,
@@ -991,6 +1013,7 @@ class ReceiptStore:
                             digest,
                             kind=kind,
                             issuer_id=issuer,
+                            diagnostic_issuer_id=diagnostic_issuer_id,
                             binding=binding,
                             found=found,
                             errors=errors,

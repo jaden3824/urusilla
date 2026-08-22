@@ -33,8 +33,17 @@ from initial_goal_eval.execution_trace import (
     route_decision_sha256,
     task_input_sha256,
 )
+from initial_goal_eval.receipt_store import (
+    RECEIPT_BUNDLE_SCHEMA_V2,
+    ReceiptStore,
+)
 from initial_goal_eval.tests.test_verifier import build_synthetic_fixture
-from initial_goal_eval.trace_assembler import assemble_execution_trace
+from initial_goal_eval.trace_assembler import (
+    ASSEMBLER_DIAGNOSTIC_ISSUER_ID,
+    ASSEMBLY_SCHEMA,
+    assemble_execution_trace,
+)
+from initial_goal_eval.verifier import verify_result
 
 
 def bare(label: str) -> str:
@@ -98,8 +107,11 @@ def make_fixture(
     silence_first: bool = False,
     pre_receiver_fallback: bool = False,
     completed_primary_validation_fallback: bool = False,
+    real_evidence: bool = False,
 ):
     plan, template_result = build_synthetic_fixture()
+    if real_evidence:
+        plan["evidence_boundary"] = "real-independent-evaluation"
     task_inputs_by_session: dict[str, list[dict]] = {}
     for planned in plan["sessions"]:
         task_inputs: list[dict] = []
@@ -804,6 +816,58 @@ class TraceAssemblerTests(unittest.TestCase):
         assembled = assemble_execution_trace(plan, trace, stores)
         self.assertFalse(assembled.claim_eligible)
         self.assertFalse(assembled.value["authentication_complete"])
+        self.assertEqual(assembled.value["schema_version"], ASSEMBLY_SCHEMA)
+        self.assertEqual(
+            ASSEMBLY_SCHEMA, "urusilla-initial-goal-trace-assembly/3"
+        )
+        self.assertIn("receipt_bundle", assembled.value)
+        self.assertNotIn("usage_receipt_bundle", assembled.value)
+        self.assertEqual(
+            assembled.value["receipt_content_validation_mode"],
+            "self-issued-diagnostic",
+        )
+        self.assertEqual(
+            {
+                receipt["issuer_id"]
+                for receipt in assembled.receipt_bundle["receipts"]
+            },
+            {ASSEMBLER_DIAGNOSTIC_ISSUER_ID},
+        )
+        self.assertEqual(
+            assembled.receipt_bundle["schema_version"],
+            RECEIPT_BUNDLE_SCHEMA_V2,
+        )
+        receipt_store = ReceiptStore.from_object(assembled.receipt_bundle)
+        default_validation = receipt_store.validate(plan, assembled.result)
+        self.assertFalse(default_validation.content_consistent)
+        self.assertTrue(
+            any(
+                error.startswith("receipt-issuer-mismatch:")
+                for error in default_validation.errors
+            )
+        )
+        receipt_validation = receipt_store.validate(
+            plan,
+            assembled.result,
+            diagnostic_issuer_id=ASSEMBLER_DIAGNOSTIC_ISSUER_ID,
+        )
+        self.assertTrue(receipt_validation.content_consistent)
+        self.assertTrue(receipt_validation.scorer_output_binding_complete)
+        self.assertTrue(receipt_validation.complete)
+        self.assertTrue(
+            assembled.value["receipt_content_validation"]["complete"]
+        )
+        summary = verify_result(
+            plan,
+            assembled.result,
+            receipt_store=ReceiptStore.from_object(assembled.receipt_bundle),
+        )
+        self.assertFalse(summary["receipt_bundle"]["complete"])
+        self.assertFalse(summary["goal_gate_passed"])
+        self.assertFalse(summary["synthetic_fixture_can_support_external_claim"])
+        self.assertIn(
+            "synthetic-test-only-not-claim-evidence", summary["gate_failures"]
+        )
         self.assertEqual(
             [arm["arm_id"] for arm in assembled.result["records"][0]["arms"]],
             list(ARMS),
@@ -811,6 +875,148 @@ class TraceAssemblerTests(unittest.TestCase):
         failed_arm = assembled.result["records"][0]["arms"][0]
         self.assertFalse(failed_arm["task_results"][0]["task_success"])
         self.assertEqual(sum(e["usage"]["total_tokens"] for e in failed_arm["events"]), 30)
+
+    def test_self_issued_bundle_fails_real_evidence_authentication_boundary(self):
+        plan, trace, stores = make_fixture(real_evidence=True)
+        assembled = assemble_execution_trace(plan, trace, stores)
+        store = ReceiptStore.from_object(assembled.receipt_bundle)
+
+        default_validation = store.validate(plan, assembled.result)
+        self.assertFalse(default_validation.complete)
+        self.assertTrue(
+            any(
+                error.startswith("receipt-issuer-mismatch:")
+                for error in default_validation.errors
+            )
+        )
+        diagnostic_validation = store.validate(
+            plan,
+            assembled.result,
+            diagnostic_issuer_id=ASSEMBLER_DIAGNOSTIC_ISSUER_ID,
+        )
+        self.assertTrue(diagnostic_validation.complete)
+
+        summary = verify_result(
+            plan,
+            assembled.result,
+            receipt_store=store,
+        )
+        self.assertFalse(summary["receipt_bundle"]["complete"])
+        self.assertFalse(summary["evidence_authentication"]["complete"])
+        self.assertFalse(summary["goal_gate_passed"])
+        self.assertIn(
+            "receipt-bundle-incomplete-or-unvalidated",
+            summary["gate_failures"],
+        )
+        self.assertIn(
+            "authenticated-provenance-not-established",
+            summary["gate_failures"],
+        )
+
+    def test_assembled_v2_score_rejects_unsynchronized_output_text_mutation(self):
+        plan, trace, stores = make_fixture()
+        assembled = assemble_execution_trace(plan, trace, stores)
+        bundle = deepcopy(assembled.receipt_bundle)
+        result = deepcopy(assembled.result)
+        scorer = next(
+            receipt
+            for receipt in bundle["receipts"]
+            if receipt["kind"] == "scorer"
+            and receipt["source_payload"]["provider_output"]["kind"]
+            == "provider-text"
+        )
+        scorer["source_payload"]["provider_output"]["text"] = '{"forged":true}'
+        scorer["source_sha256"] = sha256_ref(scorer["source_payload"])
+        replacement_digest = sha256_ref(scorer)
+        binding = scorer["binding"]
+        record = next(
+            item
+            for item in result["records"]
+            if item["session_id"] == binding["session_id"]
+        )
+        arm = next(
+            item for item in record["arms"] if item["arm_id"] == binding["arm_id"]
+        )
+        task_result = next(
+            item
+            for item in arm["task_results"]
+            if item["task_id"] == binding["task"]["task_id"]
+        )
+        task_result["scorer_receipt_sha256"] = replacement_digest
+
+        validation = ReceiptStore.from_object(bundle).validate(
+            plan,
+            result,
+            diagnostic_issuer_id=ASSEMBLER_DIAGNOSTIC_ISSUER_ID,
+        )
+        self.assertFalse(validation.content_consistent)
+        self.assertTrue(
+            any(
+                error.startswith("scorer-v2-provider-output-digest-mismatch:")
+                for error in validation.errors
+            )
+        )
+
+    def test_coordinated_rehash_is_content_consistent_but_not_authenticated(self):
+        plan, trace, stores = make_fixture(real_evidence=True)
+        assembled = assemble_execution_trace(plan, trace, stores)
+        bundle = deepcopy(assembled.receipt_bundle)
+        result = deepcopy(assembled.result)
+        record = result["records"][0]
+        arm = record["arms"][0]
+        task_result = arm["task_results"][0]
+        event = next(
+            item
+            for item in arm["events"]
+            if item["task_id"] == task_result["task_id"]
+        )
+        usage_receipt = next(
+            item
+            for item in bundle["receipts"]
+            if sha256_ref(item) == event["usage_receipt_sha256"]
+        )
+        scorer_receipt = next(
+            item
+            for item in bundle["receipts"]
+            if sha256_ref(item) == task_result["scorer_receipt_sha256"]
+        )
+
+        forged_text = '{"forged":true}'
+        forged_output_sha256 = sha256_ref(
+            {"provider_output_text": forged_text}
+        )
+        event["output_sha256"] = forged_output_sha256
+        usage_receipt["binding"]["output_sha256"] = forged_output_sha256
+        forged_usage_receipt_sha256 = sha256_ref(usage_receipt)
+        event["usage_receipt_sha256"] = forged_usage_receipt_sha256
+        for terminal in (
+            scorer_receipt["binding"]["terminal_event"],
+            scorer_receipt["source_payload"]["terminal_event"],
+        ):
+            terminal["output_sha256"] = forged_output_sha256
+            terminal["usage_receipt_sha256"] = forged_usage_receipt_sha256
+        provider_output = scorer_receipt["source_payload"]["provider_output"]
+        provider_output["text"] = forged_text
+        provider_output["output_sha256"] = forged_output_sha256
+        scorer_receipt["source_sha256"] = sha256_ref(
+            scorer_receipt["source_payload"]
+        )
+        task_result["scorer_receipt_sha256"] = sha256_ref(scorer_receipt)
+
+        store = ReceiptStore.from_object(bundle)
+        diagnostic = store.validate(
+            plan,
+            result,
+            diagnostic_issuer_id=ASSEMBLER_DIAGNOSTIC_ISSUER_ID,
+        )
+        self.assertTrue(diagnostic.complete)
+        self.assertFalse(store.validate(plan, result).complete)
+        summary = verify_result(plan, result, receipt_store=store)
+        self.assertFalse(summary["goal_gate_passed"])
+        self.assertIn(
+            "authenticated-provenance-not-established",
+            summary["gate_failures"],
+        )
 
     def test_unknown_provider_usage_fails_instead_of_becoming_zero(self):
         plan, trace, stores = make_fixture(unavailable_first=True)
@@ -966,11 +1172,33 @@ class TraceAssemblerTests(unittest.TestCase):
         self.assertEqual(target["scored_output_event_sequence"], None)
         self.assertEqual(target["output_sha256"], CANONICAL_SILENCE_OUTPUT_SHA256)
         self.assertEqual(target["terminal_status"], SILENCE_TERMINAL_STATUS)
-        self.assertTrue(
+        self.assertFalse(
             any(
-                "receipt-bundle v2 scorer-output receipts" in blocker
+                "does not emit receipt-bundle v2" in blocker
                 for blocker in assembled.value["claim_blockers"]
             )
+        )
+        scorer = next(
+            receipt
+            for receipt in assembled.receipt_bundle["receipts"]
+            if receipt["kind"] == "scorer"
+            and receipt["binding"]["session_id"]
+            == plan["sessions"][0]["session_id"]
+            and receipt["binding"]["arm_id"] == "hybrid-router"
+            and receipt["binding"]["task"]["task_id"] == task_id
+        )
+        self.assertEqual(
+            scorer["source_payload"]["provider_output"]["kind"],
+            "canonical-silence",
+        )
+        self.assertTrue(
+            ReceiptStore.from_object(assembled.receipt_bundle)
+            .validate(
+                plan,
+                assembled.result,
+                diagnostic_issuer_id=ASSEMBLER_DIAGNOSTIC_ISSUER_ID,
+            )
+            .complete
         )
 
     def test_silence_rejects_receiver_or_fallback_events(self):

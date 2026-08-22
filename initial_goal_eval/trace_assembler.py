@@ -3,10 +3,12 @@
 This module performs no provider call and grants no execution or claim
 authority.  It consumes already validated ``ExternalResponseStore`` objects,
 derives every provider event usage field without mapping an unknown to zero,
-and emits RESULT-compatible matched-session records plus content-only usage
-receipts.  Provider normalization, signatures, scorer receipts, sandbox
-receipts, and independent-operator authentication remain deliberately out of
-scope and fail closed in the existing verifier.
+and emits RESULT-compatible matched-session records plus a self-issued
+receipt-bundle v2 whose content is checked only in an explicit diagnostic
+mode. Every receipt identifies this assembler as its actual generator, so the
+normal evidence verifier rejects it. Provider normalization, signatures,
+independent sandbox observation, and independent-operator authentication
+remain deliberately out of scope and fail closed in the existing verifier.
 """
 
 from __future__ import annotations
@@ -35,18 +37,27 @@ from .execution_trace import (
     SILENCE_TERMINAL_STATUS,
     validate_execution_trace,
 )
-from .receipt_store import RECEIPT_BUNDLE_SCHEMA, RECEIPT_SCHEMA
+from .receipt_store import (
+    RECEIPT_BUNDLE_SCHEMA_V2,
+    RECEIPT_SCHEMA,
+    SCORER_OUTPUT_RECEIPT_SCHEMA,
+    USAGE_RECEIPT_SCHEMA_V2,
+    ReceiptStore,
+)
 from .verifier import _validate_session_result, _validate_usage
 
 
-ASSEMBLY_SCHEMA = "urusilla-initial-goal-trace-assembly/2"
+ASSEMBLY_SCHEMA = "urusilla-initial-goal-trace-assembly/3"
+ASSEMBLER_DIAGNOSTIC_ISSUER_ID = "urusilla-offline-trace-assembler"
 ASSEMBLY_BLOCKERS = (
     "provider receipts are content-bound but not independently re-normalized",
+    "provider response preimages are not externally resolved; coordinated "
+    "rehashing remains an authentication failure",
     "deterministic local sender/router outputs are content-bound but not "
     "independently replayed",
+    "frozen task-scorer outcomes are content-bound but not independently replayed",
     "provider, operator, and auditor signatures are not authenticated",
-    "the offline assembler does not emit receipt-bundle v2 scorer-output receipts",
-    "only legacy usage receipts are assembled; scorer and sandbox receipts remain external",
+    "self-issued sandbox receipts are not independent observations",
     "v2 scorer-output content bindings do not authenticate provider or scorer issuers",
     "post-receiver semantic validation is content-bound but not independently "
     "replayed or authenticated",
@@ -192,14 +203,85 @@ def _usage_receipt(
     }
     source = dict(source_payload)
     receipt = {
-        "schema_version": RECEIPT_SCHEMA,
+        "schema_version": USAGE_RECEIPT_SCHEMA_V2,
         "kind": "usage",
-        "issuer_id": session["operator_id"],
+        "issuer_id": ASSEMBLER_DIAGNOSTIC_ISSUER_ID,
         "binding": binding,
         "source_payload": source,
         "source_sha256": sha256_ref(source),
     }
     return receipt
+
+
+def _generic_receipt(
+    *,
+    kind: str,
+    issuer_id: str,
+    binding: Mapping[str, Any],
+    artifact_sha256: str,
+    observation: Mapping[str, Any],
+) -> dict[str, Any]:
+    source = {
+        "artifact_sha256": artifact_sha256,
+        "observation": _detach(observation),
+    }
+    return {
+        "schema_version": RECEIPT_SCHEMA,
+        "kind": kind,
+        "issuer_id": issuer_id,
+        "binding": _detach(binding),
+        "source_payload": source,
+        "source_sha256": sha256_ref(source),
+    }
+
+
+def _scorer_receipt(
+    *,
+    plan: Mapping[str, Any],
+    session: Mapping[str, Any],
+    arm_id: str,
+    execution_manifest_sha256: str,
+    task: Mapping[str, Any],
+    task_result: Mapping[str, Any],
+    terminal_event: Mapping[str, Any],
+    provider_output: Mapping[str, Any],
+) -> dict[str, Any]:
+    observed = _detach(task_result)
+    observed.pop("scorer_receipt_sha256", None)
+    scorer_locks = {
+        name: plan["artifact_locks"][name]
+        for name in (
+            "task_scorer",
+            "parse_scorer",
+            "semantic_scorer",
+            "negative_scorer",
+        )
+    }
+    binding = {
+        "study_id": plan["study_id"],
+        "plan_sha256": sha256_ref(plan),
+        "session_id": session["session_id"],
+        "arm_id": arm_id,
+        "execution_manifest_sha256": execution_manifest_sha256,
+        "task": _detach(task),
+        "scorer_locks": scorer_locks,
+        "observed": observed,
+        "terminal_event": _detach(terminal_event),
+    }
+    source = {
+        "artifact_sha256": plan["artifact_locks"]["task_scorer"],
+        "observation": observed,
+        "terminal_event": _detach(terminal_event),
+        "provider_output": _detach(provider_output),
+    }
+    return {
+        "schema_version": SCORER_OUTPUT_RECEIPT_SCHEMA,
+        "kind": "scorer",
+        "issuer_id": ASSEMBLER_DIAGNOSTIC_ISSUER_ID,
+        "binding": binding,
+        "source_payload": source,
+        "source_sha256": sha256_ref(source),
+    }
 
 
 @dataclass(frozen=True)
@@ -217,8 +299,14 @@ class TraceAssembly:
         return _detach(self._value["result"])
 
     @property
+    def receipt_bundle(self) -> Mapping[str, Any]:
+        return _detach(self._value["receipt_bundle"])
+
+    @property
     def usage_receipt_bundle(self) -> Mapping[str, Any]:
-        return _detach(self._value["usage_receipt_bundle"])
+        """Return the self-issued v2 bundle; retained as a compatibility alias."""
+
+        return self.receipt_bundle
 
     @property
     def claim_eligible(self) -> bool:
@@ -236,6 +324,9 @@ def assemble_execution_trace(
     plan = plan_value
     trace = validate_execution_trace(plan_value, trace_value)
     model_by_family = {item["family"]: item for item in plan["receiver_models"]}
+    operator_by_id = {
+        item["operator_id"]: item for item in plan["operators"]
+    }
 
     stores: dict[str, ExternalResponseStore] = {}
     for store in external_stores:
@@ -267,9 +358,11 @@ def assemble_execution_trace(
         assembled_arms: list[dict[str, Any]] = []
         for arm_id, arm in zip(ARMS, session["arms"]):
             assembled_events: list[dict[str, Any]] = []
+            assembled_task_results = _detach(arm["task_results"])
             call_id_by_sequence: dict[int, str | None] = {}
             status_by_sequence: dict[int, str] = {}
             response_sha256_by_sequence: dict[int, str | None] = {}
+            output_text_by_sequence: dict[int, str | None] = {}
             for event_spec in arm["events"]:
                 source = event_spec["source"]
                 source_kind = source["kind"]
@@ -467,6 +560,13 @@ def assemble_execution_trace(
                     }
                     event_status = "completed"
 
+                source_payload["provider_response_sha256"] = (
+                    provider_response_sha256
+                )
+                source_payload["provider_terminal_status"] = (
+                    event_status if source_kind == "external-response" else None
+                )
+
                 event = {
                     "sequence": event_spec["sequence"],
                     "phase": event_spec["phase"],
@@ -495,6 +595,9 @@ def assemble_execution_trace(
                 status_by_sequence[event["sequence"]] = event_status
                 response_sha256_by_sequence[event["sequence"]] = (
                     provider_response_sha256
+                )
+                output_text_by_sequence[event["sequence"]] = (
+                    output_text if source_kind == "external-response" else None
                 )
 
             if arm_id == "hybrid-router":
@@ -710,6 +813,175 @@ def assemble_execution_trace(
                     }
                 )
 
+            task_by_id = {task["task_id"]: task for task in planned["tasks"]}
+            for binding, task_result in zip(
+                arm["scoring_bindings"], assembled_task_results
+            ):
+                scored_sequence = binding["scored_output_event_sequence"]
+                if (
+                    arm_id == "hybrid-router"
+                    and task_result["route"]["selected_mode"] == "silence"
+                ):
+                    terminal_event = {
+                        "terminal_kind": "canonical-silence",
+                        "event_sequence": None,
+                        "phase": "silence",
+                        "task_id": task_result["task_id"],
+                        "input_sha256": None,
+                        "output_sha256": CANONICAL_SILENCE_OUTPUT_SHA256,
+                        "usage_receipt_sha256": None,
+                        "usage": None,
+                        "provider_response_sha256": None,
+                        "terminal_status": SILENCE_TERMINAL_STATUS,
+                    }
+                    provider_output = {
+                        "kind": "canonical-silence",
+                        "encoding": None,
+                        "text": None,
+                        "output_sha256": CANONICAL_SILENCE_OUTPUT_SHA256,
+                        "provider_response_sha256": None,
+                    }
+                else:
+                    if scored_sequence is None:
+                        raise VerificationError(
+                            "non-silence scorer receipt lacks a terminal event"
+                        )
+                    terminal = by_sequence[scored_sequence]
+                    provider_response_sha256 = response_sha256_by_sequence[
+                        scored_sequence
+                    ]
+                    if provider_response_sha256 is None:
+                        raise VerificationError(
+                            "scored receiver output lacks its provider response digest"
+                        )
+                    terminal_event = {
+                        "terminal_kind": "provider-response",
+                        "event_sequence": terminal["sequence"],
+                        "phase": terminal["phase"],
+                        "task_id": terminal["task_id"],
+                        "input_sha256": terminal["input_sha256"],
+                        "output_sha256": terminal["output_sha256"],
+                        "usage_receipt_sha256": terminal[
+                            "usage_receipt_sha256"
+                        ],
+                        "usage": terminal["usage"],
+                        "provider_response_sha256": provider_response_sha256,
+                        "terminal_status": status_by_sequence[scored_sequence],
+                    }
+                    output_text = output_text_by_sequence[scored_sequence]
+                    if output_text is None:
+                        if status_by_sequence[scored_sequence] == "completed":
+                            raise VerificationError(
+                                "completed scored provider call lacks exact output text"
+                            )
+                        provider_output = {
+                            "kind": "provider-no-output",
+                            "encoding": None,
+                            "text": None,
+                            "output_sha256": None,
+                            "provider_response_sha256": provider_response_sha256,
+                        }
+                    else:
+                        provider_output = {
+                            "kind": "provider-text",
+                            "encoding": "utf-8",
+                            "text": output_text,
+                            "output_sha256": terminal["output_sha256"],
+                            "provider_response_sha256": provider_response_sha256,
+                        }
+                scorer_receipt = _scorer_receipt(
+                    plan=plan,
+                    session=session,
+                    arm_id=arm_id,
+                    execution_manifest_sha256=arm[
+                        "execution_manifest_sha256"
+                    ],
+                    task=task_by_id[task_result["task_id"]],
+                    task_result=task_result,
+                    terminal_event=terminal_event,
+                    provider_output=provider_output,
+                )
+                task_result["scorer_receipt_sha256"] = sha256_ref(
+                    scorer_receipt
+                )
+                receipts.append(scorer_receipt)
+
+            assembled_sandbox_evidence = _detach(arm["sandbox_evidence"])
+            for entry in assembled_sandbox_evidence:
+                common = {
+                    "study_id": plan["study_id"],
+                    "plan_sha256": sha256_ref(plan),
+                    "session_id": session["session_id"],
+                    "arm_id": arm_id,
+                    "role": entry["role"],
+                    "execution_operator_id": session["operator_id"],
+                    "boundary_auditor_id": planned["boundary_auditor_id"],
+                    "policy_sha256": entry["policy_sha256"],
+                    "enforcement_profile_sha256": entry[
+                        "enforcement_profile_sha256"
+                    ],
+                    "denied_capability_observations": entry[
+                        "denied_capability_observations"
+                    ],
+                }
+                receipt_specs = (
+                    (
+                        "enforcement_receipt_sha256",
+                        "sandbox-enforcement",
+                        {**common, "status": entry["enforcement_status"]},
+                        entry["enforcement_profile_sha256"],
+                        {
+                            "status": entry["enforcement_status"],
+                            "denied_capability_observations": entry[
+                                "denied_capability_observations"
+                            ],
+                        },
+                    ),
+                    (
+                        "operator_attestation_sha256",
+                        "operator-attestation",
+                        {**common, "session_attestation": session["attestation"]},
+                        operator_by_id[session["operator_id"]][
+                            "attestation_sha256"
+                        ],
+                        {"session_attestation": session["attestation"]},
+                    ),
+                    (
+                        "independent_audit_receipt_sha256",
+                        "independent-audit",
+                        {
+                            **common,
+                            "independent_audit_protocol_sha256": entry[
+                                "independent_audit_protocol_sha256"
+                            ],
+                            "status": entry["independent_audit_status"],
+                        },
+                        entry["independent_audit_protocol_sha256"],
+                        {
+                            "status": entry["independent_audit_status"],
+                            "denied_capability_observations": entry[
+                                "denied_capability_observations"
+                            ],
+                        },
+                    ),
+                )
+                for (
+                    field,
+                    kind,
+                    receipt_binding,
+                    artifact_sha256,
+                    observation,
+                ) in receipt_specs:
+                    receipt = _generic_receipt(
+                        kind=kind,
+                        issuer_id=ASSEMBLER_DIAGNOSTIC_ISSUER_ID,
+                        binding=receipt_binding,
+                        artifact_sha256=artifact_sha256,
+                        observation=observation,
+                    )
+                    entry[field] = sha256_ref(receipt)
+                    receipts.append(receipt)
+
             coverage = _coverage(
                 assembled_events,
                 zero_phases=arm["zero_token_phases"],
@@ -725,8 +997,8 @@ def assemble_execution_trace(
                     "disposition": arm["disposition"],
                     "events": assembled_events,
                     "scope_coverage": coverage,
-                    "sandbox_evidence": arm["sandbox_evidence"],
-                    "task_results": arm["task_results"],
+                    "sandbox_evidence": assembled_sandbox_evidence,
+                    "task_results": assembled_task_results,
                 }
             )
 
@@ -763,14 +1035,28 @@ def assemble_execution_trace(
         "result_status": "completed",
         "records": records,
         "notes": [
-            "Offline provider-neutral assembly only; authentication remains fail-closed."
+            "Offline provider-neutral assembly only; authentication remains fail-closed.",
+            "Receipt-bundle v2 proves internal content consistency only; issuer "
+            "and sandbox assertions remain unauthenticated, and scorer outcomes "
+            "are not replayed.",
         ],
     }
-    usage_receipt_bundle = {
-        "schema_version": RECEIPT_BUNDLE_SCHEMA,
+    receipt_bundle = {
+        "schema_version": RECEIPT_BUNDLE_SCHEMA_V2,
         "plan_sha256": sha256_ref(plan),
         "receipts": receipts,
     }
+    receipt_validation = ReceiptStore.from_object(receipt_bundle).validate(
+        plan,
+        result,
+        diagnostic_issuer_id=ASSEMBLER_DIAGNOSTIC_ISSUER_ID,
+    )
+    if not receipt_validation.complete:
+        details = "; ".join(receipt_validation.errors[:3])
+        raise VerificationError(
+            "assembled receipt-bundle v2 did not close its diagnostic content gates"
+            + (f": {details}" if details else "")
+        )
     external_capture_metadata.sort(
         key=lambda item: (item["bundle_sha256"], item["bundle_record_sequence"])
     )
@@ -794,13 +1080,16 @@ def assemble_execution_trace(
         "post_receiver_validations": post_receiver_validations,
         "scoring_targets": scoring_targets,
         "result": result,
-        "usage_receipt_bundle": usage_receipt_bundle,
+        "receipt_bundle": receipt_bundle,
+        "receipt_content_validation_mode": "self-issued-diagnostic",
+        "receipt_content_validation": receipt_validation.to_object(),
     }
     core["assembly_sha256"] = sha256_ref(core)
     return TraceAssembly(_detach(core))
 
 
 __all__ = [
+    "ASSEMBLER_DIAGNOSTIC_ISSUER_ID",
     "ASSEMBLY_BLOCKERS",
     "ASSEMBLY_SCHEMA",
     "TraceAssembly",

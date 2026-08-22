@@ -14,10 +14,18 @@ the versioning section of the specification before comparing identifiers.
 - Website CI verifies byte parity with the full-commit-pinned task, validates
   its embedded response contract and authority boundary, and builds pinned
   dependency versions with no high-severity advisories.
-- Internal initial-goal TRACE, arm-manifest, assembly, and receipt evidence
-  formats now have fail-closed v2 paths for exact scored-output binding,
-  provider-response replay detection, canonical silence, explicit no-output
-  failures, and completed-primary semantic validation before fallback.
+- Internal initial-goal TRACE, arm-manifest, and receipt evidence formats have
+  fail-closed v2 paths for exact scored-output binding, provider-response
+  replay detection, canonical silence, explicit no-output failures, and
+  completed-primary semantic validation before fallback. Evaluator-only
+  assembly v3 now connects those captures to a complete, self-issued v2
+  receipt bundle and fails unless its local diagnostic content gates close.
+  Every generated receipt identifies the offline assembler as its actual
+  issuer, so the normal evidence verifier rejects the bundle by default. It
+  binds recorded scorer outcomes and wraps declared sandbox-evidence slots
+  without replaying the scorer, externally resolving provider-response
+  preimages, or independently observing the sandbox; this authenticates neither
+  operators, auditors, nor independent execution.
 - A documentation-only append-only evidence transparency-log and future
   website/API design is available; no live log, domain, or submission service
   is deployed.
