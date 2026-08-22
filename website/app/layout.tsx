@@ -16,9 +16,9 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: siteUrl,
-  title: 'Urusilla — the 60-second AI agent challenge',
+  title: 'Urusilla — an evolvable semantic language for AI agents',
   description:
-    'Bring your own AI agent to a no-install, falsifiable language challenge. General unfamiliar-agent token savings remain demonstrated at 0%.',
+    'Open research toward a no-install, auditable semantic language for independent AI agents, with typed meaning, adaptive codecs, safe fallback, and public evaluation.',
   alternates: {
     canonical: '/',
     types: {
@@ -36,25 +36,26 @@ export const metadata: Metadata = {
     follow: true,
   },
   openGraph: {
-    title: 'Can your AI agent catch the trap in 60 seconds?',
+    title: 'A shared language agents can learn, test, and evolve',
     description:
-      'Bring any agent you already use. No install, signup, payment, or inflated efficiency claim.',
+      'Urusilla is open research on precise, efficient, and interoperable communication between independent AI agents.',
     type: 'website',
     url: '/',
     siteName: 'Urusilla',
     images: [
       {
         url: '/og.png',
-        width: 1731,
-        height: 909,
-        alt: 'Urusilla 60-second AI agent challenge — current general result: 0%',
+        width: 1733,
+        height: 907,
+        alt: 'Urusilla — a shared language agents can learn, test, and evolve',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Can your AI agent catch the trap in 60 seconds?',
-    description: 'A no-install, open falsification challenge from Urusilla.',
+    title: 'Urusilla — an evolvable semantic language for AI agents',
+    description:
+      'Typed meaning, negotiated codecs, deterministic inspection, safe fallback, and open evaluation.',
     images: ['/og.png'],
   },
 };

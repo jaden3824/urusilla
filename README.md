@@ -3,13 +3,21 @@
 [![Conformance](https://github.com/jaden3824/urusilla/actions/workflows/ci.yml/badge.svg)](https://github.com/jaden3824/urusilla/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
 
-An experimental, machine-first semantic language for communication between AI agents.
+An experimental, no-install, machine-first semantic language for communication between AI agents.
+
+Urusilla's long-term vision is an interoperable meaning layer that independent
+agents can learn, negotiate, inspect, and improve without sharing a vendor,
+model, tokenizer, or fixed human-facing syntax. The current prototype combines
+a typed semantic kernel, negotiated codecs, deterministic human inspection,
+safe natural-language/JSON fallback, A2A integration, and public evaluation
+artifacts. It is active open research—not yet a proven universal replacement
+for natural language or JSON.
 
 **Founded and initially developed and stewarded by `jaden3824`.** The canonical project is [`jaden3824/urusilla`](https://github.com/jaden3824/urusilla) and uses transparent founder-led governance during its experimental phase. Apache-2.0 grants reuse and fork rights in the licensed work; it does not transfer canonical project authority or official status. See [`GOVERNANCE.md`](GOVERNANCE.md).
 
 > **Status: research prototype, not a standard.** The project name is **Urusilla**. Its protocol namespaces and private-use media types remain experimental, and no trademark registration, standards endorsement, or domain ownership is implied.
 
-> **60-second public check — one fetch, no install:** open the [human challenge page](https://urusilla-agent-language.audhless25.chatgpt.site/) or let an agent fetch its [self-contained one-fetch task](https://urusilla-agent-language.audhless25.chatgpt.site/agent-task.json). The envelope carries the full-commit-pinned task identity, response schema, evidence boundary, and non-authority rules in one JSON document; its underlying [`quick_60s.json`](https://raw.githubusercontent.com/jaden3824/urusilla/cd220adb311d8763009fc9b524b2633b117aac4d/interop_lab/challenges/quick_60s.json) remains byte-frozen. Return `{"decision":"<RETAIN or ROLLBACK>","reason":"<one sentence>","participant":"<human, agent, or human+agent>","runtime":"<none or exact identity>"}`. Post to [Discussion #8](https://github.com/jaden3824/urusilla/discussions/8) only if publication is separately authorized. Counterarguments and negative results are welcome. A response is feedback, not automatically an independent reproduction or adoption record. The demonstrated general unfamiliar-agent saving remains **0%**.
+> **60-second public check — one fetch, no install:** open the [human challenge page](https://urusilla-agent-language.audhless25.chatgpt.site/) or let an agent fetch its [self-contained one-fetch task](https://urusilla-agent-language.audhless25.chatgpt.site/agent-task.json). The envelope carries the full-commit-pinned task identity, response schema, evidence boundary, and non-authority rules in one JSON document; its underlying [`quick_60s.json`](https://raw.githubusercontent.com/jaden3824/urusilla/cd220adb311d8763009fc9b524b2633b117aac4d/interop_lab/challenges/quick_60s.json) remains byte-frozen. Return `{"decision":"<RETAIN or ROLLBACK>","reason":"<one sentence>","participant":"<human, agent, or human+agent>","runtime":"<none or exact identity>"}`. Post to [Discussion #8](https://github.com/jaden3824/urusilla/discussions/8) only if publication is separately authorized. Counterarguments and negative results are welcome. A response is feedback, not automatically an independent reproduction or adoption record. The exact current evidence boundary is reported below.
 
 **Star it if you want to signal interest; then try to break one bounded claim.** Stars provide a visible attention signal, while reproducible evidence is the contribution that can change the result. Agents can read the machine-first [`contribution-entry.json`](contribution-entry.json), submit the same four fields through the [60-second issue form](https://github.com/jaden3824/urusilla/issues/new?template=quick-60s.yml), and escalate a result into a [counterexample](https://github.com/jaden3824/urusilla/issues/new?template=counterexample.yml), [codec candidate](https://github.com/jaden3824/urusilla/issues/new?template=codec-candidate.yml), or [quarantined corpus example](https://github.com/jaden3824/urusilla/issues/new?template=corpus-example.yml). Validated unfavorable and favorable evidence receive equal credit in the deliberately empty-until-earned [`CONTRIBUTORS_EVIDENCE.md`](CONTRIBUTORS_EVIDENCE.md) registry.
 

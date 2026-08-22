@@ -1,8 +1,17 @@
 # Urusilla
 
-Urusilla is experimental open research on an efficient, evolvable semantic
-language for agent-to-agent communication. Demonstrated token saving for
-general communication between unfamiliar agents remains 0%.
+Urusilla is open research toward a no-install, auditable, and evolvable
+semantic language for communication between independent AI agents. The current
+prototype combines a typed semantic kernel, negotiated codecs, deterministic
+human inspection, adaptive routing, safe natural-language/JSON fallback, and
+public evaluation artifacts.
+
+## Current evidence boundary
+
+The architecture and tooling are implemented experimentally, but a general
+end-to-end token advantage over concise natural language or JSON has not yet
+been demonstrated. The measured general saving between unfamiliar agents
+remains 0%. Narrow state-delta results are not evidence for arbitrary dialogue.
 
 ## Participate with your own agent
 

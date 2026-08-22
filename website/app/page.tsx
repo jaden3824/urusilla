@@ -37,7 +37,7 @@ const structuredData = {
     url: 'https://github.com/jaden3824',
   },
   description:
-    'Experimental open research on an efficient, evolvable semantic language for AI-agent communication.',
+    'Open research toward a no-install, auditable, and evolvable semantic language for communication between independent AI agents.',
   mainEntityOfPage: siteUrl,
   keywords: [
     'AI agents',
@@ -71,34 +71,44 @@ export default function Home() {
 
       <section className="hero shell" id="top">
         <div className="hero-copy">
-          <p className="eyebrow"><span className="pulse" /> Open agent-language experiment</p>
-          <h1>Can your AI agent<br />catch the trap in <em>60 seconds?</em></h1>
+          <p className="eyebrow"><span className="pulse" /> Open semantic interlingua research</p>
+          <h1>A shared language<br />agents can <em>evolve.</em></h1>
           <p className="hero-lede">
-            Bring any agent or runtime you already use. No Urusilla-specific
-            agent, plugin, executable, model weights, signup, or payment.
+            Urusilla is building a no-install, auditable semantic layer for
+            independent AI agents: typed meaning, negotiated codecs,
+            deterministic inspection, and safe fallback when a specialized
+            representation does not help.
           </p>
           <div className="hero-actions">
-            <AgentLauncher />
-            <a className="button button-secondary" href={issueFormUrl}>
-              Post result on GitHub <span aria-hidden="true">↗</span>
+            <AgentLauncher label="Try the live agent test" />
+            <a
+              className="button button-secondary"
+              href="https://github.com/jaden3824/urusilla"
+            >
+              Explore the open research <span aria-hidden="true">↗</span>
             </a>
           </div>
           <p className="microcopy">
-            One tap opens your device share menu. Where Web Share is unavailable,
-            the exact frozen task is placed on your clipboard automatically.
-            Public GitHub submission is a separate, sign-in-required action.
+            Today the project includes a typed semantic kernel, deterministic
+            validators, adaptive routing, human-readable inspection, and public
+            falsification paths. It is experimental—not yet a proven replacement
+            for general natural-language or JSON communication.
           </p>
           <a className="machine-link" href="/agent-task.json">
             Agent or crawler? Read the self-contained one-fetch task <span aria-hidden="true">→</span>
           </a>
         </div>
 
-        <aside className="status-card" aria-label="Current evidence status">
-          <div className="status-label">Current evidence boundary</div>
-          <div className="status-number">0<span>%</span></div>
-          <p>demonstrated token saving for general communication between unfamiliar agents</p>
+        <aside className="status-card" aria-label="Current project state">
+          <div className="status-label">Language version · experimental</div>
+          <div className="status-number status-version">0.1.0</div>
+          <p>experimental semantic core, reference implementations, public evals, and safe adaptive fallback</p>
           <div className="status-rule" />
-          <p className="status-note">Not a breakthrough claim. Not an adoption claim. A public baseline to falsify.</p>
+          <p className="status-note">
+            The vision is broad; the evidence remains bounded. General
+            end-to-end token advantage has not yet been demonstrated, and the
+            current measured general saving remains 0%.
+          </p>
         </aside>
       </section>
 
@@ -264,7 +274,7 @@ export default function Home() {
 
       <footer className="footer shell">
         <span>Urusilla · experimental open research</span>
-        <span>Apache-2.0 · Current general result: 0%</span>
+        <span>Apache-2.0 · Vision, implementation, and evidence kept distinct</span>
       </footer>
     </main>
   );

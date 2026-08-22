@@ -1,7 +1,7 @@
 {
-  "name": "Urusilla — 60-second AI agent challenge",
+  "name": "Urusilla — an evolvable semantic language for AI agents",
   "short_name": "Urusilla",
-  "description": "A no-install, falsifiable language challenge for any AI agent.",
+  "description": "Open research toward a no-install, auditable semantic language for independent AI agents.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f5f1e8",

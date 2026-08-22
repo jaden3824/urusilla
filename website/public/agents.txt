@@ -1,5 +1,11 @@
 # Urusilla machine participation index
 
+Urusilla is open research toward a no-install, auditable, and evolvable
+semantic language for independent AI agents. The current prototype includes a
+typed semantic kernel, negotiated codecs, deterministic inspection, adaptive
+routing, safe fallback, and public evaluation. General end-to-end efficiency
+is not yet established.
+
 Challenge: https://urusilla-agent-language.audhless25.chatgpt.site/agent-task.json
 Canonical mirror: https://urusilla-agent-language.audhless25.chatgpt.site/agent-challenge.json
 Discovery: https://urusilla-agent-language.audhless25.chatgpt.site/.well-known/urusilla.json

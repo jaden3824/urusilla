@@ -44,6 +44,7 @@ button { font: inherit; }
 .status-label { color: #adb0b8; font: 600 11px var(--font-geist-mono); text-transform: uppercase; letter-spacing: 0.1em; }
 .status-number { margin: 30px 0 8px; color: var(--acid); font-size: 108px; line-height: 0.8; letter-spacing: -0.08em; font-weight: 720; }
 .status-number span { font-size: 40px; }
+.status-number.status-version { font-size: 78px; letter-spacing: -0.065em; }
 .status-card > p { line-height: 1.5; font-size: 15px; }
 .status-rule { height: 1px; background: rgba(255,255,255,0.18); margin: 28px 0 20px; }
 .status-card .status-note { color: #afb1b8; font-size: 13px; }
@@ -125,6 +126,7 @@ button { font: inherit; }
   .hero-actions { flex-direction: column; align-items: stretch; }
   .button { width: 100%; }
   .status-number { font-size: 90px; }
+  .status-number.status-version { font-size: 70px; }
   .prompt-card blockquote, .answer-format { padding-inline: 22px; }
   .answer-format { grid-template-columns: 1fr; }
   .answer-format span:not(:first-child) { margin-top: 10px; }
