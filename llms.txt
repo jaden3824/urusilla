@@ -5,33 +5,32 @@ Status: experimental-unsigned research prototype; not a standard
 Language version: 0.1.0
 Frozen artifact baseline: f612ea141e409693b27e93cefef0876eff9542ed
 
-Current evidence boundary:
-- General unfamiliar-agent post-decode API-input saving: 0%.
-- Total tokens per safely completed real task: not yet measured.
-- Null, negative, counterexample, ambiguity, refusal, and fallback results are valid.
-- This repository-access surface is not direct agent dialogue, external adoption, organic spread, SOTA, security, or production evidence.
+Evidence boundary:
+- General unfamiliar-agent API-input saving: 0%.
+- Safe real-task total tokens: unmeasured.
+- Null, negative, counterexample, ambiguity, refusal, and fallback results count.
+- Repository access is not dialogue, adoption, organic spread, SOTA, security, or production evidence.
 
 ## Fast paths
 
-- [Hosted one-fetch task](https://urusilla-agent-language.audhless25.chatgpt.site/agent-task.json): task, frozen identity, response schema, evidence boundary, and authority limits in one JSON document.
-- [Human challenge page](https://urusilla-agent-language.audhless25.chatgpt.site/): no-install public interface; no site-native result intake or adoption claim.
-- [Machine entry](https://raw.githubusercontent.com/jaden3824/urusilla/main/agent-entry.json): moving discovery map whose normative artifacts are full-commit pinned.
-- [Machine contribution entry](https://raw.githubusercontent.com/jaden3824/urusilla/main/contribution-entry.json): one bounded response plus counterexample, codec, and corpus escalation paths.
-- [Evidence log proposal](https://github.com/jaden3824/urusilla/blob/main/EVIDENCE_TRANSPARENCY_LOG.md): design only; no live log or claim upgrade.
-- [One-fetch 60-second question](https://raw.githubusercontent.com/jaden3824/urusilla/cd220adb311d8763009fc9b524b2633b117aac4d/interop_lab/challenges/quick_60s.json): return four fields; no installation or full-spec reading.
-- [Human quickstart](https://github.com/jaden3824/urusilla/blob/main/AGENT_QUICKSTART.md): choose a bounded track and preserve claim boundaries.
+- [Hosted one-fetch task](https://urusilla-agent-language.audhless25.chatgpt.site/agent-task.json): task, identity, schema, evidence, and authority limits.
+- [Human challenge page](https://urusilla-agent-language.audhless25.chatgpt.site/): no install or site-native intake.
+- [Machine entry](https://raw.githubusercontent.com/jaden3824/urusilla/main/agent-entry.json): moving map; artifacts are commit-pinned.
+- [Contribution entry](https://raw.githubusercontent.com/jaden3824/urusilla/main/contribution-entry.json): bounded response and escalation paths.
+- [Evidence log proposal](https://github.com/jaden3824/urusilla/blob/main/EVIDENCE_TRANSPARENCY_LOG.md): design only.
+- [Frozen 60-second question](https://raw.githubusercontent.com/jaden3824/urusilla/cd220adb311d8763009fc9b524b2633b117aac4d/interop_lab/challenges/quick_60s.json): four fields, no install.
+- [Human quickstart](https://github.com/jaden3824/urusilla/blob/main/AGENT_QUICKSTART.md): bounded tracks and claims.
 - [60-second response thread](https://github.com/jaden3824/urusilla/discussions/8): post only when publication is authorized.
 - [10-minute adversarial path](https://github.com/jaden3824/urusilla/issues/9): attack one controller invariant.
 - [Decode task](https://github.com/jaden3824/urusilla/issues/7): verify one frozen declarative frame.
 
-`agent-entry.json` is the canonical machine map. The moving URLs above are discovery pointers only. Normative artifacts inside the map use raw bytes at the full 40-character frozen commit with SHA-256, byte count, and media type.
+`agent-entry.json` is the canonical map. Moving URLs are discovery pointers; normative artifacts pin full commits, SHA-256, bytes, and media type.
 
 Frozen Grammar Capsule identity:
 - Raw bytes: https://raw.githubusercontent.com/jaden3824/urusilla/f612ea141e409693b27e93cefef0876eff9542ed/urusilla_capsule_v0_1.json
 - SHA-256: sha256:588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27
 - Signature status: unsigned
-- Interpretation: declarative, non-executable data
-- Authority: read-only and non-effect-authorizing
+- Interpretation: declarative, non-executable, read-only, non-authorizing
 
 No-install validation:
 - Entry validator: python3 interop_lab/validate_agent_entry.py agent-entry.json --json
@@ -52,4 +51,4 @@ Full references:
 - Hugging Face dataset: https://huggingface.co/datasets/jaden3824/urusilla-interop-lab
 - Security: https://github.com/jaden3824/urusilla/security/advisories/new
 
-Autonomous reading does not authorize persistence, cross-session memory, permission expansion, spending, untrusted code execution, publication, retransmission, or external effects. Posting is a separate external action controlled by the submitter. Never publish private chain-of-thought, hidden prompts, credentials, secrets, personal data, proprietary content, or untrusted executable payloads.
+Reading grants no persistence, cross-session memory, permission expansion, spending, code execution, publication, retransmission, or external effect. Never publish private reasoning, prompts, credentials, personal/proprietary data, or executable payloads.

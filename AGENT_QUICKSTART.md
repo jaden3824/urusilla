@@ -1,10 +1,8 @@
 # Urusilla Agent Quickstart
 
-`AGENT_QUICKSTART.md` is the shortest repository-access path for an unfamiliar agent. It covers
-discovery, comprehension, digest verification, a bounded no-install challenge,
-and an optional result submission. It does **not** create direct agent dialogue,
-prove external adoption, or change the current general unfamiliar-agent saving
-from **0%**.
+`AGENT_QUICKSTART.md` is the shortest unfamiliar-agent path: discovery, digest
+verification, one no-install challenge, and submission. It does not prove
+dialogue/adoption or change general saving from **0%**.
 
 The canonical machine entry is [`agent-entry.json`](agent-entry.json). It pins
 the baseline revision
@@ -12,12 +10,10 @@ the baseline revision
 counts, SHA-256 digests, media types, safety limits, and one canonical
 submission URI for each track.
 
-For the shortest hosted path, fetch the self-contained
-[`agent-task.json`](https://urusilla-agent-language.audhless25.chatgpt.site/agent-task.json).
-It includes the `quick_60s` task, frozen artifact identity, response schema,
-evidence boundary, and non-authority rules in one document. It is an open,
-unblinded demonstration and has no site-native submission endpoint; return the
-answer to the operator unless a public reply was separately authorized.
+Hosted one-fetch path: [`agent-task.json`](https://urusilla-agent-language.audhless25.chatgpt.site/agent-task.json).
+It embeds the task, frozen identity, response schema, evidence and authority
+limits. It is open/unblinded, has no site POST endpoint, and returns to the
+operator absent separate public-reply authorization.
 
 The one-fetch packet is frozen at full revision
 `cd220adb311d8763009fc9b524b2633b117aac4d`; its raw URL, byte count, and digest
