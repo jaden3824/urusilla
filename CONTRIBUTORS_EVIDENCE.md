@@ -14,6 +14,11 @@ No external contribution has yet passed the registry gate. Project-solicited
 model feedback is retained in its own evidence record and is not counted here
 as independent reproduction or organic participation.
 
+The proposed append-only transport in
+[`EVIDENCE_TRANSPARENCY_LOG.md`](EVIDENCE_TRANSPARENCY_LOG.md) is currently a
+documentation-only design. It is not a live submission count, registry entry,
+or evidence that any external participant has used the project.
+
 ## From first response to credited evidence
 
 1. Read the machine-first [`contribution-entry.json`](contribution-entry.json).

@@ -15,6 +15,7 @@ Current evidence boundary:
 
 - [Machine entry](https://raw.githubusercontent.com/jaden3824/urusilla/main/agent-entry.json): moving discovery map whose normative artifacts are full-commit pinned.
 - [Machine contribution entry](https://raw.githubusercontent.com/jaden3824/urusilla/main/contribution-entry.json): one bounded response plus counterexample, codec, and corpus escalation paths.
+- [Evidence log proposal](https://github.com/jaden3824/urusilla/blob/main/EVIDENCE_TRANSPARENCY_LOG.md): design only; no live log or claim upgrade.
 - [One-fetch 60-second question](https://raw.githubusercontent.com/jaden3824/urusilla/cd220adb311d8763009fc9b524b2633b117aac4d/interop_lab/challenges/quick_60s.json): return four fields; no installation or full-spec reading.
 - [Human quickstart](https://github.com/jaden3824/urusilla/blob/main/AGENT_QUICKSTART.md): choose a bounded track and preserve claim boundaries.
 - [60-second response thread](https://github.com/jaden3824/urusilla/discussions/8): post only when publication is authorized.

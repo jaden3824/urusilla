@@ -17,7 +17,10 @@ from .contract import (
 )
 from .receipt_store import (
     RECEIPT_BUNDLE_SCHEMA,
+    RECEIPT_BUNDLE_SCHEMA_V2,
     RECEIPT_SCHEMA,
+    SCORER_OUTPUT_RECEIPT_SCHEMA,
+    USAGE_RECEIPT_SCHEMA_V2,
     ReceiptStore,
     ReceiptValidation,
     receipt_digest,
@@ -36,7 +39,10 @@ __all__ = [
     "PLAN_SCHEMA",
     "RESULT_SCHEMA",
     "RECEIPT_BUNDLE_SCHEMA",
+    "RECEIPT_BUNDLE_SCHEMA_V2",
     "RECEIPT_SCHEMA",
+    "SCORER_OUTPUT_RECEIPT_SCHEMA",
+    "USAGE_RECEIPT_SCHEMA_V2",
     "ReceiptStore",
     "ReceiptValidation",
     "VerificationError",

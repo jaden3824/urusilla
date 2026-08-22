@@ -4,6 +4,19 @@ All notable public changes to Urusilla are recorded here. Semantic-language
 versions, software-package versions, and release labels are separate axes; see
 the versioning section of the specification before comparing identifiers.
 
+## Unreleased
+
+- Internal initial-goal TRACE, arm-manifest, assembly, and receipt evidence
+  formats now have fail-closed v2 paths for exact scored-output binding,
+  provider-response replay detection, canonical silence, explicit no-output
+  failures, and completed-primary semantic validation before fallback.
+- A documentation-only append-only evidence transparency-log and future
+  website/API design is available; no live log, domain, or submission service
+  is deployed.
+- These are evaluation-infrastructure changes, not a semantic-language version
+  promotion. General unfamiliar-agent token saving remains demonstrated at
+  0%, and real provider authentication and independent evaluation are absent.
+
 ## v0.1.0-experimental - 2026-08-20
 
 First public research prerelease. The Python package version is `0.1.0a0` and

@@ -19,6 +19,7 @@ from initial_goal_eval.contract import (
     verifier_bundle_sha256,
 )
 from initial_goal_eval.verifier import verify_result
+from initial_goal_eval.receipt_store import RECEIPT_BUNDLE_SCHEMA_V2, ReceiptStore
 from initial_goal_eval.statistics import SessionAggregate, compare_against_baseline
 
 
@@ -447,6 +448,72 @@ class FrozenContractTests(unittest.TestCase):
         result["records"][0]["arms"][2]["task_results"][0]["route"]["fallback_from"] = "action-state:failed"
         with self.assertRaisesRegex(VerificationError, "fallback without"):
             self.verify(result=result)
+
+    def test_real_evidence_route_cannot_borrow_another_tasks_events(self) -> None:
+        for mutation, expected_error in (
+            ("decision", "router event belongs to another task"),
+            ("receiver", "receiver/fallback event belongs to another task"),
+            ("fallback", "fallback without its token event"),
+            ("unbound-fallback", "does not bind its fallback terminal"),
+            ("undisclosed-fallback", "binds fallback without a disposition"),
+        ):
+            with self.subTest(mutation=mutation):
+                plan = deepcopy(self.plan)
+                result = deepcopy(self.result)
+                plan["evidence_boundary"] = "real-independent-evaluation"
+                result["plan_sha256"] = sha256_ref(plan)
+                receipt_store = ReceiptStore.from_object(
+                    {
+                        "schema_version": RECEIPT_BUNDLE_SCHEMA_V2,
+                        "plan_sha256": result["plan_sha256"],
+                        "receipts": [],
+                    }
+                )
+
+                for record in result["records"]:
+                    hybrid = record["arms"][2]
+                    for task_result in hybrid["task_results"]:
+                        task_result["route"] = None
+
+                hybrid = result["records"][0]["arms"][2]
+                task_results = hybrid["task_results"]
+                target_task_id = task_results[0]["task_id"]
+                other_task_id = task_results[1]["task_id"]
+                task_results[0]["route"] = {
+                    "selected_mode": "action-state",
+                    "decision_event_sequence": 2,
+                    "receiver_event_sequence": 3,
+                    "decode_before_model": False,
+                    "natural_language_expansion": False,
+                    "fallback_from": None,
+                }
+                hybrid["events"][2]["task_id"] = target_task_id
+                hybrid["events"][3]["task_id"] = target_task_id
+
+                if mutation == "decision":
+                    hybrid["events"][2]["task_id"] = other_task_id
+                elif mutation == "receiver":
+                    hybrid["events"][3]["task_id"] = other_task_id
+                else:
+                    fallback = _event(4, "fallback", 1, 1)
+                    fallback["task_id"] = (
+                        target_task_id
+                        if mutation in {"unbound-fallback", "undisclosed-fallback"}
+                        else other_task_id
+                    )
+                    hybrid["events"].append(fallback)
+                    hybrid["scope_coverage"]["fallback"] = "counted"
+                    if mutation != "undisclosed-fallback":
+                        task_results[0]["route"][
+                            "fallback_from"
+                        ] = "action-state:receiver:failed"
+                    else:
+                        task_results[0]["route"][
+                            "receiver_event_sequence"
+                        ] = fallback["sequence"]
+
+                with self.assertRaisesRegex(VerificationError, expected_error):
+                    verify_result(plan, result, receipt_store=receipt_store)
 
     def test_safety_violation_is_noncompensable(self) -> None:
         result = deepcopy(self.result)

@@ -75,22 +75,41 @@ hybrid calls bind the same task digest to the frozen sender input and bind the
 sender output to the task-specific direct-receiver payload. This prevents a
 foreign task request or projection from being relabelled after execution.
 
-The post-receiver recovery lane currently accepts only a non-completed primary
-whose exact provider status is named by `fallback_from`. A provider response
-that completed but was later rejected by deterministic output/semantic
-validation needs a separately bound validation phase; the frozen RESULT phase
-schema cannot represent that evidence yet. Offline assembly therefore rejects
-that lane and reports it as a claim blocker instead of inferring validation.
+Trace and assembly schema v2 also represent one completed-primary semantic
+rejection without changing the frozen RESULT ledger. The manifest precommits
+the versioned `deterministic-validator` identity, implementation, frozen task,
+and primary-event slot. The later observed event, accounted under the existing
+`safety` token bucket, binds the exact primary output digest, an `invalid`
+verdict with the `semantic-invalid` reason, and its usage before a raw/JSON
+fallback. Assembly checks the claimed primary-output digest against the
+captured completed response, counts the primary, validator, and fallback usage
+receipts, and scores only the final fallback. A completed primary without all
+of that evidence is still rejected.
+
+Trace, arm-manifest, and assembly v1 were project-authored synthetic plumbing
+only and no serialized v1 artifact is shipped in this repository. The v2
+validators reject those shapes rather than implying backward-compatible
+evidence semantics; regenerate any local synthetic trace from its frozen plan.
 
 This bridge is **not** real study evidence. It emits
 `claim_eligible: false` and `authentication_complete: false`; current tests use
 project-authored synthetic captures. Provider-specific usage normalization,
-signatures, scorer and sandbox receipts, and independently operated executions
-are still absent. In addition, the current scorer-receipt schema binds the
-reported score but does not yet bind that score to the exact captured provider
-output digest. That scoring-output binding must be added in a separately
-reviewed schema revision before assembled traces can support a performance
-claim.
+signatures, assembler-issued v2 scorer receipts, sandbox receipts, and
+independently operated executions are still absent. A separately versioned
+receipt-bundle v2 validator
+now requires each provider usage receipt to carry a cross-linked
+provider-response digest and terminal status. A provider-backed scorer receipt
+binds the verdict, exact task and route, terminal event, usage receipt, response
+digest, and either exact UTF-8 output text or an explicit null output from a
+non-completed call. A silence score instead binds the task, silence route, and
+canonical no-output digest without inventing a provider call, usage receipt, or
+response digest. Provider-response digests are replay-protected across the
+bundle but are not resolved or authenticated at this layer. The offline
+assembler does not yet issue that v2 bundle, so this closes a
+validation-schema gap rather than a real-evidence gap. Because v2 embeds
+completed output text instead of trusting an unverifiable text digest, the
+bundle may contain sensitive model output and must only be shared where that
+disclosure is acceptable.
 
 Run the verifier tests from the repository root:
 
@@ -109,14 +128,22 @@ Exit status `0` means every claim gate passed for a plan explicitly marked as
 a real independent evaluation, `1` means structurally valid but not
 claim-eligible, and `2` means the evidence contract was malformed or mutated.
 
-The receipt bundle currently establishes **content consistency only**. It
-resolves each content-addressed wrapper, checks exact plan/session/arm/event
-bindings, reconciles reported usage, rejects provider-call replay, requires
+Receipt bundle v1 establishes **content consistency only**. It resolves each
+content-addressed wrapper, checks exact plan/session/arm/event bindings,
+reconciles reported usage, rejects provider-call replay, requires
 receiver/fallback events to be model calls, and binds scorer, enforcement,
 attestation, and audit observations to their frozen artifact digests. It does
-not yet authenticate the issuer or rederive usage from a signed provider
-payload. A maintainer can otherwise create two keys or two issuer labels and
-self-author a mutually consistent bundle.
+not satisfy claim-facing receipt completeness because its scorer receipt does
+not bind the exact terminal provider output. Receipt bundle v2 adds that
+binding and fails closed if the output boundary, terminal status, exact-task
+route, terminal event, usage receipt, provider-response digest, or verdict
+disagrees across the linked result, usage receipt, and scorer receipt. It also
+rejects provider-response replay across tasks or arms and cannot label a
+non-completed provider call as a successful scored terminal. Neither version
+authenticates the issuer, resolves the referenced provider-response artifact,
+or rederives usage from a signed provider payload. A maintainer can otherwise
+create two keys or two issuer labels and self-author a mutually consistent
+bundle.
 
 Accordingly, real evidence currently fails closed with
 `authenticated-provenance-not-established` even when every receipt is

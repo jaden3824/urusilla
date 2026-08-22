@@ -24,9 +24,12 @@ from urusilla_hybrid_runtime.records import PublicActionState
 from initial_goal_eval.contract import ARMS, VerificationError, sha256_ref
 from initial_goal_eval.execution_trace import (
     CANONICAL_SILENCE_OUTPUT_SHA256,
+    POST_RECEIVER_VALIDATION_SCHEMA,
     SILENCE_TERMINAL_STATUS,
     build_arm_execution_manifest,
     build_execution_trace,
+    post_receiver_validation_input_sha256,
+    post_receiver_validation_output_sha256,
     route_decision_sha256,
     task_input_sha256,
 )
@@ -94,6 +97,7 @@ def make_fixture(
     zero_first_usage: bool = False,
     silence_first: bool = False,
     pre_receiver_fallback: bool = False,
+    completed_primary_validation_fallback: bool = False,
 ):
     plan, template_result = build_synthetic_fixture()
     task_inputs_by_session: dict[str, list[dict]] = {}
@@ -328,11 +332,20 @@ def make_fixture(
                 is_first = not first_call_seen
                 first_call_seen = True
                 unavailable = unavailable_first and is_first
+                semantic_validation_failure = (
+                    completed_primary_validation_fallback and first_hybrid_task
+                )
                 failed = (failed_first and is_first) or (
                     fallback_recovery and first_hybrid_task
                 )
                 terminal_status = "refused" if failed else "completed"
-                terminal_output = None if failed else '{"ok":true}'
+                terminal_output = (
+                    None
+                    if failed
+                    else '{"ok":false,"semantic":"invalid"}'
+                    if semantic_validation_failure
+                    else '{"ok":true}'
+                )
                 raw_receipt = (
                     f"receipt:{planned['session_id']}:{arm_id}:{task_index}"
                 )
@@ -418,7 +431,55 @@ def make_fixture(
                         ),
                     }
                 scored_sequence = receiver_sequence
-                if fallback_recovery and first_hybrid_task:
+                if semantic_validation_failure:
+                    assert terminal_output is not None
+                    primary_output_sha256 = sha256_ref(
+                        {"provider_output_text": terminal_output}
+                    )
+                    validation_sequence = len(events)
+                    validation_input_sha256 = (
+                        post_receiver_validation_input_sha256(
+                            task_id=task["task_id"],
+                            task_sha256=task["task_sha256"],
+                            primary_event_sequence=receiver_sequence,
+                            primary_output_sha256=primary_output_sha256,
+                        )
+                    )
+                    events.append(
+                        {
+                            "sequence": validation_sequence,
+                            "phase": "safety",
+                            "task_id": task["task_id"],
+                            "source": {
+                                "kind": "deterministic-validator",
+                                "schema_version": POST_RECEIVER_VALIDATION_SCHEMA,
+                                "local_event_id": (
+                                    f"{planned['session_id']}-{arm_id}-"
+                                    f"{task_index}-semantic-validator"
+                                ),
+                                "implementation_sha256": plan["artifact_locks"][
+                                    "semantic_scorer"
+                                ],
+                                "task_sha256": task["task_sha256"],
+                                "primary_event_sequence": receiver_sequence,
+                                "primary_output_sha256": primary_output_sha256,
+                                "verdict": "invalid",
+                                "reason_code": "semantic-invalid",
+                                "input_sha256": validation_input_sha256,
+                                "output_sha256": (
+                                    post_receiver_validation_output_sha256(
+                                        input_sha256=validation_input_sha256,
+                                        verdict="invalid",
+                                        reason_code="semantic-invalid",
+                                    )
+                                ),
+                                "usage": local_usage(),
+                            },
+                        }
+                    )
+                if (
+                    fallback_recovery or completed_primary_validation_fallback
+                ) and first_hybrid_task:
                     fallback_request = CallRequest.build(
                         episode_id=planned["session_id"],
                         turn_index=task_index,
@@ -486,7 +547,11 @@ def make_fixture(
                     ] = scored_sequence
                     task_results[task_index]["route"][
                         "fallback_from"
-                    ] = "action-state:receiver:refused"
+                    ] = (
+                        "action-state:receiver:semantic-invalid"
+                        if semantic_validation_failure
+                        else "action-state:receiver:refused"
+                    )
                     terminal_status = "completed"
                     terminal_output = '{"ok":true,"fallback":true}'
                 scoring_bindings.append(
@@ -903,7 +968,7 @@ class TraceAssemblerTests(unittest.TestCase):
         self.assertEqual(target["terminal_status"], SILENCE_TERMINAL_STATUS)
         self.assertTrue(
             any(
-                "scored-output bindings" in blocker
+                "receipt-bundle v2 scorer-output receipts" in blocker
                 for blocker in assembled.value["claim_blockers"]
             )
         )
@@ -937,6 +1002,57 @@ class TraceAssemblerTests(unittest.TestCase):
                         sessions=sessions,
                         external_bundle_sha256s=trace["external_bundle_sha256s"],
                     )
+
+    def test_silence_rejects_orphan_post_receiver_validator(self):
+        plan, trace, _ = make_fixture(silence_first=True)
+        sessions = deepcopy(trace["sessions"])
+        arm = sessions[0]["arms"][2]
+        task = plan["sessions"][0]["tasks"][0]
+        primary_output_sha256 = sha256_ref({"nonexistent-primary": True})
+        validation_input_sha256 = post_receiver_validation_input_sha256(
+            task_id=task["task_id"],
+            task_sha256=task["task_sha256"],
+            primary_event_sequence=999,
+            primary_output_sha256=primary_output_sha256,
+        )
+        arm["events"].append(
+            {
+                "sequence": len(arm["events"]),
+                "phase": "safety",
+                "task_id": task["task_id"],
+                "source": {
+                    "kind": "deterministic-validator",
+                    "schema_version": POST_RECEIVER_VALIDATION_SCHEMA,
+                    "local_event_id": "orphan-validator-on-silence",
+                    "implementation_sha256": plan["artifact_locks"][
+                        "semantic_scorer"
+                    ],
+                    "task_sha256": task["task_sha256"],
+                    "primary_event_sequence": 999,
+                    "primary_output_sha256": primary_output_sha256,
+                    "verdict": "invalid",
+                    "reason_code": "semantic-invalid",
+                    "input_sha256": validation_input_sha256,
+                    "output_sha256": post_receiver_validation_output_sha256(
+                        input_sha256=validation_input_sha256,
+                        verdict="invalid",
+                        reason_code="semantic-invalid",
+                    ),
+                    "usage": local_usage(),
+                },
+            }
+        )
+        arm["zero_token_phases"].remove("safety")
+        rebind_arm_manifest(plan, sessions, 0, 2)
+
+        with self.assertRaisesRegex(
+            VerificationError, "silence cannot contain post-receiver"
+        ):
+            build_execution_trace(
+                plan_value=plan,
+                sessions=sessions,
+                external_bundle_sha256s=trace["external_bundle_sha256s"],
+            )
 
     def test_silence_cannot_use_setup_or_repair_as_a_terminal_substitute(self):
         for phase in ("setup", "repair"):
@@ -1117,6 +1233,215 @@ class TraceAssemblerTests(unittest.TestCase):
             and item["task_id"] == task_id
         ]
         self.assertEqual(capture_statuses, ["refused", "completed"])
+
+    def test_completed_semantic_invalid_primary_uses_bound_fallback(self):
+        plan, trace, stores = make_fixture(
+            completed_primary_validation_fallback=True
+        )
+        assembled = assemble_execution_trace(plan, trace, stores)
+        hybrid = assembled.result["records"][0]["arms"][2]
+        task = hybrid["task_results"][0]
+        task_events = [
+            event for event in hybrid["events"] if event["task_id"] == task["task_id"]
+        ]
+        self.assertEqual(
+            [event["phase"] for event in task_events],
+            ["sender", "router", "receiver", "safety", "fallback"],
+        )
+        self.assertEqual(
+            [event["usage"]["total_tokens"] for event in task_events],
+            [1, 1, 15, 1, 15],
+        )
+        self.assertEqual(hybrid["scope_coverage"]["receiver"], "counted")
+        self.assertEqual(hybrid["scope_coverage"]["safety"], "counted")
+        self.assertEqual(hybrid["scope_coverage"]["fallback"], "counted")
+        self.assertTrue(task["task_success"])
+        self.assertEqual(
+            task["route"]["fallback_from"],
+            "action-state:receiver:semantic-invalid",
+        )
+        validation = assembled.value["post_receiver_validations"][0]
+        primary, validator, fallback = task_events[2:]
+        self.assertEqual(validation["primary_output_sha256"], primary["output_sha256"])
+        self.assertEqual(
+            validation["primary_usage_receipt_sha256"],
+            primary["usage_receipt_sha256"],
+        )
+        self.assertEqual(
+            validation["validation_usage_receipt_sha256"],
+            validator["usage_receipt_sha256"],
+        )
+        self.assertEqual(
+            validation["fallback_usage_receipt_sha256"],
+            fallback["usage_receipt_sha256"],
+        )
+        self.assertEqual(validation["verdict"], "invalid")
+        self.assertEqual(validation["reason_code"], "semantic-invalid")
+        target = next(
+            item
+            for item in assembled.value["scoring_targets"]
+            if item["session_id"] == plan["sessions"][0]["session_id"]
+            and item["arm_id"] == "hybrid-router"
+            and item["task_id"] == task["task_id"]
+        )
+        self.assertEqual(
+            target["scored_output_event_sequence"], fallback["sequence"]
+        )
+        self.assertEqual(target["output_sha256"], fallback["output_sha256"])
+        capture_statuses = [
+            item["status"]
+            for item in assembled.value["external_capture_metadata"]
+            if item["session_id"] == validation["session_id"]
+            and item["arm_id"] == "hybrid-router"
+            and item["task_id"] == task["task_id"]
+        ]
+        self.assertEqual(capture_statuses, ["completed", "completed"])
+
+    def test_router_decision_must_precede_semantic_invalid_primary(self):
+        plan, trace, _ = make_fixture(
+            completed_primary_validation_fallback=True
+        )
+        sessions = deepcopy(trace["sessions"])
+        arm = sessions[0]["arms"][2]
+        task_id = arm["task_results"][0]["task_id"]
+        task_events = [
+            event for event in arm["events"] if event["task_id"] == task_id
+        ]
+        sender, router, primary, validator, fallback = task_events
+        self.assertEqual(
+            [event["phase"] for event in task_events],
+            ["sender", "router", "receiver", "safety", "fallback"],
+        )
+        router_index = arm["events"].index(router)
+        primary_index = arm["events"].index(primary)
+        arm["events"][router_index], arm["events"][primary_index] = (
+            arm["events"][primary_index],
+            arm["events"][router_index],
+        )
+        for sequence, event in enumerate(arm["events"]):
+            event["sequence"] = sequence
+
+        route = arm["task_results"][0]["route"]
+        route["decision_event_sequence"] = router["sequence"]
+        route["receiver_event_sequence"] = fallback["sequence"]
+        arm["scoring_bindings"][0]["scored_output_event_sequence"] = fallback[
+            "sequence"
+        ]
+        validator_source = validator["source"]
+        validator_source["primary_event_sequence"] = primary["sequence"]
+        validator_source["input_sha256"] = post_receiver_validation_input_sha256(
+            task_id=task_id,
+            task_sha256=validator_source["task_sha256"],
+            primary_event_sequence=primary["sequence"],
+            primary_output_sha256=validator_source["primary_output_sha256"],
+        )
+        validator_source["output_sha256"] = (
+            post_receiver_validation_output_sha256(
+                input_sha256=validator_source["input_sha256"],
+                verdict=validator_source["verdict"],
+                reason_code=validator_source["reason_code"],
+            )
+        )
+        rebind_arm_manifest(plan, sessions, 0, 2)
+
+        with self.assertRaisesRegex(
+            VerificationError, "router decision must precede its primary"
+        ):
+            build_execution_trace(
+                plan_value=plan,
+                sessions=sessions,
+                external_bundle_sha256s=trace["external_bundle_sha256s"],
+            )
+
+    def test_semantic_validator_must_bind_exact_captured_primary_output(self):
+        plan, trace, stores = make_fixture(
+            completed_primary_validation_fallback=True
+        )
+        sessions = deepcopy(trace["sessions"])
+        hybrid = sessions[0]["arms"][2]
+        validator = next(
+            event
+            for event in hybrid["events"]
+            if event["source"].get("kind") == "deterministic-validator"
+        )
+        source = validator["source"]
+        source["primary_output_sha256"] = sha256_ref(
+            {"provider_output_text": '{"forged":true}'}
+        )
+        source["input_sha256"] = post_receiver_validation_input_sha256(
+            task_id=validator["task_id"],
+            task_sha256=source["task_sha256"],
+            primary_event_sequence=source["primary_event_sequence"],
+            primary_output_sha256=source["primary_output_sha256"],
+        )
+        source["output_sha256"] = post_receiver_validation_output_sha256(
+            input_sha256=source["input_sha256"],
+            verdict=source["verdict"],
+            reason_code=source["reason_code"],
+        )
+        forged_trace = build_execution_trace(
+            plan_value=plan,
+            sessions=sessions,
+            external_bundle_sha256s=trace["external_bundle_sha256s"],
+        )
+        with self.assertRaisesRegex(VerificationError, "exact completed primary"):
+            assemble_execution_trace(plan, forged_trace, stores)
+
+    def test_semantic_validator_must_use_frozen_semantic_scorer(self):
+        plan, trace, _ = make_fixture(
+            completed_primary_validation_fallback=True
+        )
+        plan = deepcopy(plan)
+        sessions = deepcopy(trace["sessions"])
+        hybrid = sessions[0]["arms"][2]
+        validator = next(
+            event
+            for event in hybrid["events"]
+            if event["source"].get("kind") == "deterministic-validator"
+        )
+        validator["source"]["implementation_sha256"] = sha256_ref(
+            {"different": "validator"}
+        )
+        rebind_arm_manifest(plan, sessions, 0, 2)
+        with self.assertRaisesRegex(VerificationError, "frozen semantic scorer"):
+            build_execution_trace(
+                plan_value=plan,
+                sessions=sessions,
+                external_bundle_sha256s=trace["external_bundle_sha256s"],
+            )
+
+    def test_semantic_validator_cannot_relabel_a_noncompleted_primary(self):
+        plan, trace, stores = make_fixture(
+            completed_primary_validation_fallback=True
+        )
+        hybrid = trace["sessions"][0]["arms"][2]
+        task_id = hybrid["task_results"][0]["task_id"]
+        primary_call_id = next(
+            event["source"]["call_request"]["call_id"]
+            for event in hybrid["events"]
+            if event["task_id"] == task_id and event["phase"] == "receiver"
+        )
+        old_store = next(
+            store
+            for store in stores
+            if primary_call_id
+            in {record["call_id"] for record in store.value["records"]}
+        )
+        replacement = rebuild_store(
+            old_store,
+            status_overrides={primary_call_id: ("refused", None)},
+        )
+        replaced_trace = replace_bundle_reference(
+            plan,
+            trace,
+            old_bundle_sha256="sha256:" + old_store.value["bundle_sha256"],
+            new_bundle_sha256="sha256:" + replacement.value["bundle_sha256"],
+        )
+        replacement_stores = [
+            replacement if store is old_store else store for store in stores
+        ]
+        with self.assertRaisesRegex(VerificationError, "requires a completed primary"):
+            assemble_execution_trace(plan, replaced_trace, replacement_stores)
 
     def test_baseline_message_content_must_match_plan_manifest_preimage(self):
         plan, trace, _ = make_fixture()

@@ -31,6 +31,7 @@ from .contract import (
 )
 from .execution_trace import (
     CANONICAL_SILENCE_OUTPUT_SHA256,
+    POST_RECEIVER_VALIDATION_SCHEMA,
     SILENCE_TERMINAL_STATUS,
     validate_execution_trace,
 )
@@ -38,17 +39,17 @@ from .receipt_store import RECEIPT_BUNDLE_SCHEMA, RECEIPT_SCHEMA
 from .verifier import _validate_session_result, _validate_usage
 
 
-ASSEMBLY_SCHEMA = "urusilla-initial-goal-trace-assembly/1"
+ASSEMBLY_SCHEMA = "urusilla-initial-goal-trace-assembly/2"
 ASSEMBLY_BLOCKERS = (
     "provider receipts are content-bound but not independently re-normalized",
     "deterministic local sender/router outputs are content-bound but not "
     "independently replayed",
     "provider, operator, and auditor signatures are not authenticated",
-    "the current scorer receipt schema does not bind a score to the exact captured provider output digest",
-    "only usage receipts are assembled; scorer and sandbox receipts remain external",
-    "the frozen scorer-receipt schema does not yet authenticate scored-output bindings",
-    "the frozen phase schema cannot yet bind deterministic rejection of a completed "
-    "primary output before fallback, so that lane is rejected rather than inferred",
+    "the offline assembler does not emit receipt-bundle v2 scorer-output receipts",
+    "only legacy usage receipts are assembled; scorer and sandbox receipts remain external",
+    "v2 scorer-output content bindings do not authenticate provider or scorer issuers",
+    "post-receiver semantic validation is content-bound but not independently "
+    "replayed or authenticated",
     "offline trace assembly is not independent performance evidence",
 )
 
@@ -256,6 +257,7 @@ def assemble_execution_trace(
     receipts: list[dict[str, Any]] = []
     records: list[dict[str, Any]] = []
     scoring_targets: list[dict[str, Any]] = []
+    post_receiver_validations: list[dict[str, Any]] = []
     external_capture_metadata: list[dict[str, Any]] = []
 
     planned_by_session = {item["session_id"]: item for item in plan["sessions"]}
@@ -267,11 +269,13 @@ def assemble_execution_trace(
             assembled_events: list[dict[str, Any]] = []
             call_id_by_sequence: dict[int, str | None] = {}
             status_by_sequence: dict[int, str] = {}
+            response_sha256_by_sequence: dict[int, str | None] = {}
             for event_spec in arm["events"]:
                 source = event_spec["source"]
                 source_kind = source["kind"]
                 call_id: str | None = None
                 capture_metadata_index: int | None = None
+                provider_response_sha256: str | None = None
                 if source_kind == "external-response":
                     bundle_sha = source["bundle_sha256"]
                     store = stores[bundle_sha]
@@ -410,6 +414,10 @@ def assemble_execution_trace(
                             "a noncompleted provider call lacks a failed-task binding"
                         )
                     event_status = response["status"]
+                    provider_response_sha256 = _prefixed_sha256(
+                        response["response_sha256"],
+                        "captured provider response digest",
+                    )
                     capture_metadata_index = len(external_capture_metadata)
                     external_capture_metadata.append(
                         {
@@ -420,10 +428,7 @@ def assemble_execution_trace(
                             "bundle_sha256": bundle_sha,
                             "bundle_record_sequence": captured.value["sequence"],
                             "call_id": call_id,
-                            "response_sha256": _prefixed_sha256(
-                                response["response_sha256"],
-                                "captured provider response digest",
-                            ),
+                            "response_sha256": provider_response_sha256,
                             "status": event_status,
                         }
                     )
@@ -488,6 +493,9 @@ def assemble_execution_trace(
                 assembled_events.append(event)
                 call_id_by_sequence[event["sequence"]] = call_id
                 status_by_sequence[event["sequence"]] = event_status
+                response_sha256_by_sequence[event["sequence"]] = (
+                    provider_response_sha256
+                )
 
             if arm_id == "hybrid-router":
                 by_sequence = {event["sequence"]: event for event in assembled_events}
@@ -593,15 +601,98 @@ def assemble_execution_trace(
                         if event["task_id"] == task_result["task_id"]
                         and event["phase"] == "fallback"
                     ]
+                    validator_specs = [
+                        event
+                        for event in arm["events"]
+                        if event["task_id"] == task_result["task_id"]
+                        and event["source"].get("kind")
+                        == "deterministic-validator"
+                    ]
                     if fallback_specs and primary_specs:
-                        primary_status = status_by_sequence[
-                            primary_specs[0]["sequence"]
-                        ]
+                        primary_sequence = primary_specs[0]["sequence"]
+                        fallback_sequence = fallback_specs[0]["sequence"]
+                        primary_status = status_by_sequence[primary_sequence]
                         if primary_status == "completed":
-                            raise VerificationError(
-                                "a completed primary receiver cannot be replaced by fallback"
+                            if (
+                                route["fallback_from"]
+                                != "action-state:receiver:semantic-invalid"
+                                or len(validator_specs) != 1
+                            ):
+                                raise VerificationError(
+                                    "a completed primary receiver cannot be replaced by "
+                                    "fallback without exact semantic validator evidence"
+                                )
+                            validator_spec = validator_specs[0]
+                            validator_sequence = validator_spec["sequence"]
+                            validator_source = validator_spec["source"]
+                            primary_event = by_sequence[primary_sequence]
+                            validator_event = by_sequence[validator_sequence]
+                            fallback_event = by_sequence[fallback_sequence]
+                            if (
+                                validator_source["schema_version"]
+                                != POST_RECEIVER_VALIDATION_SCHEMA
+                                or validator_source["primary_event_sequence"]
+                                != primary_sequence
+                                or validator_source["primary_output_sha256"]
+                                != primary_event["output_sha256"]
+                                or validator_event["input_sha256"]
+                                != validator_source["input_sha256"]
+                                or validator_event["output_sha256"]
+                                != validator_source["output_sha256"]
+                                or response_sha256_by_sequence[primary_sequence] is None
+                            ):
+                                raise VerificationError(
+                                    "semantic validator evidence differs from the exact "
+                                    "completed primary capture"
+                                )
+                            post_receiver_validations.append(
+                                {
+                                    "schema_version": POST_RECEIVER_VALIDATION_SCHEMA,
+                                    "session_id": session["session_id"],
+                                    "arm_id": arm_id,
+                                    "task_id": task_result["task_id"],
+                                    "implementation_sha256": validator_source[
+                                        "implementation_sha256"
+                                    ],
+                                    "primary_event_sequence": primary_sequence,
+                                    "primary_output_sha256": primary_event[
+                                        "output_sha256"
+                                    ],
+                                    "primary_response_sha256": (
+                                        response_sha256_by_sequence[primary_sequence]
+                                    ),
+                                    "primary_usage_receipt_sha256": primary_event[
+                                        "usage_receipt_sha256"
+                                    ],
+                                    "validation_event_sequence": validator_sequence,
+                                    "validation_input_sha256": validator_event[
+                                        "input_sha256"
+                                    ],
+                                    "validation_output_sha256": validator_event[
+                                        "output_sha256"
+                                    ],
+                                    "validation_usage_receipt_sha256": validator_event[
+                                        "usage_receipt_sha256"
+                                    ],
+                                    "verdict": validator_source["verdict"],
+                                    "reason_code": validator_source["reason_code"],
+                                    "fallback_event_sequence": fallback_sequence,
+                                    "fallback_output_sha256": fallback_event[
+                                        "output_sha256"
+                                    ],
+                                    "fallback_usage_receipt_sha256": fallback_event[
+                                        "usage_receipt_sha256"
+                                    ],
+                                    "fallback_terminal_status": status_by_sequence[
+                                        fallback_sequence
+                                    ],
+                                }
                             )
-                        if route["fallback_from"] != (
+                        elif validator_specs:
+                            raise VerificationError(
+                                "semantic validator evidence requires a completed primary"
+                            )
+                        elif route["fallback_from"] != (
                             f"action-state:receiver:{primary_status}"
                         ):
                             raise VerificationError(
@@ -683,6 +774,14 @@ def assemble_execution_trace(
     external_capture_metadata.sort(
         key=lambda item: (item["bundle_sha256"], item["bundle_record_sequence"])
     )
+    post_receiver_validations.sort(
+        key=lambda item: (
+            item["session_id"],
+            item["arm_id"],
+            item["task_id"],
+            item["validation_event_sequence"],
+        )
+    )
     core: dict[str, Any] = {
         "schema_version": ASSEMBLY_SCHEMA,
         "plan_sha256": sha256_ref(plan),
@@ -692,6 +791,7 @@ def assemble_execution_trace(
         "authentication_complete": False,
         "claim_blockers": list(ASSEMBLY_BLOCKERS),
         "external_capture_metadata": external_capture_metadata,
+        "post_receiver_validations": post_receiver_validations,
         "scoring_targets": scoring_targets,
         "result": result,
         "usage_receipt_bundle": usage_receipt_bundle,

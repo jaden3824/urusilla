@@ -43,7 +43,7 @@ from .contract import (
     verifier_bundle_sha256,
 )
 from .statistics import SessionAggregate, compare_to_both_baselines
-from .receipt_store import ReceiptStore
+from .receipt_store import RECEIPT_BUNDLE_SCHEMA_V2, ReceiptStore
 
 
 ATTESTATION_FIELDS = (
@@ -266,6 +266,9 @@ def _validate_route(
     value: Any,
     events: Mapping[int, Mapping[str, Any]],
     path: str,
+    *,
+    expected_task_id: str,
+    require_task_binding: bool,
 ) -> tuple[str, bool]:
     route = _object(value, path)
     _exact(
@@ -287,6 +290,8 @@ def _validate_route(
     assert decision is not None
     if decision not in events or events[decision]["phase"] != "router":
         raise VerificationError(f"{path} does not bind a router event")
+    if require_task_binding and events[decision]["task_id"] != expected_task_id:
+        raise VerificationError(f"{path} router event belongs to another task")
     receiver = _count(
         route["receiver_event_sequence"],
         f"{path}.receiver_event_sequence",
@@ -300,6 +305,10 @@ def _validate_route(
             raise VerificationError(f"{path} does not bind a receiver/fallback event")
         if events[receiver]["phase"] not in {"receiver", "fallback"}:
             raise VerificationError(f"{path} receiver event has the wrong phase")
+        if require_task_binding and events[receiver]["task_id"] != expected_task_id:
+            raise VerificationError(
+                f"{path} receiver/fallback event belongs to another task"
+            )
         if decision >= receiver:
             raise VerificationError(f"{path} route was not decided before receiver output")
     if route["decode_before_model"] is not False:
@@ -310,9 +319,17 @@ def _validate_route(
     if fallback_from is not None and (type(fallback_from) is not str or not fallback_from):
         raise VerificationError(f"{path}.fallback_from must be text or null")
     if fallback_from is not None and not any(
-        event["phase"] == "fallback" for event in events.values()
+        event["phase"] == "fallback"
+        and (not require_task_binding or event["task_id"] == expected_task_id)
+        for event in events.values()
     ):
         raise VerificationError(f"{path} records fallback without its token event")
+    if require_task_binding and receiver is not None:
+        terminal_phase = events[receiver]["phase"]
+        if fallback_from is not None and terminal_phase != "fallback":
+            raise VerificationError(f"{path} does not bind its fallback terminal")
+        if fallback_from is None and terminal_phase == "fallback":
+            raise VerificationError(f"{path} binds fallback without a disposition")
     return mode, fallback_from is not None
 
 
@@ -474,6 +491,7 @@ def _validate_task_result(
     *,
     arm_id: str,
     events: Mapping[int, Mapping[str, Any]],
+    require_task_binding: bool,
     path: str,
 ) -> tuple[dict[str, Any], bool]:
     result = _object(value, path)
@@ -542,7 +560,11 @@ def _validate_task_result(
             fallback_used = False
         else:
             route_mode, fallback_used = _validate_route(
-                result["route"], events, f"{path}.route"
+                result["route"],
+                events,
+                f"{path}.route",
+                expected_task_id=planned["task_id"],
+                require_task_binding=require_task_binding,
             )
     else:
         if result["route"] is not None:
@@ -570,6 +592,7 @@ def _validate_arm(
     frozen_boundaries: Mapping[str, Mapping[str, Any]],
     execution_operator_id: str,
     expected_auditor_id: str,
+    require_task_binding: bool,
     path: str,
 ) -> tuple[dict[str, Any], bool]:
     arm = _object(value, path)
@@ -630,6 +653,7 @@ def _validate_arm(
             planned,
             arm_id=expected_arm_id,
             events=events,
+            require_task_binding=require_task_binding,
             path=f"{path}.task_results[{index}]",
         )
         normalized_tasks.append(normalized)
@@ -655,6 +679,8 @@ def _validate_session_result(
     planned: Mapping[str, Any],
     frozen_boundaries: Mapping[str, Mapping[str, Any]],
     path: str,
+    *,
+    require_task_binding: bool = False,
 ) -> tuple[dict[str, Any], bool, bool]:
     record = _object(value, path)
     _exact(
@@ -703,6 +729,7 @@ def _validate_session_result(
             frozen_boundaries=frozen_boundaries,
             execution_operator_id=planned["operator_id"],
             expected_auditor_id=planned["boundary_auditor_id"],
+            require_task_binding=require_task_binding,
             path=f"{path}.arms[{index}]",
         )
         arms[arm_id] = normalized
@@ -765,6 +792,12 @@ def verify_result(
         raise VerificationError("result notes must be a non-empty-text array")
 
     planned_sessions = {item["session_id"]: item for item in plan["sessions"]}
+    real_evidence = plan["evidence_boundary"] == "real-independent-evaluation"
+    require_task_binding = (
+        real_evidence
+        and isinstance(receipt_store, ReceiptStore)
+        and receipt_store.schema_version == RECEIPT_BUNDLE_SCHEMA_V2
+    )
     raw_records = _list(result["records"], "result.records")
     submitted: dict[str, Any] = {}
     for index, raw in enumerate(raw_records):
@@ -792,18 +825,20 @@ def verify_result(
             planned,
             plan["sandbox_boundaries"],
             f"result.records[{index}]",
+            require_task_binding=require_task_binding,
         )
         normalized_sessions.append(normalized)
         measurement_complete = measurement_complete and session_complete
         all_attested = all_attested and attested
 
-    real_evidence = plan["evidence_boundary"] == "real-independent-evaluation"
     receipt_complete = not real_evidence
     authentication_complete = not real_evidence
     if receipt_store is None:
         receipt_summary: dict[str, Any] = {
             "required": real_evidence,
             "supplied": False,
+            "content_consistent": not real_evidence,
+            "scorer_output_binding_complete": not real_evidence,
             "complete": not real_evidence,
             "referenced": 0,
             "resolved": 0,

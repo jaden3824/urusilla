@@ -36,13 +36,20 @@ from .contract import (
 )
 
 
-TRACE_SCHEMA = "urusilla-initial-goal-execution-trace/1"
-ARM_EXECUTION_MANIFEST_SCHEMA = "urusilla-initial-goal-arm-execution-content/1"
+TRACE_SCHEMA = "urusilla-initial-goal-execution-trace/2"
+ARM_EXECUTION_MANIFEST_SCHEMA = "urusilla-initial-goal-arm-execution-content/2"
 ROUTE_DECISION_SCHEMA = "urusilla-initial-goal-route-decision/1"
 TASK_INPUT_SCHEMA = "urusilla-initial-goal-task-input/1"
+POST_RECEIVER_VALIDATION_SCHEMA = (
+    "urusilla-initial-goal-post-receiver-semantic-validation/1"
+)
 TRACE_BOUNDARY = "offline-content-bound-not-authenticated"
 AUTHENTICATION_STATUS = "not-authenticated-fail-closed"
-SOURCE_KINDS = ("external-response", "deterministic-local")
+SOURCE_KINDS = (
+    "external-response",
+    "deterministic-local",
+    "deterministic-validator",
+)
 LOCAL_SOURCE_PHASES = ("setup", "sender", "router", "tool", "safety", "judge")
 CAPTURE_TERMINAL_STATUSES = ("completed", "timeout", "refused", "provider_error")
 SILENCE_TERMINAL_STATUS = "silenced"
@@ -113,6 +120,43 @@ def task_input_sha256(messages: Sequence[Mapping[str, str]]) -> str:
         {
             "schema_version": TASK_INPUT_SCHEMA,
             "provider_neutral_messages": normalized,
+        }
+    )
+
+
+def post_receiver_validation_input_sha256(
+    *,
+    task_id: str,
+    task_sha256: str,
+    primary_event_sequence: int,
+    primary_output_sha256: str,
+) -> str:
+    """Bind the exact task and completed primary output presented to a validator."""
+
+    return sha256_ref(
+        {
+            "schema_version": POST_RECEIVER_VALIDATION_SCHEMA,
+            "record_kind": "validator-input",
+            "task_id": task_id,
+            "task_sha256": task_sha256,
+            "primary_event_sequence": primary_event_sequence,
+            "primary_output_sha256": primary_output_sha256,
+        }
+    )
+
+
+def post_receiver_validation_output_sha256(
+    *, input_sha256: str, verdict: str, reason_code: str
+) -> str:
+    """Bind one deterministic semantic verdict without embedding provider text."""
+
+    return sha256_ref(
+        {
+            "schema_version": POST_RECEIVER_VALIDATION_SCHEMA,
+            "record_kind": "validator-output",
+            "input_sha256": input_sha256,
+            "verdict": verdict,
+            "reason_code": reason_code,
         }
     )
 
@@ -276,6 +320,43 @@ def build_arm_execution_manifest(
             source_id = source["local_event_id"]
             external_execution_binding_sha256 = None
             bundle_record_sequence = None
+        elif source.get("kind") == "deterministic-validator":
+            # The manifest commits the validator before the provider response is
+            # known.  Response-bound input/output digests and the verdict remain
+            # observed trace evidence and are checked against the capture during
+            # assembly; including them here would make pre-registration impossible.
+            _exact(
+                source,
+                {
+                    "kind",
+                    "schema_version",
+                    "local_event_id",
+                    "implementation_sha256",
+                    "task_sha256",
+                    "primary_event_sequence",
+                    "primary_output_sha256",
+                    "verdict",
+                    "reason_code",
+                    "input_sha256",
+                    "output_sha256",
+                    "usage",
+                },
+                "manifest deterministic validator source",
+            )
+            projection_sha256 = None
+            source_commitment = {
+                "kind": "deterministic-validator",
+                "schema_version": source["schema_version"],
+                "local_event_id": source["local_event_id"],
+                "implementation_sha256": source["implementation_sha256"],
+                "task_sha256": source["task_sha256"],
+                "primary_event_sequence": source["primary_event_sequence"],
+            }
+            request_sha256 = None
+            messages_sha256 = None
+            source_id = source["local_event_id"]
+            external_execution_binding_sha256 = None
+            bundle_record_sequence = None
         else:
             raise VerificationError("execution manifest source kind is invalid")
         manifest_events.append(
@@ -310,6 +391,7 @@ def _validate_source(
     arm_id: str,
     task_by_id: Mapping[str, Mapping[str, Any]],
     task_input_by_id: Mapping[str, Sequence[Mapping[str, str]]],
+    semantic_scorer_sha256: str,
     phase: str,
     task_id: str | None,
     path: str,
@@ -430,6 +512,73 @@ def _validate_source(
             _sha(source["input_sha256"], f"{path}.input_sha256")
         if source["output_sha256"] is not None:
             _sha(source["output_sha256"], f"{path}.output_sha256")
+        _object(source["usage"], f"{path}.usage")
+        return kind, local_id
+
+    if kind == "deterministic-validator":
+        _exact(
+            source,
+            {
+                "kind",
+                "schema_version",
+                "local_event_id",
+                "implementation_sha256",
+                "task_sha256",
+                "primary_event_sequence",
+                "primary_output_sha256",
+                "verdict",
+                "reason_code",
+                "input_sha256",
+                "output_sha256",
+                "usage",
+            },
+            path,
+        )
+        if arm_id != "hybrid-router" or phase != "safety" or task_id is None:
+            raise VerificationError(
+                f"{path} deterministic validator must be a task-bound hybrid "
+                "safety-accounting event"
+            )
+        if source["schema_version"] != POST_RECEIVER_VALIDATION_SCHEMA:
+            raise VerificationError(f"{path} validator schema differs")
+        local_id = _identifier(source["local_event_id"], f"{path}.local_event_id")
+        implementation_sha256 = _sha(
+            source["implementation_sha256"], f"{path}.implementation_sha256"
+        )
+        if implementation_sha256 != semantic_scorer_sha256:
+            raise VerificationError(
+                f"{path} validator is not the frozen semantic scorer"
+            )
+        if source["task_sha256"] != task_by_id[task_id]["task_sha256"]:
+            raise VerificationError(f"{path} validator binds the wrong frozen task")
+        primary_sequence = _count(
+            source["primary_event_sequence"], f"{path}.primary_event_sequence"
+        )
+        assert primary_sequence is not None
+        primary_output_sha256 = _sha(
+            source["primary_output_sha256"], f"{path}.primary_output_sha256"
+        )
+        if source["verdict"] != "invalid":
+            raise VerificationError(f"{path} validator verdict must be invalid")
+        if source["reason_code"] != "semantic-invalid":
+            raise VerificationError(
+                f"{path} validator reason must be semantic-invalid"
+            )
+        expected_input = post_receiver_validation_input_sha256(
+            task_id=task_id,
+            task_sha256=source["task_sha256"],
+            primary_event_sequence=primary_sequence,
+            primary_output_sha256=primary_output_sha256,
+        )
+        if source["input_sha256"] != expected_input:
+            raise VerificationError(f"{path} validator input digest differs")
+        expected_output = post_receiver_validation_output_sha256(
+            input_sha256=expected_input,
+            verdict=source["verdict"],
+            reason_code=source["reason_code"],
+        )
+        if source["output_sha256"] != expected_output:
+            raise VerificationError(f"{path} validator output digest differs")
         _object(source["usage"], f"{path}.usage")
         return kind, local_id
 
@@ -622,6 +771,9 @@ def validate_execution_trace(plan_value: Any, trace_value: Any) -> dict[str, Any
                     arm_id=arm_id,
                     task_by_id=task_by_id,
                     task_input_by_id=task_input_by_id,
+                    semantic_scorer_sha256=plan["artifact_locks"][
+                        "semantic_scorer"
+                    ],
                     phase=phase,
                     task_id=task_id,
                     path=f"{event_path}.source",
@@ -735,8 +887,21 @@ def validate_execution_trace(plan_value: Any, trace_value: Any) -> dict[str, Any
                 sender_events = [
                     event for event in task_events if event["phase"] == "sender"
                 ]
+                validator_events = [
+                    event
+                    for event in task_events
+                    if event["source"].get("kind") == "deterministic-validator"
+                ]
                 if len(repair_events) > 1:
                     raise VerificationError(f"{binding_path} has unbounded repair")
+                if len(validator_events) > 1:
+                    raise VerificationError(
+                        f"{binding_path} has more than one post-receiver validator"
+                    )
+                if arm_id in {"raw-concise", "ordinary-json"} and validator_events:
+                    raise VerificationError(
+                        f"{binding_path} baseline cannot contain hybrid validation evidence"
+                    )
                 if arm_id in {"raw-concise", "ordinary-json"} and (
                     len(receiver_events) != 1 or fallback_events
                 ):
@@ -825,6 +990,14 @@ def validate_execution_trace(plan_value: Any, trace_value: Any) -> dict[str, Any
                             raise VerificationError(
                                 f"{binding_path} router decision must precede its terminal"
                             )
+                    if (
+                        receiver_events
+                        and decision_sequence >= receiver_events[0]["sequence"]
+                    ):
+                        raise VerificationError(
+                            f"{binding_path} router decision must precede its primary "
+                            "receiver"
+                        )
                     attempted_action_state = (
                         selected_mode == "action-state" or fallback_from is not None
                     )
@@ -850,6 +1023,11 @@ def validate_execution_trace(plan_value: Any, trace_value: Any) -> dict[str, Any
                                 f"{binding_path} sender must precede the router decision"
                             )
                     if selected_mode == "silence":
+                        if validator_events:
+                            raise VerificationError(
+                                f"{binding_path} silence cannot contain post-receiver "
+                                "validation evidence"
+                            )
                         invalid_silence_phases = sorted(
                             {
                                 event["phase"]
@@ -952,6 +1130,36 @@ def validate_execution_trace(plan_value: Any, trace_value: Any) -> dict[str, Any
                                 raise VerificationError(
                                     f"{binding_path} post-receiver fallback binding differs"
                                 )
+                            semantic_validation_fallback = (
+                                fallback_from
+                                == "action-state:receiver:semantic-invalid"
+                            )
+                            if semantic_validation_fallback:
+                                if len(validator_events) != 1:
+                                    raise VerificationError(
+                                        f"{binding_path} completed-primary semantic "
+                                        "fallback lacks exact validator evidence"
+                                    )
+                                validator_event = validator_events[0]
+                                validator_source = validator_event["source"]
+                                if (
+                                    validator_source["primary_event_sequence"]
+                                    != receiver_events[0]["sequence"]
+                                    or not (
+                                        receiver_events[0]["sequence"]
+                                        < validator_event["sequence"]
+                                        < fallback_events[0]["sequence"]
+                                    )
+                                ):
+                                    raise VerificationError(
+                                        f"{binding_path} validator does not bind the "
+                                        "exact primary-to-fallback chronology"
+                                    )
+                            elif validator_events:
+                                raise VerificationError(
+                                    f"{binding_path} validator evidence is not bound "
+                                    "to a semantic-invalid fallback"
+                                )
                             fallback_request_arm = fallback_events[0]["source"][
                                 "call_request"
                             ]["arm"]
@@ -964,6 +1172,11 @@ def validate_execution_trace(plan_value: Any, trace_value: Any) -> dict[str, Any
                                     "a frozen raw/json baseline request"
                                 )
                         else:
+                            if validator_events:
+                                raise VerificationError(
+                                    f"{binding_path} pre-receiver fallback cannot "
+                                    "contain post-receiver validation evidence"
+                                )
                             if (
                                 selected_mode not in BASELINE_ROUTE_MODES
                                 or not any(
@@ -985,6 +1198,10 @@ def validate_execution_trace(plan_value: Any, trace_value: Any) -> dict[str, Any
                                 )
                         expected_terminal = fallback_events[0]
                     else:
+                        if validator_events:
+                            raise VerificationError(
+                                f"{binding_path} validation evidence has no fallback"
+                            )
                         if fallback_from is not None or len(receiver_events) != 1:
                             raise VerificationError(
                                 f"{binding_path} hybrid terminal event cardinality differs"
@@ -1065,12 +1282,15 @@ __all__ = [
     "TRACE_BOUNDARY",
     "TRACE_SCHEMA",
     "ARM_EXECUTION_MANIFEST_SCHEMA",
+    "POST_RECEIVER_VALIDATION_SCHEMA",
     "ROUTE_DECISION_SCHEMA",
     "TASK_INPUT_SCHEMA",
     "CANONICAL_SILENCE_OUTPUT_SHA256",
     "SILENCE_TERMINAL_STATUS",
     "build_arm_execution_manifest",
     "build_execution_trace",
+    "post_receiver_validation_input_sha256",
+    "post_receiver_validation_output_sha256",
     "route_decision_sha256",
     "task_input_sha256",
     "validate_execution_trace",
