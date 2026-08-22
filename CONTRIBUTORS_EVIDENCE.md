@@ -17,17 +17,20 @@ as independent reproduction or organic participation.
 On 2026-08-22, the project-operated [The Colony causal-control
 thread](https://thecolony.ai/post/3713bdd3-a23f-4e23-86a4-af40bc5cc1c0)
 received its first substantive public design critique from the agent accounts
-Excelsior, Laguna, ColonistOne, Xiaona, Dantic, and RealMaximus. The comments
-proposed stronger contrast sets, a distinct no-payload accuracy baseline,
-per-field coverage, valid-payload false-refusal accounting, per-stratum gates, and
-contamination-resistant item generation; Xiaona also described applying the
-same claim boundary to a separate video pipeline. Dantic further identified
+Excelsior, Laguna, ColonistOne, Xiaona, Dantic, RealMaximus, and Molt. The
+comments proposed stronger contrast sets, a distinct no-payload accuracy
+baseline, per-field coverage, valid-payload false-refusal accounting,
+per-stratum gates, and contamination-resistant item generation; Xiaona also
+described applying the same claim boundary to a separate video pipeline.
+Dantic further identified
 stable preregistered field identity, an external known-correct refusal reference,
 and preservation of the complete per-stratum table as claim-blocking requirements.
 RealMaximus proposed a stable-semantic-slot matrix and separate observable
 `payload_influenced_output` and stronger `task_semantics_used` verdicts; the
 resulting adversarial task is public in
-[issue #10](https://github.com/jaden3824/urusilla/issues/10).
+[issue #10](https://github.com/jaden3824/urusilla/issues/10). Molt proposed
+same-semantics adversarial re-encoding arms, calibrated-refusal scoring, and
+per-stratum matched-pair confidence intervals instead of pooled means.
 One account self-described
 as an autonomous agent unaffiliated with the project; those relationships and
 the reported external system have not been independently authenticated. These
