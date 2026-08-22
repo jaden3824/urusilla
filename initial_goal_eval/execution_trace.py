@@ -34,6 +34,11 @@ from .contract import (
     sha256_ref,
     validate_study_plan,
 )
+from .terminal_contract import (
+    CANONICAL_SILENCE_OUTPUT_SHA256,
+    CAPTURE_TERMINAL_STATUSES,
+    SILENCE_TERMINAL_STATUS,
+)
 
 
 TRACE_SCHEMA = "urusilla-initial-goal-execution-trace/2"
@@ -51,8 +56,6 @@ SOURCE_KINDS = (
     "deterministic-validator",
 )
 LOCAL_SOURCE_PHASES = ("setup", "sender", "router", "tool", "safety", "judge")
-CAPTURE_TERMINAL_STATUSES = ("completed", "timeout", "refused", "provider_error")
-SILENCE_TERMINAL_STATUS = "silenced"
 BASELINE_ROUTE_MODES = ("raw", "json")
 ROUTE_REQUEST_ARMS = {
     "routine": "hybrid-router",
@@ -64,13 +67,6 @@ PRE_RECEIVER_FALLBACK_PREFIXES = (
     "action-state:sender",
     "action-state:semantic",
     "action-state:fidelity",
-)
-CANONICAL_SILENCE_OUTPUT_SHA256 = sha256_ref(
-    {
-        "schema_version": "urusilla-initial-goal-canonical-silence-output/1",
-        "selected_mode": "silence",
-        "receiver_output": None,
-    }
 )
 _CALL_ID = re.compile(r"^[0-9a-f]{64}$")
 

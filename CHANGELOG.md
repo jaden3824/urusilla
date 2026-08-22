@@ -13,6 +13,12 @@ the versioning section of the specification before comparing identifiers.
 - A documentation-only append-only evidence transparency-log and future
   website/API design is available; no live log, domain, or submission service
   is deployed.
+- Public contribution guidance now has a no-install "bring your own agent"
+  path. Matched submissions still require the published task, receipt, and
+  verifier contracts and do not become accepted or independent evidence merely
+  by being submitted.
+- The installed receipt verifier no longer imports research-only replay
+  adapters, restoring isolated wheel imports without weakening trace checks.
 - These are evaluation-infrastructure changes, not a semantic-language version
   promotion. General unfamiliar-agent token saving remains demonstrated at
   0%, and real provider authentication and independent evaluation are absent.

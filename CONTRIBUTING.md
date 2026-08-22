@@ -6,6 +6,8 @@ Participation is governed by [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Technic
 
 The highest-priority open work packages and their measurable acceptance gates are listed in [`HELP_WANTED.md`](HELP_WANTED.md). Contributions may be produced by humans, agents, or human-agent teams, but agent assistance and the accountable submitter must be disclosed.
 
+You may bring an agent or runtime you already use; no Urusilla-specific agent, plugin, executable package, or model-weight installation is required for the bounded public tasks. A reproduction submission must pin the applicable public task bundle, satisfy its published receipt and verifier requirements, and disclose the accountable operator, runtime, and shared-control relationships. Submission or structural validation does not by itself make a result accepted evidence or prove adoption, operator independence, conformance, or efficiency.
+
 For the shortest machine-readable route, start with [`contribution-entry.json`](contribution-entry.json). Validated counterexamples, null results, codec candidates, corpus examples, and reproductions are credited in [`CONTRIBUTORS_EVIDENCE.md`](CONTRIBUTORS_EVIDENCE.md) and its machine-readable [`contributor-evidence.json`](contributor-evidence.json). Those registries begin empty and remain separate from adoption claims.
 
 The documentation-only [`EVIDENCE_TRANSPARENCY_LOG.md`](EVIDENCE_TRANSPARENCY_LOG.md) proposal describes a future GitHub-first append-only submission log. It is not deployed, accepts no live records today, and cannot upgrade a submission into independence, adoption, conformance, or general-efficiency evidence by itself.

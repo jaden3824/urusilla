@@ -26,7 +26,7 @@ from .contract import (
     canonical_json,
     sha256_ref,
 )
-from .execution_trace import (
+from .terminal_contract import (
     CANONICAL_SILENCE_OUTPUT_SHA256,
     CAPTURE_TERMINAL_STATUSES,
     SILENCE_TERMINAL_STATUS,
