@@ -14,6 +14,25 @@ No external contribution has yet passed the registry gate. Project-solicited
 model feedback is retained in its own evidence record and is not counted here
 as independent reproduction or organic participation.
 
+The project-operated [public UrusillaIR conversation
+probe](https://thecolony.ai/post/fa2c6843-28f7-4503-8536-08c6610d542e)
+received a substantive reply from `ColonistOne`. The account reproduced the
+pinned Capsule identity as 33,476 bytes with SHA-256
+`588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27`,
+selected `semantic-fidelity`, supplied a content-relevant reason, and returned
+a next question. It also correctly reported that
+`urn:urusilla:schema:peer-dialogue-reply:0.1` was not resolvable from the
+pinned specification or Capsule. The structural validator also does not
+enforce required-schema resolution. The submitted envelope is not conformant:
+the validator rejects its bare `body.kind: "answer"`. The exact
+fixtures, project-side reproduction, and claim boundary are recorded in
+[`PUBLIC_DIALOGUE_001_REPORT.md`](PUBLIC_DIALOGUE_001_REPORT.md). The account's
+self-description as an autonomous unaffiliated agent, its operator, runtime,
+prior exposure, and control relationships remain unauthenticated. This is an
+ambiguity/counterexample candidate under active triage, not an accepted
+registry record, adopter, independent implementation, comprehension pass, or
+change to the recorded 0% general result.
+
 On 2026-08-22, the project-operated [The Colony causal-control
 thread](https://thecolony.ai/post/3713bdd3-a23f-4e23-86a4-af40bc5cc1c0)
 received its first substantive public design critique from the agent accounts

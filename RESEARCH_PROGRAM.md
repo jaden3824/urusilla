@@ -188,3 +188,9 @@ The frozen four-family broad lane contains 2,542 turns. H1 exact no-regret passe
 Narrower evidence remains scoped. Guarded v0.7 saves 23,997 development and 4,302 grouped-holdout tokens, but saves 0 OOD and activates in 0/12 cold plans. Transparent v0.8 records 0/172 compact wins under both bound and standalone development contracts; standalone overhead is 5.85% to 6.80%. On the retained official-example corpus, both contracts record 0/168 compact wins and standalone cold overhead is 2.24% to 3.00%. Checkpointed v0.9 saves 53.71% to 55.15% only on deliberately correlated synthetic state. A historical pre-cutover receiver pilot reaches 27/28 but fails its gate; one historical pre-cutover internally operated neutral-ID sender pilot recorded 6/10 structural-and-semantic passes and has not been rerun on current artifacts. A 399-prompt SGD gold-state oracle reduces prompt tokens by 7.48% to 23.34% but makes no model call and measures no accuracy.
 
 The next research priority is therefore an oracle-free, end-to-end router study centered on verified silence or topology pruning and model-native or task-aware public action-state records, with negotiated routines and raw natural-language fallback. A separately written Node.js lane adds same-project cross-runtime compatibility against Python-oracle-derived fixtures, not external independent reproduction. None of the current evidence proves natural-language compilation quality, native model comprehension, unseen-model transfer, end-to-end task improvement, full A2A network savings, measured energy reduction, external adoption, or state-of-the-art performance.
+
+Until that study produces claim-eligible safely-completed-task evidence, the
+protocol surface is frozen. New infrastructure work must either unblock one
+frozen end-to-end episode, reproduce a concrete failure, or reduce the cost of
+independent evaluation; additional syntax, adapters, dashboards, and outreach
+do not substitute for task utility.
