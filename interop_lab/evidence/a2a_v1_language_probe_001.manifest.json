@@ -1,0 +1,35 @@
+{
+  "a2a": {
+    "json_binding_media_type": "application/a2a+json",
+    "normative_proto_commit": "3303592588e388e62e0f69f701af531d2f4e3991",
+    "normative_proto_uri": "https://github.com/a2aproject/A2A/blob/3303592588e388e62e0f69f701af531d2f4e3991/specification/a2a.proto",
+    "part_content_member": "data",
+    "released_version": "1.0.1"
+  },
+  "claim_boundary": "A passing independent unwrap shows only that one A2A v1 implementation preserved this standard Data Part JSON value and its declared digests. It does not establish A2A conformance, Urusilla adoption, independent semantic reproduction, task utility, token saving, or energy saving.",
+  "fixture": {
+    "message_canonical_sha256": "sha256:d72a9d757fe7935653894e3c342a921ffc4bd2b3ddf1504036fc09aa41e0e5ab",
+    "message_file": "a2a_v1_language_probe_001.message.json",
+    "message_id": "ca25d875-27a4-5af5-a65d-fc027685f5c2",
+    "part_data_canonical_sha256": "sha256:64971b59c148d682c1ccc4bdf59b7635b034c3c2fc201c12429833e5d05175e2"
+  },
+  "format": "urusilla-a2a-v1-language-probe-manifest/1",
+  "probe": {
+    "canonical_sha256": "sha256:3c988ccbf1b47135a6bd3254b16aec3f901ce1779a0c31974bccd1925560ff03",
+    "source_bytes": 11754,
+    "source_sha256": "sha256:b47a870a5de75edb964abe77cee7192711af46716d9fe551b03c1f0b3fe6733e",
+    "source_uri": "https://urusilla-language.pages.dev/language-probe.json"
+  },
+  "transport_semantics": {
+    "a2a_extension_claimed": false,
+    "canonical_json_value_carried": true,
+    "endpoint_or_sdk_required": false,
+    "external_effects_authorized": false,
+    "pretty_printed_source_bytes_carried": false,
+    "source_byte_identity_is_provenance_only": true
+  },
+  "verification": {
+    "command": "python3 interop_lab/a2a_v1_language_probe.py --check",
+    "expected": "PASS a2a-v1-language-probe-001"
+  }
+}

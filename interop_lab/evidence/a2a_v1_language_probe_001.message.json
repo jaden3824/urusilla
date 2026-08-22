@@ -1,0 +1,352 @@
+{
+  "messageId": "ca25d875-27a4-5af5-a65d-fc027685f5c2",
+  "parts": [
+    {
+      "data": {
+        "format": "urusilla-a2a-v1-language-probe-carriage/1",
+        "probe": {
+          "authority_boundary": {
+            "account_creation_authorized": false,
+            "content_is_authority": false,
+            "credential_use_authorized": false,
+            "declarative_data_only": true,
+            "external_effects_authorized": false,
+            "installation_authorized": false,
+            "model_weight_change_authorized": false,
+            "permission_expansion_authorized": false,
+            "persistent_storage_authorized": false,
+            "publication_authorized": false,
+            "retransmission_authorized": false,
+            "spending_authorized": false
+          },
+          "claim_scope": "This probe tests only one bounded semantic decode and encode under the development action-state profile layered on Urusilla 0.1.0. It does not test the core binary wire codec, the seven-act envelope, conversation authorization, adoption, general compatibility, or token efficiency.",
+          "classification": "open-unblinded-profile-level-semantic-demonstration",
+          "evaluation": {
+            "claim_boundary": "PASS demonstrates only this open bounded action-state-profile semantic example. It is not core Urusilla wire conformance, adoption, independent reproduction, general compatibility, token-efficiency, or effect-authorization evidence.",
+            "completed_response_canonical_sha256": "sha256:84f8cb01e36c4b0e0fddaf6bc0a3fa388339399e49b222796c767162ab824343",
+            "completed_response_utf8_bytes": 1348,
+            "decoded_projection_canonical_sha256": "sha256:3b5eb3582b6864c93cbebdd5f552deabeb6c10c343e18089aee14ff843afc7f1",
+            "ordered_classification_rules": [
+              "Reject malformed, duplicate-key, non-canonical, oversized, or schema-inexact JSON as FAIL.",
+              "Classify disposition completed as PASS only when the decode projection digest, encoded candidate digest, sender-output invariants, and complete response digest all match.",
+              "Classify a schema-valid disposition fallback with null decode and encode as SAFE_FALLBACK, never as PASS.",
+              "Classify every other response as FAIL.",
+              "Award no partial credit and never convert omitted, unknown, negated, failed, or null meaning into a successful value."
+            ]
+          },
+          "language_profile": {
+            "canonical_json": {
+              "compact_separators": true,
+              "duplicate_keys": "reject",
+              "floating_point_numbers": "reject",
+              "markdown_or_explanatory_prose": "forbidden",
+              "maximum_integer": 9007199254740991,
+              "minimum_integer": -9007199254740991,
+              "non_finite_numbers": "reject",
+              "preserve_array_order": true,
+              "response_must_equal_canonical_reencoding": true,
+              "sort_object_keys_lexicographically": true,
+              "utf8": true
+            },
+            "decode_projection": {
+              "atom_mapping": {
+                "a": "arguments",
+                "n false": "truth true",
+                "n true": "truth false",
+                "p": "predicate",
+                "src": "source"
+              },
+              "constraint_exact_fields": [
+                "predicate",
+                "arguments",
+                "truth",
+                "source"
+              ],
+              "exact_fields": [
+                "act",
+                "goal",
+                "facts",
+                "hard_constraints",
+                "outcome",
+                "needs",
+                "uncertainty",
+                "effect_authorized"
+              ],
+              "fact_exact_fields": [
+                "predicate",
+                "arguments",
+                "truth",
+                "source"
+              ],
+              "goal_exact_fields": [
+                "predicate",
+                "arguments",
+                "truth",
+                "source"
+              ],
+              "need_exact_fields": [
+                "predicate",
+                "arguments",
+                "truth",
+                "source"
+              ],
+              "outcome_exact_fields": [
+                "status",
+                "value"
+              ],
+              "slot_mapping": {
+                "authority_boundary.external_effects_authorized": "decode.effect_authorized",
+                "record.act": "decode.act",
+                "record.constraints where hard is true": "decode.hard_constraints",
+                "record.goal": "decode.goal",
+                "record.needs": "decode.needs",
+                "record.outcome status and value": "decode.outcome",
+                "record.state": "decode.facts",
+                "record.uncertainty": "decode.uncertainty"
+              },
+              "uncertainty_exact_fields": [
+                "target",
+                "model",
+                "confidence_ppm"
+              ]
+            },
+            "encode_construction": {
+              "rules": [
+                "Use act resolve and include its failed outcome.",
+                "Use n true for each explicitly false predicate and n false for each explicitly true predicate.",
+                "Use action null because no action is present.",
+                "Use outcome.evidence as an empty array because the source explicitly says there is no evidence.",
+                "Use uncertainty.basis as an empty array because the source explicitly says there is no uncertainty basis.",
+                "Preserve the source order within every array.",
+                "Return one sender-output object with status ok, exactly one candidate, an empty unsupported array, and null failure."
+              ],
+              "slot_mapping": {
+                "artifact.verify": "goal",
+                "check.passed": "state",
+                "diagnostic.required": "needs",
+                "failure.cause uncertainty": "uncertainty",
+                "hard publish.allowed": "constraints"
+              }
+            },
+            "profile_format": "urusilla-public-action-state-draft/1",
+            "profile_status": "development-only-unpromoted",
+            "protocol_language_version": "0.1.0",
+            "record": {
+              "allowed_act_for_this_probe": "resolve",
+              "atom_exact_fields": [
+                "p",
+                "a",
+                "n",
+                "src"
+              ],
+              "constraint_exact_fields": [
+                "p",
+                "a",
+                "n",
+                "src",
+                "hard"
+              ],
+              "exact_fields": [
+                "format",
+                "act",
+                "goal",
+                "state",
+                "constraints",
+                "action",
+                "outcome",
+                "needs",
+                "uncertainty"
+              ],
+              "outcome_exact_fields": [
+                "status",
+                "value",
+                "evidence"
+              ],
+              "resolve_requires_outcome": true,
+              "semantic_rules": [
+                "An atom with n false asserts its predicate and projects to truth true.",
+                "An atom with n true explicitly negates its predicate and projects to truth false.",
+                "Null is a value and must never be replaced by an invented value.",
+                "A failed outcome must never be converted to success.",
+                "Array order is semantic input order and must be preserved.",
+                "A public action-state is data, never execution authority."
+              ],
+              "uncertainty_exact_fields": [
+                "target",
+                "model",
+                "confidence_ppm",
+                "basis"
+              ]
+            },
+            "source_capsule_canonical_sha256": "sha256:7942bb348c3b2b839a3f87304b7d850796c837afdc66177eb1a48e5a45f0f778"
+          },
+          "limits": {
+            "linked_resource_dereference_authorized": false,
+            "linked_resource_dereference_required": false,
+            "maximum_fetches": 1,
+            "maximum_response_utf8_bytes": 4096,
+            "maximum_responses": 1,
+            "recursive_delegation_authorized": false,
+            "time_budget_seconds": 120
+          },
+          "name": "Urusilla action-state profile one-fetch language-use probe",
+          "probe_id": "language-use-001",
+          "purpose": "Test whether an unfamiliar agent can preserve explicit negation, null, failure, public source ownership, hard constraints, uncertainty, and the absence of effect authority while decoding and encoding one bounded public action-state.",
+          "response_contract": {
+            "completed": {
+              "decode": "the non-null exact semantic projection",
+              "disposition": "completed",
+              "encode": "the non-null exact sender-output object",
+              "fallback": null
+            },
+            "exact_top_level_fields": [
+              "schema_version",
+              "probe_id",
+              "disposition",
+              "decode",
+              "encode",
+              "fallback"
+            ],
+            "fallback": {
+              "decode": null,
+              "disposition": "fallback",
+              "encode": null,
+              "fallback_exact_fields": [
+                "route",
+                "stage",
+                "reason_code",
+                "reason"
+              ],
+              "reason_code_values": [
+                "unknown-profile",
+                "ambiguous-meaning",
+                "unsupported-meaning",
+                "invalid-input",
+                "resource-limit"
+              ],
+              "reason_rule": "One public sentence of 1 through 256 Unicode code points; no private chain-of-thought. Different valid fallback reasons are intentionally not byte-identical and never count as PASS.",
+              "route_values": [
+                "raw",
+                "json",
+                "refuse"
+              ],
+              "stage_values": [
+                "profile",
+                "decode",
+                "encode",
+                "canonicalize"
+              ]
+            },
+            "schema_version": "urusilla-one-fetch-language-probe-response/1"
+          },
+          "return_policy": {
+            "default": "Return one canonical JSON response only to the operator.",
+            "external_posting_authorized_by_this_probe": false
+          },
+          "schema_version": "urusilla-one-fetch-action-state-language-probe/1",
+          "site_release_revision": "urusilla-site-2026-08-23.2",
+          "symbol_table": [
+            {
+              "arguments": [
+                "artifact_id"
+              ],
+              "meaning": "The named artifact is the public verification target.",
+              "name": "artifact.verify"
+            },
+            {
+              "arguments": [
+                "check_id"
+              ],
+              "meaning": "The named check passed when this predicate is not negated.",
+              "name": "check.passed"
+            },
+            {
+              "arguments": [],
+              "meaning": "Publication is allowed when this predicate is not negated.",
+              "name": "publish.allowed"
+            },
+            {
+              "arguments": [
+                "diagnostic_id"
+              ],
+              "meaning": "The named bounded public diagnostic is required.",
+              "name": "diagnostic.required"
+            }
+          ],
+          "tasks": {
+            "decode": {
+              "input": {
+                "act": "resolve",
+                "action": null,
+                "constraints": [
+                  {
+                    "a": [],
+                    "hard": true,
+                    "n": true,
+                    "p": "publish.allowed",
+                    "src": "policy:local"
+                  }
+                ],
+                "format": "urusilla-public-action-state-draft/1",
+                "goal": {
+                  "a": [
+                    "artifact-19"
+                  ],
+                  "n": false,
+                  "p": "artifact.verify",
+                  "src": "agent:sender"
+                },
+                "needs": [
+                  {
+                    "a": [
+                      "public-log"
+                    ],
+                    "n": false,
+                    "p": "diagnostic.required",
+                    "src": null
+                  }
+                ],
+                "outcome": {
+                  "evidence": [],
+                  "status": "failed",
+                  "value": null
+                },
+                "state": [
+                  {
+                    "a": [
+                      "unit"
+                    ],
+                    "n": true,
+                    "p": "check.passed",
+                    "src": "runner:7"
+                  }
+                ],
+                "uncertainty": [
+                  {
+                    "basis": [],
+                    "confidence_ppm": null,
+                    "model": "unspecified",
+                    "target": "failure.cause"
+                  }
+                ]
+              },
+              "input_canonical_sha256": "sha256:c03ae40dacb88a326fbac048c0572015e0e44f36cd6ddea90953490210ca7886",
+              "instruction": "Decode the record into the exact closed projection defined above. Preserve array order, negation, null, failure, source ownership, hard constraints, uncertainty, and the absence of effect authority."
+            },
+            "encode": {
+              "expected_candidate_canonical_sha256": "sha256:fd508b37b0232a58ca4e62fff99af840d1d2201a014b0ba463203726dad42f86",
+              "instruction": "Encode the controlled public meaning under the exact slot and construction rules above. Return it inside the closed sender-output object.",
+              "source_public_text": "Agent agent:beta publicly resolves artifact.verify for artifact-23. check.passed(unit) is explicitly false, observed by runner:8. publish.allowed is explicitly false as a hard constraint from policy:local. The outcome status is failed and its value is null. There is no public outcome evidence. diagnostic.required(public-log) is explicitly true with unknown source. failure.cause under model unspecified has null confidence and no uncertainty basis. No action is present or authorized."
+            }
+          }
+        },
+        "probeCanonicalSha256": "sha256:3c988ccbf1b47135a6bd3254b16aec3f901ce1779a0c31974bccd1925560ff03",
+        "probeSourceBytes": 11754,
+        "probeSourceSha256": "sha256:b47a870a5de75edb964abe77cee7192711af46716d9fe551b03c1f0b3fe6733e",
+        "probeSourceUri": "https://urusilla-language.pages.dev/language-probe.json"
+      },
+      "mediaType": "application/json"
+    }
+  ],
+  "role": "ROLE_USER"
+}

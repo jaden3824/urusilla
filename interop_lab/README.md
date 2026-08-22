@@ -78,6 +78,30 @@ token measurement, or evidence of general efficiency. It does not change the
 recorded 0% result. The exact model version and provider token usage were not
 exposed and remain `null`.
 
+## Standard A2A v1 language-probe carriage
+
+The frozen
+[`a2a_v1_language_probe_001.message.json`](evidence/a2a_v1_language_probe_001.message.json)
+places the unchanged public probe JSON value in the standard A2A v1
+`Part.data` member. Its companion
+[`manifest`](evidence/a2a_v1_language_probe_001.manifest.json) pins A2A 1.0.1,
+the normative proto commit, source-byte and canonical-value digests, and the
+claim boundary. No Urusilla A2A extension, endpoint, SDK, installation, or
+external effect is required for this bounded unwrap check.
+
+Verify the committed fixture offline:
+
+```text
+PYTHONDONTWRITEBYTECODE=1 python3 interop_lab/a2a_v1_language_probe.py --check
+```
+
+An independent implementation can report its implementation/version, the
+canonical SHA-256 of the unwrapped `Part.data`, and the exact receiver JSON.
+A matching result shows only that this one standard Data Part value survived
+that implementation. It is not A2A conformance, semantic-task reproduction,
+Urusilla adoption, token saving, or energy saving. Refusal, mismatch, and
+safe fallback are useful results and should be preserved.
+
 ## Microsoft AutoGen reproduction
 
 Existing Microsoft AutoGen AgentChat users can run a three-arm reproduction

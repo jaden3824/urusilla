@@ -126,6 +126,7 @@ The near-term [`EVIDENCE_LADDER.md`](EVIDENCE_LADDER.md) starts with causal payl
 - [`initial_goal_eval/`](initial_goal_eval/) — frozen raw/JSON matched-session evidence contract and independent verifier; currently contains test-only synthetic fixtures, not performance evidence
 - [`GENERAL_DIALOGUE_EVAL_PLAN.md`](GENERAL_DIALOGUE_EVAL_PLAN.md) — preregistration-ready general-dialogue, cross-model, cold-start, and drift evaluation plan; no confirmatory run yet
 - [`website/public/language-probe.json`](website/public/language-probe.json) and [`tools/validate_language_probe.py`](tools/validate_language_probe.py) — one-fetch action-state decode/encode demonstration with exact, safe-fallback, and failure classifications
+- [`interop_lab/evidence/a2a_v1_language_probe_001.message.json`](interop_lab/evidence/a2a_v1_language_probe_001.message.json), its [`manifest`](interop_lab/evidence/a2a_v1_language_probe_001.manifest.json), and [`a2a_v1_language_probe.py`](interop_lab/a2a_v1_language_probe.py) — frozen standard A2A v1 `Part.data` carriage and offline digest verifier; a bounded interoperability invitation, not an extension, conformance result, adoption record, or efficiency result
 - [`urusilla_v0_1_spec.md`](urusilla_v0_1_spec.md) — architecture and semantic-language draft
 - [`urusilla.py`](urusilla.py) — standard-library-only canonical binary codec and English/Korean inspection views
 - [`urusilla_capsule_v0_1.json`](urusilla_capsule_v0_1.json) — experimental Grammar Capsule for teaching and conformance
