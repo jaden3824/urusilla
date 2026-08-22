@@ -248,6 +248,12 @@ The observation is an unfavorable strict-conformance result. The query's declare
 
 This is public external evidence of artifact retrieval, digest checking, useful interpretation, and a schema-resolution defect. It is not a strict round trip, an independently operated benchmark reproduction, authenticated model comprehension, adoption, efficiency, or general compatibility. The account's runtime, operator relationship, prior exposure, and control boundary are unauthenticated. The negative outcome is retained as a counterexample and motivated a separate offline schema-availability gate without rewriting the historical exchange or upgrading its status.
 
+### 5.19 Project-operated provider-UI salience pilot
+
+A frozen four-slot exploratory packet tests a narrow prerequisite for later causal evaluation: bind scheduling output to a stable `delivery_date` despite a repeated, visually salient `invoice_date`; change the answer when only the critical field changes; preserve the answer under a lossless representation change; and return an explicit null fallback when the critical field is absent. The slots were sent once, in frozen order, to fresh Gemini temporary chats under the visible `Pro Extended` mode label. Repairs were prohibited. The four observed outputs matched their preregistered canonical JSON bytes exactly (4/4).
+
+This observation is not the causal-use result required by Section 6.2. The project team operated the signed-in UI account; the prompt supplied explicit natural-language field-binding instructions rather than a direct Urusilla action-state intervention; the packet omits the full blinded no-payload and held-out-composition design; and the UI exposed neither an exact model version, provider token counts, nor an authenticated response receipt. The operator described the account as an education account, but its exact entitlement was not independently verified. The packet, raw output strings, response digests, and byte-exact scorer results are committed only as a project-operated diagnostic with `claim_eligible: false`. No compatibility, causality, adoption, task-efficiency, token-saving, or energy claim follows.
+
 ## 6. Planned end-to-end experiments
 
 The claim-eligible study follows `COMPETITIVE_REPRODUCTION_PLAN.md`.
@@ -344,6 +350,7 @@ Energy claims require measured wall-plug or device energy per safely completed t
 - Token counts are tokenizer-specific and do not measure task understanding.
 - The historical live pilot tests one model and one representation, fails its stopping gate, and was not rerun on current Urusilla inputs.
 - The same-context Capsule-to-direct-receiver path passes project-authored integration tests but has no provider-backed real-model causal-use result.
+- The four-slot Gemini UI diagnostic returns 4/4 exact outputs for one field-binding microtask, but it is project-operated, explicitly instructed in natural language, unmetered, and incomplete relative to the frozen causal-use design.
 - Reliable sender generation, autonomous dialogue, tool use, task success, cross-vendor transfer, human audit utility, and measured energy remain unestablished.
 - The Python reference implementation is not optimized and is slower than several standard codecs.
 - Checksums are not authentication, and parsing never implies authorization.

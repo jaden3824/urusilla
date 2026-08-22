@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import json
+from pathlib import Path
 import unittest
 
 from initial_goal_eval.contract import VerificationError, canonical_json
@@ -16,6 +18,13 @@ from interop_lab.provider_ui_causal_pilot import (
     slot_for_condition,
     validate_packet,
     validate_packet_json,
+)
+
+
+OBSERVATION_PATH = (
+    Path(__file__).parents[1]
+    / "evidence"
+    / "gemini_web_ui_causal_pilot_2026_08_23.observation.json"
 )
 
 
@@ -116,6 +125,38 @@ class ProviderUiCausalPilotTests(unittest.TestCase):
         self.assertFalse(newline["exact_canonical_match"])
         self.assertFalse(fenced["exact_canonical_match"])
         self.assertFalse(exact["claim_eligible"])
+
+    def test_committed_project_operated_observation_is_packet_bound(self) -> None:
+        observation = json.loads(OBSERVATION_PATH.read_text(encoding="utf-8"))
+        self.assertEqual(
+            observation["schema_version"],
+            "urusilla-provider-ui-causal-pilot-observation/1",
+        )
+        self.assertEqual(observation["packet_sha256"], self.packet["packet_sha256"])
+        self.assertFalse(observation["claim_eligible"])
+        self.assertEqual(observation["classification"], "SAME-PROJECT-ORCHESTRATED")
+        self.assertIsNone(observation["provider_surface"]["exact_model_version"])
+        self.assertIsNone(observation["provider_surface"]["provider_token_usage"])
+        self.assertEqual(
+            tuple(item["condition"] for item in observation["observations"]),
+            CONDITIONS,
+        )
+        for item in observation["observations"]:
+            slot = slot_for_condition(self.packet, item["condition"])
+            self.assertEqual(item["prompt_sha256"], slot["prompt_sha256"])
+            self.assertEqual(
+                item["expected_canonical_json"], slot["expected_canonical_json"]
+            )
+            self.assertEqual(
+                item["scoring"],
+                score_response(
+                    self.packet, item["condition"], item["observed_output"]
+                ),
+            )
+        self.assertEqual(observation["summary"]["exact_canonical_matches"], 4)
+        self.assertTrue(observation["summary"]["all_exact"])
+        self.assertIsNone(observation["summary"]["causal_verdict"])
+        self.assertIsNone(observation["summary"]["efficiency_verdict"])
 
 
 if __name__ == "__main__":

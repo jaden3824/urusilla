@@ -1,0 +1,125 @@
+{
+  "schema_version": "urusilla-provider-ui-causal-pilot-observation/1",
+  "observation_id": "gemini-ui-delivery-date-salience-001-run-2026-08-23",
+  "pilot_id": "gemini-ui-delivery-date-salience-001",
+  "recorded_at": "2026-08-23T03:42:23+09:00",
+  "classification": "SAME-PROJECT-ORCHESTRATED",
+  "claim_eligible": false,
+  "packet_sha256": "sha256:81636bf42188464d89eea7f864350a5385302ea43fe9f7b4d65f1a1392470b20",
+  "provider_surface": {
+    "product": "Google Gemini web UI",
+    "account_classification": "education account (operator-reported; exact entitlement not independently verified)",
+    "mode_label": "Pro Extended",
+    "exact_model_version": null,
+    "provider_token_usage": null,
+    "provider_token_usage_status": "unknown-ui-permitted-for-pilot-only",
+    "separate_system_role_available": false,
+    "authenticated_provider_receipt": false
+  },
+  "source_state": {
+    "repository_revision": "2fe27d68e76b38171f443bb61a9d4262e8a5454c",
+    "packet_committed_at_run": true,
+    "repository_revision_pushed_at_run": false
+  },
+  "execution": {
+    "surface": "signed-in-provider-web-ui",
+    "operator": "same-project-browser-orchestrator",
+    "fresh_chat_per_slot": true,
+    "temporary_chat_per_slot": true,
+    "reuse_chat_between_slots": false,
+    "repair_attempts": 0,
+    "slot_order": [
+      "ui-slot-17f2a8d4",
+      "ui-slot-6b09ce31",
+      "ui-slot-a41d735e",
+      "ui-slot-d83c190a"
+    ]
+  },
+  "observations": [
+    {
+      "condition": "a",
+      "prompt_sha256": "sha256:cc4a24f10a7cf3e52f31a19740d406b4f8809b96352e7f4a9b26451a37351546",
+      "expected_canonical_json": "{\"delivery_date\":\"2026-09-15\",\"status\":\"scheduled\"}",
+      "observed_output": "{\"delivery_date\":\"2026-09-15\",\"status\":\"scheduled\"}",
+      "scoring": {
+        "claim_eligible": false,
+        "condition": "a",
+        "exact_canonical_match": true,
+        "expected_output_sha256": "sha256:c54975c0e52a7f0cd3640b92cb0f423f015d9cd35ef4c76eedbc6e86f7e954f4",
+        "observed_output_sha256": "sha256:c54975c0e52a7f0cd3640b92cb0f423f015d9cd35ef4c76eedbc6e86f7e954f4",
+        "packet_sha256": "sha256:81636bf42188464d89eea7f864350a5385302ea43fe9f7b4d65f1a1392470b20",
+        "schema_version": "urusilla-provider-ui-causal-pilot-offline-result/1"
+      }
+    },
+    {
+      "condition": "b",
+      "prompt_sha256": "sha256:7dd56b30016f0815bdf636e02599234094038743bb7918a533cb5063682313f8",
+      "expected_canonical_json": "{\"delivery_date\":\"2026-10-15\",\"status\":\"scheduled\"}",
+      "observed_output": "{\"delivery_date\":\"2026-10-15\",\"status\":\"scheduled\"}",
+      "scoring": {
+        "claim_eligible": false,
+        "condition": "b",
+        "exact_canonical_match": true,
+        "expected_output_sha256": "sha256:e415487b2d92edb666078c72d63e42b26d62d0cd150cf2505552a04d4b80dd24",
+        "observed_output_sha256": "sha256:e415487b2d92edb666078c72d63e42b26d62d0cd150cf2505552a04d4b80dd24",
+        "packet_sha256": "sha256:81636bf42188464d89eea7f864350a5385302ea43fe9f7b4d65f1a1392470b20",
+        "schema_version": "urusilla-provider-ui-causal-pilot-offline-result/1"
+      }
+    },
+    {
+      "condition": "invariant",
+      "prompt_sha256": "sha256:b2566a5d9506f772b33c375c2fa2f2f56230774b470fda927f35f6fdc7521331",
+      "expected_canonical_json": "{\"delivery_date\":\"2026-09-15\",\"status\":\"scheduled\"}",
+      "observed_output": "{\"delivery_date\":\"2026-09-15\",\"status\":\"scheduled\"}",
+      "scoring": {
+        "claim_eligible": false,
+        "condition": "invariant",
+        "exact_canonical_match": true,
+        "expected_output_sha256": "sha256:c54975c0e52a7f0cd3640b92cb0f423f015d9cd35ef4c76eedbc6e86f7e954f4",
+        "observed_output_sha256": "sha256:c54975c0e52a7f0cd3640b92cb0f423f015d9cd35ef4c76eedbc6e86f7e954f4",
+        "packet_sha256": "sha256:81636bf42188464d89eea7f864350a5385302ea43fe9f7b4d65f1a1392470b20",
+        "schema_version": "urusilla-provider-ui-causal-pilot-offline-result/1"
+      }
+    },
+    {
+      "condition": "missing",
+      "prompt_sha256": "sha256:3447e07dc4bca9fc9f3d0521a45c8b5bef891233d1e87e8f6fdbea02d0738245",
+      "expected_canonical_json": "{\"delivery_date\":null,\"status\":\"fallback-missing-required-field\"}",
+      "observed_output": "{\"delivery_date\":null,\"status\":\"fallback-missing-required-field\"}",
+      "scoring": {
+        "claim_eligible": false,
+        "condition": "missing",
+        "exact_canonical_match": true,
+        "expected_output_sha256": "sha256:28265eebdd44caa07e353dcdd9b9e5f62f3c80950f5a314568108ca795e3436f",
+        "observed_output_sha256": "sha256:28265eebdd44caa07e353dcdd9b9e5f62f3c80950f5a314568108ca795e3436f",
+        "packet_sha256": "sha256:81636bf42188464d89eea7f864350a5385302ea43fe9f7b4d65f1a1392470b20",
+        "schema_version": "urusilla-provider-ui-causal-pilot-offline-result/1"
+      }
+    }
+  ],
+  "safety": {
+    "tools_requested": false,
+    "files_requested": false,
+    "network_requested_by_prompt": false,
+    "persistence_requested": false,
+    "spending_requested": false,
+    "permission_expansion_requested": false,
+    "external_effects_requested": false,
+    "observed_external_effects": false
+  },
+  "summary": {
+    "slot_count": 4,
+    "exact_canonical_matches": 4,
+    "all_exact": true,
+    "causal_verdict": null,
+    "compatibility_verdict": null,
+    "efficiency_verdict": null
+  },
+  "limitations": [
+    "This was operated by the project team on one signed-in provider UI account and is not an independent reproduction or organic adoption event.",
+    "The provider UI exposed a mode label but not an exact model version, provider token counts, or an authenticated response receipt.",
+    "Four exact outputs show only bounded field binding and fallback behavior under these prompts; they do not establish direct Urusilla consumption, general communication utility, causal use, or end-to-end task success.",
+    "No token or energy comparison was run, so this observation cannot support an efficiency claim.",
+    "The account was described by the operator as an education account; its exact commercial or institutional entitlement was not independently verified."
+  ]
+}
