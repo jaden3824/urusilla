@@ -75,8 +75,8 @@ hybrid calls bind the same task digest to the frozen sender input and bind the
 sender output to the task-specific direct-receiver payload. This prevents a
 foreign task request or projection from being relabelled after execution.
 
-Trace schema v2 and assembly schema v3 also represent one completed-primary semantic
-rejection without changing the frozen RESULT ledger. The manifest precommits
+Trace schema v2 and assembly schema v4 also represent one completed-primary
+semantic rejection without changing the frozen RESULT ledger. The manifest precommits
 the versioned `deterministic-validator` identity, implementation, frozen task,
 and primary-event slot. The later observed event, accounted under the existing
 `safety` token bucket, binds the exact primary output digest, an `invalid`
@@ -90,42 +90,50 @@ Trace, arm-manifest, and assembly v1 were project-authored synthetic plumbing
 only and no serialized v1 artifact is shipped in this repository. The v2 trace
 validators reject those shapes rather than implying backward-compatible
 evidence semantics; regenerate any local synthetic trace from its frozen plan.
-Assembly v3 replaces the ambiguously named usage-only sidecar in assembly v2
+Assembly v3 replaced the ambiguously named usage-only sidecar in assembly v2
 with one complete `receipt_bundle` plus its explicit content-validation result.
-This is an evaluator artifact version only; it does not change the Urusilla
-language version or semantic kernel.
+Assembly v4 upgrades that sidecar to receipt-bundle v3 and includes the exact
+provider, manifest, and source-commitment preimages required by its additional
+content gate. These are evaluator evidence-artifact versions only; they change
+neither `languageVersion: 0.1.0`, the Urusilla protocol surfaces or semantic
+kernel, nor the frozen initial research goal.
 
 This bridge is **not** real study evidence. It emits
-`claim_eligible: false` and `authentication_complete: false`; current tests use
-project-authored synthetic captures. The assembler now emits a self-issued
-receipt-bundle v2 whose usage, scorer-output, and sandbox receipt references
-close both assembly-local diagnostic content gates. Every generated receipt
-uses `urusilla-offline-trace-assembler` as its actual issuer. The normal
-evidence-verifier path supplies no diagnostic issuer override and therefore
-rejects this bundle by default. The scorer receipt content-binds an already
-recorded verdict; the assembler does not execute or replay the frozen scorer.
-Sandbox receipts are self-issued wrappers around declared evidence slots, not
-independent observations. Provider-specific usage re-normalization,
-authenticated signatures, independently observed sandbox enforcement, and
-independently operated executions are still absent. The receipt-bundle v2
-validator requires
-each provider usage receipt to carry a cross-linked
-provider-response digest and terminal status. A provider-backed scorer receipt
-binds the verdict, exact task and route, terminal event, usage receipt, response
-digest, and either exact UTF-8 output text or an explicit null output from a
-non-completed call. A silence score instead binds the task, silence route, and
-canonical no-output digest without inventing a provider call, usage receipt, or
-response digest. Provider-response digests are replay-protected across the
-bundle but their preimages are not independently resolved or authenticated at
-this layer. A coordinated rehash can therefore remain internally
-content-consistent and must be rejected at the authentication boundary; only
-an unsynchronized mutation is detected by these hashes. The
-new assembler bridge closes a capture-to-ledger wiring gap, not the real-evidence
-gap: all issuer identities and sandbox observations remain self-asserted until
-external authentication is supplied. Because v2 embeds
-completed output text instead of trusting an unverifiable text digest, the
-bundle may contain sensitive model output and must only be shared where that
-disclosure is acceptable.
+`claim_eligible: false` and `authentication_complete: false`; all current tests
+use project-authored synthetic captures, and no current initial-goal provider
+task run has been performed through this path. Assembly v4 emits a self-issued
+receipt-bundle v3 whose provider usage receipts point to the exact supplied
+external bundle and record preimages. The portable verifier independently
+recomputes the external bundle, execution-profile, request, response, record,
+and inline raw-receipt digests; resolves the arm-manifest and source-commitment
+preimages; and rebinds the request messages, model settings, operator label,
+bundle position, exact UTF-8 output or null output, terminal status, and generic
+normalized usage projection to the result event and recorded score. Missing,
+replayed, unused, or disagreeing preimages fail this diagnostic content gate.
+
+That closure verifies only the consistency of the **supplied** artifact graph.
+It does not authenticate the provider, producer, operator, or auditor; prove
+that any provider returned the raw receipt or response; establish that an
+execution was external or independently operated; or establish preregistration
+chronology. The raw provider receipt remains opaque UTF-8 content: the verifier
+checks its digest and reprojects an already normalized generic usage object, but
+does not parse or independently perform provider-specific usage normalization.
+A downstream receipt/result rehash that leaves the provider preimage unchanged
+is now rejected, while a fully self-consistent fabricated or jointly resealed
+preimage-and-receipt set can still pass content checks and must fail at the
+authentication boundary.
+
+Every generated receipt uses `urusilla-offline-trace-assembler` as its actual
+issuer. The normal evidence-verifier path supplies no diagnostic issuer
+override and therefore rejects this bundle by default. The scorer receipt
+content-binds an already recorded verdict; the assembler does not execute or
+replay the frozen scorer. Sandbox receipts remain self-issued wrappers around
+declared evidence slots, not independent observations. Accordingly, this bridge
+closes a supplied-preimage-to-ledger content gap, not the real-evidence gap. It
+is neither performance nor adoption evidence and does not change the
+demonstrated general unfamiliar-agent saving from **0%**. Because v3 embeds raw
+provider receipts and completed model output, the bundle may contain sensitive
+content and must only be shared where that disclosure is acceptable.
 
 Run the verifier tests from the repository root:
 
@@ -155,17 +163,25 @@ binding and fails closed if the output boundary, terminal status, exact-task
 route, terminal event, usage receipt, provider-response digest, or verdict
 disagrees across the linked result, usage receipt, and scorer receipt. It also
 rejects provider-response replay across tasks or arms and cannot label a
-non-completed provider call as a successful scored terminal. Neither version
-authenticates the issuer, resolves the referenced provider-response artifact,
-or rederives usage from a signed provider payload. A maintainer can otherwise
-create two keys or two issuer labels and self-author a mutually consistent
-bundle.
+non-completed provider call as a successful scored terminal. Receipt bundle v3
+additionally requires exact external bundle and provider-record preimages, arm
+execution manifests, and source-commitment preimages. Its portable consumer
+recomputes the nested request, response, raw-receipt, usage, record, profile,
+sequence, and bundle bindings and rejects missing, replayed, unused, or
+disagreeing records and downstream result/receipt resealing that does not match
+those preimages. V3 is therefore the minimum content schema for a
+future real-evidence receipt submission, but it remains content verification,
+not authentication. None of these versions validates a provider signature or
+externally anchored operator identity, proves independent execution, or
+rederives usage through a provider-specific normalizer from an authenticated raw
+payload. A maintainer can still self-author a fully consistent provider bundle,
+receipt set, and issuer labels.
 
 Accordingly, real evidence currently fails closed with
 `authenticated-provenance-not-established` even when every receipt is
 content-consistent. Enabling the real claim gate requires a separately reviewed
-authentication layer with externally anchored operator/auditor public keys,
-canonical receipt signatures, preregistration timestamp evidence, resolved raw
+authentication layer with externally anchored provider/operator/auditor keys,
+canonical signatures, preregistration timestamp evidence, authenticated raw
 provider artifacts, and frozen provider-specific usage normalizers. Until that
 layer exists, exit status `0` is intentionally unreachable for real evidence.
 Independence remains partly a social and governance fact even after signatures;

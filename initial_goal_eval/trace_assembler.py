@@ -4,9 +4,9 @@ This module performs no provider call and grants no execution or claim
 authority.  It consumes already validated ``ExternalResponseStore`` objects,
 derives every provider event usage field without mapping an unknown to zero,
 and emits RESULT-compatible matched-session records plus a self-issued
-receipt-bundle v2 whose content is checked only in an explicit diagnostic
+receipt-bundle v3 whose supplied provider preimages are checked only in an explicit diagnostic
 mode. Every receipt identifies this assembler as its actual generator, so the
-normal evidence verifier rejects it. Provider normalization, signatures,
+normal evidence verifier rejects it. Provider-specific raw normalization, signatures,
 independent sandbox observation, and independent-operator authentication
 remain deliberately out of scope and fail closed in the existing verifier.
 """
@@ -38,27 +38,31 @@ from .execution_trace import (
     validate_execution_trace,
 )
 from .receipt_store import (
-    RECEIPT_BUNDLE_SCHEMA_V2,
+    RECEIPT_BUNDLE_SCHEMA_V3,
     RECEIPT_SCHEMA,
     SCORER_OUTPUT_RECEIPT_SCHEMA,
-    USAGE_RECEIPT_SCHEMA_V2,
+    USAGE_RECEIPT_SCHEMA_V3,
     ReceiptStore,
+)
+from .provider_artifact_store import (
+    PROVIDER_ARTIFACTS_SCHEMA,
+    project_initial_goal_usage,
 )
 from .verifier import _validate_session_result, _validate_usage
 
 
-ASSEMBLY_SCHEMA = "urusilla-initial-goal-trace-assembly/3"
+ASSEMBLY_SCHEMA = "urusilla-initial-goal-trace-assembly/4"
 ASSEMBLER_DIAGNOSTIC_ISSUER_ID = "urusilla-offline-trace-assembler"
 ASSEMBLY_BLOCKERS = (
-    "provider receipts are content-bound but not independently re-normalized",
-    "provider response preimages are not externally resolved; coordinated "
-    "rehashing remains an authentication failure",
+    "supplied provider-record preimages are resolved but provider-specific raw "
+    "receipts are not independently re-normalized",
+    "self-consistent fabricated provider preimages remain an authentication failure",
     "deterministic local sender/router outputs are content-bound but not "
     "independently replayed",
     "frozen task-scorer outcomes are content-bound but not independently replayed",
     "provider, operator, and auditor signatures are not authenticated",
     "self-issued sandbox receipts are not independent observations",
-    "v2 scorer-output content bindings do not authenticate provider or scorer issuers",
+    "v3 provider/scorer content bindings do not authenticate provider or scorer issuers",
     "post-receiver semantic validation is content-bound but not independently "
     "replayed or authenticated",
     "offline trace assembly is not independent performance evidence",
@@ -78,36 +82,7 @@ def _prefixed_sha256(value: str, path: str) -> str:
 
 
 def _external_usage(value: Mapping[str, Any]) -> dict[str, Any]:
-    if value["status"] != "complete":
-        raise VerificationError("external usage is incomplete")
-    if value["unclassified_usage_json"] is not None:
-        raise VerificationError("external usage has an unnormalized remainder")
-    input_tokens = value["input_tokens"]
-    output_tokens = value["output_tokens"]
-    total_tokens = value["total_tokens"]
-    if any(type(item) is not int or item < 0 for item in (input_tokens, output_tokens, total_tokens)):
-        raise VerificationError("external core token usage is unknown")
-    accounting = value["reasoning_accounting"]
-    reasoning = value["reasoning_tokens_subset"]
-    if accounting == "not-reported":
-        if reasoning is not None:
-            raise VerificationError("unreported external reasoning must remain unknown")
-        unclassified: int | None = None
-    elif accounting in {"included-in-output", "separately-reported"}:
-        if type(reasoning) is not int or reasoning < 0:
-            raise VerificationError("classified external reasoning is missing")
-        unclassified = 0
-    else:
-        raise VerificationError("external reasoning accounting is unsupported")
-    usage = {
-        "input_tokens": input_tokens,
-        "output_tokens": output_tokens,
-        "reasoning_tokens": reasoning,
-        "unclassified_tokens": unclassified,
-        "provider_total_tokens": total_tokens,
-        "total_tokens": total_tokens,
-        "hidden_accounting": accounting,
-    }
+    usage = dict(project_initial_goal_usage(value))
     _, complete = _validate_usage(usage, "assembled.external_usage")
     if not complete:
         raise VerificationError("external usage did not close exactly")
@@ -203,7 +178,7 @@ def _usage_receipt(
     }
     source = dict(source_payload)
     receipt = {
-        "schema_version": USAGE_RECEIPT_SCHEMA_V2,
+        "schema_version": USAGE_RECEIPT_SCHEMA_V3,
         "kind": "usage",
         "issuer_id": ASSEMBLER_DIAGNOSTIC_ISSUER_ID,
         "binding": binding,
@@ -304,7 +279,7 @@ class TraceAssembly:
 
     @property
     def usage_receipt_bundle(self) -> Mapping[str, Any]:
-        """Return the self-issued v2 bundle; retained as a compatibility alias."""
+        """Return the self-issued v3 bundle; retained as a compatibility alias."""
 
         return self.receipt_bundle
 
@@ -350,6 +325,8 @@ def assemble_execution_trace(
     scoring_targets: list[dict[str, Any]] = []
     post_receiver_validations: list[dict[str, Any]] = []
     external_capture_metadata: list[dict[str, Any]] = []
+    source_commitment_preimages: list[dict[str, Any]] = []
+    seen_source_commitments: set[str] = set()
 
     planned_by_session = {item["session_id"]: item for item in plan["sessions"]}
     for session in trace["sessions"]:
@@ -369,6 +346,7 @@ def assemble_execution_trace(
                 call_id: str | None = None
                 capture_metadata_index: int | None = None
                 provider_response_sha256: str | None = None
+                provider_record_sha256: str | None = None
                 if source_kind == "external-response":
                     bundle_sha = source["bundle_sha256"]
                     store = stores[bundle_sha]
@@ -488,6 +466,28 @@ def assemble_execution_trace(
                         if output_text is None
                         else sha256_ref({"provider_output_text": output_text})
                     )
+                    provider_record_sha256 = _prefixed_sha256(
+                        captured.value["record_sha256"],
+                        "captured provider record digest",
+                    )
+                    source_commitment = {
+                        "kind": "external-response",
+                        "call_request": _detach(source["call_request"]),
+                        "hybrid_projection": _detach(source["hybrid_projection"]),
+                        "execution_binding": _detach(source["execution_binding"]),
+                    }
+                    source_commitment_sha256 = sha256_ref(source_commitment)
+                    if source_commitment_sha256 in seen_source_commitments:
+                        raise VerificationError(
+                            "one provider source commitment is replayed"
+                        )
+                    seen_source_commitments.add(source_commitment_sha256)
+                    source_commitment_preimages.append(
+                        {
+                            "source_commitment_sha256": source_commitment_sha256,
+                            "source_commitment": source_commitment,
+                        }
+                    )
                     source_payload = {
                         "source_kind": "provider",
                         "request_id": observation["request_id"],
@@ -501,6 +501,7 @@ def assemble_execution_trace(
                             observation["raw_receipt_sha256"],
                             "raw provider receipt digest",
                         ),
+                        "provider_record_sha256": provider_record_sha256,
                     }
                     if response["status"] != "completed" and event_spec["task_id"] is None:
                         raise VerificationError(
@@ -522,6 +523,7 @@ def assemble_execution_trace(
                             "bundle_record_sequence": captured.value["sequence"],
                             "call_id": call_id,
                             "response_sha256": provider_response_sha256,
+                            "provider_record_sha256": provider_record_sha256,
                             "status": event_status,
                         }
                     )
@@ -557,6 +559,7 @@ def assemble_execution_trace(
                                 "usage": usage,
                             }
                         ),
+                        "provider_record_sha256": None,
                     }
                     event_status = "completed"
 
@@ -1036,14 +1039,28 @@ def assemble_execution_trace(
         "records": records,
         "notes": [
             "Offline provider-neutral assembly only; authentication remains fail-closed.",
-            "Receipt-bundle v2 proves internal content consistency only; issuer "
-            "and sandbox assertions remain unauthenticated, and scorer outcomes "
-            "are not replayed.",
+            "Receipt-bundle v3 resolves supplied provider-record and frozen-manifest "
+            "preimages for content checks only; provider-specific raw normalization, "
+            "issuer authentication, sandbox independence, and scorer replay remain open.",
+        ],
+    }
+    arm_execution_manifests = [
+        _detach(arm["execution_manifest"])
+        for session in trace["sessions"]
+        for arm in session["arms"]
+    ]
+    provider_artifacts = {
+        "schema_version": PROVIDER_ARTIFACTS_SCHEMA,
+        "external_bundles": [
+            _detach(stores[digest].value) for digest in sorted(stores)
         ],
     }
     receipt_bundle = {
-        "schema_version": RECEIPT_BUNDLE_SCHEMA_V2,
+        "schema_version": RECEIPT_BUNDLE_SCHEMA_V3,
         "plan_sha256": sha256_ref(plan),
+        "arm_execution_manifests": arm_execution_manifests,
+        "source_commitment_preimages": source_commitment_preimages,
+        "provider_artifacts": provider_artifacts,
         "receipts": receipts,
     }
     receipt_validation = ReceiptStore.from_object(receipt_bundle).validate(
@@ -1054,7 +1071,7 @@ def assemble_execution_trace(
     if not receipt_validation.complete:
         details = "; ".join(receipt_validation.errors[:3])
         raise VerificationError(
-            "assembled receipt-bundle v2 did not close its diagnostic content gates"
+            "assembled receipt-bundle v3 did not close its diagnostic content gates"
             + (f": {details}" if details else "")
         )
     external_capture_metadata.sort(

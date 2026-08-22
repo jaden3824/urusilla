@@ -11,6 +11,7 @@ from initial_goal_eval.execution_trace import CANONICAL_SILENCE_OUTPUT_SHA256
 from initial_goal_eval.receipt_store import (
     RECEIPT_BUNDLE_SCHEMA,
     RECEIPT_BUNDLE_SCHEMA_V2,
+    RECEIPT_BUNDLE_SCHEMA_V3,
     RECEIPT_SCHEMA,
     SCORER_OUTPUT_RECEIPT_SCHEMA,
     USAGE_RECEIPT_SCHEMA_V2,
@@ -784,13 +785,17 @@ class ReceiptStoreTests(unittest.TestCase):
             summary["gate_failures"],
         )
 
-    def test_complete_v2_receipt_gate_cannot_self_authenticate(self) -> None:
+    def test_complete_v3_content_gate_cannot_self_authenticate(self) -> None:
         class CompleteReceiptStore:
+            schema_version = RECEIPT_BUNDLE_SCHEMA_V3
+
             @staticmethod
             def validate(plan_value, result_value):
                 return ReceiptValidation(
                     content_consistent=True,
                     scorer_output_binding_complete=True,
+                    provider_preimage_resolution_required=True,
+                    provider_preimage_resolution_complete=True,
                     referenced=576,
                     resolved=576,
                     unreferenced=0,

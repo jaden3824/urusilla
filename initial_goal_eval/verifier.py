@@ -43,7 +43,11 @@ from .contract import (
     verifier_bundle_sha256,
 )
 from .statistics import SessionAggregate, compare_to_both_baselines
-from .receipt_store import RECEIPT_BUNDLE_SCHEMA_V2, ReceiptStore
+from .receipt_store import (
+    RECEIPT_BUNDLE_SCHEMA_V2,
+    RECEIPT_BUNDLE_SCHEMA_V3,
+    ReceiptStore,
+)
 
 
 ATTESTATION_FIELDS = (
@@ -796,7 +800,8 @@ def verify_result(
     require_task_binding = (
         real_evidence
         and isinstance(receipt_store, ReceiptStore)
-        and receipt_store.schema_version == RECEIPT_BUNDLE_SCHEMA_V2
+        and receipt_store.schema_version
+        in {RECEIPT_BUNDLE_SCHEMA_V2, RECEIPT_BUNDLE_SCHEMA_V3}
     )
     raw_records = _list(result["records"], "result.records")
     submitted: dict[str, Any] = {}
@@ -839,6 +844,8 @@ def verify_result(
             "supplied": False,
             "content_consistent": not real_evidence,
             "scorer_output_binding_complete": not real_evidence,
+            "provider_preimage_resolution_required": real_evidence,
+            "provider_preimage_resolution_complete": not real_evidence,
             "complete": not real_evidence,
             "referenced": 0,
             "resolved": 0,
@@ -853,6 +860,14 @@ def verify_result(
         receipt_summary["required"] = real_evidence
         receipt_summary["supplied"] = True
         receipt_complete = receipt_validation.complete
+        if real_evidence and receipt_store.schema_version != RECEIPT_BUNDLE_SCHEMA_V3:
+            receipt_summary["errors"].append(
+                "real-evidence-requires-receipt-bundle-v3"
+            )
+            receipt_summary["provider_preimage_resolution_required"] = True
+            receipt_summary["provider_preimage_resolution_complete"] = False
+            receipt_summary["complete"] = False
+            receipt_complete = False
     authentication_summary = {
         "required": real_evidence,
         "complete": authentication_complete,

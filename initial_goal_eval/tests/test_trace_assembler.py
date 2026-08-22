@@ -34,7 +34,8 @@ from initial_goal_eval.execution_trace import (
     task_input_sha256,
 )
 from initial_goal_eval.receipt_store import (
-    RECEIPT_BUNDLE_SCHEMA_V2,
+    RECEIPT_BUNDLE_SCHEMA_V3,
+    USAGE_RECEIPT_SCHEMA_V2,
     ReceiptStore,
 )
 from initial_goal_eval.tests.test_verifier import build_synthetic_fixture
@@ -818,7 +819,7 @@ class TraceAssemblerTests(unittest.TestCase):
         self.assertFalse(assembled.value["authentication_complete"])
         self.assertEqual(assembled.value["schema_version"], ASSEMBLY_SCHEMA)
         self.assertEqual(
-            ASSEMBLY_SCHEMA, "urusilla-initial-goal-trace-assembly/3"
+            ASSEMBLY_SCHEMA, "urusilla-initial-goal-trace-assembly/4"
         )
         self.assertIn("receipt_bundle", assembled.value)
         self.assertNotIn("usage_receipt_bundle", assembled.value)
@@ -835,7 +836,7 @@ class TraceAssemblerTests(unittest.TestCase):
         )
         self.assertEqual(
             assembled.receipt_bundle["schema_version"],
-            RECEIPT_BUNDLE_SCHEMA_V2,
+            RECEIPT_BUNDLE_SCHEMA_V3,
         )
         receipt_store = ReceiptStore.from_object(assembled.receipt_bundle)
         default_validation = receipt_store.validate(plan, assembled.result)
@@ -853,6 +854,8 @@ class TraceAssemblerTests(unittest.TestCase):
         )
         self.assertTrue(receipt_validation.content_consistent)
         self.assertTrue(receipt_validation.scorer_output_binding_complete)
+        self.assertTrue(receipt_validation.provider_preimage_resolution_required)
+        self.assertTrue(receipt_validation.provider_preimage_resolution_complete)
         self.assertTrue(receipt_validation.complete)
         self.assertTrue(
             assembled.value["receipt_content_validation"]["complete"]
@@ -957,7 +960,7 @@ class TraceAssemblerTests(unittest.TestCase):
             )
         )
 
-    def test_coordinated_rehash_is_content_consistent_but_not_authenticated(self):
+    def test_downstream_coordinated_rehash_is_rejected_by_v3_preimage(self):
         plan, trace, stores = make_fixture(real_evidence=True)
         assembled = assemble_execution_trace(plan, trace, stores)
         bundle = deepcopy(assembled.receipt_bundle)
@@ -1009,13 +1012,108 @@ class TraceAssemblerTests(unittest.TestCase):
             result,
             diagnostic_issuer_id=ASSEMBLER_DIAGNOSTIC_ISSUER_ID,
         )
-        self.assertTrue(diagnostic.complete)
+        self.assertFalse(diagnostic.complete)
+        self.assertTrue(
+            any(
+                error.startswith("usage-v3-provider-event-output-mismatch:")
+                for error in diagnostic.errors
+            )
+        )
         self.assertFalse(store.validate(plan, result).complete)
         summary = verify_result(plan, result, receipt_store=store)
         self.assertFalse(summary["goal_gate_passed"])
         self.assertIn(
             "authenticated-provenance-not-established",
             summary["gate_failures"],
+        )
+
+    def test_receipt_bundle_v3_rejects_usage_schema_downgrade(self):
+        plan, trace, stores = make_fixture(real_evidence=True)
+        assembled = assemble_execution_trace(plan, trace, stores)
+        bundle = deepcopy(assembled.receipt_bundle)
+        usage_receipt = next(
+            item for item in bundle["receipts"] if item["kind"] == "usage"
+        )
+        usage_receipt["schema_version"] = USAGE_RECEIPT_SCHEMA_V2
+
+        with self.assertRaisesRegex(VerificationError, "schema_version differs"):
+            ReceiptStore.from_object(bundle)
+
+    def test_receipt_bundle_v3_requires_source_commitment_preimage(self):
+        plan, trace, stores = make_fixture(real_evidence=True)
+        assembled = assemble_execution_trace(plan, trace, stores)
+        bundle = deepcopy(assembled.receipt_bundle)
+        bundle["source_commitment_preimages"].pop(0)
+
+        validation = ReceiptStore.from_object(bundle).validate(
+            plan,
+            assembled.result,
+            diagnostic_issuer_id=ASSEMBLER_DIAGNOSTIC_ISSUER_ID,
+        )
+
+        self.assertFalse(validation.provider_preimage_resolution_complete)
+        self.assertTrue(
+            any(
+                error.startswith("v3-source-commitment-preimage-missing:")
+                for error in validation.errors
+            )
+        )
+
+    def test_receipt_bundle_v3_rejects_cross_task_provider_record_swap(self):
+        plan, trace, stores = make_fixture(real_evidence=True)
+        assembled = assemble_execution_trace(plan, trace, stores)
+        bundle = deepcopy(assembled.receipt_bundle)
+        result = deepcopy(assembled.result)
+        usage_receipts = [
+            item
+            for item in bundle["receipts"]
+            if item["kind"] == "usage"
+            and item["source_payload"]["source_kind"] == "provider"
+        ][:2]
+        first_ref = usage_receipts[0]["source_payload"]["provider_record_sha256"]
+        second_ref = usage_receipts[1]["source_payload"]["provider_record_sha256"]
+        usage_receipts[0]["source_payload"]["provider_record_sha256"] = second_ref
+        usage_receipts[1]["source_payload"]["provider_record_sha256"] = first_ref
+
+        for receipt in usage_receipts:
+            receipt["source_sha256"] = sha256_ref(receipt["source_payload"])
+            replacement_digest = sha256_ref(receipt)
+            binding = receipt["binding"]
+            record = next(
+                item
+                for item in result["records"]
+                if item["session_id"] == binding["session_id"]
+            )
+            arm = next(
+                item
+                for item in record["arms"]
+                if item["arm_id"] == binding["arm_id"]
+            )
+            event = next(
+                item
+                for item in arm["events"]
+                if item["sequence"] == binding["event_sequence"]
+            )
+            event["usage_receipt_sha256"] = replacement_digest
+
+        validation = ReceiptStore.from_object(bundle).validate(
+            plan,
+            result,
+            diagnostic_issuer_id=ASSEMBLER_DIAGNOSTIC_ISSUER_ID,
+        )
+
+        self.assertFalse(validation.provider_preimage_resolution_complete)
+        self.assertTrue(
+            any(
+                error.startswith(
+                    (
+                        "usage-v3-provider-event-input-mismatch:",
+                        "usage-v3-provider-event-output-mismatch:",
+                        "v3-manifest-call-id-mismatch:",
+                    )
+                )
+                for error in validation.errors
+            )
         )
 
     def test_unknown_provider_usage_fails_instead_of_becoming_zero(self):
@@ -1174,7 +1272,7 @@ class TraceAssemblerTests(unittest.TestCase):
         self.assertEqual(target["terminal_status"], SILENCE_TERMINAL_STATUS)
         self.assertFalse(
             any(
-                "does not emit receipt-bundle v2" in blocker
+                "does not emit receipt-bundle v3" in blocker
                 for blocker in assembled.value["claim_blockers"]
             )
         )

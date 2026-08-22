@@ -26,6 +26,7 @@ from .contract import (
     canonical_json,
     sha256_ref,
 )
+from .provider_artifact_store import ProviderArtifactStore, ProviderRecordView
 from .terminal_contract import (
     CANONICAL_SILENCE_OUTPUT_SHA256,
     CAPTURE_TERMINAL_STATUSES,
@@ -35,11 +36,14 @@ from .terminal_contract import (
 
 RECEIPT_BUNDLE_SCHEMA = "urusilla-initial-goal-receipt-bundle/1"
 RECEIPT_BUNDLE_SCHEMA_V2 = "urusilla-initial-goal-receipt-bundle/2"
+RECEIPT_BUNDLE_SCHEMA_V3 = "urusilla-initial-goal-receipt-bundle/3"
 RECEIPT_SCHEMA = "urusilla-initial-goal-receipt/1"
 USAGE_RECEIPT_SCHEMA_V2 = "urusilla-initial-goal-usage-receipt/2"
+USAGE_RECEIPT_SCHEMA_V3 = "urusilla-initial-goal-usage-receipt/3"
 SCORER_OUTPUT_RECEIPT_SCHEMA = (
     "urusilla-initial-goal-scorer-output-receipt/2"
 )
+ARM_EXECUTION_MANIFEST_SCHEMA = "urusilla-initial-goal-arm-execution-content/2"
 RECEIPT_KINDS = (
     "usage",
     "scorer",
@@ -54,6 +58,8 @@ class ReceiptValidation:
     complete: bool
     content_consistent: bool
     scorer_output_binding_complete: bool
+    provider_preimage_resolution_required: bool
+    provider_preimage_resolution_complete: bool
     referenced: int
     resolved: int
     unreferenced: int
@@ -69,6 +75,8 @@ class ReceiptValidation:
         *,
         content_consistent: bool | None = None,
         scorer_output_binding_complete: bool | None = None,
+        provider_preimage_resolution_required: bool = False,
+        provider_preimage_resolution_complete: bool | None = None,
     ) -> None:
         """Build new split-gate results or accept the legacy ``complete=`` API.
 
@@ -92,9 +100,24 @@ class ReceiptValidation:
             or type(scorer_output_binding_complete) is not bool
         ):
             raise TypeError("both ReceiptValidation split gates must be boolean")
+        if type(provider_preimage_resolution_required) is not bool:
+            raise TypeError("provider preimage required flag must be boolean")
+        if provider_preimage_resolution_complete is None:
+            provider_preimage_resolution_complete = (
+                not provider_preimage_resolution_required
+            )
+        if type(provider_preimage_resolution_complete) is not bool:
+            raise TypeError("provider preimage completion flag must be boolean")
         if complete is not None and type(complete) is not bool:
             raise TypeError("ReceiptValidation.complete must be boolean or null")
-        computed = content_consistent and scorer_output_binding_complete
+        computed = (
+            content_consistent
+            and scorer_output_binding_complete
+            and (
+                not provider_preimage_resolution_required
+                or provider_preimage_resolution_complete
+            )
+        )
         if complete is not None and complete is not computed:
             raise ValueError("complete disagrees with the split receipt gates")
         object.__setattr__(self, "complete", computed)
@@ -103,6 +126,16 @@ class ReceiptValidation:
             self,
             "scorer_output_binding_complete",
             scorer_output_binding_complete,
+        )
+        object.__setattr__(
+            self,
+            "provider_preimage_resolution_required",
+            provider_preimage_resolution_required,
+        )
+        object.__setattr__(
+            self,
+            "provider_preimage_resolution_complete",
+            provider_preimage_resolution_complete,
         )
         object.__setattr__(self, "referenced", referenced)
         object.__setattr__(self, "resolved", resolved)
@@ -115,6 +148,12 @@ class ReceiptValidation:
             "content_consistent": self.content_consistent,
             "scorer_output_binding_complete": (
                 self.scorer_output_binding_complete
+            ),
+            "provider_preimage_resolution_required": (
+                self.provider_preimage_resolution_required
+            ),
+            "provider_preimage_resolution_complete": (
+                self.provider_preimage_resolution_complete
             ),
             "complete": self.complete,
             "referenced": self.referenced,
@@ -129,17 +168,89 @@ class ReceiptStore:
 
     def __init__(self, value: Any):
         bundle = _object(value, "receipt_bundle")
-        _exact(
-            bundle,
-            {"schema_version", "plan_sha256", "receipts"},
-            "receipt_bundle",
-        )
-        if bundle["schema_version"] not in {
+        schema_version = bundle.get("schema_version")
+        if schema_version not in {
             RECEIPT_BUNDLE_SCHEMA,
             RECEIPT_BUNDLE_SCHEMA_V2,
+            RECEIPT_BUNDLE_SCHEMA_V3,
         }:
             raise VerificationError("receipt bundle schema differs")
-        self.schema_version = bundle["schema_version"]
+        self.schema_version = schema_version
+        if self.schema_version == RECEIPT_BUNDLE_SCHEMA_V3:
+            _exact(
+                bundle,
+                {
+                    "schema_version",
+                    "plan_sha256",
+                    "arm_execution_manifests",
+                    "source_commitment_preimages",
+                    "provider_artifacts",
+                    "receipts",
+                },
+                "receipt_bundle",
+            )
+            self._provider_artifacts = ProviderArtifactStore.from_object(
+                bundle["provider_artifacts"]
+            )
+            self._arm_manifests: dict[tuple[str, str], dict[str, Any]] = {}
+            self._arm_manifest_order: list[tuple[str, str]] = []
+            for index, raw in enumerate(
+                _list(
+                    bundle["arm_execution_manifests"],
+                    "receipt_bundle.arm_execution_manifests",
+                )
+            ):
+                path = f"receipt_bundle.arm_execution_manifests[{index}]"
+                manifest = _object(raw, path)
+                _exact(
+                    manifest,
+                    {"schema_version", "session_id", "arm_id", "events"},
+                    path,
+                )
+                if manifest["schema_version"] != ARM_EXECUTION_MANIFEST_SCHEMA:
+                    raise VerificationError(f"{path}.schema_version differs")
+                key = (
+                    _identifier(manifest["session_id"], f"{path}.session_id"),
+                    _identifier(manifest["arm_id"], f"{path}.arm_id"),
+                )
+                if key in self._arm_manifests:
+                    raise VerificationError("duplicate arm execution manifest preimage")
+                self._arm_manifests[key] = json.loads(canonical_json(manifest))
+                self._arm_manifest_order.append(key)
+            self._source_commitments: dict[str, dict[str, Any]] = {}
+            for index, raw in enumerate(
+                _list(
+                    bundle["source_commitment_preimages"],
+                    "receipt_bundle.source_commitment_preimages",
+                )
+            ):
+                path = f"receipt_bundle.source_commitment_preimages[{index}]"
+                entry = _object(raw, path)
+                _exact(
+                    entry,
+                    {"source_commitment_sha256", "source_commitment"},
+                    path,
+                )
+                digest = _sha(
+                    entry["source_commitment_sha256"],
+                    f"{path}.source_commitment_sha256",
+                )
+                source = _object(entry["source_commitment"], f"{path}.source_commitment")
+                if sha256_ref(source) != digest:
+                    raise VerificationError("source commitment preimage digest mismatch")
+                if digest in self._source_commitments:
+                    raise VerificationError("duplicate source commitment preimage")
+                self._source_commitments[digest] = json.loads(canonical_json(source))
+        else:
+            _exact(
+                bundle,
+                {"schema_version", "plan_sha256", "receipts"},
+                "receipt_bundle",
+            )
+            self._provider_artifacts = None
+            self._arm_manifests = {}
+            self._arm_manifest_order = []
+            self._source_commitments = {}
         self.plan_sha256 = _sha(
             bundle["plan_sha256"], "receipt_bundle.plan_sha256"
         )
@@ -165,11 +276,19 @@ class ReceiptStore:
                 (
                     SCORER_OUTPUT_RECEIPT_SCHEMA
                     if receipt["kind"] == "scorer"
+                    else USAGE_RECEIPT_SCHEMA_V3
+                    if (
+                        receipt["kind"] == "usage"
+                        and self.schema_version == RECEIPT_BUNDLE_SCHEMA_V3
+                    )
                     else USAGE_RECEIPT_SCHEMA_V2
                     if receipt["kind"] == "usage"
                     else RECEIPT_SCHEMA
                 )
-                if self.schema_version == RECEIPT_BUNDLE_SCHEMA_V2
+                if self.schema_version in {
+                    RECEIPT_BUNDLE_SCHEMA_V2,
+                    RECEIPT_BUNDLE_SCHEMA_V3,
+                }
                 else RECEIPT_SCHEMA
             )
             if receipt["schema_version"] != expected_schema:
@@ -362,6 +481,260 @@ class ReceiptStore:
         else:
             errors.append(f"usage-source-kind-invalid:{label}")
         return len(errors) == error_count
+
+    @staticmethod
+    def _validate_v3_manifest_binding(
+        *,
+        manifest_event: Mapping[str, Any],
+        result_event: Mapping[str, Any],
+        record: ProviderRecordView,
+        operator_id: str,
+        planned_task_sha256: str | None,
+        source_commitments: Mapping[str, Mapping[str, Any]],
+        used_source_commitments: set[str],
+        label: str,
+        errors: list[str],
+    ) -> bool:
+        error_count = len(errors)
+        expected_fields = {
+            "sequence",
+            "task_id",
+            "phase",
+            "source_kind",
+            "source_id",
+            "request_sha256",
+            "messages_sha256",
+            "hybrid_projection_sha256",
+            "external_execution_binding_sha256",
+            "bundle_record_sequence",
+            "source_commitment_sha256",
+        }
+        if set(manifest_event) != expected_fields:
+            errors.append(f"v3-manifest-event-fields-mismatch:{label}")
+            return False
+        for field in ("sequence", "task_id", "phase"):
+            if manifest_event[field] != result_event[field]:
+                errors.append(f"v3-manifest-result-{field}-mismatch:{label}")
+        if manifest_event["source_kind"] != "external-response":
+            errors.append(f"v3-manifest-provider-source-required:{label}")
+        if manifest_event["source_id"] != record.call_id:
+            errors.append(f"v3-manifest-call-id-mismatch:{label}")
+        if manifest_event["request_sha256"] != record.request_sha256:
+            errors.append(f"v3-manifest-request-digest-mismatch:{label}")
+        if manifest_event["messages_sha256"] != record.input_sha256:
+            errors.append(f"v3-manifest-message-digest-mismatch:{label}")
+        if (
+            manifest_event["external_execution_binding_sha256"]
+            != record.external_execution_binding_sha256
+        ):
+            errors.append(f"v3-manifest-execution-binding-mismatch:{label}")
+        if manifest_event["bundle_record_sequence"] != record.record_sequence:
+            errors.append(f"v3-manifest-record-sequence-mismatch:{label}")
+        if record.producer_operator_id != operator_id:
+            errors.append(f"v3-provider-operator-mismatch:{label}")
+
+        commitment_sha256 = manifest_event["source_commitment_sha256"]
+        try:
+            _sha(commitment_sha256, f"{label}.source_commitment_sha256")
+        except VerificationError:
+            errors.append(f"v3-source-commitment-digest-invalid:{label}")
+            return False
+        if commitment_sha256 in used_source_commitments:
+            errors.append(f"v3-source-commitment-replayed:{label}")
+            return False
+        commitment = source_commitments.get(commitment_sha256)
+        if commitment is None:
+            errors.append(f"v3-source-commitment-preimage-missing:{label}")
+            return False
+        used_source_commitments.add(commitment_sha256)
+        if set(commitment) != {
+            "kind",
+            "call_request",
+            "hybrid_projection",
+            "execution_binding",
+        }:
+            errors.append(f"v3-source-commitment-fields-mismatch:{label}")
+            return False
+        if commitment["kind"] != "external-response":
+            errors.append(f"v3-source-commitment-kind-mismatch:{label}")
+        if commitment["call_request"] != dict(record.call_request):
+            errors.append(f"v3-source-commitment-request-mismatch:{label}")
+        if commitment["execution_binding"] != dict(record.execution_binding):
+            errors.append(f"v3-source-commitment-execution-mismatch:{label}")
+
+        projection_wrapper = commitment["hybrid_projection"]
+        if projection_wrapper is None:
+            if manifest_event["hybrid_projection_sha256"] is not None:
+                errors.append(f"v3-hybrid-projection-preimage-missing:{label}")
+        elif type(projection_wrapper) is not dict or set(projection_wrapper) != {
+            "projection_sha256",
+            "projection",
+            "planned_task_sha256",
+        }:
+            errors.append(f"v3-hybrid-projection-wrapper-invalid:{label}")
+        else:
+            projection_sha256 = projection_wrapper["projection_sha256"]
+            if (
+                type(projection_sha256) is not str
+                or len(projection_sha256) != 64
+                or any(character not in "0123456789abcdef" for character in projection_sha256)
+            ):
+                errors.append(f"v3-hybrid-projection-digest-invalid:{label}")
+            else:
+                projection = projection_wrapper["projection"]
+                if type(projection) is not dict:
+                    errors.append(f"v3-hybrid-projection-invalid:{label}")
+                elif sha256_ref(projection) != "sha256:" + projection_sha256:
+                    errors.append(f"v3-hybrid-projection-digest-mismatch:{label}")
+                else:
+                    if (
+                        projection.get("execution_profile_sha256")
+                        != record.execution_profile_sha256.removeprefix("sha256:")
+                    ):
+                        errors.append(f"v3-hybrid-projection-profile-mismatch:{label}")
+                    expected_messages_sha256 = sha256_ref(
+                        record.call_request["messages"]
+                    ).removeprefix("sha256:")
+                    if (
+                        projection.get("provider_neutral_messages_sha256")
+                        != expected_messages_sha256
+                    ):
+                        errors.append(f"v3-hybrid-projection-messages-mismatch:{label}")
+                    maximum_total = projection.get("maximum_total_tokens")
+                    if (
+                        type(maximum_total) is not int
+                        or maximum_total <= 0
+                        or record.initial_goal_usage["total_tokens"] > maximum_total
+                    ):
+                        errors.append(f"v3-hybrid-projection-budget-mismatch:{label}")
+            if (
+                manifest_event["hybrid_projection_sha256"]
+                != "sha256:" + str(projection_sha256)
+            ):
+                errors.append(f"v3-manifest-hybrid-projection-mismatch:{label}")
+            if projection_wrapper["planned_task_sha256"] != planned_task_sha256:
+                errors.append(f"v3-hybrid-projection-task-mismatch:{label}")
+        return len(errors) == error_count
+
+    @classmethod
+    def _validate_usage_source_v3(
+        cls,
+        source: Mapping[str, Any],
+        *,
+        expected_usage: Mapping[str, Any],
+        expected_input_sha256: str | None,
+        expected_output_sha256: str | None,
+        phase: str,
+        result_event: Mapping[str, Any],
+        session_id: str,
+        operator_id: str,
+        planned_task_sha256: str | None,
+        receiver_model_id: str,
+        receiver_settings_sha256: str,
+        provider_call_identities: set[tuple[str, str]],
+        provider_artifacts: ProviderArtifactStore,
+        referenced_provider_records: set[str],
+        manifest_event: Mapping[str, Any],
+        source_commitments: Mapping[str, Mapping[str, Any]],
+        used_source_commitments: set[str],
+        label: str,
+        errors: list[str],
+    ) -> bool:
+        error_count = len(errors)
+        expected_fields = {
+            "source_kind",
+            "request_id",
+            "response_id",
+            "model_id",
+            "settings_sha256",
+            "reported_usage",
+            "raw_receipt_sha256",
+            "provider_record_sha256",
+            "provider_response_sha256",
+            "provider_terminal_status",
+        }
+        if set(source) != expected_fields:
+            errors.append(f"usage-v3-source-fields-mismatch:{label}")
+            return False
+        base_source = dict(source)
+        provider_record_sha256 = base_source.pop("provider_record_sha256")
+        base_valid = cls._validate_usage_source(
+            base_source,
+            require_provider_response_sha256=True,
+            expected_usage=expected_usage,
+            expected_output_sha256=expected_output_sha256,
+            phase=phase,
+            receiver_model_id=receiver_model_id,
+            receiver_settings_sha256=receiver_settings_sha256,
+            provider_call_identities=provider_call_identities,
+            label=label,
+            errors=errors,
+        )
+        if source["source_kind"] == "deterministic-local":
+            if provider_record_sha256 is not None:
+                errors.append(f"usage-v3-local-provider-record-present:{label}")
+            if manifest_event.get("source_kind") not in {
+                "deterministic-local",
+                "deterministic-validator",
+            }:
+                errors.append(f"usage-v3-local-manifest-source-mismatch:{label}")
+            return base_valid and len(errors) == error_count
+        if source["source_kind"] != "provider":
+            return False
+        try:
+            _sha(provider_record_sha256, f"{label}.provider_record_sha256")
+        except VerificationError:
+            errors.append(f"usage-v3-provider-record-digest-invalid:{label}")
+            return False
+        if provider_record_sha256 in referenced_provider_records:
+            errors.append(f"usage-v3-provider-record-replayed:{label}")
+            return False
+        record = provider_artifacts.resolve(provider_record_sha256)
+        if record is None:
+            errors.append(f"usage-v3-provider-record-missing:{label}")
+            return False
+        referenced_provider_records.add(provider_record_sha256)
+        if not record.provider_observation_complete or not record.usage_capture_complete:
+            errors.append(f"usage-v3-provider-record-incomplete:{label}")
+        observation = record.observation
+        comparisons = {
+            "request-id": (source["request_id"], observation["request_id"]),
+            "response-id": (source["response_id"], observation["response_id"]),
+            "model-id": (source["model_id"], observation["resolved_model_id"]),
+            "settings": (source["settings_sha256"], record.settings_sha256),
+            "raw-receipt": (
+                source["raw_receipt_sha256"],
+                "sha256:" + str(observation["raw_receipt_sha256"]),
+            ),
+            "provider-response": (
+                source["provider_response_sha256"],
+                record.response_sha256,
+            ),
+            "terminal-status": (
+                source["provider_terminal_status"],
+                record.terminal_status,
+            ),
+            "reported-usage": (source["reported_usage"], record.initial_goal_usage),
+            "event-usage": (dict(expected_usage), record.initial_goal_usage),
+            "event-input": (expected_input_sha256, record.input_sha256),
+            "event-output": (expected_output_sha256, record.output_sha256),
+            "session": (session_id, record.session_id),
+        }
+        for name, (observed, expected) in comparisons.items():
+            if observed != expected:
+                errors.append(f"usage-v3-provider-{name}-mismatch:{label}")
+        cls._validate_v3_manifest_binding(
+            manifest_event=manifest_event,
+            result_event=result_event,
+            record=record,
+            operator_id=operator_id,
+            planned_task_sha256=planned_task_sha256,
+            source_commitments=source_commitments,
+            used_source_commitments=used_source_commitments,
+            label=label,
+            errors=errors,
+        )
+        return base_valid and len(errors) == error_count
 
     @staticmethod
     def _validate_generic_source(
@@ -719,6 +1092,105 @@ class ReceiptStore:
         if self.plan_sha256 != plan_sha256:
             errors.append("receipt-bundle-plan-mismatch")
 
+        provider_preimage_resolution_required = (
+            self.schema_version == RECEIPT_BUNDLE_SCHEMA_V3
+        )
+        manifest_events: dict[tuple[str, str, int], Mapping[str, Any]] = {}
+        expected_manifest_event_count = 0
+        if provider_preimage_resolution_required:
+            expected_manifest_order = [
+                (session["session_id"], arm_id)
+                for session in _list(plan["sessions"], "plan.sessions")
+                for arm_id in ARMS
+            ]
+            if self._arm_manifest_order != expected_manifest_order:
+                errors.append("v3-arm-manifest-order-or-coverage-mismatch")
+            for session in _list(plan["sessions"], "plan.sessions"):
+                for arm_id in ARMS:
+                    key = (session["session_id"], arm_id)
+                    manifest = self._arm_manifests.get(key)
+                    if manifest is None:
+                        errors.append(
+                            f"v3-arm-manifest-missing:{session['session_id']}:{arm_id}"
+                        )
+                        continue
+                    if (
+                        sha256_ref(manifest)
+                        != session["arm_execution_manifest_sha256"][arm_id]
+                    ):
+                        errors.append(
+                            f"v3-arm-manifest-plan-digest-mismatch:"
+                            f"{session['session_id']}:{arm_id}"
+                        )
+                    events = _list(
+                        manifest["events"],
+                        f"v3.arm_manifest.{session['session_id']}.{arm_id}.events",
+                    )
+                    expected_manifest_event_count += len(events)
+                    observed_sequences: list[int] = []
+                    for index, raw_event in enumerate(events):
+                        label = (
+                            f"v3.arm_manifest.{session['session_id']}."
+                            f"{arm_id}.events[{index}]"
+                        )
+                        manifest_event = _object(raw_event, label)
+                        if set(manifest_event) != {
+                            "sequence",
+                            "task_id",
+                            "phase",
+                            "source_kind",
+                            "source_id",
+                            "request_sha256",
+                            "messages_sha256",
+                            "hybrid_projection_sha256",
+                            "external_execution_binding_sha256",
+                            "bundle_record_sequence",
+                            "source_commitment_sha256",
+                        }:
+                            errors.append(f"v3-manifest-event-fields-mismatch:{label}")
+                            continue
+                        try:
+                            sequence = _count(
+                                manifest_event["sequence"], f"{label}.sequence"
+                            )
+                        except VerificationError:
+                            errors.append(f"v3-manifest-event-sequence-invalid:{label}")
+                            continue
+                        observed_sequences.append(sequence)
+                        event_key = (session["session_id"], arm_id, sequence)
+                        if event_key in manifest_events:
+                            errors.append(f"v3-manifest-event-sequence-replayed:{label}")
+                        else:
+                            manifest_events[event_key] = manifest_event
+                        for field in (
+                            "request_sha256",
+                            "messages_sha256",
+                            "hybrid_projection_sha256",
+                            "external_execution_binding_sha256",
+                        ):
+                            value = manifest_event[field]
+                            if value is not None:
+                                try:
+                                    _sha(value, f"{label}.{field}")
+                                except VerificationError:
+                                    errors.append(
+                                        f"v3-manifest-event-{field}-invalid:{label}"
+                                    )
+                        try:
+                            _sha(
+                                manifest_event["source_commitment_sha256"],
+                                f"{label}.source_commitment_sha256",
+                            )
+                        except VerificationError:
+                            errors.append(
+                                f"v3-manifest-event-source-commitment-invalid:{label}"
+                            )
+                    if observed_sequences != list(range(len(observed_sequences))):
+                        errors.append(
+                            f"v3-manifest-event-order-mismatch:"
+                            f"{session['session_id']}:{arm_id}"
+                        )
+
         model_by_family = {
             item["family"]: item for item in _list(plan["receiver_models"], "plan.receiver_models")
         }
@@ -733,6 +1205,11 @@ class ReceiptStore:
         valid: set[str] = set()
         provider_terminal_by_usage_receipt: dict[str, tuple[str, str]] = {}
         provider_call_identities: set[tuple[str, str]] = set()
+        referenced_provider_records: set[str] = set()
+        used_source_commitments: set[str] = set()
+        used_manifest_events: set[tuple[str, str, int]] = set()
+        provider_preimage_targets = 0
+        provider_preimage_valid = 0
         referenced = 0
         scorer_targets = 0
         scorer_v2_valid = 0
@@ -777,6 +1254,33 @@ class ReceiptStore:
                         "output_sha256": event["output_sha256"],
                         "usage": event["usage"],
                     }
+                    manifest_event: Mapping[str, Any] = {}
+                    if provider_preimage_resolution_required:
+                        manifest_key = (
+                            session["session_id"],
+                            arm_id,
+                            event["sequence"],
+                        )
+                        manifest_event = manifest_events.get(manifest_key, {})
+                        if not manifest_event:
+                            errors.append(
+                                f"v3-result-event-manifest-missing:"
+                                f"{session['session_id']}:{arm_id}:{event['sequence']}"
+                            )
+                        elif manifest_key in used_manifest_events:
+                            errors.append(
+                                f"v3-result-event-manifest-replayed:"
+                                f"{session['session_id']}:{arm_id}:{event['sequence']}"
+                            )
+                        else:
+                            used_manifest_events.add(manifest_key)
+                            for field in ("sequence", "task_id", "phase"):
+                                if manifest_event[field] != event[field]:
+                                    errors.append(
+                                        f"v3-manifest-result-{field}-mismatch:"
+                                        f"{session['session_id']}:{arm_id}:"
+                                        f"{event['sequence']}"
+                                    )
                     source = self._resolve(
                         digest,
                         kind="usage",
@@ -787,13 +1291,51 @@ class ReceiptStore:
                         errors=errors,
                     )
                     receipt = self._receipts.get(digest)
-                    usage_v2 = (
-                        receipt is not None
-                        and receipt["schema_version"] == USAGE_RECEIPT_SCHEMA_V2
+                    usage_schema = (
+                        None if receipt is None else receipt["schema_version"]
                     )
-                    if source is not None and self._validate_usage_source(
+                    usage_v2_or_later = usage_schema in {
+                        USAGE_RECEIPT_SCHEMA_V2,
+                        USAGE_RECEIPT_SCHEMA_V3,
+                    }
+                    if source is not None and source.get("source_kind") == "provider":
+                        provider_preimage_targets += int(
+                            usage_schema == USAGE_RECEIPT_SCHEMA_V3
+                        )
+                    planned_task = planned_tasks.get(event.get("task_id"))
+                    if source is None:
+                        usage_valid = False
+                    elif usage_schema == USAGE_RECEIPT_SCHEMA_V3:
+                        assert self._provider_artifacts is not None
+                        usage_valid = self._validate_usage_source_v3(
                             source,
-                            require_provider_response_sha256=usage_v2,
+                            expected_usage=event["usage"],
+                            expected_input_sha256=event["input_sha256"],
+                            expected_output_sha256=event["output_sha256"],
+                            phase=event["phase"],
+                            result_event=event,
+                            session_id=session["session_id"],
+                            operator_id=operator_id,
+                            planned_task_sha256=(
+                                None
+                                if planned_task is None
+                                else planned_task["task_sha256"]
+                            ),
+                            receiver_model_id=model["model_id"],
+                            receiver_settings_sha256=model["settings_sha256"],
+                            provider_call_identities=provider_call_identities,
+                            provider_artifacts=self._provider_artifacts,
+                            referenced_provider_records=referenced_provider_records,
+                            manifest_event=manifest_event,
+                            source_commitments=self._source_commitments,
+                            used_source_commitments=used_source_commitments,
+                            label=digest,
+                            errors=errors,
+                        )
+                    else:
+                        usage_valid = self._validate_usage_source(
+                            source,
+                            require_provider_response_sha256=usage_v2_or_later,
                             expected_usage=event["usage"],
                             expected_output_sha256=event["output_sha256"],
                             phase=event["phase"],
@@ -802,9 +1344,15 @@ class ReceiptStore:
                             provider_call_identities=provider_call_identities,
                             label=digest,
                             errors=errors,
-                    ):
+                        )
+                    if source is not None and usage_valid:
                         valid.add(digest)
-                        if source["source_kind"] == "provider" and usage_v2:
+                        if (
+                            source["source_kind"] == "provider"
+                            and usage_schema == USAGE_RECEIPT_SCHEMA_V3
+                        ):
+                            provider_preimage_valid += 1
+                        if source["source_kind"] == "provider" and usage_v2_or_later:
                             provider_terminal_by_usage_receipt[digest] = (
                                 source["provider_response_sha256"],
                                 source["provider_terminal_status"],
@@ -1035,13 +1583,56 @@ class ReceiptStore:
             not errors and len(valid) == referenced == len(self._receipts)
         )
         scorer_output_binding_complete = (
-            self.schema_version == RECEIPT_BUNDLE_SCHEMA_V2
+            self.schema_version in {
+                RECEIPT_BUNDLE_SCHEMA_V2,
+                RECEIPT_BUNDLE_SCHEMA_V3,
+            }
             and scorer_targets > 0
             and scorer_v2_valid == scorer_targets
         )
+        provider_preimage_resolution_complete = True
+        if provider_preimage_resolution_required:
+            assert self._provider_artifacts is not None
+            unreferenced_provider_records = self._provider_artifacts.unreferenced(
+                referenced_provider_records
+            )
+            if unreferenced_provider_records:
+                errors.append(
+                    "v3-unreferenced-provider-records:"
+                    f"{len(unreferenced_provider_records)}"
+                )
+            unreferenced_source_commitments = (
+                set(self._source_commitments) - used_source_commitments
+            )
+            if unreferenced_source_commitments:
+                errors.append(
+                    "v3-unreferenced-source-commitments:"
+                    f"{len(unreferenced_source_commitments)}"
+                )
+            if len(used_manifest_events) != expected_manifest_event_count:
+                errors.append(
+                    "v3-unreferenced-manifest-events:"
+                    f"{expected_manifest_event_count - len(used_manifest_events)}"
+                )
+            provider_preimage_resolution_complete = (
+                provider_preimage_targets > 0
+                and provider_preimage_valid == provider_preimage_targets
+                and not unreferenced_provider_records
+                and not unreferenced_source_commitments
+                and len(used_manifest_events) == expected_manifest_event_count
+            )
+            content_consistent = (
+                not errors and len(valid) == referenced == len(self._receipts)
+            )
         return ReceiptValidation(
             content_consistent=content_consistent,
             scorer_output_binding_complete=scorer_output_binding_complete,
+            provider_preimage_resolution_required=(
+                provider_preimage_resolution_required
+            ),
+            provider_preimage_resolution_complete=(
+                provider_preimage_resolution_complete
+            ),
             referenced=referenced,
             resolved=len(valid),
             unreferenced=unreferenced,
