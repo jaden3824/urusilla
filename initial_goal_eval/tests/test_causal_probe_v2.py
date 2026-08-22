@@ -7,8 +7,12 @@ import unittest
 
 from initial_goal_eval.causal_probe_v2 import (
     ACTION_STATE_FORMAT,
+    CAUSAL_PROBE_ALIAS_BINDING_SCHEMA,
     CAUSAL_PROBE_ASSIGNMENT_SCHEMA,
     CAUSAL_PROBE_CALL_SCHEMA,
+    CAUSAL_PROBE_EXTERNAL_REFERENCE_SET_SCHEMA,
+    CAUSAL_PROBE_FIELD_UNIVERSE_SCHEMA,
+    CAUSAL_PROBE_IDENTITY_ENVELOPE_SCHEMA,
     CAUSAL_PROBE_PACK_SCHEMA,
     CAUSAL_PROBE_PLAN_SCHEMA,
     CAUSAL_PROBE_RESPONSE_SCHEMA,
@@ -16,6 +20,8 @@ from initial_goal_eval.causal_probe_v2 import (
     CAUSAL_PROBE_SUMMARY_SCHEMA,
     CAUSAL_PROBE_USAGE_SCHEMA,
     CONDITIONS,
+    EXTERNAL_REFERENCE_PURPOSE,
+    EXTERNAL_REFERENCE_STATUS,
     OFFLINE_EVIDENCE_BOUNDARY,
     PLACEBO_EXPECTATION,
     PLAN_STATUS,
@@ -33,7 +39,12 @@ def _digest(label: str) -> str:
     return sha256_ref({"causal-probe-v2-test": label})
 
 
-def _action_state(task: str, decision: bool) -> dict[str, object]:
+def _action_state(
+    task: str,
+    decision: bool,
+    *,
+    decision_field: str = "decision",
+) -> dict[str, object]:
     return {
         "format": ACTION_STATE_FORMAT,
         "act": "propose",
@@ -42,7 +53,7 @@ def _action_state(task: str, decision: bool) -> dict[str, object]:
         "constraints": [],
         "action": {
             "name": "choose",
-            "args": {"decision": decision, "task": task},
+            "args": {decision_field: decision, "task": task},
             "status": "proposed",
             "effects": [],
         },
@@ -143,8 +154,12 @@ def _fixture() -> tuple[dict[str, object], dict[str, object]]:
             "b": _action_state("task-one", False),
         },
         "probe-two": {
-            "a": _action_state("task-two", True),
-            "b": _action_state("task-two", False),
+            "a": _action_state(
+                "task-two", True, decision_field="selected_decision"
+            ),
+            "b": _action_state(
+                "task-two", False, decision_field="selected_decision"
+            ),
         },
     }
     shuffled_from = {
@@ -186,8 +201,13 @@ def _fixture() -> tuple[dict[str, object], dict[str, object]]:
                     "receiver_family": "receiver-family-1",
                     "operator_id": "operator-1",
                 },
+                "field_id": "action-decision",
                 "payload_format": ACTION_STATE_FORMAT,
-                "critical_pointer": "/action/args/decision",
+                "critical_pointer": (
+                    "/action/args/decision"
+                    if probe_id == "probe-one"
+                    else "/action/args/selected_decision"
+                ),
                 "call_binding": deepcopy(bindings[probe_id]),
                 "payload_sha256": {
                     "a": sha256_ref(payloads[probe_id]["a"]),
@@ -244,6 +264,44 @@ def _fixture() -> tuple[dict[str, object], dict[str, object]]:
                 "attestation_sha256": _digest("operator-attestation"),
             }
         ],
+        "preregistered_identity_envelope": {
+            "schema_version": CAUSAL_PROBE_IDENTITY_ENVELOPE_SCHEMA,
+            "status": PLAN_STATUS,
+            "field_universe": {
+                "schema_version": CAUSAL_PROBE_FIELD_UNIVERSE_SCHEMA,
+                "fields": [
+                    {
+                        "field_id": "action-decision",
+                        "canonical_pointer": "/action/args/decision",
+                        "pointer_aliases": [
+                            "/action/args/selected_decision"
+                        ],
+                        "semantic_definition_sha256": _digest(
+                            "field-action-decision"
+                        ),
+                    }
+                ],
+            },
+            "external_refusal_calibration_reference_set": {
+                "schema_version": CAUSAL_PROBE_EXTERNAL_REFERENCE_SET_SCHEMA,
+                "status": EXTERNAL_REFERENCE_STATUS,
+                "purpose": EXTERNAL_REFERENCE_PURPOSE,
+                "reference_set_id": "external-valid-payload-reference-1",
+                "manifest_sha256": _digest("external-reference-manifest"),
+                "selection_protocol_sha256": _digest(
+                    "external-reference-selection"
+                ),
+                "validity_scorer_sha256": _digest("external-validity-scorer"),
+                "source_id": "external-source-1",
+                "source_attestation_sha256": _digest(
+                    "external-source-attestation"
+                ),
+                "independent_specifier_id": "external-specifier-1",
+                "independent_specification_sha256": _digest(
+                    "external-independent-specification"
+                ),
+            },
+        },
         "probe_specs": specs,
         "assignment_commitment_sha256": sha256_ref(reveal),
     }
@@ -287,6 +345,20 @@ def _spec(plan: dict[str, object], probe_id: str) -> dict[str, object]:
     return next(item for item in plan["probe_specs"] if item["probe_id"] == probe_id)
 
 
+def _identity_envelope(plan: dict[str, object]) -> dict[str, object]:
+    return plan["preregistered_identity_envelope"]
+
+
+def _field_universe(plan: dict[str, object]) -> dict[str, object]:
+    return _identity_envelope(plan)["field_universe"]
+
+
+def _external_reference_set(plan: dict[str, object]) -> dict[str, object]:
+    return _identity_envelope(plan)[
+        "external_refusal_calibration_reference_set"
+    ]
+
+
 def _reseal(plan: dict[str, object], pack: dict[str, object], *, reveal: bool = False) -> None:
     if reveal:
         plan["assignment_commitment_sha256"] = sha256_ref(pack["assignment_reveal"])
@@ -314,8 +386,115 @@ class CausalProbeV2Tests(unittest.TestCase):
             self.assertFalse(diagnostic["semantic_invariance_checked"])
             self.assertFalse(diagnostic["composition_holdout_checked"])
             self.assertFalse(diagnostic["no_payload_accuracy_measured"])
-            self.assertFalse(diagnostic["declared_field_universe_covered"])
+            self.assertTrue(diagnostic["declared_field_universe_covered"])
             self.assertFalse(diagnostic["calibration_headline_seed_separated"])
+            self.assertEqual(diagnostic["declared_field_count"], 1)
+            self.assertEqual(diagnostic["covered_field_count"], 1)
+            self.assertEqual(
+                diagnostic["field_identity_coverage"], {"action-decision": 2}
+            )
+            self.assertEqual(
+                diagnostic["field_universe_sha256"], sha256_ref(_field_universe(plan))
+            )
+            expected_alias_binding = {
+                "schema_version": CAUSAL_PROBE_ALIAS_BINDING_SCHEMA,
+                "bindings": [
+                    {
+                        "field_id": "action-decision",
+                        "canonical_pointer": "/action/args/decision",
+                        "pointer_aliases": [
+                            "/action/args/selected_decision"
+                        ],
+                    }
+                ],
+            }
+            self.assertEqual(
+                diagnostic["alias_to_field_id_binding_sha256"],
+                sha256_ref(expected_alias_binding),
+            )
+            self.assertEqual(
+                diagnostic["preregistered_identity_envelope_sha256"],
+                sha256_ref(_identity_envelope(plan)),
+            )
+            self.assertTrue(
+                diagnostic[
+                    "field_identity_and_external_refusal_calibration_same_envelope_bound"
+                ]
+            )
+            self.assertFalse(diagnostic["preregistration_chronology_verified"])
+            self.assertFalse(
+                diagnostic["identity_envelope_external_anchor_verified"]
+            )
+            self.assertTrue(diagnostic["external_reference_set_identity_bound"])
+            self.assertTrue(
+                diagnostic[
+                    "external_refusal_calibration_reference_set_identity_bound"
+                ]
+            )
+            self.assertEqual(
+                diagnostic["external_reference_set_id"],
+                "external-valid-payload-reference-1",
+            )
+            self.assertEqual(
+                diagnostic["external_reference_set_sha256"],
+                sha256_ref(_external_reference_set(plan)),
+            )
+            self.assertFalse(diagnostic["external_reference_observations_validated"])
+            self.assertEqual(
+                diagnostic["external_refusal_calibration_purpose"],
+                EXTERNAL_REFERENCE_PURPOSE,
+            )
+            self.assertTrue(
+                diagnostic["independent_specification_commitment_bound"]
+            )
+            self.assertFalse(
+                diagnostic["independent_specification_authenticated"]
+            )
+            self.assertFalse(
+                diagnostic["external_refusal_calibration_gate_implemented"]
+            )
+            self.assertFalse(
+                diagnostic[
+                    "same_receiver_valid_ab_refusal_or_fallback_baseline_externally_anchored"
+                ]
+            )
+            self.assertEqual(
+                diagnostic["authoritative_coverage_unit"], "stable-field-id"
+            )
+            self.assertFalse(diagnostic["per_slot_arm_matrix_validated"])
+            self.assertFalse(diagnostic["five_dimensional_strata_validated"])
+            self.assertFalse(
+                diagnostic["task_semantics_used_verdict_validated"]
+            )
+            self.assertEqual(
+                diagnostic["required_empirical_worst_stratum_axes"],
+                [
+                    "domain",
+                    "receiver-runtime",
+                    "operator",
+                    "principal",
+                    "slot-class",
+                ],
+            )
+        self.assertEqual(
+            plan_summary["field_identity_coverage_basis"],
+            "preregistered-probe-specs-only",
+        )
+        self.assertFalse(plan_summary["pack_binds_identity_envelope"])
+        self.assertEqual(
+            plan_summary["per_stable_semantic_slot"],
+            [
+                {
+                    "field_id": "action-decision",
+                    "planned_probes": 2,
+                    "required_arm_matrix_preregistered": False,
+                }
+            ],
+        )
+        self.assertEqual(
+            plan_summary["verdicts"]["payload_influenced_output"]["status"],
+            "not-evaluated-plan-only",
+        )
         self.assertEqual(summary["schema_version"], CAUSAL_PROBE_SUMMARY_SCHEMA)
         self.assertTrue(summary["structurally_valid"])
         self.assertTrue(summary["payload_dependence_checks_passed"])
@@ -326,8 +505,15 @@ class CausalProbeV2Tests(unittest.TestCase):
         self.assertEqual(summary["valid_ab_calls_denominator"], 4)
         self.assertEqual(summary["valid_ab_refusals_or_fallbacks_numerator"], 0)
         self.assertEqual(
-            summary["critical_pointer_coverage"],
-            {"/action/args/decision": 2},
+            summary["field_identity_coverage_basis"], "validated-probe-results"
+        )
+        self.assertTrue(summary["pack_binds_identity_envelope"])
+        self.assertEqual(
+            summary["critical_pointer_usage"],
+            {
+                "/action/args/decision": 1,
+                "/action/args/selected_decision": 1,
+            },
         )
         self.assertTrue(summary["worst_stratum_checks_passed"])
         self.assertEqual(len(summary["per_stratum"]), 2)
@@ -345,6 +531,36 @@ class CausalProbeV2Tests(unittest.TestCase):
                 stratum["valid_ab_refusals_or_fallbacks_numerator"], 0
             )
             self.assertTrue(stratum["checks_passed"])
+        self.assertEqual(len(summary["per_stable_semantic_slot"]), 1)
+        slot = summary["per_stable_semantic_slot"][0]
+        self.assertEqual(slot["field_id"], "action-decision")
+        self.assertEqual(slot["probes"], 2)
+        self.assertEqual(slot["probes_passed"], 2)
+        self.assertEqual(slot["intervention_pairs_passed"], 2)
+        self.assertEqual(slot["placebo_calls_passed"], 4)
+        self.assertTrue(slot["available_contract_checks_passed"])
+        self.assertFalse(slot["required_arm_matrix_validated"])
+        self.assertTrue(
+            summary["worst_stable_semantic_slot_available_checks_passed"]
+        )
+        self.assertFalse(summary["pooled_intervention_pair_count_is_claim_gate"])
+        self.assertEqual(
+            summary["verdicts"]["payload_influenced_output"]["status"],
+            "local-record-contract-passed",
+        )
+        self.assertTrue(
+            summary["verdicts"]["payload_influenced_output"]["checks_passed"]
+        )
+        self.assertFalse(
+            summary["verdicts"]["payload_influenced_output"]["claim_eligible"]
+        )
+        self.assertEqual(
+            summary["verdicts"]["task_semantics_used"]["status"],
+            "not-validated",
+        )
+        self.assertFalse(
+            summary["verdicts"]["task_semantics_used"]["checks_passed"]
+        )
         self.assertTrue(summary["token_accounting_complete"])
         self.assertEqual(summary["known_total_token_calls"], 8)
         self.assertEqual(summary["unknown_total_token_calls"], 0)
@@ -361,6 +577,10 @@ class CausalProbeV2Tests(unittest.TestCase):
             CAUSAL_PROBE_ASSIGNMENT_SCHEMA,
             CAUSAL_PROBE_RESULT_SCHEMA,
             CAUSAL_PROBE_CALL_SCHEMA,
+            CAUSAL_PROBE_ALIAS_BINDING_SCHEMA,
+            CAUSAL_PROBE_EXTERNAL_REFERENCE_SET_SCHEMA,
+            CAUSAL_PROBE_FIELD_UNIVERSE_SCHEMA,
+            CAUSAL_PROBE_IDENTITY_ENVELOPE_SCHEMA,
             CAUSAL_PROBE_RESPONSE_SCHEMA,
             CAUSAL_PROBE_USAGE_SCHEMA,
             CAUSAL_PROBE_SUMMARY_SCHEMA,
@@ -417,6 +637,159 @@ class CausalProbeV2Tests(unittest.TestCase):
         with self.assertRaisesRegex(VerificationError, "reuses another probe"):
             validate_causal_probe_plan(plan)
 
+    def test_pointer_aliases_collapse_to_one_stable_field_identity(self):
+        plan, pack = _fixture()
+
+        summary = validate_causal_probe_pack(plan, pack)
+
+        self.assertEqual(summary["declared_field_count"], 1)
+        self.assertEqual(summary["covered_field_count"], 1)
+        self.assertEqual(summary["field_identity_coverage"], {"action-decision": 2})
+        self.assertEqual(
+            summary["critical_pointer_usage"],
+            {
+                "/action/args/decision": 1,
+                "/action/args/selected_decision": 1,
+            },
+        )
+        self.assertTrue(summary["declared_field_universe_covered"])
+
+    def test_one_pointer_alias_cannot_own_multiple_stable_field_ids(self):
+        plan, _pack = _fixture()
+        _field_universe(plan)["fields"].append(
+            {
+                "field_id": "selected-decision-alias",
+                "canonical_pointer": "/action/args/selected_decision",
+                "pointer_aliases": [],
+                "semantic_definition_sha256": _digest("alias-inflation"),
+            }
+        )
+
+        with self.assertRaisesRegex(VerificationError, "multiple stable field IDs"):
+            validate_causal_probe_plan(plan)
+
+    def test_one_semantic_definition_cannot_split_into_multiple_field_ids(self):
+        plan, _pack = _fixture()
+        original_definition = _field_universe(plan)["fields"][0][
+            "semantic_definition_sha256"
+        ]
+        _field_universe(plan)["fields"].append(
+            {
+                "field_id": "renamed-action-decision",
+                "canonical_pointer": "/action/args/renamed_decision",
+                "pointer_aliases": [],
+                "semantic_definition_sha256": original_definition,
+            }
+        )
+
+        with self.assertRaisesRegex(VerificationError, "semantic definition"):
+            validate_causal_probe_plan(plan)
+
+    def test_probe_must_reference_declared_field_identity_and_pointer(self):
+        for mutation, message in (
+            (
+                lambda spec: spec.__setitem__("field_id", "undeclared-field"),
+                "undeclared stable field ID",
+            ),
+            (
+                lambda spec: spec.__setitem__(
+                    "critical_pointer", "/action/args/undeclared_alias"
+                ),
+                "not registered to its stable field ID",
+            ),
+        ):
+            plan, _pack = _fixture()
+            mutation(_spec(plan, "probe-one"))
+            with self.subTest(message=message):
+                with self.assertRaisesRegex(VerificationError, message):
+                    validate_causal_probe_plan(plan)
+
+    def test_uncovered_declared_field_is_reported_without_alias_inflation(self):
+        plan, _pack = _fixture()
+        _field_universe(plan)["fields"].append(
+            {
+                "field_id": "action-priority",
+                "canonical_pointer": "/action/args/priority",
+                "pointer_aliases": [],
+                "semantic_definition_sha256": _digest("field-action-priority"),
+            }
+        )
+
+        summary = validate_causal_probe_plan(plan)
+
+        self.assertFalse(summary["declared_field_universe_covered"])
+        self.assertEqual(summary["declared_field_count"], 2)
+        self.assertEqual(summary["covered_field_count"], 1)
+        self.assertEqual(
+            summary["field_identity_coverage"],
+            {"action-decision": 2, "action-priority": 0},
+        )
+
+    def test_external_reference_set_is_frozen_identity_not_observation(self):
+        for field, value, message in (
+            ("status", "completed-results", "identity-only"),
+            ("purpose", "same-receiver-calibration", "purpose differs"),
+            ("manifest_sha256", "not-a-digest", "sha256 reference"),
+            (
+                "independent_specification_sha256",
+                "not-a-digest",
+                "sha256 reference",
+            ),
+        ):
+            plan, _pack = _fixture()
+            _external_reference_set(plan)[field] = value
+            with self.subTest(field=field):
+                with self.assertRaisesRegex(VerificationError, message):
+                    validate_causal_probe_plan(plan)
+
+    def test_identity_envelope_is_strict_and_frozen(self):
+        for mutate, message in (
+            (
+                lambda envelope: envelope.__setitem__("extra", True),
+                "fields differ",
+            ),
+            (
+                lambda envelope: envelope.__setitem__("status", "results-known"),
+                "status differs",
+            ),
+        ):
+            plan, _pack = _fixture()
+            mutate(_identity_envelope(plan))
+            with self.subTest(message=message):
+                with self.assertRaisesRegex(VerificationError, message):
+                    validate_causal_probe_plan(plan)
+
+    def test_one_envelope_binds_alias_map_and_external_calibration_identity(self):
+        for mutate in (
+            lambda plan: _field_universe(plan)["fields"][0][
+                "pointer_aliases"
+            ].append("/action/args/alternate_decision"),
+            lambda plan: _external_reference_set(plan).__setitem__(
+                "manifest_sha256", _digest("changed-external-manifest")
+            ),
+        ):
+            plan, pack = _fixture()
+            original_envelope_digest = sha256_ref(_identity_envelope(plan))
+            mutate(plan)
+            self.assertNotEqual(
+                sha256_ref(_identity_envelope(plan)), original_envelope_digest
+            )
+            with self.assertRaisesRegex(VerificationError, "does not bind the plan"):
+                validate_causal_probe_pack(plan, pack)
+
+    def test_plan_and_pack_coordinated_rehash_is_not_misreported_as_chronology(self):
+        plan, pack = _fixture()
+        _external_reference_set(plan)["manifest_sha256"] = _digest(
+            "coordinated-rehash-manifest"
+        )
+        _reseal(plan, pack)
+
+        summary = validate_causal_probe_pack(plan, pack)
+
+        self.assertTrue(summary["pack_binds_identity_envelope"])
+        self.assertFalse(summary["preregistration_chronology_verified"])
+        self.assertFalse(summary["identity_envelope_external_anchor_verified"])
+
     def test_constant_output_adapter_is_preserved_as_negative_outcome(self):
         plan, pack = _fixture()
         a = _call_for(pack, "probe-one", "a")
@@ -433,6 +806,23 @@ class CausalProbeV2Tests(unittest.TestCase):
             "expected-output-mismatch:probe-one:b", summary["gate_failures"]
         )
         self.assertEqual(summary["intervention_pairs_passed"], 1)
+        slot = summary["per_stable_semantic_slot"][0]
+        self.assertEqual(slot["probes_passed"], 1)
+        self.assertEqual(slot["probes_failed"], 1)
+        self.assertFalse(slot["available_contract_checks_passed"])
+        self.assertFalse(
+            summary["worst_stable_semantic_slot_available_checks_passed"]
+        )
+        self.assertEqual(
+            summary["verdicts"]["payload_influenced_output"]["status"],
+            "local-record-contract-failed",
+        )
+        self.assertFalse(
+            summary["verdicts"]["payload_influenced_output"]["checks_passed"]
+        )
+        self.assertFalse(
+            summary["verdicts"]["task_semantics_used"]["checks_passed"]
+        )
 
     def test_swapped_or_wrong_expected_output_is_preserved_as_negative(self):
         plan, pack = _fixture()
@@ -537,6 +927,7 @@ class CausalProbeV2Tests(unittest.TestCase):
         ):
             plan, pack = _fixture()
             _spec(plan, "probe-one")["critical_pointer"] = pointer
+            _field_universe(plan)["fields"][0]["pointer_aliases"].append(pointer)
             _reseal(plan, pack)
             with self.subTest(pointer=pointer):
                 with self.assertRaisesRegex(VerificationError, message):

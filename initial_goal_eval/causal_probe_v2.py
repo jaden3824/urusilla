@@ -46,16 +46,48 @@ CAUSAL_PROBE_CALL_SCHEMA = "urusilla-initial-goal-causal-probe-call/2"
 CAUSAL_PROBE_RESPONSE_SCHEMA = "urusilla-initial-goal-causal-probe-response/2"
 CAUSAL_PROBE_USAGE_SCHEMA = "urusilla-initial-goal-causal-probe-usage/2"
 CAUSAL_PROBE_SUMMARY_SCHEMA = "urusilla-initial-goal-causal-probe-summary/2"
+CAUSAL_PROBE_FIELD_UNIVERSE_SCHEMA = (
+    "urusilla-initial-goal-causal-probe-field-universe/2"
+)
+CAUSAL_PROBE_EXTERNAL_REFERENCE_SET_SCHEMA = (
+    "urusilla-initial-goal-causal-probe-external-reference-set/2"
+)
+CAUSAL_PROBE_IDENTITY_ENVELOPE_SCHEMA = (
+    "urusilla-initial-goal-causal-probe-identity-envelope/2"
+)
+CAUSAL_PROBE_ALIAS_BINDING_SCHEMA = (
+    "urusilla-initial-goal-causal-probe-alias-binding/2"
+)
 
 OFFLINE_EVIDENCE_BOUNDARY = "offline-structural-diagnostic-only"
 PLAN_STATUS = "frozen-preregistered-no-results"
 TOKEN_SCOPE = "inclusive-all-phases-retries-repairs-and-fallbacks"
 PLACEBO_EXPECTATION = "refuse-or-fallback"
+EXTERNAL_REFERENCE_STATUS = "frozen-identity-only-no-observations"
+EXTERNAL_REFERENCE_PURPOSE = "external-valid-payload-refusal-calibration"
 CONDITIONS = ("a", "b", "missing", "shuffled")
 AB_CONDITIONS = ("a", "b")
 PLACEBO_CONDITIONS = ("missing", "shuffled")
 RESPONSE_DISPOSITIONS = ("completed", "refused", "fallback")
 FALLBACK_MODES = ("raw", "json")
+REQUIRED_PER_SLOT_CONTRAST_ARMS = (
+    "critical-field-flip",
+    "semantic-invariant",
+    "missing-or-corrupt",
+    "no-payload-or-byte-lure",
+)
+VALIDATED_STRATUM_DIMENSIONS = (
+    "domain_id",
+    "receiver_family",
+    "operator_id",
+)
+REQUIRED_EMPIRICAL_WORST_STRATUM_AXES = (
+    "domain",
+    "receiver-runtime",
+    "operator",
+    "principal",
+    "slot-class",
+)
 
 MAX_JSON_BYTES = 16 * 1024 * 1024
 MAX_DIMENSION_VALUES = 64
@@ -72,8 +104,12 @@ _MASKED_POINTER_VALUE = {"urusilla_causal_probe_v2_masked": True}
 __all__ = [
     "AB_CONDITIONS",
     "ACTION_STATE_FORMAT",
+    "CAUSAL_PROBE_ALIAS_BINDING_SCHEMA",
     "CAUSAL_PROBE_ASSIGNMENT_SCHEMA",
     "CAUSAL_PROBE_CALL_SCHEMA",
+    "CAUSAL_PROBE_EXTERNAL_REFERENCE_SET_SCHEMA",
+    "CAUSAL_PROBE_FIELD_UNIVERSE_SCHEMA",
+    "CAUSAL_PROBE_IDENTITY_ENVELOPE_SCHEMA",
     "CAUSAL_PROBE_PACK_SCHEMA",
     "CAUSAL_PROBE_PLAN_SCHEMA",
     "CAUSAL_PROBE_RESPONSE_SCHEMA",
@@ -81,6 +117,8 @@ __all__ = [
     "CAUSAL_PROBE_SUMMARY_SCHEMA",
     "CAUSAL_PROBE_USAGE_SCHEMA",
     "CONDITIONS",
+    "EXTERNAL_REFERENCE_STATUS",
+    "EXTERNAL_REFERENCE_PURPOSE",
     "OFFLINE_EVIDENCE_BOUNDARY",
     "PLACEBO_CONDITIONS",
     "PLACEBO_EXPECTATION",
@@ -251,6 +289,168 @@ def _validate_single_pointer_difference(
         )
 
 
+def _validate_field_universe(
+    value: Any,
+    path: str,
+) -> tuple[
+    Mapping[str, Any],
+    dict[str, frozenset[str]],
+    Mapping[str, Any],
+]:
+    universe = _object(value, path)
+    _exact(universe, {"schema_version", "fields"}, path)
+    if universe["schema_version"] != CAUSAL_PROBE_FIELD_UNIVERSE_SCHEMA:
+        raise VerificationError(f"{path}.schema_version differs")
+    raw_fields = _bounded_list(
+        universe["fields"], f"{path}.fields", maximum=MAX_PROBES
+    )
+    pointers_by_field: dict[str, frozenset[str]] = {}
+    owner_by_pointer: dict[str, str] = {}
+    owner_by_semantic_definition: dict[str, str] = {}
+    alias_bindings: list[dict[str, Any]] = []
+    for index, raw in enumerate(raw_fields):
+        field_path = f"{path}.fields[{index}]"
+        field = _object(raw, field_path)
+        _exact(
+            field,
+            {
+                "field_id",
+                "canonical_pointer",
+                "pointer_aliases",
+                "semantic_definition_sha256",
+            },
+            field_path,
+        )
+        field_id = _identifier(field["field_id"], f"{field_path}.field_id")
+        if field_id in pointers_by_field:
+            raise VerificationError(f"{path} contains duplicate stable field IDs")
+        canonical_pointer = field["canonical_pointer"]
+        _pointer_tokens(canonical_pointer, f"{field_path}.canonical_pointer")
+        raw_aliases = _list(field["pointer_aliases"], f"{field_path}.pointer_aliases")
+        if len(raw_aliases) > MAX_POINTER_TOKENS:
+            raise VerificationError(f"{field_path}.pointer_aliases exceeds the limit")
+        aliases: list[str] = []
+        for alias_index, alias in enumerate(raw_aliases):
+            _pointer_tokens(alias, f"{field_path}.pointer_aliases[{alias_index}]")
+            aliases.append(alias)
+        pointers = [canonical_pointer, *aliases]
+        if len(set(pointers)) != len(pointers):
+            raise VerificationError(f"{field_path} contains duplicate pointer aliases")
+        semantic_definition = _sha(
+            field["semantic_definition_sha256"],
+            f"{field_path}.semantic_definition_sha256",
+        )
+        prior_semantic_owner = owner_by_semantic_definition.setdefault(
+            semantic_definition, field_id
+        )
+        if prior_semantic_owner != field_id:
+            raise VerificationError(
+                f"{path} assigns one semantic definition to multiple stable field IDs"
+            )
+        for pointer in pointers:
+            prior_owner = owner_by_pointer.setdefault(pointer, field_id)
+            if prior_owner != field_id:
+                raise VerificationError(
+                    f"{path} assigns one pointer alias to multiple stable field IDs"
+                )
+        pointers_by_field[field_id] = frozenset(pointers)
+        alias_bindings.append(
+            {
+                "field_id": field_id,
+                "canonical_pointer": canonical_pointer,
+                "pointer_aliases": sorted(aliases),
+            }
+        )
+    alias_binding = {
+        "schema_version": CAUSAL_PROBE_ALIAS_BINDING_SCHEMA,
+        "bindings": sorted(alias_bindings, key=lambda item: item["field_id"]),
+    }
+    return universe, pointers_by_field, alias_binding
+
+
+def _validate_external_reference_set(value: Any, path: str) -> Mapping[str, Any]:
+    reference = _object(value, path)
+    _exact(
+        reference,
+        {
+            "schema_version",
+            "status",
+            "purpose",
+            "reference_set_id",
+            "manifest_sha256",
+            "selection_protocol_sha256",
+            "validity_scorer_sha256",
+            "source_id",
+            "source_attestation_sha256",
+            "independent_specifier_id",
+            "independent_specification_sha256",
+        },
+        path,
+    )
+    if reference["schema_version"] != CAUSAL_PROBE_EXTERNAL_REFERENCE_SET_SCHEMA:
+        raise VerificationError(f"{path}.schema_version differs")
+    if reference["status"] != EXTERNAL_REFERENCE_STATUS:
+        raise VerificationError(f"{path}.status must remain identity-only")
+    if reference["purpose"] != EXTERNAL_REFERENCE_PURPOSE:
+        raise VerificationError(f"{path}.purpose differs")
+    _identifier(reference["reference_set_id"], f"{path}.reference_set_id")
+    _identifier(reference["source_id"], f"{path}.source_id")
+    _identifier(
+        reference["independent_specifier_id"],
+        f"{path}.independent_specifier_id",
+    )
+    for field in (
+        "manifest_sha256",
+        "selection_protocol_sha256",
+        "validity_scorer_sha256",
+        "source_attestation_sha256",
+        "independent_specification_sha256",
+    ):
+        _sha(reference[field], f"{path}.{field}")
+    return reference
+
+
+def _validate_identity_envelope(
+    value: Any,
+    path: str,
+) -> tuple[
+    Mapping[str, Any],
+    Mapping[str, Any],
+    dict[str, frozenset[str]],
+    Mapping[str, Any],
+    Mapping[str, Any],
+]:
+    envelope = _object(value, path)
+    _exact(
+        envelope,
+        {
+            "schema_version",
+            "status",
+            "field_universe",
+            "external_refusal_calibration_reference_set",
+        },
+        path,
+    )
+    if envelope["schema_version"] != CAUSAL_PROBE_IDENTITY_ENVELOPE_SCHEMA:
+        raise VerificationError(f"{path}.schema_version differs")
+    if envelope["status"] != PLAN_STATUS:
+        raise VerificationError(f"{path}.status differs")
+    field_universe, pointers_by_field, alias_binding = _validate_field_universe(
+        envelope["field_universe"], f"{path}.field_universe"
+    )
+    external_reference_set = _validate_external_reference_set(
+        envelope["external_refusal_calibration_reference_set"],
+        f"{path}.external_refusal_calibration_reference_set",
+    )
+    return (
+        envelope,
+        field_universe,
+        pointers_by_field,
+        alias_binding,
+        external_reference_set,
+    )
+
+
 def output_text_sha256(output_text: str) -> str:
     """Return the v2 exact-output commitment used by probe expectations."""
 
@@ -276,6 +476,7 @@ def _validate_probe_spec(value: Any, path: str) -> Mapping[str, Any]:
         {
             "probe_id",
             "stratum",
+            "field_id",
             "payload_format",
             "critical_pointer",
             "call_binding",
@@ -288,6 +489,7 @@ def _validate_probe_spec(value: Any, path: str) -> Mapping[str, Any]:
     )
     _identifier(spec["probe_id"], f"{path}.probe_id")
     _validate_stratum(spec["stratum"], f"{path}.stratum")
+    _identifier(spec["field_id"], f"{path}.field_id")
     if spec["payload_format"] != ACTION_STATE_FORMAT:
         raise VerificationError(f"{path}.payload_format is unsupported")
     _pointer_tokens(spec["critical_pointer"], f"{path}.critical_pointer")
@@ -343,6 +545,7 @@ def _validate_plan_internal(value: Any) -> tuple[Mapping[str, Any], dict[str, An
             "domains",
             "receiver_families",
             "independent_operators",
+            "preregistered_identity_envelope",
             "probe_specs",
             "assignment_commitment_sha256",
         },
@@ -354,6 +557,17 @@ def _validate_plan_internal(value: Any) -> tuple[Mapping[str, Any], dict[str, An
         raise VerificationError("causal probe plan status differs")
     if plan["evidence_boundary"] != OFFLINE_EVIDENCE_BOUNDARY:
         raise VerificationError("causal probe plan evidence boundary differs")
+
+    (
+        identity_envelope,
+        field_universe,
+        pointers_by_field,
+        alias_binding,
+        external_reference_set,
+    ) = _validate_identity_envelope(
+        plan["preregistered_identity_envelope"],
+        "causal_probe_plan.preregistered_identity_envelope",
+    )
 
     domains = _unique_identifiers(plan["domains"], "causal_probe_plan.domains")
     families = _unique_identifiers(
@@ -385,6 +599,10 @@ def _validate_plan_internal(value: Any) -> tuple[Mapping[str, Any], dict[str, An
     model_by_family: dict[str, str] = {}
     family_by_model: dict[str, str] = {}
     context_owner: dict[str, str] = {}
+    field_identity_coverage = {
+        field_id: 0 for field_id in pointers_by_field
+    }
+    planned_pointer_usage: dict[str, int] = {}
     for index, raw in enumerate(raw_specs):
         path = f"causal_probe_plan.probe_specs[{index}]"
         spec = _validate_probe_spec(raw, path)
@@ -394,6 +612,17 @@ def _validate_plan_internal(value: Any) -> tuple[Mapping[str, Any], dict[str, An
         stratum = _validate_stratum(spec["stratum"], f"{path}.stratum")
         if stratum not in expected_strata:
             raise VerificationError(f"{path} references an undeclared stratum")
+        field_id = spec["field_id"]
+        allowed_pointers = pointers_by_field.get(field_id)
+        if allowed_pointers is None:
+            raise VerificationError(f"{path} references an undeclared stable field ID")
+        pointer = spec["critical_pointer"]
+        if pointer not in allowed_pointers:
+            raise VerificationError(
+                f"{path}.critical_pointer is not registered to its stable field ID"
+            )
+        field_identity_coverage[field_id] += 1
+        planned_pointer_usage[pointer] = planned_pointer_usage.get(pointer, 0) + 1
         family = stratum[1]
         model_id = spec["call_binding"]["receiver_model_id"]
         prior_model = model_by_family.setdefault(family, model_id)
@@ -462,6 +691,12 @@ def _validate_plan_internal(value: Any) -> tuple[Mapping[str, Any], dict[str, An
         "specs": specs,
         "spec_order": [spec["probe_id"] for spec in raw_specs],
         "assignment_commitment": assignment_commitment,
+        "identity_envelope": identity_envelope,
+        "field_universe": field_universe,
+        "alias_binding": alias_binding,
+        "field_identity_coverage": field_identity_coverage,
+        "planned_pointer_usage": planned_pointer_usage,
+        "external_reference_set": external_reference_set,
     }
     return plan, info
 
@@ -470,6 +705,18 @@ def validate_causal_probe_plan(value: Any) -> dict[str, Any]:
     """Validate a frozen v2 preregistration without observing any result."""
 
     plan, info = _validate_plan_internal(value)
+    field_identity_coverage = dict(sorted(info["field_identity_coverage"].items()))
+    covered_field_count = sum(count > 0 for count in field_identity_coverage.values())
+    declared_field_count = len(field_identity_coverage)
+    external_reference = info["external_reference_set"]
+    per_stable_semantic_slot = [
+        {
+            "field_id": field_id,
+            "planned_probes": field_identity_coverage[field_id],
+            "required_arm_matrix_preregistered": False,
+        }
+        for field_id in sorted(field_identity_coverage)
+    ]
     return {
         "schema_version": CAUSAL_PROBE_SUMMARY_SCHEMA,
         "valid": True,
@@ -479,8 +726,57 @@ def validate_causal_probe_plan(value: Any) -> dict[str, Any]:
         "semantic_invariance_checked": False,
         "composition_holdout_checked": False,
         "no_payload_accuracy_measured": False,
-        "declared_field_universe_covered": False,
+        "declared_field_universe_covered": covered_field_count == declared_field_count,
+        "declared_field_count": declared_field_count,
+        "covered_field_count": covered_field_count,
+        "field_identity_coverage": field_identity_coverage,
+        "field_identity_coverage_basis": "preregistered-probe-specs-only",
+        "critical_pointer_usage": dict(
+            sorted(info["planned_pointer_usage"].items())
+        ),
+        "authoritative_coverage_unit": "stable-field-id",
+        "field_universe_sha256": sha256_ref(info["field_universe"]),
+        "alias_to_field_id_binding_sha256": sha256_ref(info["alias_binding"]),
+        "preregistered_identity_envelope_sha256": sha256_ref(
+            info["identity_envelope"]
+        ),
+        "field_identity_and_external_refusal_calibration_same_envelope_bound": True,
+        "pack_binds_identity_envelope": False,
+        "preregistration_chronology_verified": False,
+        "identity_envelope_external_anchor_verified": False,
         "calibration_headline_seed_separated": False,
+        "external_reference_set_identity_bound": True,
+        "external_refusal_calibration_reference_set_identity_bound": True,
+        "external_reference_set_id": external_reference["reference_set_id"],
+        "external_reference_set_sha256": sha256_ref(external_reference),
+        "external_refusal_calibration_purpose": external_reference["purpose"],
+        "independent_specification_commitment_bound": True,
+        "independent_specification_authenticated": False,
+        "external_reference_observations_validated": False,
+        "external_refusal_calibration_gate_implemented": False,
+        "same_receiver_valid_ab_refusal_or_fallback_baseline_externally_anchored": False,
+        "per_stable_semantic_slot": per_stable_semantic_slot,
+        "required_per_slot_contrast_arms": list(REQUIRED_PER_SLOT_CONTRAST_ARMS),
+        "per_slot_arm_matrix_validated": False,
+        "pooled_intervention_pair_count_is_claim_gate": False,
+        "validated_stratum_dimensions": list(VALIDATED_STRATUM_DIMENSIONS),
+        "required_empirical_worst_stratum_axes": list(
+            REQUIRED_EMPIRICAL_WORST_STRATUM_AXES
+        ),
+        "five_dimensional_strata_validated": False,
+        "task_semantics_used_verdict_validated": False,
+        "verdicts": {
+            "payload_influenced_output": {
+                "status": "not-evaluated-plan-only",
+                "checks_passed": False,
+                "claim_eligible": False,
+            },
+            "task_semantics_used": {
+                "status": "not-validated",
+                "checks_passed": False,
+                "claim_eligible": False,
+            },
+        },
         "evidence_boundary": OFFLINE_EVIDENCE_BOUNDARY,
         "claim_eligible": False,
         "provider_or_model_calls_by_validator": 0,
@@ -802,7 +1098,7 @@ def validate_causal_probe_pack(plan_value: Any, pack_value: Any) -> dict[str, An
     placebo_calls_passed = 0
     valid_ab_calls_denominator = 0
     valid_ab_refusals_or_fallbacks_numerator = 0
-    critical_pointer_coverage: dict[str, int] = {}
+    critical_pointer_usage: dict[str, int] = {}
     per_stratum: dict[tuple[str, str, str], dict[str, int]] = {
         stratum: {
             "probes": 0,
@@ -816,6 +1112,20 @@ def validate_causal_probe_pack(plan_value: Any, pack_value: Any) -> dict[str, An
             "valid_ab_refusals_or_fallbacks_numerator": 0,
         }
         for stratum in info["expected_strata"]
+    }
+    per_stable_semantic_slot: dict[str, dict[str, int]] = {
+        field_id: {
+            "probes": 0,
+            "probes_passed": 0,
+            "probes_failed": 0,
+            "intervention_pairs_passed": 0,
+            "intervention_pairs_failed": 0,
+            "placebo_calls_passed": 0,
+            "placebo_calls_failed": 0,
+            "valid_ab_calls_denominator": 0,
+            "valid_ab_refusals_or_fallbacks_numerator": 0,
+        }
+        for field_id in info["field_identity_coverage"]
     }
 
     for result_index, raw_result in enumerate(raw_results):
@@ -833,6 +1143,7 @@ def validate_causal_probe_pack(plan_value: Any, pack_value: Any) -> dict[str, An
         spec = info["specs"][probe_id]
         stratum = _validate_stratum(spec["stratum"], f"{result_path}.stratum")
         stratum_counts = per_stratum[stratum]
+        slot_counts = per_stable_semantic_slot[spec["field_id"]]
         gate_failure_count_before_probe = len(gate_failures)
         assignment = assignments[probe_id]
         calls = _list(result["calls"], f"{result_path}.calls")
@@ -919,8 +1230,8 @@ def validate_causal_probe_pack(plan_value: Any, pack_value: Any) -> dict[str, An
                 probe_placebo_calls_passed += 1
 
         pointer = spec["critical_pointer"]
-        critical_pointer_coverage[pointer] = (
-            critical_pointer_coverage.get(pointer, 0) + 1
+        critical_pointer_usage[pointer] = (
+            critical_pointer_usage.get(pointer, 0) + 1
         )
         probe_passed = len(gate_failures) == gate_failure_count_before_probe
         stratum_counts["probes"] += 1
@@ -934,6 +1245,19 @@ def validate_causal_probe_pack(plan_value: Any, pack_value: Any) -> dict[str, An
         )
         stratum_counts["valid_ab_calls_denominator"] += len(AB_CONDITIONS)
         stratum_counts[
+            "valid_ab_refusals_or_fallbacks_numerator"
+        ] += refused_or_fallback
+        slot_counts["probes"] += 1
+        slot_counts["probes_passed"] += int(probe_passed)
+        slot_counts["probes_failed"] += int(not probe_passed)
+        slot_counts["intervention_pairs_passed"] += int(pair_passed)
+        slot_counts["intervention_pairs_failed"] += int(not pair_passed)
+        slot_counts["placebo_calls_passed"] += probe_placebo_calls_passed
+        slot_counts["placebo_calls_failed"] += (
+            len(PLACEBO_CONDITIONS) - probe_placebo_calls_passed
+        )
+        slot_counts["valid_ab_calls_denominator"] += len(AB_CONDITIONS)
+        slot_counts[
             "valid_ab_refusals_or_fallbacks_numerator"
         ] += refused_or_fallback
 
@@ -965,6 +1289,26 @@ def validate_causal_probe_pack(plan_value: Any, pack_value: Any) -> dict[str, An
     worst_stratum_checks_passed = all(
         item["checks_passed"] for item in per_stratum_summary
     )
+    per_stable_semantic_slot_summary = [
+        {
+            "field_id": field_id,
+            **per_stable_semantic_slot[field_id],
+            "available_contract_checks_passed": (
+                per_stable_semantic_slot[field_id]["probes"] > 0
+                and per_stable_semantic_slot[field_id]["probes_failed"] == 0
+            ),
+            "required_arm_matrix_validated": False,
+        }
+        for field_id in sorted(per_stable_semantic_slot)
+    ]
+    worst_stable_semantic_slot_available_checks_passed = all(
+        item["available_contract_checks_passed"]
+        for item in per_stable_semantic_slot_summary
+    )
+    field_identity_coverage = dict(sorted(info["field_identity_coverage"].items()))
+    covered_field_count = sum(count > 0 for count in field_identity_coverage.values())
+    declared_field_count = len(field_identity_coverage)
+    external_reference = info["external_reference_set"]
     return {
         "schema_version": CAUSAL_PROBE_SUMMARY_SCHEMA,
         "valid": True,
@@ -982,9 +1326,28 @@ def validate_causal_probe_pack(plan_value: Any, pack_value: Any) -> dict[str, An
         "valid_ab_refusals_or_fallbacks_numerator": (
             valid_ab_refusals_or_fallbacks_numerator
         ),
-        "critical_pointer_coverage": dict(sorted(critical_pointer_coverage.items())),
+        "critical_pointer_usage": dict(sorted(critical_pointer_usage.items())),
+        "field_identity_coverage": field_identity_coverage,
+        "field_identity_coverage_basis": "validated-probe-results",
+        "authoritative_coverage_unit": "stable-field-id",
+        "declared_field_count": declared_field_count,
+        "covered_field_count": covered_field_count,
+        "field_universe_sha256": sha256_ref(info["field_universe"]),
+        "alias_to_field_id_binding_sha256": sha256_ref(info["alias_binding"]),
+        "preregistered_identity_envelope_sha256": sha256_ref(
+            info["identity_envelope"]
+        ),
+        "field_identity_and_external_refusal_calibration_same_envelope_bound": True,
+        "pack_binds_identity_envelope": True,
+        "preregistration_chronology_verified": False,
+        "identity_envelope_external_anchor_verified": False,
         "per_stratum": per_stratum_summary,
         "worst_stratum_checks_passed": worst_stratum_checks_passed,
+        "per_stable_semantic_slot": per_stable_semantic_slot_summary,
+        "worst_stable_semantic_slot_available_checks_passed": (
+            worst_stable_semantic_slot_available_checks_passed
+        ),
+        "pooled_intervention_pair_count_is_claim_gate": False,
         "token_accounting_complete": unknown_total_calls == 0,
         "known_total_token_calls": total_calls - unknown_total_calls,
         "unknown_total_token_calls": unknown_total_calls,
@@ -995,8 +1358,42 @@ def validate_causal_probe_pack(plan_value: Any, pack_value: Any) -> dict[str, An
         "semantic_invariance_checked": False,
         "composition_holdout_checked": False,
         "no_payload_accuracy_measured": False,
-        "declared_field_universe_covered": False,
+        "declared_field_universe_covered": covered_field_count == declared_field_count,
         "calibration_headline_seed_separated": False,
+        "external_reference_set_identity_bound": True,
+        "external_refusal_calibration_reference_set_identity_bound": True,
+        "external_reference_set_id": external_reference["reference_set_id"],
+        "external_reference_set_sha256": sha256_ref(external_reference),
+        "external_refusal_calibration_purpose": external_reference["purpose"],
+        "independent_specification_commitment_bound": True,
+        "independent_specification_authenticated": False,
+        "external_reference_observations_validated": False,
+        "external_refusal_calibration_gate_implemented": False,
+        "same_receiver_valid_ab_refusal_or_fallback_baseline_externally_anchored": False,
+        "required_per_slot_contrast_arms": list(REQUIRED_PER_SLOT_CONTRAST_ARMS),
+        "per_slot_arm_matrix_validated": False,
+        "validated_stratum_dimensions": list(VALIDATED_STRATUM_DIMENSIONS),
+        "required_empirical_worst_stratum_axes": list(
+            REQUIRED_EMPIRICAL_WORST_STRATUM_AXES
+        ),
+        "five_dimensional_strata_validated": False,
+        "task_semantics_used_verdict_validated": False,
+        "verdicts": {
+            "payload_influenced_output": {
+                "status": (
+                    "local-record-contract-passed"
+                    if not gate_failures
+                    else "local-record-contract-failed"
+                ),
+                "checks_passed": not gate_failures,
+                "claim_eligible": False,
+            },
+            "task_semantics_used": {
+                "status": "not-validated",
+                "checks_passed": False,
+                "claim_eligible": False,
+            },
+        },
         "evidence_boundary": OFFLINE_EVIDENCE_BOUNDARY,
         "claim_eligible": False,
         "provider_or_model_calls_by_validator": 0,

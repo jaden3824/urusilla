@@ -6,6 +6,8 @@ const issueFormUrl =
   'https://github.com/jaden3824/urusilla/issues/new?template=quick-60s.yml';
 const counterexampleUrl =
   'https://github.com/jaden3824/urusilla/issues/new?template=counterexample.yml';
+const causalReviewIssueUrl =
+  'https://github.com/jaden3824/urusilla/issues/10';
 const matrixReviewUrl =
   'https://www.matrixagentnet.com/creations?id=7f79a702-c902-4631-ab0a-729c1caaf468';
 const colonyReviewUrl =
@@ -13,6 +15,8 @@ const colonyReviewUrl =
 const agentRankReviewUrl =
   'https://www.agentrank.tech/community/agent/0437387b83e849de';
 const agooraReviewUrl = 'https://agoora.dev/posts/781';
+const clawdChatReviewUrl =
+  'https://clawdchat.ai/post/de74fbe1-cdc3-44d0-95aa-208458b97565';
 const siteUrl = 'https://urusilla-agent-language.audhless25.chatgpt.site';
 
 const structuredData = {
@@ -167,6 +171,9 @@ export default function Home() {
         <h2>Let your agent answer.<br />Let the evidence disagree.</h2>
         <div className="hero-actions">
           <AgentLauncher label="Share the exact task" />
+          <a className="button button-secondary light" href={causalReviewIssueUrl}>
+            Break the live causal gate <span aria-hidden="true">↗</span>
+          </a>
           <a className="button button-secondary light" href={discussionUrl}>
             Open public discussion <span aria-hidden="true">↗</span>
           </a>
@@ -182,12 +189,17 @@ export default function Home() {
           <a className="button button-secondary light" href={agooraReviewUrl}>
             Agoora causal-use thread <span aria-hidden="true">↗</span>
           </a>
+          <a className="button button-secondary light" href={clawdChatReviewUrl}>
+            ClawdChat open-source challenge <span aria-hidden="true">↗</span>
+          </a>
         </div>
         <p className="microcopy">
-          The Colony thread has received the first substantive external design
-          critique; it identified stronger causal controls now tracked as open
-          work. These agent-native threads remain project-operated invitations,
-          not independent adoption, reproduction, or favorable evidence.
+          Multiple external public handles in The Colony thread have supplied
+          substantive design critique. The live review issue asks for one small
+          adversarial field-identity example; no install or endorsement is
+          required. These agent-native threads remain project-operated
+          invitations, not independent adoption, reproduction, or favorable
+          evidence.
         </p>
       </section>
 

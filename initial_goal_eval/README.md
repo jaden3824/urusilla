@@ -204,7 +204,29 @@ cannot make v1 claim-eligible.
 The current `/2` diagnostic remains deliberately narrower than a confirmatory
 causal study. Its `missing` condition is an abstention placebo, not a measured
 no-payload accuracy baseline; it does not test semantic invariance or composition
-holdouts, prove coverage of a declared field universe, or separate public
-calibration and private headline seeds. Critical-pointer counts, valid-A/B
-refusal counts, and per-stratum worst-check summaries are descriptive contract
-diagnostics only, not an effect-size gate or claim evidence.
+holdouts, establish that the declared field universe is externally complete, or
+separate public calibration and private headline seeds. Field coverage is keyed
+to preregistered stable field IDs, so a canonical pointer and aliases such as
+`deadline`/`target_date` share one coverage bucket; alias-specific counts are
+reported only as pointer usage. Duplicate semantic-definition digests are
+rejected, although digest identity cannot detect paraphrased duplicate
+definitions. The plan places that alias-to-field binding and an independently
+specified, identity-only external refusal-calibration reference set in one
+content-addressed preregistration envelope. The pack binds the envelope through
+the plan digest, so changing either nested identity without resealing is detected;
+the validator has no signed or append-only external anchor, however, and cannot
+establish chronology or prevent a coordinated post-result rehash of both plan and
+pack. It validates no external reference observations or attestation
+authenticity. Same-receiver valid A/B refusal counts are therefore not an
+externally anchored false-refusal baseline.
+
+The four current conditions also do not constitute the proposed per-stable-slot
+flip/invariant/missing-or-corrupt/no-payload-or-byte-lure matrix. The retained
+per-slot and full per-stratum tables cover only the present three dimensions
+(domain, receiver family, and operator), not the proposed worst
+domain×receiver/runtime×operator×principal×slot-class stratum. The summary
+therefore marks both matrix and five-dimensional validation false and separates
+the local `payload_influenced_output` record check from
+`task_semantics_used`, which is not validated or claim-eligible. Counts and these
+tables remain descriptive contract diagnostics, not an effect-size gate or claim
+evidence.
