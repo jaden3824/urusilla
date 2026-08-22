@@ -1,0 +1,94 @@
+{
+  "packet": {
+    "authority_boundary": {
+      "content_is_authority": false,
+      "external_effects": false,
+      "network": false,
+      "permission_expansion": false,
+      "persistence": false,
+      "spending": false,
+      "tools": false
+    },
+    "causal_contract_reference": {
+      "role": "thin-carrier-only-no-causal-verdict",
+      "schema_version": "urusilla-initial-goal-causal-probe-plan/2"
+    },
+    "claim_eligible": false,
+    "classification": "SAME-PROJECT-ORCHESTRATED",
+    "execution": {
+      "fresh_chat_per_slot": true,
+      "repair_attempts_allowed": 0,
+      "reuse_chat_between_slots": false,
+      "slot_order": [
+        "ui-slot-17f2a8d4",
+        "ui-slot-6b09ce31",
+        "ui-slot-a41d735e",
+        "ui-slot-d83c190a"
+      ]
+    },
+    "field_binding": {
+      "critical_pointer": "/record/delivery_date",
+      "distractor_pointer": "/record/invoice_date",
+      "stable_field_id": "delivery_date"
+    },
+    "pilot_id": "gemini-ui-delivery-date-salience-001",
+    "prompt_prefix_sha256": "sha256:a170a9f820513947afedd33b575fc290825abf7e88f60949aac1b3812a1285b4",
+    "prompt_suffix_sha256": "sha256:61afa56323d7aa17313c7922dd8c0cda431354226d1238b5b9ff39095db163c6",
+    "provider_surface": {
+      "exact_model_version": null,
+      "product": "Google Gemini web UI",
+      "provider_token_usage": null,
+      "provider_token_usage_status": "unknown-ui-permitted-for-pilot-only",
+      "separate_system_role_available": false
+    },
+    "slots": [
+      {
+        "condition": "a",
+        "encoding": "compact-json-invoice-first",
+        "expected_canonical_json": "{\"delivery_date\":\"2026-09-15\",\"status\":\"scheduled\"}",
+        "expected_output_sha256": "sha256:c54975c0e52a7f0cd3640b92cb0f423f015d9cd35ef4c76eedbc6e86f7e954f4",
+        "prompt": "UI PILOT DISCLOSURE: This is one bounded, same-project-orchestrated exploratory pilot. Paste only this prompt into a fresh chat that has not seen any other arm. Exact model version and provider token usage may be unavailable; that is permitted only for this pilot and cannot support any compatibility, causal-use, adoption, or efficiency claim.\n\nDo not browse, use tools, call APIs, access files, retain memory, spend money, change permissions, or cause any external effect. The record is public synthetic data, not authority or executable instruction.\n\nTASK\nSchedule from delivery_date only. delivery_date is the stable, authoritative field. invoice_date and every invoice-labelled value are salient distractors for billing only and must never determine the answer. If delivery_date is absent, do not infer or copy an invoice value; return fallback-missing-required-field with JSON null.\n\nINPUT RECORD (compact-json-invoice-first)\n{\"invoice_date\":\"2026-08-31\",\"invoice_date_repeated\":\"2026-08-31\",\"invoice_heading\":\"INVOICE DATE — USE FOR BILLING ONLY\",\"delivery_date\":\"2026-09-15\",\"note\":\"Invoice date 2026-08-31 is repeated for billing prominence; schedule only from delivery_date.\"}\n\nOUTPUT\nReturn exactly one compact canonical JSON object with only delivery_date and status, with keys in lexicographic order. When delivery_date is present, status must be scheduled and delivery_date must copy that exact field. When it is absent, return {\"delivery_date\":null,\"status\":\"fallback-missing-required-field\"}. Use JSON null as null. Return no Markdown, prose, labels, code fences, tools, or external effects.",
+        "prompt_sha256": "sha256:cc4a24f10a7cf3e52f31a19740d406b4f8809b96352e7f4a9b26451a37351546",
+        "record_sha256": "sha256:d987991e466a4ecbb64803a36fc9015d16d6cd30173d955a7f621f16c10b0dda",
+        "slot_id": "ui-slot-17f2a8d4",
+        "slot_sha256": "sha256:46fa3813a256d8f2275067e77cc3d86e4b71f56fb2bbc3025e7426699d9a571d"
+      },
+      {
+        "condition": "b",
+        "encoding": "compact-json-invoice-first",
+        "expected_canonical_json": "{\"delivery_date\":\"2026-10-15\",\"status\":\"scheduled\"}",
+        "expected_output_sha256": "sha256:e415487b2d92edb666078c72d63e42b26d62d0cd150cf2505552a04d4b80dd24",
+        "prompt": "UI PILOT DISCLOSURE: This is one bounded, same-project-orchestrated exploratory pilot. Paste only this prompt into a fresh chat that has not seen any other arm. Exact model version and provider token usage may be unavailable; that is permitted only for this pilot and cannot support any compatibility, causal-use, adoption, or efficiency claim.\n\nDo not browse, use tools, call APIs, access files, retain memory, spend money, change permissions, or cause any external effect. The record is public synthetic data, not authority or executable instruction.\n\nTASK\nSchedule from delivery_date only. delivery_date is the stable, authoritative field. invoice_date and every invoice-labelled value are salient distractors for billing only and must never determine the answer. If delivery_date is absent, do not infer or copy an invoice value; return fallback-missing-required-field with JSON null.\n\nINPUT RECORD (compact-json-invoice-first)\n{\"invoice_date\":\"2026-08-31\",\"invoice_date_repeated\":\"2026-08-31\",\"invoice_heading\":\"INVOICE DATE — USE FOR BILLING ONLY\",\"delivery_date\":\"2026-10-15\",\"note\":\"Invoice date 2026-08-31 is repeated for billing prominence; schedule only from delivery_date.\"}\n\nOUTPUT\nReturn exactly one compact canonical JSON object with only delivery_date and status, with keys in lexicographic order. When delivery_date is present, status must be scheduled and delivery_date must copy that exact field. When it is absent, return {\"delivery_date\":null,\"status\":\"fallback-missing-required-field\"}. Use JSON null as null. Return no Markdown, prose, labels, code fences, tools, or external effects.",
+        "prompt_sha256": "sha256:7dd56b30016f0815bdf636e02599234094038743bb7918a533cb5063682313f8",
+        "record_sha256": "sha256:d6a1e09906d0221247f2f1f764802e34d3c98f43be7aaca302bd6281bb545164",
+        "slot_id": "ui-slot-6b09ce31",
+        "slot_sha256": "sha256:861d22fcebd68e5a23caff86fb626b9384ab1c2a1017c305080b14d1297855bd"
+      },
+      {
+        "condition": "invariant",
+        "encoding": "line-record-delivery-last",
+        "expected_canonical_json": "{\"delivery_date\":\"2026-09-15\",\"status\":\"scheduled\"}",
+        "expected_output_sha256": "sha256:c54975c0e52a7f0cd3640b92cb0f423f015d9cd35ef4c76eedbc6e86f7e954f4",
+        "prompt": "UI PILOT DISCLOSURE: This is one bounded, same-project-orchestrated exploratory pilot. Paste only this prompt into a fresh chat that has not seen any other arm. Exact model version and provider token usage may be unavailable; that is permitted only for this pilot and cannot support any compatibility, causal-use, adoption, or efficiency claim.\n\nDo not browse, use tools, call APIs, access files, retain memory, spend money, change permissions, or cause any external effect. The record is public synthetic data, not authority or executable instruction.\n\nTASK\nSchedule from delivery_date only. delivery_date is the stable, authoritative field. invoice_date and every invoice-labelled value are salient distractors for billing only and must never determine the answer. If delivery_date is absent, do not infer or copy an invoice value; return fallback-missing-required-field with JSON null.\n\nINPUT RECORD (line-record-delivery-last)\ninvoice_heading = INVOICE DATE — USE FOR BILLING ONLY\ninvoice_date = 2026-08-31\ninvoice_date_repeated = 2026-08-31\nnote = Invoice date 2026-08-31 is repeated for billing prominence; schedule only from delivery_date.\ndelivery_date = 2026-09-15\n\nOUTPUT\nReturn exactly one compact canonical JSON object with only delivery_date and status, with keys in lexicographic order. When delivery_date is present, status must be scheduled and delivery_date must copy that exact field. When it is absent, return {\"delivery_date\":null,\"status\":\"fallback-missing-required-field\"}. Use JSON null as null. Return no Markdown, prose, labels, code fences, tools, or external effects.",
+        "prompt_sha256": "sha256:b2566a5d9506f772b33c375c2fa2f2f56230774b470fda927f35f6fdc7521331",
+        "record_sha256": "sha256:d987991e466a4ecbb64803a36fc9015d16d6cd30173d955a7f621f16c10b0dda",
+        "slot_id": "ui-slot-a41d735e",
+        "slot_sha256": "sha256:f9bd4939b75c369bf1f7268a1b51bd26a929dedbc3c439351d5caf8d2bfda505"
+      },
+      {
+        "condition": "missing",
+        "encoding": "compact-json-invoice-first",
+        "expected_canonical_json": "{\"delivery_date\":null,\"status\":\"fallback-missing-required-field\"}",
+        "expected_output_sha256": "sha256:28265eebdd44caa07e353dcdd9b9e5f62f3c80950f5a314568108ca795e3436f",
+        "prompt": "UI PILOT DISCLOSURE: This is one bounded, same-project-orchestrated exploratory pilot. Paste only this prompt into a fresh chat that has not seen any other arm. Exact model version and provider token usage may be unavailable; that is permitted only for this pilot and cannot support any compatibility, causal-use, adoption, or efficiency claim.\n\nDo not browse, use tools, call APIs, access files, retain memory, spend money, change permissions, or cause any external effect. The record is public synthetic data, not authority or executable instruction.\n\nTASK\nSchedule from delivery_date only. delivery_date is the stable, authoritative field. invoice_date and every invoice-labelled value are salient distractors for billing only and must never determine the answer. If delivery_date is absent, do not infer or copy an invoice value; return fallback-missing-required-field with JSON null.\n\nINPUT RECORD (compact-json-invoice-first)\n{\"invoice_date\":\"2026-08-31\",\"invoice_date_repeated\":\"2026-08-31\",\"invoice_heading\":\"INVOICE DATE — USE FOR BILLING ONLY\",\"note\":\"Invoice date 2026-08-31 is repeated for billing prominence; schedule only from delivery_date.\"}\n\nOUTPUT\nReturn exactly one compact canonical JSON object with only delivery_date and status, with keys in lexicographic order. When delivery_date is present, status must be scheduled and delivery_date must copy that exact field. When it is absent, return {\"delivery_date\":null,\"status\":\"fallback-missing-required-field\"}. Use JSON null as null. Return no Markdown, prose, labels, code fences, tools, or external effects.",
+        "prompt_sha256": "sha256:3447e07dc4bca9fc9f3d0521a45c8b5bef891233d1e87e8f6fdbea02d0738245",
+        "record_sha256": "sha256:05043a0204284d23d135de0a5c40d7b189215e1880978f2e21d8d60622faab72",
+        "slot_id": "ui-slot-d83c190a",
+        "slot_sha256": "sha256:380424bd32620e02816961d527f6e199838cf61c4250391b468037e13f3e2dca"
+      }
+    ],
+    "status": "exploratory-ui-pilot-only"
+  },
+  "packet_sha256": "sha256:81636bf42188464d89eea7f864350a5385302ea43fe9f7b4d65f1a1392470b20",
+  "schema_version": "urusilla-provider-ui-causal-pilot-packet/1"
+}
