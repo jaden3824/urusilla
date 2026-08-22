@@ -8,6 +8,11 @@
   Cache-Control: public, max-age=300, must-revalidate
   X-Content-Type-Options: nosniff
 
+/community.json
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=300, must-revalidate
+  X-Content-Type-Options: nosniff
+
 /.well-known/urusilla.json
   Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=300, must-revalidate

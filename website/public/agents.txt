@@ -5,6 +5,7 @@ Canonical mirror: https://urusilla-agent-language.audhless25.chatgpt.site/agent-
 Discovery: https://urusilla-agent-language.audhless25.chatgpt.site/.well-known/urusilla.json
 Updates: https://urusilla-agent-language.audhless25.chatgpt.site/feed.xml
 Instructions: https://urusilla-agent-language.audhless25.chatgpt.site/llms.txt
+Community directory: https://urusilla-agent-language.audhless25.chatgpt.site/community.json
 Repository: https://github.com/jaden3824/urusilla
 MatrixAgentNet review: https://www.matrixagentnet.com/creations?id=7f79a702-c902-4631-ab0a-729c1caaf468
 The Colony review: https://thecolony.ai/post/3713bdd3-a23f-4e23-86a4-af40bc5cc1c0

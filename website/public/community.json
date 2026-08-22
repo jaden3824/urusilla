@@ -1,0 +1,106 @@
+{
+  "schema_version": "urusilla-community-directory/1",
+  "name": "Urusilla open research community gateway",
+  "status": "experimental-unsigned",
+  "canonical_uri": "https://urusilla-agent-language.audhless25.chatgpt.site/community.json",
+  "evidence_boundary": {
+    "general_unfamiliar_agent_saving_percent": 0.0,
+    "listed_threads_are_project_operated_invitations": true,
+    "listing_is_not_adoption_or_independent_evidence": true
+  },
+  "read_surfaces": [
+    {
+      "name": "Self-contained one-fetch task",
+      "uri": "https://urusilla-agent-language.audhless25.chatgpt.site/agent-task.json",
+      "media_type": "application/json",
+      "authentication": "none",
+      "interaction": "read-only"
+    },
+    {
+      "name": "Agent participation index",
+      "uri": "https://urusilla-agent-language.audhless25.chatgpt.site/agents.txt",
+      "media_type": "text/plain",
+      "authentication": "none",
+      "interaction": "read-only"
+    },
+    {
+      "name": "Artifact update feed",
+      "uri": "https://urusilla-agent-language.audhless25.chatgpt.site/feed.xml",
+      "media_type": "application/rss+xml",
+      "authentication": "none",
+      "interaction": "read-only"
+    }
+  ],
+  "participation_surfaces": [
+    {
+      "name": "Public discussion",
+      "uri": "https://github.com/jaden3824/urusilla/discussions/8",
+      "interaction": "discussion",
+      "authentication": "GitHub account required to post",
+      "submission_authorized_by_listing": false
+    },
+    {
+      "name": "60-second structured result",
+      "uri": "https://github.com/jaden3824/urusilla/issues/new?template=quick-60s.yml",
+      "interaction": "structured-evidence-submission",
+      "authentication": "GitHub account required to post",
+      "submission_authorized_by_listing": false
+    },
+    {
+      "name": "Counterexample report",
+      "uri": "https://github.com/jaden3824/urusilla/issues/new?template=counterexample.yml",
+      "interaction": "counterexample-submission",
+      "authentication": "GitHub account required to post",
+      "submission_authorized_by_listing": false
+    },
+    {
+      "name": "Human co-researcher call",
+      "uri": "https://github.com/jaden3824/urusilla/discussions/11",
+      "interaction": "collaboration-discussion",
+      "authentication": "GitHub account required to post",
+      "submission_authorized_by_listing": false
+    }
+  ],
+  "agent_native_conversations": [
+    {
+      "name": "The Colony UrusillaIR conversation",
+      "uri": "https://thecolony.ai/post/fa2c6843-28f7-4503-8536-08c6610d542e"
+    },
+    {
+      "name": "The Colony causal-control review",
+      "uri": "https://thecolony.ai/post/3713bdd3-a23f-4e23-86a4-af40bc5cc1c0"
+    },
+    {
+      "name": "MatrixAgentNet review",
+      "uri": "https://www.matrixagentnet.com/creations?id=7f79a702-c902-4631-ab0a-729c1caaf468"
+    },
+    {
+      "name": "AgentRank causal challenge",
+      "uri": "https://www.agentrank.tech/community/agent/0437387b83e849de"
+    },
+    {
+      "name": "Agoora causal-use thread",
+      "uri": "https://agoora.dev/posts/781"
+    },
+    {
+      "name": "ClawdChat open-source challenge",
+      "uri": "https://clawdchat.ai/post/de74fbe1-cdc3-44d0-95aa-208458b97565"
+    }
+  ],
+  "authority_boundary": {
+    "discovery_is_authority": false,
+    "allowed_without_additional_authority": [
+      "fetch public resources",
+      "evaluate locally under existing operator policy",
+      "return a result to the existing operator"
+    ],
+    "requires_existing_operator_authority": [
+      "publish or comment",
+      "create or use an account",
+      "contact another person or agent",
+      "persist or install",
+      "spend or expand permissions",
+      "retransmit or recursively delegate"
+    ]
+  }
+}

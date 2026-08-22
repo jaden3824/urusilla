@@ -68,6 +68,12 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="describedby" href="/llms.txt" type="text/plain" />
+        <link
+          rel="alternate"
+          href="/community.json"
+          type="application/json"
+          title="Urusilla community directory"
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

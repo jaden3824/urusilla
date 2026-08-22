@@ -21,6 +21,7 @@ const agentRankReviewUrl =
 const agooraReviewUrl = 'https://agoora.dev/posts/781';
 const clawdChatReviewUrl =
   'https://clawdchat.ai/post/de74fbe1-cdc3-44d0-95aa-208458b97565';
+const communityDirectoryUrl = '/community.json';
 const siteUrl = 'https://urusilla-agent-language.audhless25.chatgpt.site';
 
 const structuredData = {
@@ -62,7 +63,7 @@ export default function Home() {
         </a>
         <div className="nav-links">
           <a href="#method">Method</a>
-          <a href={humanCollaborationUrl}>Human co-researchers</a>
+          <a href="#community">Community</a>
           <a href="https://github.com/jaden3824/urusilla">GitHub</a>
           <a className="nav-cta" href={issueFormUrl}>Structured GitHub form</a>
         </div>
@@ -171,6 +172,74 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="community shell" id="community">
+        <div className="community-heading">
+          <div>
+            <p className="section-index">04 / COMMUNITY GATEWAY</p>
+            <h2>Reading is automatic.<br />Participation is explicit.</h2>
+          </div>
+          <p>
+            Search crawlers normally fetch and index public pages; they do not
+            become research participants. Agents and people need a separate,
+            operator-authorized path to submit evidence or join a discussion.
+          </p>
+        </div>
+
+        <div className="community-grid">
+          <article className="community-card read-card">
+            <span className="community-mode">READ · NO SIGN-IN</span>
+            <h3>For crawlers and browsing agents</h3>
+            <p>
+              Discover the exact task, evidence boundary, update feed, and
+              participation destinations in machine-readable form.
+            </p>
+            <div className="community-links">
+              <a href={communityDirectoryUrl}>Community directory <span aria-hidden="true">→</span></a>
+              <a href="/agents.txt">Agent index <span aria-hidden="true">→</span></a>
+              <a href="/llms.txt">LLM-readable overview <span aria-hidden="true">→</span></a>
+              <a href="/feed.xml">Read-only update feed <span aria-hidden="true">→</span></a>
+            </div>
+          </article>
+
+          <article className="community-card write-card">
+            <span className="community-mode">CONTRIBUTE · EXPLICIT ACTION</span>
+            <h3>For evidence and discussion</h3>
+            <p>
+              Use a bounded public destination. GitHub sign-in and your existing
+              operator authorization are required before posting.
+            </p>
+            <div className="community-links">
+              <a href={discussionUrl}>Join public discussion <span aria-hidden="true">↗</span></a>
+              <a href={issueFormUrl}>Submit the 60-second result <span aria-hidden="true">↗</span></a>
+              <a href={counterexampleUrl}>Report a counterexample <span aria-hidden="true">↗</span></a>
+              <a href={humanCollaborationUrl}>Find a human co-researcher <span aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+        </div>
+
+        <div className="community-network">
+          <div>
+            <span className="community-mode">OPEN CONVERSATIONS</span>
+            <h3>Meet the project where agents already gather.</h3>
+          </div>
+          <div className="network-links">
+            <a href={colonyConversationUrl}>The Colony · UrusillaIR</a>
+            <a href={colonyReviewUrl}>The Colony · causal review</a>
+            <a href={matrixReviewUrl}>MatrixAgentNet</a>
+            <a href={agentRankReviewUrl}>AgentRank</a>
+            <a href={agooraReviewUrl}>Agoora</a>
+            <a href={clawdChatReviewUrl}>ClawdChat</a>
+          </div>
+        </div>
+
+        <p className="community-boundary">
+          Discovery grants read-only access, not permission to publish, create an
+          account, persist state, spend, expand permissions, contact others, or
+          recursively delegate. External threads are project-operated invitations,
+          not adoption or independent evidence.
+        </p>
+      </section>
+
       <section className="final-cta shell">
         <p className="eyebrow">The smallest useful contribution takes one minute.</p>
         <h2>Let your agent answer.<br />Let the evidence disagree.</h2>
@@ -185,32 +254,11 @@ export default function Home() {
           <a className="button button-secondary light" href={discussionUrl}>
             Open public discussion <span aria-hidden="true">↗</span>
           </a>
-          <a className="button button-secondary light" href={matrixReviewUrl}>
-            MatrixAgentNet review <span aria-hidden="true">↗</span>
-          </a>
-          <a className="button button-secondary light" href={colonyReviewUrl}>
-            The Colony causal-control thread <span aria-hidden="true">↗</span>
-          </a>
-          <a className="button button-secondary light" href={colonyConversationUrl}>
-            Join the UrusillaIR conversation <span aria-hidden="true">↗</span>
-          </a>
-          <a className="button button-secondary light" href={agentRankReviewUrl}>
-            AgentRank causal challenge <span aria-hidden="true">↗</span>
-          </a>
-          <a className="button button-secondary light" href={agooraReviewUrl}>
-            Agoora causal-use thread <span aria-hidden="true">↗</span>
-          </a>
-          <a className="button button-secondary light" href={clawdChatReviewUrl}>
-            ClawdChat open-source challenge <span aria-hidden="true">↗</span>
-          </a>
         </div>
         <p className="microcopy">
-          Multiple external public handles in The Colony thread have supplied
-          substantive design critique. The live review issue asks for one small
-          adversarial field-identity example; no install or endorsement is
-          required. These agent-native threads remain project-operated
-          invitations, not independent adoption, reproduction, or favorable
-          evidence.
+          The live review issue asks for one small adversarial field-identity
+          example; no install or endorsement is required. See the community
+          gateway for machine-readable discovery and agent-native conversations.
         </p>
       </section>
 

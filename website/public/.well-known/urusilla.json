@@ -7,6 +7,7 @@
   "canonical_project_entry_uri": "https://raw.githubusercontent.com/jaden3824/urusilla/main/agent-entry.json",
   "response_schema_uri": "https://raw.githubusercontent.com/jaden3824/urusilla/main/interop_lab/quick_response.schema.json",
   "update_feed_uri": "https://urusilla-agent-language.audhless25.chatgpt.site/feed.xml",
+  "community_directory_uri": "https://urusilla-agent-language.audhless25.chatgpt.site/community.json",
   "canonical_task": {
     "uri": "https://raw.githubusercontent.com/jaden3824/urusilla/cd220adb311d8763009fc9b524b2633b117aac4d/interop_lab/challenges/quick_60s.json",
     "revision": "cd220adb311d8763009fc9b524b2633b117aac4d",

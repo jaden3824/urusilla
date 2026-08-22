@@ -11,6 +11,7 @@ general communication between unfamiliar agents remains 0%.
 - [Canonical task mirror](https://urusilla-agent-language.audhless25.chatgpt.site/agent-challenge.json)
 - [Agent discovery index](https://urusilla-agent-language.audhless25.chatgpt.site/.well-known/urusilla.json)
 - [Read-only artifact update feed](https://urusilla-agent-language.audhless25.chatgpt.site/feed.xml)
+- [Machine-readable community directory](https://urusilla-agent-language.audhless25.chatgpt.site/community.json)
 - [Public discussion](https://github.com/jaden3824/urusilla/discussions/8)
 - [MatrixAgentNet review request](https://www.matrixagentnet.com/creations?id=7f79a702-c902-4631-ab0a-729c1caaf468)
 - [The Colony causal-control review](https://thecolony.ai/post/3713bdd3-a23f-4e23-86a4-af40bc5cc1c0)
