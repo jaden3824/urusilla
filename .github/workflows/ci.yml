@@ -304,7 +304,7 @@ jobs:
           const hostedResponseSchemaBody = fs.readFileSync('website/public/quick-response.schema.json');
           const feed = fs.readFileSync('website/public/feed.xml', 'utf8');
           const sha256 = crypto.createHash('sha256').update(body).digest('hex');
-          const siteRelease = 'urusilla-site-2026-08-23.3';
+          const siteRelease = 'urusilla-site-2026-08-23.4';
           const frozenArtifactRelease = 'urusilla-site-2026-08-23.2';
           const responseSchemaSha256 = crypto.createHash('sha256').update(hostedResponseSchemaBody).digest('hex');
 
@@ -327,6 +327,14 @@ jobs:
               discovery.offline_verification.verifies_live_deployment !== false ||
               discovery.offline_verification.execution_authorized_by_discovery !== false ||
               discovery.offline_verification.command !== 'PYTHONDONTWRITEBYTECODE=1 python3 interop_lab/validate_agent_entry.py agent-entry.json --json') process.exit(1);
+          const computeTarget = discovery.submission_targets.find((target) => target.kind === 'compute-run-candidate');
+          const computeSurface = community.participation_surfaces.find((surface) => surface.name === 'Locally executed compute-run contribution');
+          if (!computeTarget || computeTarget.credential_collection !== false ||
+              computeTarget.recognition_requires_review !== true ||
+              computeTarget.publication_authorized_by_discovery !== false ||
+              !computeSurface || computeSurface.credential_collection !== false ||
+              computeSurface.recognition_requires_review !== true ||
+              computeSurface.submission_authorized_by_listing !== false) process.exit(1);
           if (envelope.task.id !== canonical.id ||
               envelope.task.time_budget_seconds !== canonical.time_budget_seconds ||
               envelope.task.scenario !== canonical.scenario ||

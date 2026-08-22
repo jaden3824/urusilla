@@ -1,0 +1,124 @@
+name: Donate a verified evaluation run
+description: Contribute a locally executed model run without sharing an API key.
+title: "[Compute run]: "
+labels:
+  - research-evidence
+  - compute-contribution-candidate
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Run the evaluation in an environment you control and submit only public, reviewable evidence. **Never paste an API key, access token, gift code, billing identifier, private prompt, private conversation, personal data, or chain-of-thought.** Urusilla does not accept or store provider credentials through this form.
+
+        A submission is a candidate record, not automatically accepted evidence. A validated run may receive `Compute Contributor` credit with the submitter's consent. Compute credit does not imply adoption, performance, scientific authorship, employment, payment, or endorsement.
+
+  - type: dropdown
+    id: result_direction
+    attributes:
+      label: Result direction
+      options:
+        - Unfavorable or regression
+        - Null or inconclusive
+        - Favorable
+    validations:
+      required: true
+
+  - type: input
+    id: submitter
+    attributes:
+      label: Accountable submitter
+      description: Public person, team, or organization responsible for the run.
+      placeholder: GitHub handle, team, or organization
+    validations:
+      required: true
+
+  - type: dropdown
+    id: relationship
+    attributes:
+      label: Relationship to Urusilla
+      options:
+        - Independent external run
+        - Mixed or project-assisted run
+        - Urusilla project-affiliated run
+        - Uncertain; explained below
+    validations:
+      required: true
+
+  - type: textarea
+    id: independence
+    attributes:
+      label: Independence and assistance disclosure
+      description: Disclose prior exposure, project help, reused artifacts, agent assistance, and conflicts of interest.
+    validations:
+      required: true
+
+  - type: input
+    id: revision
+    attributes:
+      label: Frozen Urusilla revision
+      description: Use a full commit SHA, not a moving branch name.
+    validations:
+      required: true
+
+  - type: textarea
+    id: runtime
+    attributes:
+      label: Runtime, model, and settings
+      description: Include provider or local runtime, exact model/version when exposed, temperature, limits, retry policy, and tokenizer or usage source.
+    validations:
+      required: true
+
+  - type: textarea
+    id: execution
+    attributes:
+      label: Execution contract
+      description: State the task, trial count, cold/warm state, stopping rule, local runner revision, and every supplied artifact.
+    validations:
+      required: true
+
+  - type: textarea
+    id: result
+    attributes:
+      label: Public result packet and digest
+      description: Link immutable public artifacts when possible. Include exact outcomes, failures, refusals, repairs, fallbacks, and SHA-256 digests.
+    validations:
+      required: true
+
+  - type: textarea
+    id: accounting
+    attributes:
+      label: Inclusive usage and cost ledger
+      placeholder: |
+        Provider-reported input/output/cache/reasoning usage:
+        Local or estimated counts and method:
+        Attempts, retries, repairs, fallbacks, and judging:
+        Actual billed cost or unknown:
+        Missing categories:
+    validations:
+      required: true
+
+  - type: dropdown
+    id: recognition
+    attributes:
+      label: Public recognition preference
+      description: Recognition occurs only after review and may be corrected or revoked if evidence changes.
+      options:
+        - Credit my accountable submitter name as a Compute Contributor
+        - Credit this submission anonymously
+        - Do not list this run in a contributor registry
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: boundary
+    attributes:
+      label: Credential, evidence, and credit boundary
+      options:
+        - label: I did not submit any API key, token, gift code, billing identifier, private content, personal data, or chain-of-thought.
+          required: true
+        - label: I authorized any provider cost before the run and understand that Urusilla does not reimburse it unless a separate written agreement exists.
+          required: true
+        - label: I retained unfavorable and null results and did not convert missing usage to zero.
+          required: true
+        - label: I authorize this public submission and understand that compute credit is not adoption, endorsement, payment, or scientific authorship.
+          required: true

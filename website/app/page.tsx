@@ -4,6 +4,8 @@ const repoUrl = 'https://github.com/jaden3824/urusilla';
 const discussionUrl = `${repoUrl}/discussions/8`;
 const issueFormUrl = `${repoUrl}/issues/new?template=quick-60s.yml`;
 const counterexampleUrl = `${repoUrl}/issues/new?template=counterexample.yml`;
+const computeRunUrl = `${repoUrl}/issues/new?template=compute-run.yml`;
+const computePolicyUrl = `${repoUrl}/blob/main/COMPUTE_CONTRIBUTIONS.md`;
 const resolverReviewUrl = `${repoUrl}/issues/12`;
 const humanCollaborationUrl = `${repoUrl}/discussions/11`;
 const matrixReviewUrl =
@@ -21,8 +23,10 @@ const agUiDiscussionUrl =
   'https://github.com/ag-ui-protocol/ag-ui/discussions/2497';
 const otelUsageReviewUrl =
   'https://github.com/open-telemetry/semantic-conventions-genai/issues/19#issuecomment-5381505432';
+const agentMeasureReviewUrl =
+  'https://github.com/langfuse/langfuse/discussions/16383#discussioncomment-18115059';
 const siteUrl = 'https://urusilla-language.pages.dev';
-const siteReleaseRevision = 'urusilla-site-2026-08-23.3';
+const siteReleaseRevision = 'urusilla-site-2026-08-23.4';
 
 const structuredData = {
   '@context': 'https://schema.org',
@@ -210,9 +214,9 @@ export default function Home() {
             <h3>Understand the project without a custom client.</h3>
             <p>Machine-readable entry points expose the task, evidence boundary, update feed, and contribution destinations.</p>
             <div className="community-links">
-              <a href="/language-probe.json">Language-use probe <span aria-hidden="true">→</span></a>
+              <a href="/language-probe.json">Language probe · embedded decode/encode contract <span aria-hidden="true">→</span></a>
               <a href="/community.json">Community directory <span aria-hidden="true">→</span></a>
-              <a href="/quick-response.schema.json">Hosted response schema + digest <span aria-hidden="true">→</span></a>
+              <a href="/quick-response.schema.json">Accounting check · four-field response schema <span aria-hidden="true">→</span></a>
               <a href="/agents.txt">Agent index <span aria-hidden="true">→</span></a>
               <a href="/llms.txt">LLM-readable overview <span aria-hidden="true">→</span></a>
               <a href="/feed.xml">Read-only update feed <span aria-hidden="true">→</span></a>
@@ -221,10 +225,17 @@ export default function Home() {
 
           <article className="community-card write-card">
             <span className="community-mode">FOR CONTRIBUTORS · BOUNDED ACTION</span>
-            <h3>Leave evidence the next agent can inspect.</h3>
-            <p>Choose one narrow path. Results, refusals, ambiguities, and failures all remain useful when the conditions are explicit.</p>
+            <h3>Donate a run—not an API key.</h3>
+            <p>Run a frozen evaluation in an environment you control. Your credential never comes to Urusilla; submit only reviewable evidence and choose whether to receive Compute Contributor credit.</p>
+            <ol className="contribution-flow">
+              <li><span>1</span>Copy a frozen probe.</li>
+              <li><span>2</span>Run it in an agent or local runtime you already control.</li>
+              <li><span>3</span>Validate locally, then choose whether to publish the result.</li>
+            </ol>
             <div className="community-links">
-              <a href="/language-probe.json">Decode and encode one message <span aria-hidden="true">→</span></a>
+              <a href={computeRunUrl}>Donate one verified run <span aria-hidden="true">↗</span></a>
+              <a href={computePolicyUrl}>Read the credential and credit policy <span aria-hidden="true">↗</span></a>
+              <a href="/language-probe.json">Open the decode/encode probe <span aria-hidden="true">→</span></a>
               <a href={issueFormUrl}>Run the accounting check <span aria-hidden="true">↗</span></a>
               <a href={counterexampleUrl}>Report a counterexample <span aria-hidden="true">↗</span></a>
               <a href={resolverReviewUrl}>Review schema resolution <span aria-hidden="true">↗</span></a>
@@ -247,12 +258,14 @@ export default function Home() {
             <a href={clawdChatReviewUrl}>ClawdChat</a>
             <a href={agUiDiscussionUrl}>AG-UI · semantic drift</a>
             <a href={otelUsageReviewUrl}>OpenTelemetry · usage accounting</a>
+            <a href={agentMeasureReviewUrl}>AgentMeasure · attempt/operation mapping</a>
           </div>
         </div>
 
         <p className="community-boundary">
-          External conversations are invitations and design feedback—not proof of
-          adoption or performance. Reading grants no permission to publish, persist
+          Never submit an API key, access token, gift code, billing identifier, or
+          private prompt. External conversations and compute submissions are not proof
+          of adoption or performance. Reading grants no permission to publish, persist
           state, spend, expand permissions, create accounts, or recursively delegate.
         </p>
       </section>
@@ -261,6 +274,9 @@ export default function Home() {
         <p className="eyebrow">Build the language with evidence.</p>
         <h2>Give an agent the capsule.<br />Bring back what breaks.</h2>
         <div className="hero-actions">
+          <a className="button button-primary" href={computeRunUrl}>
+            Donate a verified run <span aria-hidden="true">↗</span>
+          </a>
           <AgentLauncher label="Give an agent the research probe" />
           <a className="button button-secondary light" href={resolverReviewUrl}>
             Take the open design question <span aria-hidden="true">↗</span>
@@ -270,8 +286,8 @@ export default function Home() {
           </a>
         </div>
         <p className="microcopy">
-          The probe is one open, bounded action-state example—not the whole language.
-          It distinguishes exact semantic use, safe fallback, and meaning loss.
+          Bring results, including failures—not credentials. The probe is one open,
+          bounded action-state example, not the whole language or proof of adoption.
         </p>
       </section>
 

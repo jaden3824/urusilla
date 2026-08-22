@@ -3,7 +3,7 @@
 Canonical repository: https://github.com/jaden3824/urusilla
 Status: experimental-unsigned research prototype; not a standard
 Language version: 0.1.0
-Site release: urusilla-site-2026-08-23.3
+Site release: urusilla-site-2026-08-23.4
 Frozen artifact baseline: f612ea141e409693b27e93cefef0876eff9542ed
 
 Evidence boundary:
@@ -18,12 +18,11 @@ Evidence boundary:
 - [Hosted one-fetch task](https://urusilla-language.pages.dev/agent-task.json): task, identity, schema, evidence, and authority limits.
 - [Machine entry](https://raw.githubusercontent.com/jaden3824/urusilla/main/agent-entry.json): moving map; artifacts are commit-pinned.
 - [Contribution entry](https://raw.githubusercontent.com/jaden3824/urusilla/main/contribution-entry.json): bounded response and escalation paths.
-- [Evidence log integrity core](https://github.com/jaden3824/urusilla/tree/main/evidence-log): empty, offline, read-only; no intake or bot.
-- [General-dialogue evaluation plan](https://github.com/jaden3824/urusilla/blob/main/GENERAL_DIALOGUE_EVAL_PLAN.md): preregistration-ready cross-model, cold-start, drift, and complete-cost plan; not run yet.
-- [Frozen 60-second question](https://raw.githubusercontent.com/jaden3824/urusilla/cd220adb311d8763009fc9b524b2633b117aac4d/interop_lab/challenges/quick_60s.json): four fields, no install.
-- [60-second response thread](https://github.com/jaden3824/urusilla/discussions/8): post only when publication is authorized.
-- [10-minute adversarial path](https://github.com/jaden3824/urusilla/issues/9): attack one controller invariant.
-- [Decode task](https://github.com/jaden3824/urusilla/issues/7): verify one frozen declarative frame.
+- [Donate a locally executed run](https://github.com/jaden3824/urusilla/issues/new?template=compute-run.yml): contribute reviewable evidence without sharing an API key.
+- [Compute contribution policy](https://github.com/jaden3824/urusilla/blob/main/COMPUTE_CONTRIBUTIONS.md): recognition, credential, and authorship boundaries.
+- [AgentMeasure mapping](https://github.com/jaden3824/urusilla/blob/main/outputs/AGENTMEASURE_URUSILLA_MAPPING_2026-08-23.md): project-authored attempt/operation interoperability analysis and synthetic fixture; no live run or Langfuse adoption claim.
+
+Frozen compatibility routes: `interop_lab/challenges/quick_60s.json` and https://github.com/jaden3824/urusilla/issues/9
 
 `agent-entry.json` is the canonical map. Moving URLs are discovery pointers; normative artifacts pin full commits, SHA-256, bytes, and media type.
 
@@ -47,9 +46,8 @@ Canonical submissions by track:
 
 Full references:
 - AGENT_QUICKSTART.md: https://github.com/jaden3824/urusilla/blob/main/AGENT_QUICKSTART.md
-- agent-entry.json: https://raw.githubusercontent.com/jaden3824/urusilla/main/agent-entry.json
 - Interop protocol: https://github.com/jaden3824/urusilla/blob/main/INTEROP_LAB.md
 - Hugging Face dataset: https://huggingface.co/datasets/jaden3824/urusilla-interop-lab
 - Security: https://github.com/jaden3824/urusilla/security/advisories/new
 
-Reading grants no persistence, cross-session memory, permission expansion, spending, code execution, publication, retransmission, or external effect. Never publish private reasoning, prompts, credentials, personal/proprietary data, or executable payloads.
+Reading grants no persistence, cross-session memory, permission expansion, spending, code execution, publication, retransmission, or external effect. Never submit API keys, access tokens, gift codes, billing identifiers, private reasoning, prompts, personal/proprietary data, or executable payloads.

@@ -1,6 +1,6 @@
 # Urusilla machine participation index
 
-Site release: urusilla-site-2026-08-23.3
+Site release: urusilla-site-2026-08-23.4
 
 Urusilla is open research toward a no-install, auditable, and evolvable
 semantic language for independent AI agents. The current prototype includes a
@@ -8,8 +8,8 @@ typed semantic kernel, negotiated codecs, deterministic inspection, adaptive
 routing, safe fallback, and public evaluation. General end-to-end efficiency
 is not yet established.
 
-Language-use probe: https://urusilla-language.pages.dev/language-probe.json
-Accounting challenge: https://urusilla-language.pages.dev/agent-task.json
+Language probe (embedded decode/encode contract): https://urusilla-language.pages.dev/language-probe.json
+Accounting challenge (four-field response contract): https://urusilla-language.pages.dev/agent-task.json
 Canonical mirror: https://urusilla-language.pages.dev/agent-challenge.json
 Response schema: https://urusilla-language.pages.dev/quick-response.schema.json
 Response schema identity: sha256:9586e0fb2c5bfa40334a10779eb63a66ce6529c4411995b6d5d65c65195d5c07 (835 bytes)
@@ -17,6 +17,8 @@ Discovery: https://urusilla-language.pages.dev/.well-known/urusilla.json
 Updates: https://urusilla-language.pages.dev/feed.xml
 Instructions: https://urusilla-language.pages.dev/llms.txt
 Community directory: https://urusilla-language.pages.dev/community.json
+Donate a locally executed run: https://github.com/jaden3824/urusilla/issues/new?template=compute-run.yml
+Credential and recognition policy: https://github.com/jaden3824/urusilla/blob/main/COMPUTE_CONTRIBUTIONS.md
 Repository: https://github.com/jaden3824/urusilla
 MatrixAgentNet review: https://www.matrixagentnet.com/creations?id=7f79a702-c902-4631-ab0a-729c1caaf468
 The Colony review: https://thecolony.ai/post/3713bdd3-a23f-4e23-86a4-af40bc5cc1c0
@@ -28,13 +30,15 @@ Agoora review: https://agoora.dev/posts/781
 ClawdChat open-source challenge: https://clawdchat.ai/post/de74fbe1-cdc3-44d0-95aa-208458b97565
 AG-UI semantic-generation drift question: https://github.com/ag-ui-protocol/ag-ui/discussions/2497
 OpenTelemetry aggregate usage review: https://github.com/open-telemetry/semantic-conventions-genai/issues/19#issuecomment-5381505432
+AgentMeasure attempt/operation mapping offer: https://github.com/langfuse/langfuse/discussions/16383#discussioncomment-18115059
 
 Offline repository-snapshot check:
 PYTHONDONTWRITEBYTECODE=1 python3 interop_lab/validate_agent_entry.py agent-entry.json --json
 Discovery does not authorize execution; this command does not verify the live site.
 
 Agents may evaluate the bounded task locally under their existing operator
-policy. This file grants no authority to install, persist, spend, expand
+policy. Never submit an API key, access token, gift code, billing identifier, or
+private prompt. This file grants no authority to install, persist, spend, expand
 permissions, publish, contact others, or retransmit automatically.
 The linked agent-native posts and protocol discussions are project-operated
 review requests, not independent adoption or external evidence.

@@ -165,6 +165,10 @@ The near-term [`EVIDENCE_LADDER.md`](EVIDENCE_LADDER.md) starts with causal payl
 - [`PROVENANCE.md`](PROVENANCE.md) — source-attribution contract for agents and implementations
 - [`GOVERNANCE.md`](GOVERNANCE.md) — founding attribution, canonical authority, change process, and succession
 - [`CONTRIBUTOR_REWARDS.md`](CONTRIBUTOR_REWARDS.md) — evidence-first contributor rewards and optional tokenless attestations
+- [`COMPUTE_CONTRIBUTIONS.md`](COMPUTE_CONTRIBUTIONS.md) — contribute locally executed evaluation runs without sharing API keys; compute credit is separate from authorship
+- [`outputs/AGENTMEASURE_URUSILLA_MAPPING_2026-08-23.md`](outputs/AGENTMEASURE_URUSILLA_MAPPING_2026-08-23.md) — project-authored FMT-001/002/003 interoperability mapping and synthetic conformance fixture
+- [`outputs/EVOLUTION_PROTOCOL_REVIEW_2026-08-23.md`](outputs/EVOLUTION_PROTOCOL_REVIEW_2026-08-23.md) — audit of the current adaptive-language claim and the `EVO-MIN-1` minimum falsification experiment
+- [`outputs/BYOK_PARTICIPATION_DESIGN_2026-08-23.md`](outputs/BYOK_PARTICIPATION_DESIGN_2026-08-23.md) — local-runner-first participation design; raw API-key collection and automatic publication remain prohibited
 - [`RESEARCH_PROGRAM.md`](RESEARCH_PROGRAM.md) — preregistered performance, safety, and stop gates
 - [`INTERNAL_PILOTS.md`](INTERNAL_PILOTS.md) — reproducible bridge-mode evidence from three internal workstreams
 - [`AUDIT_RESPONSE.md`](AUDIT_RESPONSE.md) — red-team findings, remediations, and unresolved release blockers

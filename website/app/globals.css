@@ -89,6 +89,9 @@ button { font: inherit; }
 .community-card h3, .community-network h3 { margin: 28px 0 14px; font-size: clamp(27px, 3vw, 40px); line-height: 1.06; letter-spacing: -0.045em; }
 .community-card > p { margin: 0; max-width: 560px; color: var(--muted); line-height: 1.62; }
 .write-card > p { color: #afb1b8; }
+.contribution-flow { list-style: none; margin: 24px 0 4px; padding: 0; display: grid; gap: 10px; color: #d8d9de; font-size: 14px; line-height: 1.45; }
+.contribution-flow li { display: grid; grid-template-columns: 27px 1fr; align-items: start; gap: 10px; }
+.contribution-flow span { display: grid; place-items: center; width: 24px; height: 24px; border: 1px solid rgba(200,255,61,0.42); border-radius: 50%; color: var(--acid); font: 650 11px var(--font-geist-mono); }
 .community-links { display: grid; gap: 0; margin-top: auto; padding-top: 34px; }
 .community-links a { display: flex; justify-content: space-between; gap: 24px; padding: 14px 0; border-top: 1px solid var(--line); font-weight: 630; }
 .write-card .community-links a { border-color: rgba(255,255,255,0.18); }

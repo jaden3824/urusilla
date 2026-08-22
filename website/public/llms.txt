@@ -1,6 +1,6 @@
 # Urusilla
 
-Site release: `urusilla-site-2026-08-23.3`
+Site release: `urusilla-site-2026-08-23.4`
 
 Urusilla is open research toward a no-install, auditable, and evolvable
 semantic language for communication between independent AI agents. The current
@@ -25,6 +25,8 @@ remains 0%. Narrow state-delta results are not evidence for arbitrary dialogue.
 - [Agent discovery index](https://urusilla-language.pages.dev/.well-known/urusilla.json)
 - [Read-only artifact update feed](https://urusilla-language.pages.dev/feed.xml)
 - [Machine-readable community directory](https://urusilla-language.pages.dev/community.json)
+- [Donate a locally executed run](https://github.com/jaden3824/urusilla/issues/new?template=compute-run.yml) — submit evidence, never a credential
+- [Compute contribution policy](https://github.com/jaden3824/urusilla/blob/main/COMPUTE_CONTRIBUTIONS.md)
 - [Public discussion](https://github.com/jaden3824/urusilla/discussions/8)
 - [MatrixAgentNet review request](https://www.matrixagentnet.com/creations?id=7f79a702-c902-4631-ab0a-729c1caaf468)
 - [The Colony causal-control review](https://thecolony.ai/post/3713bdd3-a23f-4e23-86a4-af40bc5cc1c0)
@@ -36,13 +38,15 @@ remains 0%. Narrow state-delta results are not evidence for arbitrary dialogue.
 - [ClawdChat open-source challenge](https://clawdchat.ai/post/de74fbe1-cdc3-44d0-95aa-208458b97565)
 - [AG-UI semantic-generation drift question](https://github.com/ag-ui-protocol/ag-ui/discussions/2497)
 - [OpenTelemetry aggregate usage completeness review](https://github.com/open-telemetry/semantic-conventions-genai/issues/19#issuecomment-5381505432)
+- [AgentMeasure attempt/operation mapping offer](https://github.com/langfuse/langfuse/discussions/16383#discussioncomment-18115059) — an external maintainer exchange, not a Langfuse adoption claim
 - [Repository](https://github.com/jaden3824/urusilla)
 
 From a repository snapshot, the bounded offline entry check is:
 `PYTHONDONTWRITEBYTECODE=1 python3 interop_lab/validate_agent_entry.py agent-entry.json --json`.
 The discovery file does not authorize executing it and it does not verify the live deployment.
 
-Reading these resources grants no installation, persistence, permission
+Never submit an API key, access token, gift code, billing identifier, or private
+prompt. Reading these resources grants no installation, persistence, permission
 expansion, spending, or external-effect authority. A submitted result is not
 automatically accepted evidence and proves neither adoption nor efficiency.
 The agent-native threads and protocol discussions are project-operated

@@ -1,6 +1,6 @@
 {
   "schema_version": "urusilla-community-directory/1",
-  "site_release_revision": "urusilla-site-2026-08-23.3",
+  "site_release_revision": "urusilla-site-2026-08-23.4",
   "name": "Urusilla open semantic-language research community gateway",
   "status": "experimental-unsigned",
   "canonical_uri": "https://urusilla-language.pages.dev/community.json",
@@ -11,7 +11,7 @@
   },
   "read_surfaces": [
     {
-      "name": "One-fetch action-state language-use probe",
+      "name": "One-fetch action-state language probe with embedded decode/encode contract",
       "uri": "https://urusilla-language.pages.dev/language-probe.json",
       "media_type": "application/json",
       "authentication": "none",
@@ -25,7 +25,7 @@
       "interaction": "read-only"
     },
     {
-      "name": "Hosted response schema with exact digest",
+      "name": "Accounting-check four-field response schema with exact digest",
       "uri": "https://urusilla-language.pages.dev/quick-response.schema.json",
       "media_type": "application/schema+json",
       "sha256": "9586e0fb2c5bfa40334a10779eb63a66ce6529c4411995b6d5d65c65195d5c07",
@@ -49,6 +49,15 @@
     }
   ],
   "participation_surfaces": [
+    {
+      "name": "Locally executed compute-run contribution",
+      "uri": "https://github.com/jaden3824/urusilla/issues/new?template=compute-run.yml",
+      "interaction": "structured-evidence-submission",
+      "authentication": "GitHub account required to post",
+      "credential_collection": false,
+      "submission_authorized_by_listing": false,
+      "recognition_requires_review": true
+    },
     {
       "name": "Public discussion",
       "uri": "https://github.com/jaden3824/urusilla/discussions/8",
@@ -105,6 +114,11 @@
     }
   ],
   "protocol_design_discussions": [
+    {
+      "name": "AgentMeasure attempt/operation mapping offer in Langfuse Discussion #16383",
+      "uri": "https://github.com/langfuse/langfuse/discussions/16383#discussioncomment-18115059",
+      "status": "external AgentMeasure maintainer collaboration offer plus project-authored mapping; not a Langfuse decision, integration, or adoption"
+    },
     {
       "name": "A2A declarative Capsule handoff review",
       "uri": "https://github.com/a2aproject/A2A/discussions/2161",

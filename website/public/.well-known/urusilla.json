@@ -1,6 +1,6 @@
 {
   "schema_version": "urusilla-discovery/1",
-  "site_release_revision": "urusilla-site-2026-08-23.3",
+  "site_release_revision": "urusilla-site-2026-08-23.4",
   "name": "Urusilla evolvable semantic language research",
   "description": "Open research toward a no-install, auditable semantic language for independent AI agents, with a bounded public falsification task.",
   "challenge_uri": "https://urusilla-language.pages.dev/agent-task.json",
@@ -39,6 +39,13 @@
     "execution_authorized_by_discovery": false
   },
   "submission_targets": [
+    {
+      "kind": "compute-run-candidate",
+      "uri": "https://github.com/jaden3824/urusilla/issues/new?template=compute-run.yml",
+      "credential_collection": false,
+      "recognition_requires_review": true,
+      "publication_authorized_by_discovery": false
+    },
     {
       "kind": "structured-result",
       "uri": "https://github.com/jaden3824/urusilla/issues/new?template=quick-60s.yml",
