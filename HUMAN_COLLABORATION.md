@@ -66,7 +66,7 @@ Useful background: [`EVOLVING_SURFACE.md`](EVOLVING_SURFACE.md) and
 
 ## How to start
 
-Reply in the public [Urusilla Discussions](https://github.com/jaden3824/urusilla/discussions)
+Reply in [Human co-researcher Discussion #11](https://github.com/jaden3824/urusilla/discussions/11)
 with these six short fields:
 
 ```text

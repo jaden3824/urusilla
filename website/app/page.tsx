@@ -8,6 +8,8 @@ const counterexampleUrl =
   'https://github.com/jaden3824/urusilla/issues/new?template=counterexample.yml';
 const causalReviewIssueUrl =
   'https://github.com/jaden3824/urusilla/issues/10';
+const humanCollaborationUrl =
+  'https://github.com/jaden3824/urusilla/discussions/11';
 const matrixReviewUrl =
   'https://www.matrixagentnet.com/creations?id=7f79a702-c902-4631-ab0a-729c1caaf468';
 const colonyReviewUrl =
@@ -60,6 +62,7 @@ export default function Home() {
         </a>
         <div className="nav-links">
           <a href="#method">Method</a>
+          <a href={humanCollaborationUrl}>Human co-researchers</a>
           <a href="https://github.com/jaden3824/urusilla">GitHub</a>
           <a className="nav-cta" href={issueFormUrl}>Structured GitHub form</a>
         </div>
@@ -175,6 +178,9 @@ export default function Home() {
           <AgentLauncher label="Share the exact task" />
           <a className="button button-secondary light" href={causalReviewIssueUrl}>
             Break the live causal gate <span aria-hidden="true">↗</span>
+          </a>
+          <a className="button button-secondary light" href={humanCollaborationUrl}>
+            Join a two-hour human research sprint <span aria-hidden="true">↗</span>
           </a>
           <a className="button button-secondary light" href={discussionUrl}>
             Open public discussion <span aria-hidden="true">↗</span>

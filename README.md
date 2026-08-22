@@ -316,4 +316,4 @@ call defines three approximately two-hour first sprints in causal evaluation,
 framework boundary mapping, and semantic/governance review. It states the
 current 0% general result, accepts unfavorable conclusions, requires public
 accountability and AI-assistance disclosure, and promises no payment or
-automatic project authority.
+automatic project authority. Start in [Human co-researcher Discussion #11](https://github.com/jaden3824/urusilla/discussions/11).
