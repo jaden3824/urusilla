@@ -1,12 +1,14 @@
-# Urusilla: A Layered Machine-First Interlingua with Deterministic Serialization and Adaptive Fallback
+# Urusilla: Methods and Negative Results for a Safe Hybrid Machine-First Interlingua
 
-Status: working paper draft; not submission-ready  
-Evidence cut-off: 2026-08-20  
+Status: methods and negative-results working paper; not submission-ready
+
+Evidence cut-off: 2026-08-23
+
 System name: Urusilla
 
 ## Abstract
 
-AI agents usually communicate through natural language or general-purpose structured data even when both endpoints are machines. This work studies Urusilla, a layered machine-first interlingua that separates typed intent, canonical semantics, transport encoding, negotiated surfaces, provenance, and readable fallback. The primary result is negative: demonstrated token saving for general communication between unfamiliar agents is **0%**. A frozen 2,542-turn convenience sample from Taskmaster, Schema-Guided Dialogue, Dolly, and OpenAssistant passes its exact no-regret fallback hypothesis but fails its general compact-value and repeated-context hypotheses. Warm receiver-carrier saving is only 0.65% to 0.80%; cold and post-decode API-input savings are 0%, and end-to-end task utility is not evaluated. A minimal external-profile carrier adds 165.60% to 183.98% tokens. On a separate retained 42-record official-example corpus, bound and standalone compact modes each win 0/168 comparisons, while standalone cold text is 2.24% to 3.00% larger than raw concise text. Narrower results remain informative but do not repair this boundary: receiver-bound v0.7 saves 23,997 development and 4,302 grouped-holdout tokens, yet saves 0 OOD and activates in 0/12 cold plans; checkpointed v0.9 saves 53.71% to 55.15% only on deliberately correlated synthetic state. A historical pre-cutover receiver pilot reaches 27/28 exact reconstructions but fails its gate, while one historical pre-cutover internally operated neutral-ID sender pilot recorded 6/10 structural-and-semantic passes and has not been rerun on current artifacts. Total tokens per safely completed real-model task remain unknown. These results motivate a layered router that prioritizes verified silence, model-native or task-aware public action state, negotiated routines, and raw fallback rather than one universal lossless syntax. No state-of-the-art, energy, adoption, or end-to-end superiority claim is made.
+AI agents usually communicate through natural language or general-purpose structured data even when both endpoints are machines. This work studies Urusilla, a layered machine-first interlingua that separates typed intent, canonical semantics, transport encoding, negotiated surfaces, provenance, and readable fallback. The primary result is negative: demonstrated token saving for general communication between unfamiliar agents is **0%**. A frozen 2,542-turn convenience sample from Taskmaster, Schema-Guided Dialogue, Dolly, and OpenAssistant passes its exact no-regret fallback hypothesis but fails its general compact-value and repeated-context hypotheses. Warm receiver-carrier saving is only 0.65% to 0.80%; cold and post-decode API-input savings are 0%, and end-to-end task utility is not evaluated. A minimal external-profile carrier adds 165.60% to 183.98% tokens. On a separate retained 42-record official-example corpus, bound and standalone compact modes each win 0/168 comparisons, while standalone cold text is 2.24% to 3.00% larger than raw concise text. Narrower results remain informative but do not repair this boundary: receiver-bound v0.7 saves 23,997 development and 4,302 grouped-holdout tokens, yet saves 0 OOD and activates in 0/12 cold plans; checkpointed v0.9 saves 53.71% to 55.15% only on deliberately correlated synthetic state. A historical pre-cutover receiver pilot reaches 27/28 exact reconstructions but fails its gate, while one historical pre-cutover internally operated neutral-ID sender pilot recorded 6/10 structural-and-semantic passes and has not been rerun on current artifacts. Development request artifacts now enforce exact context, Capsule, payload, route, receiver-setting, and fallback bindings, but the same-context Capsule-to-direct-receiver execution path remains under implementation and no real-model causal use has been shown. In one project-operated public conversation, `ColonistOne` verified a pinned Capsule's byte count and digest and returned a content-relevant UrusillaIR-shaped reply; an unresolved `answer_schema` and a rejected body kind prevent a conformance pass, and the observation is not independent benchmark reproduction, adoption, or efficiency evidence. Total tokens and energy per safely completed real-model task remain unknown. These results motivate a layered router that prioritizes verified silence, model-native or task-aware public action state, negotiated routines, and raw fallback rather than one universal lossless syntax. The present contribution is a methods and negative-results paper; no state-of-the-art, energy-saving, adoption, causal-consumption, or end-to-end superiority claim is made.
 
 ## 1. Introduction
 
@@ -14,7 +16,7 @@ Multi-agent systems increasingly pass plans, evidence, requests, tool results, c
 
 This paper investigates a middle path: a stable, typed semantic kernel with negotiated external encodings. The kernel is intended to remain auditable and versioned. Compact symbolic, binary, or learned surfaces are codecs over that kernel, not independent sources of meaning. An endpoint may select a fast representation only after exactness, provenance, authorization, privacy, and compatibility gates pass. Unknown or novel content falls back to a readable representation.
 
-The current evidence is deliberately bounded. It shows exact serialization, strong in-family compression, explicit out-of-domain failures, transparent fallback, a failed frozen broad-dialogue compact-value test, checkpointed state-delta behavior on synthetic correlated sessions, A2A bridge accounting, same-project Python/Node cross-runtime agreement, and failed small receiver and sender gates. It does not show autonomous task success, reliable sender generation, external independent reproduction, cross-vendor transfer, measured human audit utility, measured energy reduction, public adoption, or state-of-the-art performance.
+The current evidence is deliberately bounded. It shows exact serialization, strong in-family compression, explicit out-of-domain failures, transparent fallback, a failed frozen broad-dialogue compact-value test, checkpointed state-delta behavior on synthetic correlated sessions, A2A bridge accounting, request-binding invariants, same-project Python/Node cross-runtime agreement, a public schema-resolution counterexample, and failed small receiver and sender gates. It does not show a completed same-context Capsule-to-direct-receiver path, causal payload use by a real model, autonomous task success, reliable sender generation, external independent benchmark reproduction, cross-vendor transfer, measured human audit utility, measured energy reduction, public adoption, or state-of-the-art performance.
 
 ### 1.1 Research questions
 
@@ -121,6 +123,12 @@ argmin_{e in E} (receiver_tokens(e, m, r), fixed_tie_rank(e), encoded_text(e, m)
 ```
 
 The proposed deployment eligibility gate is determined before optimization by exact semantic recovery, profile compatibility, authorization, provenance, privacy, and integrity checks. The current measured selector exercises codec validity and profile availability, not the full deployment policy. The cold planner compares complete session plans with and without profile activation. A specialized profile is not activated when its transfer cost cannot be recovered for the expected session.
+
+### 4.5 Current hybrid-runtime boundary
+
+The development runtime has request-level invariants rather than a completed language-use result. Its typed artifacts bind the public task context, declarative Capsule, candidate action-state payload, chosen route, receiver settings, model-visible request, token ceiling, and exact raw or JSON fallback. Mutation and synthetic integration tests reject mismatched digests, substituted baseline prompts, incompatible cached context, replay, and incomplete accounting. These invariants establish which bytes a prepared request is supposed to carry; they do not establish that a model used those bytes.
+
+The intended cold-start path is natural language to a public action-state sender, followed by a receiver that reads the Capsule and consumes the validated action-state directly in the same live model context without first expanding it back into natural language. That same-context Capsule-to-direct-receiver path is still under implementation. Existing builders, exporters, fake adapters, and project-authored fixtures exercise preparation and binding boundaries, but no current provider-backed run supplies a causal contrast showing that a real receiver's answer changed with a task-critical payload and remained invariant to a task-irrelevant re-encoding. The five-route utility router and raw/JSON fallback therefore remain a development hypothesis, not demonstrated end-to-end utility or comprehension.
 
 ## 5. Current evaluation
 
@@ -232,6 +240,14 @@ Reliable sender generation is not established. One historical pre-cutover, inter
 
 A separately written dependency-free ECMAScript implementation runs under Node.js and does not import, spawn, or embed the Python reference during its normal tests. It encodes, decodes, and re-encodes 280 Python-oracle-derived v0.2 fixtures byte-for-byte and rejects 25 frozen negative fixtures. This is useful cross-runtime compatibility evidence, but it is project-internal and shares project-authored specifications, Capsules, and oracle-derived vectors. It is not a clean-room external reproduction, external adoption, a security certification, or proof of full protocol conformance.
 
+### 5.18 Public external dialogue counterexample
+
+A project-operated public conversation asked an account with no authenticated project relationship to fetch a commit-pinned Capsule and answer a bounded UrusillaIR query. The public account `ColonistOne` reported the correct Capsule identity---33,476 bytes and SHA-256 `588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27`---selected the requested `semantic-fidelity` option, supplied a content-relevant reason, and returned a new question in a conversational UrusillaIR-shaped envelope. Project-side recomputation confirms the Capsule byte identity.
+
+The observation is an unfavorable strict-conformance result. The query's declared `urn:urusilla:schema:peer-dialogue-reply:0.1` answer schema and top-level dialogue schema were not resolvable from the pinned artifacts, the Capsule's act/body and node-manifest tables were not closed over the same node set, and the reference validator checked identifier syntax rather than required-schema availability. The reply then used bare `body.kind: "answer"`, which the pinned core validator rejects. Inline required fields were sufficient for a useful conversational inference, but they were not declared as a content-bound replacement for the unresolved answer schema.
+
+This is public external evidence of artifact retrieval, digest checking, useful interpretation, and a schema-resolution defect. It is not a strict round trip, an independently operated benchmark reproduction, authenticated model comprehension, adoption, efficiency, or general compatibility. The account's runtime, operator relationship, prior exposure, and control boundary are unauthenticated. The negative outcome is retained as a counterexample and motivated a separate offline schema-availability gate without rewriting the historical exchange or upgrading its status.
+
 ## 6. Planned end-to-end experiments
 
 The claim-eligible study follows `COMPETITIVE_REPRODUCTION_PLAN.md`.
@@ -257,6 +273,28 @@ The target matrix contains three independently released model families, includin
 The primary effectiveness outcome is safely completed task success. The primary efficiency outcomes are total model tokens and total cost per safely completed task. Communication-only output tokens are secondary and retained for comparison with prior work.
 
 All task input, system, history, visible communication, final-answer, profile, translation, repair, and billed reasoning tokens are counted. Judge tokens are reported separately and included in economic accounting.
+
+The frozen initial-goal gate compares the complete hybrid system with the better of concise natural language and canonical JSON under unseen multi-domain, multi-model, independently operated evaluation. Its one-sided 95% lower bound on task-success difference must exceed `-0.01`; the lower bound on total-token reduction must reach `0.20`; unseen-partner parse validity must reach `0.99`; and held-out semantic fidelity must reach `0.95`. Setup, sender, router, receiver, output, reasoning, repair, fallback, tool, safety, and judge costs remain in scope. The repository's separate `25%` threshold for the word **competitive** is stricter. Neither gate has been run to completion.
+
+### 6.5 Energy hypothesis and break-even
+
+Token counts are only a workload proxy, not an energy result. Production measurements are also provider- and workload-specific: Elsworth et al. report a fleet-wide median of 0.24 Wh for a Gemini Apps text prompt while including accelerators, hosts, idle capacity, and data-centre overhead; Oviedo et al. estimate a median 0.31 Wh for a frontier-scale standard query with 500 input and 300 median output tokens, rising to 3.91 Wh for a 5,000-output-token test-time-scaling query. FineWeb's 15-trillion-token corpus derived from 96 Common Crawl snapshots illustrates why corpus-wide pretranslation and refresh cannot be treated as free setup. These are external scale anchors, not Urusilla measurements.
+
+For one fixed corpus or source unit, let `E_build`, `E_validate`, `E_refresh`, and `E_store` be the incremental joules required before reuse; let `E_raw_read` and `E_capsule_read` be matched end-to-end joules for one safely completed downstream use, including repair and fallback. If the denominator is positive, the reuse break-even is:
+
+```text
+R* = (E_build + E_validate + E_refresh + E_store)
+     / (E_raw_read - E_capsule_read)
+```
+
+Under the narrower first-order assumption that only model input length changes, with Capsule/source token ratio `r`, build energy `e_build` per source token, and serving energy `e_input` per original input token, this reduces to `R* = e_build / ((1 - r) * e_input)`. The study must measure every term on the same system boundary and retain a non-positive denominator as a failed energy hypothesis. Raw fallback and provenance normally require retaining the source alongside the Capsule, so a safe hybrid cache cannot silently book source deletion as storage saving. No value is substituted into either equation as a project result, and no energy-saving percentage is claimed.
+
+Primary sources:
+
+- Google fleet measurement: <https://arxiv.org/abs/2508.15734>
+- Production-scale inference model: <https://doi.org/10.1016/j.joule.2026.102430>
+- FineWeb corpus scale: <https://papers.nips.cc/paper_files/paper/2024/file/370df50ccfdf8bde18f8f9c2d9151bda-Paper-Datasets_and_Benchmarks_Track.pdf>
+- Global data-centre accounting context: <https://www.iea.org/reports/energy-and-ai/executive-summary>
 
 ## 7. Statistical analysis plan
 
@@ -305,26 +343,31 @@ Energy claims require measured wall-plug or device energy per safely completed t
 - The four-family broad-dialogue lane is a 2,542-turn convenience sample. Its freeze chronology is project-internal rather than externally preregistered, and evaluator authors could access the corpus during implementation.
 - Token counts are tokenizer-specific and do not measure task understanding.
 - The historical live pilot tests one model and one representation, fails its stopping gate, and was not rerun on current Urusilla inputs.
+- Request-binding invariants exist, but the same-context Capsule-to-direct-receiver path is incomplete and has no real-model causal-use result.
 - Reliable sender generation, autonomous dialogue, tool use, task success, cross-vendor transfer, human audit utility, and measured energy remain unestablished.
 - The Python reference implementation is not optimized and is slower than several standard codecs.
 - Checksums are not authentication, and parsing never implies authorization.
 - A same-project Node implementation agrees with Python-oracle-derived fixtures, but no external adopter or external independent implementation validates the main claims.
+- The `ColonistOne` exchange verifies one pinned artifact identity and preserves a useful public counterexample, but its rejected reply shape, unresolved answer schema, and unauthenticated runtime preclude a conformance, reproduction, adoption, or efficiency claim.
 - An immutable release commit and signed source manifest remain pending.
 
 ## 11. Claim policy
 
-Use **competitive** only after the one-sided 95% lower bound establishes safe-task-success non-inferiority and the lower bound of the two-sided 95% paired-bootstrap token-reduction interval is at least 25% against compact terse English on every qualifying public task family. Use **near-leading** only after a same-workload study is within five percentage points of the strongest reproducible result on at least two task families and adds another Pareto benefit. Use **leading**, **best**, or **state of the art** only after outperforming the strongest same-workload baseline and obtaining independent reproduction.
+Make no end-to-end efficiency claim until the frozen initial-goal study passes all of its gates against the better of concise natural language and canonical JSON: safe-task-success non-inferiority, at least 20% fully accounted total-token reduction, at least 99% unseen-partner parse validity, at least 95% held-out semantic fidelity, zero prohibited authority or effect events, multiple model families, multiple domains, and independent operation. A route-preparation invariant, codec ratio, wire-byte reduction, synthetic repetition result, project-operated public reply, or decode-before-model transport saving cannot substitute for that study.
+
+Use **competitive** only after the one-sided 95% lower bound establishes safe-task-success non-inferiority and the lower bound of the two-sided 95% paired-bootstrap token-reduction interval is at least 25% against the strongest compact terse-English or canonical-JSON baseline on every qualifying public task family. Use **near-leading** only after a same-workload study is within five percentage points of the strongest reproducible result on at least two task families and adds another Pareto benefit. Use **leading**, **best**, or **state of the art** only after outperforming the strongest same-workload baseline and obtaining independent reproduction.
 
 The published AutoForm value of 72.7% is a reference point, not directly comparable with the present serialization corpus.
 
 ## 12. Venue positioning
 
-- **ACL or EMNLP main/Findings:** strongest fit after cross-model public-task evidence establishes language and task utility.
-- **AAMAS:** strongest fit if interaction protocols, commitments, topology, and heterogeneous-agent coordination become the primary contribution.
-- **MLSys:** plausible only after optimized implementations and measured latency, memory, networking, and energy results.
-- **NeurIPS or ICML workshop:** suitable for an earlier, explicitly preliminary artifact focused on adaptive communication or evaluation methodology.
+- **Current evidence profile:** position the work as an evaluation-methods and negative-results paper. The defensible contributions are the layered claim taxonomy, complete-cost and causal-use gates, fail-closed fallback design, reproducible counterexamples, and evidence showing that favorable codec and synthetic-state results do not transfer to unfamiliar general dialogue. The paper must not be pitched as a new efficient universal language.
+- **ACL/EMNLP Findings, negative-results venues, or language/agent-evaluation workshops:** plausible current targets if the artifact and chronology are tightened and the paper centers semantic-equivalence methodology, failed broad-dialogue hypotheses, and the external schema-resolution counterexample.
+- **AAMAS workshops or a methods-oriented AAMAS submission:** plausible if protocol state, heterogeneous-agent causal controls, and failure-preserving interoperability are foregrounded without an adoption claim.
+- **ACL/EMNLP main, AAMAS main, or a broader machine-learning venue:** defer an efficiency-centered submission until the frozen end-to-end gate passes across the required domains, models, and independent operators.
+- **MLSys:** defer until the same gate is accompanied by optimized implementations and measured latency, memory, networking, wall energy, and refresh/setup amortization.
 
-No venue deadline is assumed in this draft. The submission target should be chosen only after the evidence profile is known.
+No venue deadline is assumed in this draft. A methods/negative-results submission may proceed on the current claim boundary; an efficiency, general-language, adoption, or systems-superiority submission may not.
 
 ## 13. Scientific submission blockers
 
@@ -334,11 +377,14 @@ No venue deadline is assumed in this draft. The submission target should be chos
 - [ ] Run at least two public task families across three model families.
 - [ ] Pass the safe-task-success non-inferiority gate and report the complete token ledger.
 - [ ] Measure cross-model sender construction and receiver reconstruction under fixed protocols.
+- [x] Implement request-level context, Capsule, payload, route, receiver-setting, and fallback bindings; retain them as plumbing rather than comprehension evidence.
+- [ ] Complete the same-context Capsule-to-direct-receiver path and pass a real-model payload-intervention gate before claiming direct consumption.
 - [x] Run a premeasurement-sealed external OOD serialization evaluation; retain its failed cold token-value gate.
 - [x] Remeasure transparent fallback on the retained official-example corpus; retain 0/168 compact wins under both bound and standalone contracts and the 2.24% to 3.00% standalone cold overhead without labeling it fresh confirmation.
 - [x] Run the frozen 2,542-turn broad lossless lane; retain H1 pass, H2-H3 fail, H4 not evaluated, 0.65% to 0.80% warm carrier saving, and zero cold/API-input saving.
 - [ ] Replace incremental universal-lossless tuning with a frozen end-to-end study of public action state, model-native/task-aware representations, verified silence/topology, negotiated routines, and raw fallback, including a blinded payload-dependence/placebo control before any direct-consumption claim.
 - [x] Add a separately written same-project cross-runtime implementation; classify it as internal compatibility evidence.
+- [x] Preserve the `ColonistOne` digest match and conversational reply as an unfavorable schema-resolution counterexample, not as conformance, reproduction, adoption, or efficiency.
 - [ ] Obtain an external independent implementation or external cross-play result.
 - [ ] Add adversarial, privacy, provenance, collusion, and blinded human-audit evaluations.
 - [ ] Report total tokens, repairs, cold profiles, bytes, latency, and cost.
