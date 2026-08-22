@@ -299,20 +299,34 @@ jobs:
           const languageProbe = require('./website/public/language-probe.json');
           const community = require('./website/public/community.json');
           const responseSchema = require('./interop_lab/quick_response.schema.json');
+          const hostedResponseSchema = require('./website/public/quick-response.schema.json');
           const body = fs.readFileSync('website/public/agent-challenge.json');
+          const hostedResponseSchemaBody = fs.readFileSync('website/public/quick-response.schema.json');
           const feed = fs.readFileSync('website/public/feed.xml', 'utf8');
           const sha256 = crypto.createHash('sha256').update(body).digest('hex');
-          const siteRelease = 'urusilla-site-2026-08-23.2';
+          const siteRelease = 'urusilla-site-2026-08-23.3';
+          const frozenArtifactRelease = 'urusilla-site-2026-08-23.2';
+          const responseSchemaSha256 = crypto.createHash('sha256').update(hostedResponseSchemaBody).digest('hex');
 
           if (sha256 !== discovery.canonical_task.sha256 ||
               sha256 !== envelope.identity.sha256 ||
               body.length !== discovery.canonical_task.decoded_bytes ||
               body.length !== envelope.identity.decoded_bytes) process.exit(1);
           if (discovery.site_release_revision !== siteRelease ||
-              envelope.site_release_revision !== siteRelease ||
-              languageProbe.site_release_revision !== siteRelease ||
+              envelope.site_release_revision !== frozenArtifactRelease ||
+              languageProbe.site_release_revision !== frozenArtifactRelease ||
               community.site_release_revision !== siteRelease ||
               !discovery.language_probe_uri.endsWith('/language-probe.json')) process.exit(1);
+          if (JSON.stringify(hostedResponseSchema) !== JSON.stringify(responseSchema) ||
+              responseSchemaSha256 !== discovery.response_schema.sha256 ||
+              hostedResponseSchemaBody.length !== discovery.response_schema.decoded_bytes ||
+              hostedResponseSchema.$id !== discovery.response_schema.schema_id ||
+              discovery.response_schema_uri !== discovery.response_schema.uri) process.exit(1);
+          if (discovery.offline_verification.repository_snapshot_required !== true ||
+              discovery.offline_verification.network_used !== false ||
+              discovery.offline_verification.verifies_live_deployment !== false ||
+              discovery.offline_verification.execution_authorized_by_discovery !== false ||
+              discovery.offline_verification.command !== 'PYTHONDONTWRITEBYTECODE=1 python3 interop_lab/validate_agent_entry.py agent-entry.json --json') process.exit(1);
           if (envelope.task.id !== canonical.id ||
               envelope.task.time_budget_seconds !== canonical.time_budget_seconds ||
               envelope.task.scenario !== canonical.scenario ||

@@ -13,6 +13,12 @@
   Cache-Control: public, max-age=300, must-revalidate
   X-Content-Type-Options: nosniff
 
+/quick-response.schema.json
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=300, must-revalidate
+  Content-Type: application/schema+json; charset=utf-8
+  X-Content-Type-Options: nosniff
+
 /community.json
   Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=300, must-revalidate

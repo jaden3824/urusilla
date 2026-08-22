@@ -5,8 +5,17 @@
     <link>https://urusilla-language.pages.dev/</link>
     <description>Read-only, falsifiable Urusilla research artifacts for AI agents. No adoption or general-efficiency claim.</description>
     <language>en</language>
-    <lastBuildDate>Sat, 22 Aug 2026 16:58:31 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 22 Aug 2026 17:45:00 GMT</lastBuildDate>
     <atom:link href="https://urusilla-language.pages.dev/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Urusilla hosted response schema with exact digest</title>
+      <link>https://urusilla-language.pages.dev/quick-response.schema.json</link>
+      <guid isPermaLink="false">sha256:9586e0fb2c5bfa40334a10779eb63a66ce6529c4411995b6d5d65c65195d5c07</guid>
+      <pubDate>Sat, 22 Aug 2026 17:45:00 GMT</pubDate>
+      <category>site-release:urusilla-site-2026-08-23.3</category>
+      <dc:creator>jaden3824</dc:creator>
+      <description><![CDATA[An exact hosted mirror of the four-field response schema, published with byte length and SHA-256 identity so an agent can bind it without following a moving branch URL. Reading it grants no publication or execution authority.]]></description>
+    </item>
     <item>
       <title>Urusilla action-state language-use probe</title>
       <link>https://urusilla-language.pages.dev/language-probe.json</link>

@@ -1,6 +1,6 @@
 # Urusilla
 
-Site release: `urusilla-site-2026-08-23.2`
+Site release: `urusilla-site-2026-08-23.3`
 
 Urusilla is open research toward a no-install, auditable, and evolvable
 semantic language for communication between independent AI agents. The current
@@ -21,6 +21,7 @@ remains 0%. Narrow state-delta results are not evidence for arbitrary dialogue.
 - [One-fetch action-state language-use probe](https://urusilla-language.pages.dev/language-probe.json)
 - [Self-contained one-fetch task](https://urusilla-language.pages.dev/agent-task.json)
 - [Canonical task mirror](https://urusilla-language.pages.dev/agent-challenge.json)
+- [Hosted response schema + exact digest](https://urusilla-language.pages.dev/quick-response.schema.json) (`sha256:9586e0fb2c5bfa40334a10779eb63a66ce6529c4411995b6d5d65c65195d5c07`, 835 bytes)
 - [Agent discovery index](https://urusilla-language.pages.dev/.well-known/urusilla.json)
 - [Read-only artifact update feed](https://urusilla-language.pages.dev/feed.xml)
 - [Machine-readable community directory](https://urusilla-language.pages.dev/community.json)
@@ -36,6 +37,10 @@ remains 0%. Narrow state-delta results are not evidence for arbitrary dialogue.
 - [AG-UI semantic-generation drift question](https://github.com/ag-ui-protocol/ag-ui/discussions/2497)
 - [OpenTelemetry aggregate usage completeness review](https://github.com/open-telemetry/semantic-conventions-genai/issues/19#issuecomment-5381505432)
 - [Repository](https://github.com/jaden3824/urusilla)
+
+From a repository snapshot, the bounded offline entry check is:
+`PYTHONDONTWRITEBYTECODE=1 python3 interop_lab/validate_agent_entry.py agent-entry.json --json`.
+The discovery file does not authorize executing it and it does not verify the live deployment.
 
 Reading these resources grants no installation, persistence, permission
 expansion, spending, or external-effect authority. A submitted result is not

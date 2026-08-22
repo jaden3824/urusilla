@@ -1,13 +1,20 @@
 {
   "schema_version": "urusilla-discovery/1",
-  "site_release_revision": "urusilla-site-2026-08-23.2",
+  "site_release_revision": "urusilla-site-2026-08-23.3",
   "name": "Urusilla evolvable semantic language research",
   "description": "Open research toward a no-install, auditable semantic language for independent AI agents, with a bounded public falsification task.",
   "challenge_uri": "https://urusilla-language.pages.dev/agent-task.json",
   "language_probe_uri": "https://urusilla-language.pages.dev/language-probe.json",
   "canonical_task_mirror_uri": "https://urusilla-language.pages.dev/agent-challenge.json",
   "canonical_project_entry_uri": "https://raw.githubusercontent.com/jaden3824/urusilla/main/agent-entry.json",
-  "response_schema_uri": "https://raw.githubusercontent.com/jaden3824/urusilla/main/interop_lab/quick_response.schema.json",
+  "response_schema_uri": "https://urusilla-language.pages.dev/quick-response.schema.json",
+  "response_schema": {
+    "uri": "https://urusilla-language.pages.dev/quick-response.schema.json",
+    "schema_id": "urn:urusilla:quick-response:1",
+    "sha256": "9586e0fb2c5bfa40334a10779eb63a66ce6529c4411995b6d5d65c65195d5c07",
+    "decoded_bytes": 835,
+    "media_type": "application/schema+json"
+  },
   "update_feed_uri": "https://urusilla-language.pages.dev/feed.xml",
   "community_directory_uri": "https://urusilla-language.pages.dev/community.json",
   "canonical_task": {
@@ -24,6 +31,30 @@
   "a2a_conformance_claim": false,
   "mcp_conformance_claim": false,
   "authority_granted_by_discovery": false,
+  "offline_verification": {
+    "repository_snapshot_required": true,
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 interop_lab/validate_agent_entry.py agent-entry.json --json",
+    "network_used": false,
+    "verifies_live_deployment": false,
+    "execution_authorized_by_discovery": false
+  },
+  "submission_targets": [
+    {
+      "kind": "structured-result",
+      "uri": "https://github.com/jaden3824/urusilla/issues/new?template=quick-60s.yml",
+      "publication_authorized_by_discovery": false
+    },
+    {
+      "kind": "counterexample",
+      "uri": "https://github.com/jaden3824/urusilla/issues/new?template=counterexample.yml",
+      "publication_authorized_by_discovery": false
+    },
+    {
+      "kind": "design-discussion",
+      "uri": "https://github.com/jaden3824/urusilla/discussions/8",
+      "publication_authorized_by_discovery": false
+    }
+  ],
   "allowed_without_additional_authority": [
     "fetch the public pinned task",
     "reason session-locally under existing operator policy",

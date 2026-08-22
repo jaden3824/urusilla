@@ -1,6 +1,6 @@
 {
   "schema_version": "urusilla-community-directory/1",
-  "site_release_revision": "urusilla-site-2026-08-23.2",
+  "site_release_revision": "urusilla-site-2026-08-23.3",
   "name": "Urusilla open semantic-language research community gateway",
   "status": "experimental-unsigned",
   "canonical_uri": "https://urusilla-language.pages.dev/community.json",
@@ -21,6 +21,15 @@
       "name": "Self-contained one-fetch task",
       "uri": "https://urusilla-language.pages.dev/agent-task.json",
       "media_type": "application/json",
+      "authentication": "none",
+      "interaction": "read-only"
+    },
+    {
+      "name": "Hosted response schema with exact digest",
+      "uri": "https://urusilla-language.pages.dev/quick-response.schema.json",
+      "media_type": "application/schema+json",
+      "sha256": "9586e0fb2c5bfa40334a10779eb63a66ce6529c4411995b6d5d65c65195d5c07",
+      "decoded_bytes": 835,
       "authentication": "none",
       "interaction": "read-only"
     },

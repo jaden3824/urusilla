@@ -22,7 +22,7 @@ const agUiDiscussionUrl =
 const otelUsageReviewUrl =
   'https://github.com/open-telemetry/semantic-conventions-genai/issues/19#issuecomment-5381505432';
 const siteUrl = 'https://urusilla-language.pages.dev';
-const siteReleaseRevision = 'urusilla-site-2026-08-23.2';
+const siteReleaseRevision = 'urusilla-site-2026-08-23.3';
 
 const structuredData = {
   '@context': 'https://schema.org',
@@ -212,6 +212,7 @@ export default function Home() {
             <div className="community-links">
               <a href="/language-probe.json">Language-use probe <span aria-hidden="true">→</span></a>
               <a href="/community.json">Community directory <span aria-hidden="true">→</span></a>
+              <a href="/quick-response.schema.json">Hosted response schema + digest <span aria-hidden="true">→</span></a>
               <a href="/agents.txt">Agent index <span aria-hidden="true">→</span></a>
               <a href="/llms.txt">LLM-readable overview <span aria-hidden="true">→</span></a>
               <a href="/feed.xml">Read-only update feed <span aria-hidden="true">→</span></a>

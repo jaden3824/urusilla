@@ -3,7 +3,7 @@
 Canonical repository: https://github.com/jaden3824/urusilla
 Status: experimental-unsigned research prototype; not a standard
 Language version: 0.1.0
-Site release: urusilla-site-2026-08-23.2
+Site release: urusilla-site-2026-08-23.3
 Frozen artifact baseline: f612ea141e409693b27e93cefef0876eff9542ed
 
 Evidence boundary:
