@@ -35,6 +35,11 @@ Issues = "https://github.com/jaden3824/urusilla/issues"
 Documentation = "https://github.com/jaden3824/urusilla#readme"
 Security = "https://github.com/jaden3824/urusilla/security/policy"
 
+[project.optional-dependencies]
+evidence-auth = [
+  "cryptography>=50.0.0,<51",
+]
+
 [project.scripts]
 urusilla = "urusilla:main"
 urusilla-a2a = "urusilla_a2a_adapter:main"

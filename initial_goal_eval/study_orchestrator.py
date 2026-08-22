@@ -3,9 +3,10 @@
 The runtime already prepares and executes one hybrid message, including a
 bounded raw/JSON fallback and a runtime-scoped inclusive ledger.  This module
 closes the next local orchestration gap: it presents *only the final terminal
-output* to an injected task scorer and derives the task-result,
-scoring-binding, and deterministic-judge fragments consumed by the offline
-execution-trace assembler.
+output* to an injected task scorer and derives diagnostic task-result and
+scoring-binding fragments.  It deliberately does not mint a judge event:
+without an authenticated scorer capture, judge usage must remain unknown and
+the offline execution-trace assembler must refuse the projection.
 
 It performs no provider call of its own, grants no network or credential
 authority, does not authenticate the injected adapter or scorer, and cannot
@@ -16,7 +17,7 @@ a separate evidence-production boundary.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import InitVar, dataclass
 import json
 import re
 from types import MappingProxyType
@@ -47,6 +48,7 @@ SCORING_INPUT_SCHEMA = "urusilla-initial-goal-runtime-scoring-input/1"
 SCORING_OUTPUT_SCHEMA = "urusilla-initial-goal-runtime-scoring-output/1"
 SCORER_OBSERVATION_SCHEMA = "urusilla-initial-goal-runtime-scorer-observation/1"
 ORCHESTRATION_BOUNDARY = "provider-free-runtime-scoring-diagnostic-only"
+_SCORED_TASK_FACTORY_TOKEN = object()
 
 _SHA256_REF = re.compile(r"^sha256:[0-9a-f]{64}$")
 _SAFETY_FIELDS = (
@@ -430,32 +432,6 @@ class RuntimeTaskScorer(Protocol):
         ...
 
 
-class _ScoredTaskSeal:
-    __slots__ = ("fingerprint",)
-
-    def __init__(self, fingerprint: str) -> None:
-        self.fingerprint = fingerprint
-
-
-def _scored_task_fingerprint(
-    *,
-    execution: HybridExecution,
-    scoring_input: RuntimeScoringInput,
-    score: RuntimeTaskScore,
-    scorer_locks: Mapping[str, str],
-    scorer_observation_sha256: str,
-) -> str:
-    return sha256_ref(
-        {
-            "execution_repr": repr(execution),
-            "scoring_input": scoring_input.value,
-            "scorer_output": score.value,
-            "scorer_locks": dict(scorer_locks),
-            "scorer_observation_sha256": scorer_observation_sha256,
-        }
-    )
-
-
 @dataclass(frozen=True)
 class ScoredHybridTask:
     """One runtime execution plus its exact final-output scorer observation."""
@@ -465,19 +441,19 @@ class ScoredHybridTask:
     score: RuntimeTaskScore
     scorer_locks: Mapping[str, str]
     scorer_observation_sha256: str
+    _factory_token: InitVar[object]
     scorer_calls: int = 1
     evidence_boundary: str = ORCHESTRATION_BOUNDARY
     frozen_plan_bound: bool = False
     scorer_implementation_authenticated: bool = False
     claim_eligible: bool = False
     goal_total_complete: bool = False
-    _construction_seal: object = field(
-        default=None,
-        repr=False,
-        compare=False,
-    )
 
-    def __post_init__(self) -> None:
+    def __post_init__(self, _factory_token: object) -> None:
+        if _factory_token is not _SCORED_TASK_FACTORY_TOKEN:
+            raise VerificationError(
+                "scored task observations must be minted by the orchestrator"
+            )
         if type(self.execution) is not HybridExecution:
             raise VerificationError("scored task requires an exact HybridExecution")
         if type(self.scoring_input) is not RuntimeScoringInput:
@@ -492,20 +468,6 @@ class ScoredHybridTask:
             "scorer_locks",
             MappingProxyType(normalized_locks),
         )
-        expected_fingerprint = _scored_task_fingerprint(
-            execution=self.execution,
-            scoring_input=self.scoring_input,
-            score=self.score,
-            scorer_locks=normalized_locks,
-            scorer_observation_sha256=self.scorer_observation_sha256,
-        )
-        if (
-            not isinstance(self._construction_seal, _ScoredTaskSeal)
-            or self._construction_seal.fingerprint != expected_fingerprint
-        ):
-            raise VerificationError(
-                "scored task observations must be minted by the orchestrator"
-            )
         expected_observation = sha256_ref(
             {
                 "schema_version": SCORER_OBSERVATION_SCHEMA,
@@ -633,19 +595,17 @@ class ScoredHybridTask:
 
         return None
 
-    def trace_artifacts(
+    def diagnostic_fragments(
         self,
         *,
         decision_event_sequence: int,
         receiver_event_sequence: int | None,
-        judge_event_sequence: int,
-        judge_local_event_id: str,
-    ) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
-        """Derive task-result, scoring-binding, and unknown-cost judge fragments.
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
+        """Derive non-claim task-result and scoring-binding fragments.
 
-        Event-source projection remains the caller's separate responsibility;
-        the returned objects cannot be used with another task or output without
-        failing their content bindings.
+        These fragments bind the observed final output, but they are incomplete
+        without a separately captured judge event and therefore cannot be fed
+        to the offline assembler as a complete trace.
         """
 
         if type(decision_event_sequence) is not int or decision_event_sequence < 0:
@@ -655,21 +615,6 @@ class ScoredHybridTask:
             or receiver_event_sequence <= decision_event_sequence
         ):
             raise VerificationError("receiver event sequence is invalid")
-        if (
-            type(judge_event_sequence) is not int
-            or judge_event_sequence <= decision_event_sequence
-            or (
-                receiver_event_sequence is not None
-                and judge_event_sequence <= receiver_event_sequence
-            )
-        ):
-            raise VerificationError("judge event sequence is invalid")
-        if type(judge_local_event_id) is not str or not judge_local_event_id:
-            raise VerificationError("judge local event ID is invalid")
-        if self.score.scorer_kind != "deterministic-local":
-            raise VerificationError(
-                "external or failed scorer requires a captured judge event"
-            )
         if (
             self.execution.fallback is not None
             and self.scoring_input.selected_mode != "action-state"
@@ -702,31 +647,39 @@ class ScoredHybridTask:
             "output_sha256": self.scoring_input.output_sha256,
             "terminal_status": self.scoring_input.terminal_status,
         }
-        judge_event = {
-            "sequence": judge_event_sequence,
-            "phase": "judge",
-            "task_id": self.scoring_input.task_id,
-            "source": {
-                "kind": "deterministic-local",
-                "local_event_id": judge_local_event_id,
-                "implementation_sha256": self.scorer_locks["task_scorer"],
-                "input_sha256": self.scoring_input.sha256,
-                "output_sha256": self.scorer_observation_sha256,
-                "usage": {
-                    "input_tokens": None,
-                    "output_tokens": None,
-                    "reasoning_tokens": None,
-                    "unclassified_tokens": None,
-                    "provider_total_tokens": None,
-                    "total_tokens": None,
-                    "hidden_accounting": "not-reported",
-                },
-            },
-        }
         return (
             _detached(task_result),
             _detached(scoring_binding),
-            _detached(judge_event),
+        )
+
+    def trace_artifacts(
+        self,
+        *,
+        decision_event_sequence: int,
+        receiver_event_sequence: int | None,
+        judge_event_sequence: int,
+        judge_local_event_id: str,
+    ) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+        """Refuse an assembler trace until the scorer has a real capture.
+
+        A caller-declared ``deterministic-local`` label does not prove that the
+        callable made no hidden model request.  Emitting zero usage would turn
+        an unknown judge cost into zero, while emitting null usage creates an
+        artifact that the assembler correctly rejects.  The honest boundary is
+        to expose only :meth:`diagnostic_fragments` and require a future runner
+        to supply an independently captured judge event.
+        """
+
+        self.diagnostic_fragments(
+            decision_event_sequence=decision_event_sequence,
+            receiver_event_sequence=receiver_event_sequence,
+        )
+        if type(judge_event_sequence) is not int or judge_event_sequence < 0:
+            raise VerificationError("judge event sequence is invalid")
+        if type(judge_local_event_id) is not str or not judge_local_event_id:
+            raise VerificationError("judge local event ID is invalid")
+        raise VerificationError(
+            "unauthenticated scorer requires a separately captured judge event"
         )
 
 
@@ -844,22 +797,13 @@ def run_scored_hybrid_task(
             "scorer_output": candidate.value,
         }
     )
-    seal = _ScoredTaskSeal(
-        _scored_task_fingerprint(
-            execution=execution,
-            scoring_input=scoring_input,
-            score=candidate,
-            scorer_locks=observed_locks,
-            scorer_observation_sha256=observation_sha256,
-        )
-    )
     return ScoredHybridTask(
         execution=execution,
         scoring_input=scoring_input,
         score=candidate,
         scorer_locks=observed_locks,
         scorer_observation_sha256=observation_sha256,
-        _construction_seal=seal,
+        _factory_token=_SCORED_TASK_FACTORY_TOKEN,
     )
 
 

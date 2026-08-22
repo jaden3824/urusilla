@@ -43,6 +43,7 @@ from .contract import (
     verifier_bundle_sha256,
 )
 from .statistics import SessionAggregate, compare_to_both_baselines
+from .authentication import validate_authenticated_provenance
 from .receipt_store import (
     RECEIPT_BUNDLE_SCHEMA_V2,
     RECEIPT_BUNDLE_SCHEMA_V3,
@@ -772,6 +773,10 @@ def verify_result(
     result_value: Any,
     method_value: Mapping[str, Any] | None = None,
     receipt_store: ReceiptStore | None = None,
+    *,
+    trust_policy_value: Any | None = None,
+    authentication_envelope_value: Any | None = None,
+    expected_trust_policy_sha256: str | None = None,
 ) -> dict[str, Any]:
     """Verify matched-session evidence and recompute the initial-goal gates."""
 
@@ -868,20 +873,63 @@ def verify_result(
             receipt_summary["provider_preimage_resolution_complete"] = False
             receipt_summary["complete"] = False
             receipt_complete = False
-    authentication_summary = {
-        "required": real_evidence,
-        "complete": authentication_complete,
-        "mechanism": (
-            "not-required-for-synthetic-test-only"
-            if not real_evidence
-            else "not-implemented-fail-closed"
-        ),
-        "errors": (
-            []
-            if not real_evidence
-            else ["authenticated-provenance-not-implemented"]
-        ),
-    }
+    authentication_supplied = (
+        trust_policy_value is not None
+        or authentication_envelope_value is not None
+        or expected_trust_policy_sha256 is not None
+    )
+    if not real_evidence:
+        if authentication_supplied:
+            raise VerificationError(
+                "signed authentication is only valid for real independent evidence"
+            )
+        authentication_summary = {
+            "required": False,
+            "supplied": False,
+            "complete": True,
+            "mechanism": "not-required-for-synthetic-test-only",
+            "errors": [],
+        }
+    elif not authentication_supplied:
+        authentication_summary = {
+            "required": True,
+            "supplied": False,
+            "complete": False,
+            "mechanism": "ed25519-signed-accountability-v1",
+            "errors": [
+                "authentication-envelope-and-trust-policy-not-supplied"
+            ],
+        }
+    else:
+        if (
+            trust_policy_value is None
+            or authentication_envelope_value is None
+            or expected_trust_policy_sha256 is None
+        ):
+            raise VerificationError(
+                "authentication envelope, trust policy, and out-of-band pin must be supplied together"
+            )
+        if (
+            receipt_store is None
+            or receipt_store.schema_version != RECEIPT_BUNDLE_SCHEMA_V3
+            or not hasattr(receipt_store, "bundle_sha256")
+            or not hasattr(receipt_store, "provider_record_count")
+        ):
+            raise VerificationError(
+                "signed authentication requires an exact receipt-bundle v3 store"
+            )
+        authentication_validation = validate_authenticated_provenance(
+            plan_value=plan_value,
+            result_value=result_value,
+            receipt_bundle_sha256=receipt_store.bundle_sha256,
+            provider_record_count=receipt_store.provider_record_count,
+            verifier_bundle_sha256=verifier_bundle_sha256(),
+            expected_trust_policy_sha256=expected_trust_policy_sha256,
+            trust_policy_value=trust_policy_value,
+            envelope_value=authentication_envelope_value,
+        )
+        authentication_complete = authentication_validation.complete
+        authentication_summary = authentication_validation.to_object()
     if real_evidence:
         measurement_complete = (
             measurement_complete
@@ -1127,6 +1175,9 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("result", type=Path)
     parser.add_argument("--method", type=Path, default=None)
     parser.add_argument("--receipts", type=Path, default=None)
+    parser.add_argument("--trust-policy", type=Path, default=None)
+    parser.add_argument("--authentication", type=Path, default=None)
+    parser.add_argument("--expected-trust-policy-sha256", default=None)
     return parser
 
 
@@ -1141,7 +1192,27 @@ def main(argv: Iterable[str] | None = None) -> int:
             if args.receipts is not None
             else None
         )
-        summary = verify_result(plan, result, method, receipts)
+        trust_policy = (
+            load_json(args.trust_policy)
+            if args.trust_policy is not None
+            else None
+        )
+        authentication = (
+            load_json(args.authentication)
+            if args.authentication is not None
+            else None
+        )
+        summary = verify_result(
+            plan,
+            result,
+            method,
+            receipts,
+            trust_policy_value=trust_policy,
+            authentication_envelope_value=authentication,
+            expected_trust_policy_sha256=(
+                args.expected_trust_policy_sha256
+            ),
+        )
     except VerificationError as exc:
         print(json.dumps({"valid": False, "error": str(exc)}, sort_keys=True))
         return 2

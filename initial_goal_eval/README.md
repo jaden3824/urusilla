@@ -64,13 +64,15 @@ invokes the injected scorer exactly once. This comparison neither derives the
 callable's code hash nor authenticates its implementation. It verifies that the
 prepared natural language is the exact final user task-input preimage, then derives the
 task-result and scoring-binding objects from that observation. The returned
-observation is factory-sealed and re-derives terminal fields from the execution,
-so changing the public scoring object and its digest together is rejected. A
-caller-labelled deterministic local scorer can receive a bound `judge` event,
-but its token usage remains unknown because the helper does not authenticate the
-callable or prove that it made no hidden model call. An external-model or failed
-scorer requires a separately captured judge event and cannot be projected by
-this helper. A failed primary call remains
+observation is factory-guarded and re-derives terminal fields from the execution,
+so ordinary public dataclass replacement cannot change the scoring object and
+its digest together without being rejected. The factory token is not stored on
+the result. This is an API misuse guard, not an authentication or Python security
+boundary. No scorer kind receives a projected
+`judge` event: a caller-labelled deterministic local scorer does not prove that
+the callable made no hidden model call, and a null-usage local event is not
+assembler-consumable. A future runner must instead supply a separately captured
+judge event. A failed primary call remains
 unknown-cost after a successful fallback, a failed scorer remains null and
 unknown-cost, a terminal no-output failure keeps `output_sha256: null`, and an
 parse, semantic, negative, or preservation observations inconsistent with the
@@ -230,14 +232,45 @@ receipt set, and issuer labels.
 
 Accordingly, real evidence currently fails closed with
 `authenticated-provenance-not-established` even when every receipt is
-content-consistent. Enabling the real claim gate requires a separately reviewed
-authentication layer with externally anchored provider/operator/auditor keys,
-canonical signatures, preregistration timestamp evidence, authenticated raw
-provider artifacts, and frozen provider-specific usage normalizers. Until that
-layer exists, exit status `0` is intentionally unreachable for real evidence.
-Independence remains partly a social and governance fact even after signatures;
+content-consistent. A first optional signed-accountability sidecar now verifies
+canonical Ed25519 signatures over the exact plan, result, receipt-bundle digest,
+frozen normalizer-manifest digest, per-session operator/auditor roles, and one
+preregistration statement. The verifier caller must obtain the trust-policy
+digest independently and pass it through a separate argument. The validator
+checks the exact digest match but cannot prove where the caller obtained it;
+under a proper independent workflow, silent trust-key substitution is
+detectable.
+The sidecar also rejects mutated signatures, untrusted normalizers, revoked or
+wrong-role keys, invalid chronology, repeated signature bytes, incomplete
+provider/normalization reports, and operator/auditor control-domain overlap.
+
+That sidecar reports `signed_accountability_complete: true` only. It deliberately
+keeps claim-facing `complete: false`: witness signatures are not provider
+signatures, signer timestamps do not establish execution-after-anchor by
+themselves, count attestations do not replay a provider-specific normalizer from
+the raw receipt, and an envelope-local replay check is not a global reservation
+registry. Enabling the real claim gate still requires provider-origin proof,
+independent raw-to-normalized usage replay under the frozen provider profile,
+and a global replay/challenge registry. Until those boundaries exist, exit
+status `0` remains intentionally unreachable for real evidence. Independence
+also remains partly a social and governance fact even after signatures;
 accountable review must establish that separate keys correspond to genuinely
 independent operators.
+
+Install the optional verification backend only for a signed evidence audit:
+
+```text
+python -m pip install 'urusilla[evidence-auth]'
+python -m initial_goal_eval.verifier PLAN.json RESULT.json \
+  --receipts RECEIPTS.json \
+  --trust-policy TRUST_POLICY.json \
+  --authentication AUTHENTICATION.json \
+  --expected-trust-policy-sha256 sha256:...
+```
+
+The declarative Capsule and reference runtime remain dependency-free; this
+optional package is evaluator tooling, not software installed at a partner
+agent.
 
 All fixtures under `tests/` are synthetic plumbing tests. Even when their
 numeric gates pass, the verifier deliberately refuses to emit claim-eligible

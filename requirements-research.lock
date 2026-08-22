@@ -5,8 +5,10 @@ Brotli==1.2.0
 PyYAML==6.0.3
 cbor2==6.1.4
 certifi==2026.7.22
+cffi==2.1.1
 charset-normalizer==3.5.1
 coverage==7.15.4
+cryptography==50.0.0
 filelock==3.32.3
 fsspec==2026.7.0
 grpcio==1.83.0
@@ -17,6 +19,7 @@ idna==3.19
 msgpack==1.2.1
 packaging==26.3
 protobuf==7.35.1
+pycparser==3.0
 regex==2026.7.19
 requests==2.34.2
 setuptools==84.0.0

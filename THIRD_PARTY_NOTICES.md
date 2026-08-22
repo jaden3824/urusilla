@@ -7,6 +7,15 @@ them in the adjacent frozen corpora and measurement records. The repository's
 Apache-2.0 license does not replace the terms identified below. This is a
 factual attribution inventory, not a legal opinion.
 
+## Optional PyCA cryptography verification backend
+
+The `evidence-auth` extra uses PyCA `cryptography` to verify Ed25519 signatures.
+The dependency is obtained separately from PyPI and is not copied into this
+source tree. Upstream offers it under the Apache License 2.0 or the BSD
+3-Clause License; see the [PyCA cryptography repository](https://github.com/pyca/cryptography)
+and its distributed license files. The dependency-free Urusilla runtime does
+not import this backend unless signed evidence verification is requested.
+
 ## W3C ActivityStreams 2.0 examples
 
 - Source: World Wide Web Consortium, `w3c/activitystreams`, revision

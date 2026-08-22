@@ -168,6 +168,7 @@ class ReceiptStore:
 
     def __init__(self, value: Any):
         bundle = _object(value, "receipt_bundle")
+        self._bundle_sha256 = sha256_ref(bundle)
         schema_version = bundle.get("schema_version")
         if schema_version not in {
             RECEIPT_BUNDLE_SCHEMA,
@@ -311,6 +312,20 @@ class ReceiptStore:
     @property
     def receipt_count(self) -> int:
         return len(self._receipts)
+
+    @property
+    def bundle_sha256(self) -> str:
+        """Digest of the exact canonical receipt-bundle input."""
+
+        return self._bundle_sha256
+
+    @property
+    def provider_record_count(self) -> int:
+        """Number of content-validated provider records in a v3 bundle."""
+
+        if self._provider_artifacts is None:
+            return 0
+        return self._provider_artifacts.record_count
 
     def _resolve(
         self,

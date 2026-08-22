@@ -193,22 +193,21 @@ class StudyOrchestratorTests(unittest.TestCase):
             result.scoring_input.fallback_from,
             "action-state:receiver:semantic-invalid",
         )
-        task_result, scoring_binding, judge_event = result.trace_artifacts(
+        task_result, scoring_binding = result.diagnostic_fragments(
             decision_event_sequence=1,
             receiver_event_sequence=4,
-            judge_event_sequence=5,
-            judge_local_event_id="task-fallback-judge",
         )
         self.assertTrue(task_result["task_success"])
         self.assertEqual(task_result["route"]["receiver_event_sequence"], 4)
         self.assertEqual(scoring_binding["output_sha256"], result.scoring_input.output_sha256)
         self.assertEqual(scoring_binding["terminal_status"], "completed")
-        self.assertEqual(judge_event["phase"], "judge")
-        self.assertIsNone(judge_event["source"]["usage"]["total_tokens"])
-        self.assertEqual(
-            judge_event["source"]["usage"]["hidden_accounting"],
-            "not-reported",
-        )
+        with self.assertRaisesRegex(VerificationError, "captured judge event"):
+            result.trace_artifacts(
+                decision_event_sequence=1,
+                receiver_event_sequence=4,
+                judge_event_sequence=5,
+                judge_local_event_id="task-fallback-judge",
+            )
 
     def test_failed_primary_cost_remains_unknown_after_successful_fallback(self):
         prepared = self._prepared()
@@ -265,11 +264,9 @@ class StudyOrchestratorTests(unittest.TestCase):
             "routine:receiver:semantic-invalid",
         )
         with self.assertRaisesRegex(VerificationError, "receiver fallback mode"):
-            result.trace_artifacts(
+            result.diagnostic_fragments(
                 decision_event_sequence=1,
                 receiver_event_sequence=4,
-                judge_event_sequence=5,
-                judge_local_event_id="task-routine-fallback-judge",
             )
 
     def test_scorer_failure_is_preserved_as_null_not_success_or_zero(self):
@@ -330,11 +327,9 @@ class StudyOrchestratorTests(unittest.TestCase):
         self.assertTrue(result.scoring_input.terminal_observation_sha256.startswith("sha256:"))
         self.assertFalse(result.caller_reported_safely_completed)
         self.assertIsNone(result.safely_completed)
-        _, scoring_binding, _ = result.trace_artifacts(
+        _, scoring_binding = result.diagnostic_fragments(
             decision_event_sequence=1,
             receiver_event_sequence=4,
-            judge_event_sequence=5,
-            judge_local_event_id="task-terminal-failure-judge",
         )
         self.assertIsNone(scoring_binding["output_sha256"])
         self.assertEqual(scoring_binding["terminal_status"], "provider_error")
@@ -474,7 +469,11 @@ class StudyOrchestratorTests(unittest.TestCase):
             observed_local_usage=self.case._complete_local_usage(prepared),
         )
         with self.assertRaisesRegex(VerificationError, "minted by the orchestrator"):
-            replace(result, scorer_observation_sha256=sha256_ref({"forged": True}))
+            replace(
+                result,
+                scorer_observation_sha256=sha256_ref({"forged": True}),
+                _factory_token=None,
+            )
         forged_input = replace(
             result.scoring_input,
             output_text="forged",
@@ -493,11 +492,17 @@ class StudyOrchestratorTests(unittest.TestCase):
                 result,
                 scoring_input=forged_input,
                 scorer_observation_sha256=forged_observation,
+                _factory_token=None,
             )
+        self.assertFalse(hasattr(result, "_factory_token"))
         self.assertFalse(result.frozen_plan_bound)
         self.assertFalse(result.scorer_implementation_authenticated)
-        with self.assertRaisesRegex(VerificationError, "authenticate plan or scorer"):
-            replace(result, scorer_implementation_authenticated=True)
+        with self.assertRaisesRegex(VerificationError, "minted by the orchestrator"):
+            replace(
+                result,
+                scorer_implementation_authenticated=True,
+                _factory_token=None,
+            )
 
 
 if __name__ == "__main__":

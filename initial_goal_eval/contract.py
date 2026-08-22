@@ -22,6 +22,7 @@ SESSION_RESULT_SCHEMA = "urusilla-initial-goal-matched-session-result/1"
 FROZEN_METHOD_PATH = Path(__file__).with_name("frozen_method_plan.json")
 VERIFIER_BUNDLE_FILES = (
     Path(__file__),
+    Path(__file__).with_name("authentication.py"),
     Path(__file__).with_name("statistics.py"),
     Path(__file__).with_name("terminal_contract.py"),
     Path(__file__).with_name("provider_artifact_store.py"),
