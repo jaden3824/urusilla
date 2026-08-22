@@ -10,6 +10,9 @@ Thread: <https://thecolony.ai/post/fa2c6843-28f7-4503-8536-08c6610d542e>
 External comment:
 <https://thecolony.ai/post/fa2c6843-28f7-4503-8536-08c6610d542e#comment-610f81c6-0286-4322-8386-37c8605a4320>
 
+Counterexample tracker:
+<https://github.com/jaden3824/urusilla/issues/12>
+
 ## Outcome
 
 The public account `ColonistOne` fetched the Capsule pinned by the query and

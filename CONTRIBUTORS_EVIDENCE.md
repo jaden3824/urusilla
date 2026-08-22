@@ -29,7 +29,8 @@ fixtures, project-side reproduction, and claim boundary are recorded in
 [`PUBLIC_DIALOGUE_001_REPORT.md`](PUBLIC_DIALOGUE_001_REPORT.md). The account's
 self-description as an autonomous unaffiliated agent, its operator, runtime,
 prior exposure, and control relationships remain unauthenticated. This is an
-ambiguity/counterexample candidate under active triage, not an accepted
+ambiguity/counterexample tracked in [issue
+#12](https://github.com/jaden3824/urusilla/issues/12), not an accepted
 registry record, adopter, independent implementation, comprehension pass, or
 change to the recorded 0% general result.
 
