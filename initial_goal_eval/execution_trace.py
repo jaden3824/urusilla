@@ -12,13 +12,6 @@ import json
 import re
 from typing import Any, Mapping, Sequence
 
-from competitive_eval.protocol import CallRequest
-from competitive_eval.canonical import canonical_json as competitive_canonical_json
-from competitive_eval.hybrid_external_replay import (
-    HYBRID_ARM,
-    HybridReceiverExternalCall,
-)
-
 from .contract import (
     ARMS,
     EVENT_PHASES,
@@ -70,6 +63,52 @@ PRE_RECEIVER_FALLBACK_PREFIXES = (
     "action-state:fidelity",
 )
 _CALL_ID = re.compile(r"^[0-9a-f]{64}$")
+HYBRID_ARM = "urusilla_hybrid_direct_receiver_v1"
+
+
+def _parse_call_request(value: Mapping[str, Any]):
+    """Load the source-tree research parser only when trace work is requested.
+
+    The installable evidence verifier imports this module for shared receipt
+    constants.  It must remain usable without shipping the research-only
+    ``competitive_eval`` harness in the wheel.
+    """
+
+    try:
+        from competitive_eval.protocol import CallRequest
+    except ImportError as exc:  # pragma: no cover - exercised by wheel smoke test
+        raise VerificationError(
+            "execution-trace validation requires the source-tree competitive_eval "
+            "research harness"
+        ) from exc
+    return CallRequest.from_value(value)
+
+
+def _validate_hybrid_external_call(
+    *,
+    projection: Mapping[str, Any],
+    projection_sha256: str,
+    call_request_json: str,
+) -> None:
+    """Validate a hybrid projection through the optional research harness."""
+
+    try:
+        from competitive_eval.canonical import (
+            canonical_json as competitive_canonical_json,
+        )
+        from competitive_eval.hybrid_external_replay import (
+            HybridReceiverExternalCall,
+        )
+    except ImportError as exc:  # pragma: no cover - exercised by wheel smoke test
+        raise VerificationError(
+            "hybrid trace validation requires the source-tree competitive_eval "
+            "research harness"
+        ) from exc
+    HybridReceiverExternalCall(
+        _projection_json=competitive_canonical_json(projection),
+        projection_sha256=projection_sha256,
+        _call_request_json=call_request_json,
+    )
 
 
 def _detach(value: Any) -> Any:
@@ -285,7 +324,7 @@ def build_arm_execution_manifest(
     for event in events:
         source = _object(event["source"], "manifest event source")
         if source.get("kind") == "external-response":
-            request = CallRequest.from_value(source["call_request"])
+            request = _parse_call_request(source["call_request"])
             projection = source.get("hybrid_projection")
             execution_binding = _validate_external_execution_binding(
                 source.get("execution_binding"),
@@ -412,7 +451,7 @@ def _validate_source(
             source["execution_binding"], f"{path}.execution_binding"
         )
         try:
-            request = CallRequest.from_value(
+            request = _parse_call_request(
                 _object(source["call_request"], f"{path}.call_request")
             )
         except Exception as exc:
@@ -469,15 +508,13 @@ def _validate_source(
             if request_value["arm"] != HYBRID_ARM:
                 raise VerificationError(f"{path} hybrid projection call arm differs")
             try:
-                HybridReceiverExternalCall(
-                    _projection_json=competitive_canonical_json(
-                        _object(
-                            projection_binding["projection"],
-                            f"{path}.hybrid_projection.projection",
-                        )
+                _validate_hybrid_external_call(
+                    projection=_object(
+                        projection_binding["projection"],
+                        f"{path}.hybrid_projection.projection",
                     ),
                     projection_sha256=projection_binding["projection_sha256"],
-                    _call_request_json=request.to_json(),
+                    call_request_json=request.to_json(),
                 )
             except Exception as exc:
                 raise VerificationError(

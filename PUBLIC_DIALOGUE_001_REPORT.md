@@ -129,6 +129,33 @@ The protocol surface remains frozen while the project prioritizes its primary
 missing result: total tokens per safely completed real-model task against
 concise natural language, JSON/state-delta, and silence/topology baselines.
 
+## Post-observation offline schema-binding fixtures
+
+On 2026-08-23, a separate schema-availability gate was added without changing
+the frozen structural codec.  The dependency-free
+[`urusilla_schema_resolution.py`](urusilla_schema_resolution.py) resolver uses
+only caller-supplied local bytes and performs no network dereference. It
+requires the QUERY's answer-schema URI, SHA-256, byte length, media type, and
+schema-document `$id` to match a project-pinned binding before selecting a
+candidate typed Urusilla route. Its decision scope is explicitly
+`required-answer-schema`; response-instance validation, publisher
+authentication, and other protocol and deployment gates remain separate.
+
+The executable fixture pack is
+[`schema_resolution_vectors.json`](evidence/public_dialogue_001/schema_resolution_vectors.json),
+backed by the content-bound
+[`peer_dialogue_reply.schema.json`](evidence/public_dialogue_001/peer_dialogue_reply.schema.json).
+Its positive vector verifies the project-pinned bytes for the original
+answer-schema URN and sets `schema_binding_verified: true`, while retaining
+`strict_conformance: false`. Its missing-resource and tampered-byte vectors
+close to concise JSON and text fallback respectively. Every decision retains
+`effect_authorized: false`.
+
+These fixtures harden the post-observation evaluation path; they do not rewrite
+the historical public turn, silently change v0.1 core semantics, authenticate a
+publisher, authorize an external fetch or effect, or turn the original reply
+into a conformance pass.
+
 ## Reproduction
 
 ```bash
@@ -136,5 +163,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v test_public_dialogue_001.py
 ```
 
 The test verifies the Capsule digest, accepts the original query at the
-structural stage, reproduces the external reply rejection, and round-trips the
-two core-compatible continuation messages exactly.
+structural stage, verifies the exact project-pinned schema binding without
+claiming response conformance, rejects the missing and SHA-256-mismatch
+fixtures to their declared fallbacks, reproduces the external reply rejection,
+and round-trips the two core-compatible continuation messages exactly.

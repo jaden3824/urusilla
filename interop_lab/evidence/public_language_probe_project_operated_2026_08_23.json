@@ -1,0 +1,264 @@
+{
+  "format": "urusilla-project-operated-normalized-probe-record/1",
+  "experiment_id": "public-language-probe-project-operated-2026-08-23-001",
+  "recorded_date": "2026-08-23",
+  "evidence_classification": {
+    "operation": "PROJECT-OPERATED",
+    "platform": "SAME-PLATFORM",
+    "interop_lab_class": "SAME-PROJECT-ORCHESTRATED",
+    "provenance_label": "project-internal",
+    "claim_eligible": false,
+    "external_independent_reproduction": false,
+    "external_adoption_evidence": false
+  },
+  "runtime": {
+    "product": "Codex desktop agent team",
+    "topology": "one project orchestrator and three subagents",
+    "shared_platform": true,
+    "shared_workspace": true,
+    "exact_model_version": null
+  },
+  "source_state": {
+    "repository_revision": "65079e427a634863697238992a59a82b826d45e4",
+    "worktree_clean_before_recording": true,
+    "probe_path": "website/public/language-probe.json",
+    "probe_file_sha256": "sha256:b47a870a5de75edb964abe77cee7192711af46716d9fe551b03c1f0b3fe6733e",
+    "probe_file_bytes": 11754,
+    "validator_path": "tools/validate_language_probe.py",
+    "validator_file_sha256": "sha256:1b6a5bbe942585512e9071c6193eb2e6c689d4f2eb5d4875bdb415a07b26cb9f",
+    "validator_file_bytes": 21797
+  },
+  "probe": {
+    "public_url": "https://urusilla-language.pages.dev/language-probe.json",
+    "probe_id": "language-use-001",
+    "probe_schema_version": "urusilla-one-fetch-action-state-language-probe/1",
+    "response_schema_version": "urusilla-one-fetch-language-probe-response/1",
+    "site_release_revision": "urusilla-site-2026-08-23.2",
+    "maximum_network_fetches_per_trial": 1,
+    "expected_completed_response_sha256": "sha256:84f8cb01e36c4b0e0fddaf6bc0a3fa388339399e49b222796c767162ab824343",
+    "expected_completed_response_utf8_bytes": 1348
+  },
+  "normalized_response": {
+    "raw_agent_response_bytes_retained": false,
+    "direct_agent_response_validated": false,
+    "sha256": "sha256:84f8cb01e36c4b0e0fddaf6bc0a3fa388339399e49b222796c767162ab824343",
+    "utf8_bytes": 1348,
+    "trial_ids": [
+      "B",
+      "C"
+    ],
+    "response": {
+      "decode": {
+        "act": "resolve",
+        "effect_authorized": false,
+        "facts": [
+          {
+            "arguments": [
+              "unit"
+            ],
+            "predicate": "check.passed",
+            "source": "runner:7",
+            "truth": false
+          }
+        ],
+        "goal": {
+          "arguments": [
+            "artifact-19"
+          ],
+          "predicate": "artifact.verify",
+          "source": "agent:sender",
+          "truth": true
+        },
+        "hard_constraints": [
+          {
+            "arguments": [],
+            "predicate": "publish.allowed",
+            "source": "policy:local",
+            "truth": false
+          }
+        ],
+        "needs": [
+          {
+            "arguments": [
+              "public-log"
+            ],
+            "predicate": "diagnostic.required",
+            "source": null,
+            "truth": true
+          }
+        ],
+        "outcome": {
+          "status": "failed",
+          "value": null
+        },
+        "uncertainty": [
+          {
+            "confidence_ppm": null,
+            "model": "unspecified",
+            "target": "failure.cause"
+          }
+        ]
+      },
+      "disposition": "completed",
+      "encode": {
+        "candidates": [
+          {
+            "act": "resolve",
+            "action": null,
+            "constraints": [
+              {
+                "a": [],
+                "hard": true,
+                "n": true,
+                "p": "publish.allowed",
+                "src": "policy:local"
+              }
+            ],
+            "format": "urusilla-public-action-state-draft/1",
+            "goal": {
+              "a": [
+                "artifact-23"
+              ],
+              "n": false,
+              "p": "artifact.verify",
+              "src": "agent:beta"
+            },
+            "needs": [
+              {
+                "a": [
+                  "public-log"
+                ],
+                "n": false,
+                "p": "diagnostic.required",
+                "src": null
+              }
+            ],
+            "outcome": {
+              "evidence": [],
+              "status": "failed",
+              "value": null
+            },
+            "state": [
+              {
+                "a": [
+                  "unit"
+                ],
+                "n": true,
+                "p": "check.passed",
+                "src": "runner:8"
+              }
+            ],
+            "uncertainty": [
+              {
+                "basis": [],
+                "confidence_ppm": null,
+                "model": "unspecified",
+                "target": "failure.cause"
+              }
+            ]
+          }
+        ],
+        "failure": null,
+        "status": "ok",
+        "unsupported": []
+      },
+      "fallback": null,
+      "probe_id": "language-use-001",
+      "schema_version": "urusilla-one-fetch-language-probe-response/1"
+    }
+  },
+  "trials": [
+    {
+      "trial_id": "A",
+      "delivery": {
+        "status": "DELIVERY_FAILURE",
+        "network_fetches": 0,
+        "successful_fetches": 0,
+        "url_tool_calls": 1,
+        "non_network_preflight_rejections": 1,
+        "transport": null,
+        "detail": "The in-app web open rejected the URL as unsafe before a network request."
+      },
+      "response_received": false,
+      "response_ref": null,
+      "validator": {
+        "invoked": false,
+        "not_invoked_reason": "no-response-delivered",
+        "classification": null,
+        "language_pass": null,
+        "safe_fallback": null,
+        "reason_code": null,
+        "exit_code": null
+      }
+    },
+    {
+      "trial_id": "B",
+      "delivery": {
+        "status": "DELIVERED",
+        "network_fetches": 1,
+        "successful_fetches": 1,
+        "url_tool_calls": 2,
+        "non_network_preflight_rejections": 1,
+        "transport": "curl-read-only-get-no-redirect",
+        "detail": "One non-network web safe-open rejection preceded the single successful network fetch."
+      },
+      "response_received": true,
+      "response_ref": "normalized_response",
+      "validator": {
+        "invoked": true,
+        "input_kind": "normalized-canonical-rendering",
+        "classification": "NORMALIZED_PASS",
+        "validator_returned_classification": "PASS",
+        "language_pass_on_normalized_input": true,
+        "direct_response_language_pass": null,
+        "safe_fallback": false,
+        "reason_code": "exact-semantic-match",
+        "exit_code": 0
+      }
+    },
+    {
+      "trial_id": "C",
+      "delivery": {
+        "status": "DELIVERED",
+        "network_fetches": 1,
+        "successful_fetches": 1,
+        "url_tool_calls": 2,
+        "non_network_preflight_rejections": 1,
+        "transport": "curl-read-only-get-no-redirect",
+        "detail": "One non-network web safe-open rejection preceded the single successful network fetch."
+      },
+      "response_received": true,
+      "response_ref": "normalized_response",
+      "validator": {
+        "invoked": true,
+        "input_kind": "normalized-canonical-rendering",
+        "classification": "NORMALIZED_PASS",
+        "validator_returned_classification": "PASS",
+        "language_pass_on_normalized_input": true,
+        "direct_response_language_pass": null,
+        "safe_fallback": false,
+        "reason_code": "exact-semantic-match",
+        "exit_code": 0
+      }
+    }
+  ],
+  "aggregate": {
+    "trial_count": 3,
+    "delivered_response_count": 2,
+    "delivery_failure_count": 1,
+    "validator_invocation_count": 2,
+    "normalized_rendering_validator_pass_count": 2,
+    "direct_response_pass_count": null,
+    "validator_safe_fallback_count": 0,
+    "validator_fail_count": 0,
+    "validator_denominator": "normalized-renderings-only"
+  },
+  "limitations": [
+    "The probe is open and unblinded and embeds expected digests; NORMALIZED_PASS is limited to a canonical rendering of the recorded response object.",
+    "The exact raw response strings returned by trials B and C were not retained, so direct-response canonicality, duplicate-key safety, and raw byte identity are unknown.",
+    "All trials were project-operated on the same Codex platform under one orchestrator with a shared workspace.",
+    "This record is project-internal evidence, not external independent reproduction or external adoption evidence.",
+    "Trial A delivered no response and is therefore neither validator FAIL nor SAFE_FALLBACK.",
+    "No token efficiency, general compatibility, downstream task success, persistence, or effect authorization was measured."
+  ]
+}

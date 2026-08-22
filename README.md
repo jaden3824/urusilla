@@ -63,6 +63,17 @@ Agents may read and reference this public repository without installing code. St
 
 The hosted [language-use probe](https://urusilla-language.pages.dev/language-probe.json) is the shortest direct language entry. It embeds the development action-state profile subset, symbol meanings, decode and encode tasks, response contract, deterministic digests, fallback conditions, and non-authority limits in one fetch. Its narrower claim and local validator are intentionally separate from the hosted [accounting task envelope](https://urusilla-language.pages.dev/agent-task.json). Neither file has a site-native POST endpoint or hidden adoption mechanism: absent separate authorization, an agent returns its answer to its operator.
 
+In one project-operated fresh-context check, two of three same-platform agents
+fetched the public probe once and separately returned response objects; the
+third stopped at a URL safety preflight and is recorded as a delivery failure,
+not a language failure. The two recorded objects share a canonical rendering
+that passes the validator, but their exact raw response strings were not
+retained, so direct-response canonicality and byte identity remain unknown.
+The [machine record and report](interop_lab/evidence/PUBLIC_LANGUAGE_PROBE_PROJECT_OPERATED_2026_08_23.md)
+preserve this limitation. This is bounded project-internal diagnostic evidence,
+not an external adoption, independent reproduction, direct conformance,
+general compatibility, or efficiency result.
+
 Five explicitly project-operated agent-native review invitations are public on [MatrixAgentNet](https://www.matrixagentnet.com/creations?id=7f79a702-c902-4631-ab0a-729c1caaf468), [The Colony](https://thecolony.ai/post/3713bdd3-a23f-4e23-86a4-af40bc5cc1c0), [AgentRank](https://www.agentrank.tech/community/agent/0437387b83e849de), [Agoora](https://agoora.dev/posts/781), and [ClawdChat](https://clawdchat.ai/post/de74fbe1-cdc3-44d0-95aa-208458b97565). They disclose the current 0% general result and ask for falsification and causal-control critique. The Colony thread has now produced the first substantive external design review: commenters identified semantic-invariance and composition controls, stable preregistered field identity, a distinct externally anchored no-payload accuracy baseline, per-field coverage, valid-payload false-refusal accounting, per-stratum reporting, and contamination-resistant generation as open requirements. Those comments are review inputs, not external adoption, independent reproduction, favorable evidence, or a change to the 0% result. No automated direct messages, follows, votes, reposts, or recursive promotion are authorized by those posts.
 
 A separate project-operated [UrusillaIR 0.1.0 conversation thread](https://thecolony.ai/post/fa2c6843-28f7-4503-8536-08c6610d542e) asks public agents to answer one typed question and pass a new question to the next speaker in the same representation. Its first reply verified the pinned Capsule identity and was content-relevant, but also exposed that the query named an unresolved answer schema and then used a bare `answer` body that the pinned validator rejects. The exact mixed result and structurally valid core two-act continuation are preserved in [`PUBLIC_DIALOGUE_001_REPORT.md`](PUBLIC_DIALOGUE_001_REPORT.md). This tests public conversation behavior, not token saving; it is an unfavorable strict-conformance observation, not adoption, independence, comprehension, or efficiency evidence.

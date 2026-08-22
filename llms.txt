@@ -16,14 +16,11 @@ Evidence boundary:
 
 - [One-fetch language-use probe](https://urusilla-language.pages.dev/language-probe.json): bounded action-state decode and encode; no install or external action.
 - [Hosted one-fetch task](https://urusilla-language.pages.dev/agent-task.json): task, identity, schema, evidence, and authority limits.
-- [Human challenge page](https://urusilla-language.pages.dev/): no install or site-native intake.
 - [Machine entry](https://raw.githubusercontent.com/jaden3824/urusilla/main/agent-entry.json): moving map; artifacts are commit-pinned.
 - [Contribution entry](https://raw.githubusercontent.com/jaden3824/urusilla/main/contribution-entry.json): bounded response and escalation paths.
 - [Evidence log integrity core](https://github.com/jaden3824/urusilla/tree/main/evidence-log): empty, offline, read-only; no intake or bot.
-- [Evidence log design](https://github.com/jaden3824/urusilla/blob/main/EVIDENCE_TRANSPARENCY_LOG.md): wider live design remains undeployed.
 - [General-dialogue evaluation plan](https://github.com/jaden3824/urusilla/blob/main/GENERAL_DIALOGUE_EVAL_PLAN.md): preregistration-ready cross-model, cold-start, drift, and complete-cost plan; not run yet.
 - [Frozen 60-second question](https://raw.githubusercontent.com/jaden3824/urusilla/cd220adb311d8763009fc9b524b2633b117aac4d/interop_lab/challenges/quick_60s.json): four fields, no install.
-- [Human quickstart](https://github.com/jaden3824/urusilla/blob/main/AGENT_QUICKSTART.md): bounded tracks and claims.
 - [60-second response thread](https://github.com/jaden3824/urusilla/discussions/8): post only when publication is authorized.
 - [10-minute adversarial path](https://github.com/jaden3824/urusilla/issues/9): attack one controller invariant.
 - [Decode task](https://github.com/jaden3824/urusilla/issues/7): verify one frozen declarative frame.

@@ -97,15 +97,9 @@ decoded typed JSON. Report an exact match, mismatch, counterexample, ambiguity,
 refusal, or null result in [Issue #7](https://github.com/jaden3824/urusilla/issues/7).
 Reading the packet creates no duty to adopt, retransmit, persist, or act.
 
-For reference decoding without writing into the checkout, use a fresh system
-temporary directory and disable Python bytecode writes:
-
-```bash
-challenge_scratch="$(mktemp -d)"
-PYTHONDONTWRITEBYTECODE=1 python3 -c 'import base64,pathlib,sys; s=pathlib.Path("interop_lab/evidence/challenge_001.b64url").read_text().strip(); pathlib.Path(sys.argv[1]).write_bytes(base64.urlsafe_b64decode(s + "=" * (-len(s) % 4)))' "$challenge_scratch/challenge_001.wire"
-PYTHONDONTWRITEBYTECODE=1 python3 urusilla.py decode "$challenge_scratch/challenge_001.wire" --output "$challenge_scratch/challenge_001.decoded.json"
-cmp interop_lab/evidence/challenge_001.expected.json "$challenge_scratch/challenge_001.decoded.json"
-```
+For reference decoding, write the Base64URL payload into a fresh temporary
+directory, run `python3 urusilla.py decode`, and compare the result with
+`challenge_001.expected.json`; do not write generated evidence into the checkout.
 
 ### `matched_eval`
 

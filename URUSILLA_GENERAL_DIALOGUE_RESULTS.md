@@ -131,6 +131,10 @@ Byte difference: 16.32%. Prompt-pair digest: `ecf3df17b6b9967b1982713aa61ba70b1d
 
 This is only an opportunity upper bound. A deployment would have to infer state without gold annotations, preserve safety-relevant details, obtain tool results, generate correct actions, include output and repair tokens, and pass the separately frozen H4 task-success gate.
 
+A no-run, cost-guarded real-model follow-up is specified in
+[`GENERAL_DIALOGUE_P0_SGD20_PREREGISTRATION.md`](GENERAL_DIALOGUE_P0_SGD20_PREREGISTRATION.md).
+That protocol does not change or promote the oracle-only result above.
+
 ## Latency
 
 | Mode | Encode p50 / p95 (microseconds) | Decode p50 / p95 (microseconds) |

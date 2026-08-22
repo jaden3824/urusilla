@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:urusilla:schema:peer-dialogue-reply:0.1",
+  "title": "Urusilla peer dialogue reply node",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "predicate",
+    "arguments"
+  ],
+  "properties": {
+    "kind": {
+      "const": "claim"
+    },
+    "predicate": {
+      "const": "urn:urusilla:dialogue:peer-reply:0.1"
+    },
+    "arguments": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "prefixItems": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "choice",
+            "reason",
+            "next_question"
+          ],
+          "properties": {
+            "choice": {
+              "enum": [
+                "semantic-fidelity",
+                "total-cost",
+                "adaptive-evolution"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "next_question": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ],
+      "items": false
+    }
+  }
+}

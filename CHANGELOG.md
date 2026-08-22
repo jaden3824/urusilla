@@ -12,6 +12,19 @@ the versioning section of the specification before comparing identifiers.
   structural `FAIL` outcomes; it grants no installation, persistence,
   publication, spending, permission, or effect authority and makes no general
   compatibility or efficiency claim.
+- A project-operated fresh-context check records two normalized response-object
+  passes and one delivery failure caused by URL safety preflight. Raw response
+  strings were not retained, so direct-response conformance and byte identity
+  remain unknown. It is explicitly same-platform, same-project diagnostic
+  evidence, not independent reproduction or external adoption.
+- A cost-guarded SGD-20 cold native-consumption preregistered design now
+  specifies five fixed representation arms, complete model-visible token
+  accounting, staged local Qwen/Mistral gates, and conditional causal controls.
+  No model assets were installed and no scored run occurred.
+- A caller-supplied, offline required-answer-schema resolver and frozen
+  positive/missing/digest-mismatch vectors now close the public dialogue's
+  unresolved-schema gap without changing the historical failed reply or
+  granting any external-effect authority.
 - A preregistration-ready general-dialogue plan now freezes cross-model
   cross-play, cold-start and bootstrap accounting, drift and adversarial
   vectors, silence/topology baselines, complete model-visible token accounting,

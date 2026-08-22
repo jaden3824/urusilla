@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -14,6 +15,12 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 VALIDATOR_PATH = ROOT / "tools" / "validate_language_probe.py"
+PROJECT_RECORD_PATH = (
+    ROOT
+    / "interop_lab"
+    / "evidence"
+    / "public_language_probe_project_operated_2026_08_23.json"
+)
 SPEC = importlib.util.spec_from_file_location("validate_language_probe", VALIDATOR_PATH)
 assert SPEC is not None and SPEC.loader is not None
 validator = importlib.util.module_from_spec(SPEC)
@@ -211,6 +218,82 @@ class SafeFallbackTests(unittest.TestCase):
         for case in invalid_cases:
             with self.subTest(case=case):
                 self.assertEqual(self.classify(case)["classification"], "FAIL")
+
+
+class ProjectOperatedReproductionTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.probe = validator.load_probe()
+        cls.record = json.loads(PROJECT_RECORD_PATH.read_text(encoding="utf-8"))
+
+    def test_normalized_response_is_bound_and_passes_only_after_rendering(self) -> None:
+        normalized = self.record["normalized_response"]
+        self.assertFalse(normalized["raw_agent_response_bytes_retained"])
+        self.assertFalse(normalized["direct_agent_response_validated"])
+        response = normalized["response"]
+        raw = canonical(response).encode("utf-8")
+        self.assertEqual(
+            "sha256:" + hashlib.sha256(raw).hexdigest(),
+            normalized["sha256"],
+        )
+        self.assertEqual(len(raw), normalized["utf8_bytes"])
+        result = validator.classify_response(self.probe, raw.decode("utf-8"))
+        self.assertEqual(result["classification"], "PASS")
+        self.assertTrue(result["language_pass"])
+        pretty = json.dumps(response, ensure_ascii=False, indent=2)
+        self.assertEqual(
+            validator.classify_response(self.probe, pretty)["classification"],
+            "FAIL",
+        )
+
+    def test_record_binds_the_probe_and_validator_source_bytes(self) -> None:
+        source_state = self.record["source_state"]
+        for path_key, digest_key, bytes_key in (
+            ("probe_path", "probe_file_sha256", "probe_file_bytes"),
+            ("validator_path", "validator_file_sha256", "validator_file_bytes"),
+        ):
+            raw = (ROOT / source_state[path_key]).read_bytes()
+            self.assertEqual(len(raw), source_state[bytes_key])
+            self.assertEqual(
+                "sha256:" + hashlib.sha256(raw).hexdigest(),
+                source_state[digest_key],
+            )
+
+    def test_delivery_failure_is_not_relabelled_as_language_failure(self) -> None:
+        trials = {trial["trial_id"]: trial for trial in self.record["trials"]}
+        self.assertEqual(trials["A"]["delivery"]["status"], "DELIVERY_FAILURE")
+        self.assertFalse(trials["A"]["response_received"])
+        self.assertFalse(trials["A"]["validator"]["invoked"])
+        self.assertIsNone(trials["A"]["validator"]["classification"])
+        for trial_id in ("B", "C"):
+            observed = trials[trial_id]["validator"]
+            self.assertEqual(observed["classification"], "NORMALIZED_PASS")
+            self.assertEqual(observed["validator_returned_classification"], "PASS")
+            self.assertTrue(observed["language_pass_on_normalized_input"])
+            self.assertIsNone(observed["direct_response_language_pass"])
+        boundary = self.record["evidence_classification"]
+        self.assertFalse(boundary["claim_eligible"])
+        self.assertFalse(boundary["external_independent_reproduction"])
+        self.assertFalse(boundary["external_adoption_evidence"])
+
+    def test_aggregate_recomputes_from_trials(self) -> None:
+        trials = self.record["trials"]
+        aggregate = self.record["aggregate"]
+        delivered = [
+            trial for trial in trials if trial["delivery"]["status"] == "DELIVERED"
+        ]
+        normalized_passes = [
+            trial
+            for trial in delivered
+            if trial["validator"].get("classification") == "NORMALIZED_PASS"
+        ]
+        self.assertEqual(len(trials), aggregate["trial_count"])
+        self.assertEqual(len(delivered), aggregate["delivered_response_count"])
+        self.assertEqual(
+            len(normalized_passes),
+            aggregate["normalized_rendering_validator_pass_count"],
+        )
+        self.assertIsNone(aggregate["direct_response_pass_count"])
 
 
 if __name__ == "__main__":

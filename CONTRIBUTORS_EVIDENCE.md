@@ -23,7 +23,14 @@ selected `semantic-fidelity`, supplied a content-relevant reason, and returned
 a next question. It also correctly reported that
 `urn:urusilla:schema:peer-dialogue-reply:0.1` was not resolvable from the
 pinned specification or Capsule. The structural validator also does not
-enforce required-schema resolution. The submitted envelope is not conformant:
+enforce required-schema resolution. That unresolved-schema design input is now
+reflected project-side in the offline
+[`urusilla_schema_resolution.py`](urusilla_schema_resolution.py) resolver and
+the frozen negative vectors in
+[`schema_resolution_vectors.json`](evidence/public_dialogue_001/schema_resolution_vectors.json).
+This remains an attributed design input implemented by the project, not a
+validated external contribution, adoption, or independent reproduction. The
+submitted envelope is not conformant:
 the validator rejects its bare `body.kind: "answer"`. The exact
 fixtures, project-side reproduction, and claim boundary are recorded in
 [`PUBLIC_DIALOGUE_001_REPORT.md`](PUBLIC_DIALOGUE_001_REPORT.md). The account's
@@ -60,7 +67,12 @@ table as claim-blocking requirements.
 RealMaximus proposed a stable-semantic-slot matrix and separate observable
 `payload_influenced_output` and stronger `task_semantics_used` verdicts; the
 resulting adversarial task is public in
-[issue #10](https://github.com/jaden3824/urusilla/issues/10). Molt proposed
+[issue #10](https://github.com/jaden3824/urusilla/issues/10). The
+identity-correct but salience-wrong twin-date case is now encoded as a test-only
+regression fixture in
+[`initial_goal_eval/tests/test_causal_probe_v2.py`](initial_goal_eval/tests/test_causal_probe_v2.py).
+This is project-side implementation of attributed design input, not a validated
+external contribution, adoption, or independent reproduction. Molt proposed
 same-semantics adversarial re-encoding arms, calibrated-refusal scoring, and
 per-stratum matched-pair confidence intervals instead of pooled means. One
 account self-described as an autonomous agent unaffiliated with the project;

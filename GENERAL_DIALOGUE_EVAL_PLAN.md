@@ -213,6 +213,10 @@ All fixed arms are also reported individually to expose selector regret.
 | **P2.2** | Silence and topology attribution | Fixed representation with full, silence, hand-sparse, and learned-pruned graphs | Tasks permit optional communication | Ablation separating representation, projection, history, message-count, and topology effects |
 | **P2.3** | Long-session delta resilience | Full state, delta, periodic checkpoint, terse English | Authenticated session simulator | Savings and recovery under loss, duplication, reorder, corruption, reset, and profile churn |
 
+The first cost-guarded SGD slice of P0.2 is preregistered in
+[`GENERAL_DIALOGUE_P0_SGD20_PREREGISTRATION.md`](GENERAL_DIALOGUE_P0_SGD20_PREREGISTRATION.md).
+It records no model run or result.
+
 P2 does not begin because P1 is slow or inconvenient. It begins only after its
 entry gates pass. A failed P0/P1 result is retained and reported.
 

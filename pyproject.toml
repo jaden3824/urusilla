@@ -30,6 +30,7 @@ classifiers = [
 ]
 
 [project.urls]
+Homepage = "https://urusilla-language.pages.dev"
 Repository = "https://github.com/jaden3824/urusilla"
 Issues = "https://github.com/jaden3824/urusilla/issues"
 Documentation = "https://github.com/jaden3824/urusilla#readme"
@@ -47,7 +48,7 @@ urusilla-wire-v02 = "urusilla_wire_v02:main"
 urusilla-source = "source_manifest:main"
 
 [tool.setuptools]
-py-modules = ["urusilla", "urusilla_a2a_adapter", "urusilla_wire_v02", "urusilla_deterministic_gzip", "source_manifest"]
+py-modules = ["urusilla", "urusilla_a2a_adapter", "urusilla_wire_v02", "urusilla_deterministic_gzip", "urusilla_schema_resolution", "source_manifest"]
 packages = ["urusilla_hybrid_runtime", "initial_goal_eval"]
 
 [tool.setuptools.package-data]

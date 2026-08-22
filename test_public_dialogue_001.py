@@ -6,6 +6,10 @@ from pathlib import Path
 import unittest
 
 from urusilla import ValidationError, decode_message, encode_message, normalize_message
+from urusilla_schema_resolution import (
+    SchemaResource,
+    resolve_required_answer_schema,
+)
 
 
 ROOT = Path(__file__).resolve().parent
@@ -17,6 +21,30 @@ MISSING_DIALOGUE_SCHEMA = "urn:urusilla:dialogue:0.1"
 
 def load_json(name: str) -> dict[str, object]:
     return json.loads((EVIDENCE / name).read_text(encoding="utf-8"))
+
+
+def run_schema_resolution_vector(case_id: str) -> dict[str, object]:
+    vectors = load_json("schema_resolution_vectors.json")
+    query = load_json(str(vectors["query_path"]))
+    descriptors = {
+        descriptor["resource_id"]: descriptor
+        for descriptor in vectors["resources"]
+    }
+    case = next(item for item in vectors["cases"] if item["case_id"] == case_id)
+    resources = {}
+    for resource_id in case["available_resource_ids"]:
+        descriptor = descriptors[resource_id]
+        resources[descriptor["uri"]] = SchemaResource(
+            uri=descriptor["uri"],
+            media_type=descriptor["media_type"],
+            content=(EVIDENCE / descriptor["path"]).read_bytes(),
+        )
+    return resolve_required_answer_schema(
+        query,
+        case["binding"],
+        resources,
+        fallback_route=case["fallback_route"],
+    )
 
 
 class PublicDialogueProbe001Tests(unittest.TestCase):
@@ -32,6 +60,152 @@ class PublicDialogueProbe001Tests(unittest.TestCase):
         frame = encode_message(message)
         self.assertEqual(decode_message(frame), canonical)
         self.assertEqual(encode_message(canonical), frame)
+
+    def test_schema_resolution_positive_fixture_matches_complete_binding(self) -> None:
+        vectors = load_json("schema_resolution_vectors.json")
+        query = load_json(str(vectors["query_path"]))
+        descriptor = vectors["resources"][0]
+        schema_bytes = (EVIDENCE / descriptor["path"]).read_bytes()
+        schema = json.loads(schema_bytes.decode("utf-8"))
+        capsule = json.loads(
+            (ROOT / "urusilla_capsule_v0_1.json").read_text(encoding="utf-8")
+        )
+
+        self.assertTrue(vectors["offline_only"])
+        self.assertFalse(vectors["external_effects_authorized"])
+        self.assertEqual(query["schema"], capsule["identifiers"]["core_schema_id"])
+        self.assertEqual(query["body"]["answer_schema"], MISSING_ANSWER_SCHEMA)
+        self.assertFalse(query["meta"]["external_effects"])
+        self.assertEqual(descriptor["uri"], MISSING_ANSWER_SCHEMA)
+        self.assertEqual(schema["$id"], descriptor["uri"])
+        self.assertEqual(descriptor["media_type"], "application/schema+json")
+        self.assertEqual(len(schema_bytes), descriptor["bytes"])
+        self.assertEqual(
+            "sha256:" + hashlib.sha256(schema_bytes).hexdigest(),
+            descriptor["sha256"],
+        )
+
+        case = next(
+            item
+            for item in vectors["cases"]
+            if item["case_id"] == "resolved-exact-binding"
+        )
+        decision = run_schema_resolution_vector(case["case_id"])
+        self.assertEqual(decision, case["expected"])
+        self.assertTrue(decision["schema_binding_verified"])
+        self.assertFalse(decision["strict_conformance"])
+        self.assertEqual(decision["route"], "urusilla")
+        self.assertFalse(decision["effect_authorized"])
+
+    def test_schema_resolution_failure_vectors_close_to_fallback(self) -> None:
+        vectors = load_json("schema_resolution_vectors.json")
+        for case_id, route, media_type in (
+            ("required-schema-missing", "json", "application/json"),
+            ("required-schema-sha256-mismatch", "text", "text/plain"),
+        ):
+            with self.subTest(case_id=case_id):
+                case = next(
+                    item for item in vectors["cases"] if item["case_id"] == case_id
+                )
+                decision = run_schema_resolution_vector(case_id)
+                self.assertEqual(decision, case["expected"])
+                self.assertFalse(decision["strict_conformance"])
+                self.assertFalse(decision["schema_binding_verified"])
+                self.assertEqual(decision["route"], route)
+                self.assertEqual(decision["fallback"]["media_type"], media_type)
+                self.assertFalse(decision["effect_authorized"])
+
+    def test_self_consistent_unpinned_schema_cannot_open_typed_route(self) -> None:
+        vectors = load_json("schema_resolution_vectors.json")
+        query = load_json(str(vectors["query_path"]))
+        schema_uri = query["body"]["answer_schema"]
+        content = json.dumps(
+            {"$id": schema_uri}, sort_keys=True, separators=(",", ":")
+        ).encode("utf-8")
+        binding = {
+            "uri": schema_uri,
+            "sha256": "sha256:" + hashlib.sha256(content).hexdigest(),
+            "bytes": len(content),
+            "media_type": "application/schema+json",
+        }
+        decision = resolve_required_answer_schema(
+            query,
+            binding,
+            {
+                schema_uri: SchemaResource(
+                    uri=schema_uri,
+                    media_type="application/schema+json",
+                    content=content,
+                )
+            },
+        )
+        self.assertEqual(decision["reason_code"], "required-schema-binding-not-pinned")
+        self.assertEqual(decision["route"], "json")
+        self.assertFalse(decision["schema_binding_verified"])
+        self.assertFalse(decision["strict_conformance"])
+
+    def test_schema_resolution_rejects_each_non_digest_identity_mismatch(self) -> None:
+        vectors = load_json("schema_resolution_vectors.json")
+        query = load_json(str(vectors["query_path"]))
+        descriptor = vectors["resources"][0]
+        content = (EVIDENCE / descriptor["path"]).read_bytes()
+        exact_binding = {
+            field: descriptor[field]
+            for field in ("uri", "sha256", "bytes", "media_type")
+        }
+        exact_resource = SchemaResource(
+            uri=descriptor["uri"],
+            media_type=descriptor["media_type"],
+            content=content,
+        )
+        cases = []
+
+        uri_binding = dict(exact_binding)
+        uri_binding["uri"] = "urn:urusilla:schema:other:0.1"
+        cases.append(
+            (
+                "uri",
+                uri_binding,
+                {descriptor["uri"]: exact_resource},
+                "required-schema-uri-mismatch",
+            )
+        )
+
+        byte_binding = dict(exact_binding)
+        byte_binding["bytes"] += 1
+        cases.append(
+            (
+                "bytes",
+                byte_binding,
+                {descriptor["uri"]: exact_resource},
+                "required-schema-binding-not-pinned",
+            )
+        )
+
+        media_resource = SchemaResource(
+            uri=descriptor["uri"],
+            media_type="application/json",
+            content=content,
+        )
+        cases.append(
+            (
+                "media-type",
+                exact_binding,
+                {descriptor["uri"]: media_resource},
+                "required-schema-media-type-mismatch",
+            )
+        )
+
+        for label, binding, resources, reason_code in cases:
+            with self.subTest(label=label):
+                decision = resolve_required_answer_schema(
+                    query, binding, resources, fallback_route="json"
+                )
+                self.assertFalse(decision["strict_conformance"])
+                self.assertFalse(decision["schema_binding_verified"])
+                self.assertEqual(decision["reason_code"], reason_code)
+                self.assertEqual(decision["route"], "json")
+                self.assertFalse(decision["effect_authorized"])
 
     def test_original_schema_identifiers_are_not_defined_by_pinned_artifacts(self) -> None:
         message = load_json("original_query.json")

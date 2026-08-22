@@ -1,0 +1,107 @@
+{
+  "format": "urusilla-required-schema-resolution-vectors/1",
+  "issue_uri": "https://github.com/jaden3824/urusilla/issues/12",
+  "source_observation_path": "original_query.json",
+  "query_path": "schema_resolution_query.json",
+  "offline_only": true,
+  "external_effects_authorized": false,
+  "resources": [
+    {
+      "resource_id": "peer-dialogue-reply",
+      "path": "peer_dialogue_reply.schema.json",
+      "uri": "urn:urusilla:schema:peer-dialogue-reply:0.1",
+      "sha256": "sha256:4e40793ff15a897db35f3805c252f38f47dff816d76e37de9b7a17f210152e37",
+      "bytes": 1202,
+      "media_type": "application/schema+json"
+    },
+    {
+      "resource_id": "peer-dialogue-reply-tampered",
+      "path": "peer_dialogue_reply.tampered.schema.json",
+      "uri": "urn:urusilla:schema:peer-dialogue-reply:0.1",
+      "sha256": "sha256:3b3c0305fcff7111f97f5d2e15ce9fb632c70539c78ab84b3d0b9e1a86f89ddc",
+      "bytes": 1202,
+      "media_type": "application/schema+json"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "resolved-exact-binding",
+      "binding": {
+        "uri": "urn:urusilla:schema:peer-dialogue-reply:0.1",
+        "sha256": "sha256:4e40793ff15a897db35f3805c252f38f47dff816d76e37de9b7a17f210152e37",
+        "bytes": 1202,
+        "media_type": "application/schema+json"
+      },
+      "available_resource_ids": [
+        "peer-dialogue-reply"
+      ],
+      "fallback_route": "json",
+      "expected": {
+        "conformance_scope": "required-answer-schema",
+        "effect_authorized": false,
+        "fallback": null,
+        "format": "urusilla-required-schema-resolution-decision/1",
+        "reason_code": "required-schema-resolved",
+        "route": "urusilla",
+        "schema_binding_verified": true,
+        "schema_uri": "urn:urusilla:schema:peer-dialogue-reply:0.1",
+        "strict_conformance": false
+      }
+    },
+    {
+      "case_id": "required-schema-missing",
+      "binding": {
+        "uri": "urn:urusilla:schema:peer-dialogue-reply:0.1",
+        "sha256": "sha256:4e40793ff15a897db35f3805c252f38f47dff816d76e37de9b7a17f210152e37",
+        "bytes": 1202,
+        "media_type": "application/schema+json"
+      },
+      "available_resource_ids": [],
+      "fallback_route": "json",
+      "expected": {
+        "conformance_scope": "required-answer-schema",
+        "effect_authorized": false,
+        "fallback": {
+          "media_type": "application/json",
+          "value": {
+            "reason_code": "required-schema-missing",
+            "status": "fallback"
+          }
+        },
+        "format": "urusilla-required-schema-resolution-decision/1",
+        "reason_code": "required-schema-missing",
+        "route": "json",
+        "schema_binding_verified": false,
+        "schema_uri": "urn:urusilla:schema:peer-dialogue-reply:0.1",
+        "strict_conformance": false
+      }
+    },
+    {
+      "case_id": "required-schema-sha256-mismatch",
+      "binding": {
+        "uri": "urn:urusilla:schema:peer-dialogue-reply:0.1",
+        "sha256": "sha256:4e40793ff15a897db35f3805c252f38f47dff816d76e37de9b7a17f210152e37",
+        "bytes": 1202,
+        "media_type": "application/schema+json"
+      },
+      "available_resource_ids": [
+        "peer-dialogue-reply-tampered"
+      ],
+      "fallback_route": "text",
+      "expected": {
+        "conformance_scope": "required-answer-schema",
+        "effect_authorized": false,
+        "fallback": {
+          "media_type": "text/plain",
+          "value": "Required answer schema unavailable (required-schema-sha256-mismatch); use concise text."
+        },
+        "format": "urusilla-required-schema-resolution-decision/1",
+        "reason_code": "required-schema-sha256-mismatch",
+        "route": "text",
+        "schema_binding_verified": false,
+        "schema_uri": "urn:urusilla:schema:peer-dialogue-reply:0.1",
+        "strict_conformance": false
+      }
+    }
+  ]
+}

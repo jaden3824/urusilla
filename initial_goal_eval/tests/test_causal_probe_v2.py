@@ -63,6 +63,38 @@ def _action_state(
     }
 
 
+def _twin_date_action_state(
+    task: str,
+    *,
+    delivery_date: str,
+    invoice_date: str,
+    instruction: str,
+) -> dict[str, object]:
+    return {
+        "format": ACTION_STATE_FORMAT,
+        "act": "propose",
+        "goal": {"p": "choose", "a": [task], "n": False, "src": "fixture"},
+        "state": [],
+        "constraints": [],
+        "action": {
+            "name": "choose",
+            "args": {
+                # The invoice alias is intentionally first and adjacent to the
+                # instruction; the authoritative delivery alias is less salient.
+                "deadline": invoice_date,
+                "instruction": instruction,
+                "delivery_on": delivery_date,
+                "task": task,
+            },
+            "status": "proposed",
+            "effects": [],
+        },
+        "outcome": None,
+        "needs": [],
+        "uncertainty": [],
+    }
+
+
 def _binding(probe_id: str) -> dict[str, object]:
     return {
         "non_payload_context_sha256": _digest(f"context-{probe_id}"),
@@ -373,6 +405,80 @@ def _reseal_usage(call: dict[str, object]) -> None:
     call["usage_sha256"] = sha256_ref(call["usage"])
 
 
+def _twin_date_fixture() -> tuple[dict[str, object], dict[str, object]]:
+    plan, pack = _fixture()
+    payloads = {
+        "probe-one": {
+            "a": _twin_date_action_state(
+                "ship-from-delivery-date-only",
+                delivery_date="2026-09-15",
+                invoice_date="2026-08-31",
+                instruction="Choose the shipment action from the adjacent deadline.",
+            ),
+            "b": _twin_date_action_state(
+                "ship-from-delivery-date-only",
+                delivery_date="2026-10-15",
+                invoice_date="2026-08-31",
+                instruction="Choose the shipment action from the adjacent deadline.",
+            ),
+        },
+        "probe-two": {
+            "a": _twin_date_action_state(
+                "bill-from-invoice-date-only",
+                delivery_date="2026-10-15",
+                invoice_date="2026-08-31",
+                instruction="Choose the billing action from the adjacent deadline.",
+            ),
+            "b": _twin_date_action_state(
+                "bill-from-invoice-date-only",
+                delivery_date="2026-10-15",
+                invoice_date="2026-09-30",
+                instruction="Choose the billing action from the adjacent deadline.",
+            ),
+        },
+    }
+    _field_universe(plan)["fields"] = [
+        {
+            "field_id": "delivery_date",
+            "canonical_pointer": "/action/args/delivery_date",
+            "pointer_aliases": ["/action/args/delivery_on"],
+            "semantic_definition_sha256": _digest("field-delivery-date"),
+        },
+        {
+            "field_id": "invoice_date",
+            "canonical_pointer": "/action/args/invoice_date",
+            "pointer_aliases": ["/action/args/deadline"],
+            "semantic_definition_sha256": _digest("field-invoice-date"),
+        },
+    ]
+    identities = {
+        "probe-one": ("delivery_date", "/action/args/delivery_on"),
+        "probe-two": ("invoice_date", "/action/args/deadline"),
+    }
+    for probe_id, (field_id, critical_pointer) in identities.items():
+        spec = _spec(plan, probe_id)
+        spec["field_id"] = field_id
+        spec["critical_pointer"] = critical_pointer
+        for condition in ("a", "b"):
+            payload = payloads[probe_id][condition]
+            call = _call_for(pack, probe_id, condition)
+            call["payload"] = deepcopy(payload)
+            call["payload_sha256"] = sha256_ref(payload)
+            spec["payload_sha256"][condition] = sha256_ref(payload)
+
+    for probe_id in identities:
+        spec = _spec(plan, probe_id)
+        donor = spec["shuffled_from"]
+        shuffled_payload = payloads[donor["probe_id"]][donor["condition"]]
+        shuffled_call = _call_for(pack, probe_id, "shuffled")
+        shuffled_call["payload"] = deepcopy(shuffled_payload)
+        shuffled_call["payload_sha256"] = sha256_ref(shuffled_payload)
+        spec["payload_sha256"]["shuffled"] = sha256_ref(shuffled_payload)
+
+    _reseal(plan, pack)
+    return plan, pack
+
+
 class CausalProbeV2Tests(unittest.TestCase):
     def test_valid_pack_is_bounded_nonclaim_and_counts_every_call(self):
         plan, pack = _fixture()
@@ -653,6 +759,66 @@ class CausalProbeV2Tests(unittest.TestCase):
             },
         )
         self.assertTrue(summary["declared_field_universe_covered"])
+
+    def test_identity_correct_salience_wrong_twin_date_pair_is_not_semantic_use_evidence(
+        self,
+    ):
+        plan, pack = _twin_date_fixture()
+        delivery_a = _call_for(pack, "probe-one", "a")["payload"]["action"][
+            "args"
+        ]
+        delivery_b = _call_for(pack, "probe-one", "b")["payload"]["action"][
+            "args"
+        ]
+
+        self.assertEqual(
+            list(delivery_a),
+            ["deadline", "instruction", "delivery_on", "task"],
+        )
+        self.assertIn("adjacent deadline", delivery_a["instruction"])
+        self.assertEqual(delivery_a["task"], "ship-from-delivery-date-only")
+        self.assertEqual(delivery_a["deadline"], delivery_b["deadline"])
+        self.assertNotEqual(delivery_a["delivery_on"], delivery_b["delivery_on"])
+
+        fields = {
+            field["field_id"]: field for field in _field_universe(plan)["fields"]
+        }
+        self.assertEqual(set(fields), {"delivery_date", "invoice_date"})
+        self.assertEqual(
+            fields["delivery_date"]["pointer_aliases"],
+            ["/action/args/delivery_on"],
+        )
+        self.assertEqual(
+            fields["invoice_date"]["pointer_aliases"],
+            ["/action/args/deadline"],
+        )
+
+        summary = validate_causal_probe_pack(plan, pack)
+
+        self.assertTrue(summary["payload_dependence_checks_passed"])
+        self.assertEqual(
+            summary["field_identity_coverage"],
+            {"delivery_date": 1, "invoice_date": 1},
+        )
+        self.assertEqual(
+            summary["verdicts"]["payload_influenced_output"]["status"],
+            "local-record-contract-passed",
+        )
+        self.assertTrue(
+            summary["verdicts"]["payload_influenced_output"]["checks_passed"]
+        )
+        self.assertFalse(summary["semantic_invariance_checked"])
+        self.assertFalse(summary["task_semantics_used_verdict_validated"])
+        self.assertEqual(
+            summary["verdicts"]["task_semantics_used"]["status"],
+            "not-validated",
+        )
+        self.assertFalse(
+            summary["verdicts"]["task_semantics_used"]["checks_passed"]
+        )
+        self.assertFalse(
+            summary["verdicts"]["task_semantics_used"]["claim_eligible"]
+        )
 
     def test_one_pointer_alias_cannot_own_multiple_stable_field_ids(self):
         plan, _pack = _fixture()
