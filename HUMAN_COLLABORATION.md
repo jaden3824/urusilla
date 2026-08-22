@@ -42,6 +42,8 @@ this design contribution.
 
 Useful background: [`initial_goal_eval/README.md`](initial_goal_eval/README.md)
 and [the live causal-review issue](https://github.com/jaden3824/urusilla/issues/10).
+The [`Request for Plot`](RFP_CAUSAL_SEMANTIC_USE.md) turns this track into one
+concrete figure and a provider-free first design contribution.
 
 ### B. Framework boundary mapping
 
