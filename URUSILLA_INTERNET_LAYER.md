@@ -2,6 +2,7 @@
 
 Status: North-star architecture draft, not an implemented network or standard  
 Date: 2026-08-20  
+Last evidence review: 2026-08-23
 Project name: `Urusilla`
 
 ## 1. North star
@@ -25,6 +26,15 @@ This goal has three complementary paths:
 1. **On-demand semantic compilation:** an agent retrieves a source for a real task, extracts only the required meaning, and binds the result to the exact source representation.
 2. **Permission-aware shared reuse:** eligible semantic artifacts are cached and exchanged so other agents do not repeatedly retrieve and re-parse the same unchanged material.
 3. **Agent-native publishing:** willing publishers expose signed Urusilla representations and deltas next to their human-facing pages, feeds, APIs, and media.
+
+The resulting architecture is a **source-bound, demand-driven semantic
+cache/content-delivery layer**, not a bulk pretranslation or replacement of the
+Web. Query-time compilation is the default for legacy material. A semantic
+artifact becomes a shared hot-cache object only after measured reuse and change
+rates show that its avoided downstream work exceeds compilation, validation,
+storage, refresh, and invalidation cost. Native publishers use a dual format:
+the existing human or modality representation remains available while a signed
+Urusilla sidecar and delta stream provide agent-native access.
 
 "All Internet information" is therefore an interoperability aspiration. It does not mean that one organization copies every page, that every item can legally be redistributed, or that all meaning can be compiled losslessly. Paywalled, private, deleted, disallowed, rapidly changing, adversarial, or modality-specific material remains subject to its access, rights, freshness, and representation constraints.
 
@@ -93,6 +103,14 @@ Publishers and sources
 
 The semantic layer is separate from transport. HTTP, TLS, A2A, MCP, gRPC, feeds, and browser sessions continue to carry requests and bytes. Images, audio, video, source code, and large scientific arrays remain in suitable modality codecs; Urusilla describes their meaning, provenance, relationships, constraints, and immutable references.
 
+Each derived semantic object is therefore a sidecar to, not a substitute for,
+an exact permitted source representation or a source locator plus digest. The
+sidecar binds the source digest, observation time, compiler and Capsule
+identities, anchors, exactness and omissions, freshness decision, and rights
+policy. A publisher-native sidecar additionally binds the publisher signature;
+a legacy compiler signature identifies the derivation but does not become an
+origin signature.
+
 ### 4.1 Acquisition adapters
 
 Adapters normalize retrieval evidence without pretending that all source types behave alike:
@@ -110,6 +128,17 @@ An adapter returns a retrieval receipt even when semantic compilation fails. Thi
 ### 4.2 Sandboxed semantic compiler
 
 The compiler receives an immutable source snapshot and a narrow extraction request. Its output is a typed claim bundle plus a coverage report. It runs without execution authority, and preferably without network access after acquisition. Untrusted source instructions are treated as data.
+
+For prose and other lossy inputs, the extraction request includes the actual
+query or a preregistered query family. A single query-independent summary is not
+assumed to preserve details needed by future long-tail questions. Work on
+[query-guided context compression](https://aclanthology.org/2024.acl-long.685/)
+reports that high compression can lose key information severely enough to
+approach closed-book performance, which is evidence for testing query-time
+selection rather than assuming universal precompilation is safe.
+Query-independent artifacts are limited to deterministic schema mappings,
+exact indexes, or stable projections that pass explicit coverage and
+held-out-query tests.
 
 Compilation may be deterministic for structured APIs and probabilistic for prose, tables, or multimodal content. Each output distinguishes:
 
@@ -134,6 +163,15 @@ Cache reuse requires all of the following:
 - redistribution and retention are allowed;
 - the schema, compiler profile, and codec are accepted;
 - the artifact has not been revoked, tombstoned, or superseded for the query's time scope.
+
+Promotion also requires an empirical break-even decision for the exact immutable
+source version. If `R` is eligible downstream reuse, `S` is avoided energy or
+cost per reuse, and `C` is compilation, validation, storage, refresh, and
+invalidation cost, a cache entry is beneficial only when `R * S > C`. The
+runtime measures this relationship rather than inferring it from page count,
+wire bytes, or token surface. Low-reuse or high-change artifacts expire and
+return to query-time compilation. Unknown rights or freshness never become
+eligible for shared-cache promotion merely because reuse is high.
 
 [HTTP caching](https://www.rfc-editor.org/rfc/rfc9111.html), validators such as ETags and Last-Modified, and conditional requests should be reused instead of inventing incompatible freshness machinery. [HTTP Digest Fields](https://www.rfc-editor.org/rfc/rfc9530.html) can provide representation or content integrity evidence when origins supply them.
 
@@ -304,6 +342,14 @@ This architecture is not a legal determination. Each deployment requires jurisdi
 
 Provenance follows a derivation graph compatible in spirit with [W3C PROV-O](https://www.w3.org/TR/prov-o/): source entities, compilation activities, responsible agents, and derived entities remain separately identifiable.
 
+Content-addressed chunks and version roots may use a
+[Merkle DAG](https://docs.ipfs.tech/concepts/merkle-dag/) so peers can verify
+which exact fragments and deltas they received. HTTP `Content-Digest` and
+`Repr-Digest` provide compatible integrity evidence when origins supply them.
+A digest or Merkle proof establishes byte identity and derivation linkage only;
+it does not establish factual truth, authorship, freshness, redistribution
+rights, or authority to execute.
+
 Artifacts may use canonical Urusilla signatures or a standard envelope such as [JSON Web Signature](https://www.rfc-editor.org/rfc/rfc7515.html). Signature profiles must define canonical bytes, algorithms, key discovery, key rotation, revocation, timestamp evidence, and replay protection. Publisher, acquirer, compiler, verifier, and cache signatures have different meanings and must not be substituted for one another.
 
 Trust is a vector, not a universal scalar:
@@ -371,6 +417,28 @@ FragmentSplice(
 ```
 
 Examples include a mathematical expression, source-code AST, SQL query, geospatial object, table, image region, compact JSON, or compatible latent sidecar. A receiver requests only the unresolved fragment in its next supported representation. Exact surrounding claims remain valid. An opaque or approximate fragment cannot authorize an effect.
+
+Executable source, media, and scientific data are never reconstructed solely
+from extracted claims. The splice retains a permitted original blob or locator,
+digest, environment and dependency references where relevant, and precise
+regions or time spans. A code description is not the code, a media caption is
+not the media, and neither may acquire execution authority through translation.
+
+### 11.1 Direct consumption, not an internal-thought claim
+
+The efficiency lane measures a receiver consuming UrusillaIR directly in its
+model-visible input. Expanding the IR back into natural language before the
+receiver would measure only transport compression and cannot support a model
+token or energy claim. Capsule teaching, schema induction, tokenizer-specific
+surface cost, parse and semantic repair, and raw fallback are included in the
+receiver ledger.
+
+Direct input consumption does not show that a model "thinks in Urusilla."
+Private internal representations are neither required nor claimed. Evidence is
+limited to observable input binding, parse validity, task outcomes, repairs,
+fallback, and complete cost. A fine-tuned or pretrained model-native profile is
+an optional later research lane and cannot replace the no-install,
+no-retraining unseen-partner gate.
 
 Continuous grammar evolution follows proposal, local trial, held-out evaluation, unseen-partner cross-play, signed profile ratification, migration, deprecation, and garbage collection. During the founder-led Experimental Stewardship Phase, ratification additionally requires explicit Founding Maintainer approval under `GOVERNANCE.md`; agents and automated evidence cannot grant it. Adoption frequency informs evaluation but cannot override semantic, safety, rights, governance, or rollback gates.
 
@@ -460,9 +528,77 @@ Development, public validation, and hidden sets remain separate. At least one so
 
 Do not rely only on an LLM judge. Use exact field checks, executable state checks, source mutation tests, human domain review, counterfactual evidence substitution, and blinded pairwise evaluation. Publish failures and confidence intervals, not only averages.
 
+### 13.4 Preregistered demand-versus-precompute Web canary
+
+Before any whole-corpus or shared-network build, run a small, independently
+operated, preregistered canary that compares the following matched arms:
+
+1. strongest concise-natural-language retrieval baseline;
+2. strongest ordinary or minified JSON retrieval baseline;
+3. query-independent precompiled Urusilla sidecars;
+4. query-time Urusilla compilation;
+5. demand-driven Urusilla compilation with hot-cache reuse; and
+6. publisher-native dual-format snapshots and deltas where a real source makes
+   them available.
+
+Freeze source snapshots, compiler and Capsule digests, arms, scorers, hardware,
+and accounting before evaluation. Freeze the query-independent artifacts before
+revealing the held-out queries so long-tail questions can expose omitted facts
+instead of rewarding a summary tailored after seeing the test. Include static
+and changing prose, structured APIs, tables and documents, executable-code
+references, image/audio/video regions, unsupported fragments, conflicting and
+corrected sources, and prompt-injection material. Mutate eligible sources after
+the first answer to test validation, staleness, deltas, rollback, and raw
+fallback.
+
+For each unchanged source version, run matched reuse counts of exactly
+`1, 2, 5, 10, 50, 100`. Report results separately by reuse count and source
+change rate; do not extrapolate a hot-page result to the Web long tail. Count
+every acquisition, compilation, Capsule/schema setup, sender, receiver,
+reasoning-visible or provider-billed token, output, validation, repair, retry,
+fallback, judge, revalidation, storage interval, and cache invalidation. Measure
+CPU and GPU joules on the disclosed hardware; report network and storage energy
+separately when measured. An unknown energy component makes the energy result
+incomplete rather than zero.
+
+The original end-to-end gate remains controlling. Against the best successful
+concise-natural-language or JSON baseline, the Urusilla route must show all of:
+
+- a preregistered task-success non-inferiority margin no worse than `-1`
+  percentage point on hidden multi-domain, multi-model, independent-operator
+  evaluation;
+- at least `20%` lower complete tokens per safely completed task, including
+  setup, reasoning, output, repair, fallback, and judge;
+- unseen-partner parse validity of at least `99%`;
+- held-out semantic fidelity of at least `95%`;
+- preserved negative, null, stale, unsupported, and failed outcomes;
+- no permission expansion, permanent agent-state or profile adoption, creation
+  of spending authority, unauthorized external effect, or content-derived
+  authority; and
+- receiver-direct consumption without natural-language re-expansion.
+
+Joules per safely completed task are a separate measured outcome, not inferred
+from the token result. An energy-saving claim requires a preregistered positive
+effect with its confidence interval and complete disclosed meter boundary. A
+hot-cache artifact is promoted only in reuse/change strata whose avoided-cost
+lower bound is positive. Failure of any original gate blocks a protocol-version,
+general-efficiency, adoption, or state-of-the-art claim even if energy, wire
+bytes, or one cache stratum improves.
+
 ## 14. Token, energy, and cost model
 
 Semantic conversion can save work when a verified artifact is reused many times, a small delta replaces a large refresh, or structured evidence prevents repeated long-context reading and repair. It can consume more work when material changes quickly, reuse is low, extraction is expensive, or agents translate back and forth unnecessarily.
+
+The scale of a whole-Web pass makes demand selection material. The
+[June 2026 Common Crawl](https://commoncrawl.org/blog) alone contains about
+`2.10 billion` pages and `354.59 TiB` of uncompressed content. As a deliberately
+non-comparable scale illustration, the FAccT 2024
+[Power Hungry Processing](https://facctconference.org/static/papers24/facct24-6.pdf)
+mean of `0.047 kWh` per `1,000` short text-generation inferences would equal
+about `98.7 MWh` for one inference per page. That is not an estimate of Web
+compilation: page lengths, outputs, models, and hardware differ, and it excludes
+crawling, validation, storage, cooling, and updates. It demonstrates why a
+blind global pass requires evidence rather than an assumed amortization story.
 
 Measure the complete system:
 
@@ -479,6 +615,13 @@ E_total =
 ```
 
 Token reduction is not proportional proof of energy reduction. Reports include tokens, wall time, hardware, utilization, cache state, CPU/GPU energy where measurable, network bytes, storage duration, and safely completed tasks. A cache artifact is promoted only after its expected avoided cost exceeds compilation, maintenance, privacy, and invalidation cost under realistic reuse and change rates.
+
+This break-even must be measured end to end. A 2026 study of
+[prompt compression in deployed conditions](https://arxiv.org/abs/2604.02985)
+found up to `18%` end-to-end speed-up only when prompt length, compression, and
+hardware were well matched; outside that operating window, compression overhead
+cancelled the gain. Urusilla therefore does not use token reduction alone as a
+proxy for latency or electricity.
 
 Useful efficiency strategies are:
 
