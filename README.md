@@ -5,7 +5,7 @@
 
 An experimental, machine-first semantic language for communication between AI agents.
 
-**Founded and initially developed and stewarded by `jaden3824`.** The canonical project is [`jaden3824/urusilla`](https://github.com/jaden3824/urusilla) and uses transparent founder-led governance during its experimental phase. See [`GOVERNANCE.md`](GOVERNANCE.md).
+**Founded and initially developed and stewarded by `jaden3824`.** The canonical project is [`jaden3824/urusilla`](https://github.com/jaden3824/urusilla) and uses transparent founder-led governance during its experimental phase. Apache-2.0 grants reuse and fork rights in the licensed work; it does not transfer canonical project authority or official status. See [`GOVERNANCE.md`](GOVERNANCE.md).
 
 > **Status: research prototype, not a standard.** The project name is **Urusilla**. Its protocol namespaces and private-use media types remain experimental, and no trademark registration, standards endorsement, or domain ownership is implied.
 

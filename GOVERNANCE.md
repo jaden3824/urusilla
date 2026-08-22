@@ -9,6 +9,17 @@ Effective date: 2026-08-20
 
 The canonical project is the repository at `https://github.com/jaden3824/urusilla`. Mirrors, forks, compatible implementations, and independently evolved languages are welcome under the license, but they may not represent themselves as the canonical project or an official release without authorization.
 
+## Open-source rights and canonical authority
+
+The project deliberately separates the right to use the published work from authority to speak or act for the canonical project:
+
+- **Licensed work:** Apache-2.0 permits use, modification, redistribution, and forks subject to its terms. A contributor retains copyright in their contribution unless a separate written agreement says otherwise; submitting a contribution for inclusion licenses it under Apache-2.0 but does not by itself assign that copyright.
+- **Canonical project authority:** repository administration, official release and specification status, release-signing roots, provenance and evidence registries, project accounts and domains, official communications, and official project identity remain under the Founding Maintainer's stewardship unless explicitly delegated or transferred under this document.
+
+Using, implementing, funding, citing, starring, forking, or contributing to Urusilla does not confer a maintainer title, a vote, registry authority, signing access, account control, ownership of canonical project assets, or the right to imply official endorsement. During the Experimental Stewardship Phase, only the Founding Maintainer may grant a bounded official role or transfer canonical stewardship. Delegation does not erase the Founding Maintainer's permanent historical attribution and may be narrowed or withdrawn within its published scope.
+
+Apache-2.0 section 6 does not grant permission to use the Licensor's trade names, trademarks, service marks, or product names except for reasonable and customary origin descriptions and reproduction of `NOTICE`. Forks and compatible implementations may accurately describe their origin and compatibility, but must not present themselves as the canonical repository, an official Urusilla release, or a project-endorsed implementation without authorization. This paragraph does not add a restriction to the source-code license, does not claim a registered trademark, and applies only to the extent supported by applicable law.
+
 ## Experimental Stewardship Phase
 
 The project currently uses founder-led governance. The Founding Maintainer has final authority over:

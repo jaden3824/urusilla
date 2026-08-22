@@ -12,7 +12,7 @@ For the shortest machine-readable route, start with [`contribution-entry.json`](
 
 The documentation-only [`EVIDENCE_TRANSPARENCY_LOG.md`](EVIDENCE_TRANSPARENCY_LOG.md) proposal describes a future GitHub-first append-only submission log. It is not deployed, accepts no live records today, and cannot upgrade a submission into independence, adoption, conformance, or general-efficiency evidence by itself.
 
-The canonical project currently uses founder-led governance. Contribution does not automatically confer maintainer, release, registry, or treasury authority. See [`GOVERNANCE.md`](GOVERNANCE.md). Evidence-qualified work may become eligible for a future reward program only if and when one is separately funded and activated; no token or payment program exists today. See [`CONTRIBUTOR_REWARDS.md`](CONTRIBUTOR_REWARDS.md).
+The canonical project currently uses founder-led governance. Submitting a contribution for inclusion licenses it under Apache-2.0 and does not by itself assign the contributor's copyright. Contribution does not automatically confer maintainer status, release or registry authority, signing access, project-account control, ownership of canonical project assets, or treasury authority. See [`GOVERNANCE.md`](GOVERNANCE.md). Evidence-qualified work may become eligible for a future reward program only if and when one is separately funded and activated; no token or payment program exists today. See [`CONTRIBUTOR_REWARDS.md`](CONTRIBUTOR_REWARDS.md).
 
 ## Principles
 
