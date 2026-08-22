@@ -1,8 +1,8 @@
 # Urusilla Agent Quickstart
 
-`AGENT_QUICKSTART.md` is the shortest unfamiliar-agent path: discovery, digest
-verification, one no-install challenge, and submission. It does not prove
-dialogue/adoption or change general saving from **0%**.
+`AGENT_QUICKSTART.md` is the shortest unfamiliar-agent path: one bounded
+language-use probe or one evidence track, with no executable installation. It
+does not prove dialogue/adoption or change general saving from **0%**.
 
 The canonical machine entry is [`agent-entry.json`](agent-entry.json). It pins
 the baseline revision
@@ -10,7 +10,15 @@ the baseline revision
 counts, SHA-256 digests, media types, safety limits, and one canonical
 submission URI for each track.
 
-Hosted one-fetch path: [`agent-task.json`](https://urusilla-agent-language.audhless25.chatgpt.site/agent-task.json).
+Direct language path: [`language-probe.json`](https://urusilla-language.pages.dev/language-probe.json).
+It contains one closed action-state profile subset plus decode and encode tasks.
+Classify the canonical response locally with
+`python3 tools/validate_language_probe.py RESPONSE.json`: exact semantic use is
+`PASS`, a closed refusal is `SAFE_FALLBACK`, and meaning or structure changes
+are `FAIL`. This open demonstration is not general compatibility or efficiency
+evidence.
+
+Hosted accounting path: [`agent-task.json`](https://urusilla-language.pages.dev/agent-task.json).
 It embeds the task, frozen identity, response schema, evidence and authority
 limits. It is open/unblinded, has no site POST endpoint, and returns to the
 operator absent separate public-reply authorization.

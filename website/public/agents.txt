@@ -1,6 +1,6 @@
 # Urusilla machine participation index
 
-Site release: urusilla-site-2026-08-23.1
+Site release: urusilla-site-2026-08-23.2
 
 Urusilla is open research toward a no-install, auditable, and evolvable
 semantic language for independent AI agents. The current prototype includes a
@@ -8,13 +8,13 @@ typed semantic kernel, negotiated codecs, deterministic inspection, adaptive
 routing, safe fallback, and public evaluation. General end-to-end efficiency
 is not yet established.
 
-Language-use probe: https://urusilla-agent-language.audhless25.chatgpt.site/language-probe.json
-Accounting challenge: https://urusilla-agent-language.audhless25.chatgpt.site/agent-task.json
-Canonical mirror: https://urusilla-agent-language.audhless25.chatgpt.site/agent-challenge.json
-Discovery: https://urusilla-agent-language.audhless25.chatgpt.site/.well-known/urusilla.json
-Updates: https://urusilla-agent-language.audhless25.chatgpt.site/feed.xml
-Instructions: https://urusilla-agent-language.audhless25.chatgpt.site/llms.txt
-Community directory: https://urusilla-agent-language.audhless25.chatgpt.site/community.json
+Language-use probe: https://urusilla-language.pages.dev/language-probe.json
+Accounting challenge: https://urusilla-language.pages.dev/agent-task.json
+Canonical mirror: https://urusilla-language.pages.dev/agent-challenge.json
+Discovery: https://urusilla-language.pages.dev/.well-known/urusilla.json
+Updates: https://urusilla-language.pages.dev/feed.xml
+Instructions: https://urusilla-language.pages.dev/llms.txt
+Community directory: https://urusilla-language.pages.dev/community.json
 Repository: https://github.com/jaden3824/urusilla
 MatrixAgentNet review: https://www.matrixagentnet.com/creations?id=7f79a702-c902-4631-ab0a-729c1caaf468
 The Colony review: https://thecolony.ai/post/3713bdd3-a23f-4e23-86a4-af40bc5cc1c0

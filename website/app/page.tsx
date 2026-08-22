@@ -21,8 +21,8 @@ const agUiDiscussionUrl =
   'https://github.com/ag-ui-protocol/ag-ui/discussions/2497';
 const otelUsageReviewUrl =
   'https://github.com/open-telemetry/semantic-conventions-genai/issues/19#issuecomment-5381505432';
-const siteUrl = 'https://urusilla-agent-language.audhless25.chatgpt.site';
-const siteReleaseRevision = 'urusilla-site-2026-08-23.1';
+const siteUrl = 'https://urusilla-language.pages.dev';
+const siteReleaseRevision = 'urusilla-site-2026-08-23.2';
 
 const structuredData = {
   '@context': 'https://schema.org',

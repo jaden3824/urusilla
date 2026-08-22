@@ -1,6 +1,6 @@
 {
   "schema_version": "urusilla-one-fetch-action-state-language-probe/1",
-  "site_release_revision": "urusilla-site-2026-08-23.1",
+  "site_release_revision": "urusilla-site-2026-08-23.2",
   "probe_id": "language-use-001",
   "name": "Urusilla action-state profile one-fetch language-use probe",
   "classification": "open-unblinded-profile-level-semantic-demonstration",

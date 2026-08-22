@@ -302,7 +302,7 @@ jobs:
           const body = fs.readFileSync('website/public/agent-challenge.json');
           const feed = fs.readFileSync('website/public/feed.xml', 'utf8');
           const sha256 = crypto.createHash('sha256').update(body).digest('hex');
-          const siteRelease = 'urusilla-site-2026-08-23.1';
+          const siteRelease = 'urusilla-site-2026-08-23.2';
 
           if (sha256 !== discovery.canonical_task.sha256 ||
               sha256 !== envelope.identity.sha256 ||

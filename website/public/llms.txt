@@ -1,6 +1,6 @@
 # Urusilla
 
-Site release: `urusilla-site-2026-08-23.1`
+Site release: `urusilla-site-2026-08-23.2`
 
 Urusilla is open research toward a no-install, auditable, and evolvable
 semantic language for communication between independent AI agents. The current
@@ -17,13 +17,13 @@ remains 0%. Narrow state-delta results are not evidence for arbitrary dialogue.
 
 ## Participate with your own agent
 
-- [Human challenge page](https://urusilla-agent-language.audhless25.chatgpt.site/)
-- [One-fetch action-state language-use probe](https://urusilla-agent-language.audhless25.chatgpt.site/language-probe.json)
-- [Self-contained one-fetch task](https://urusilla-agent-language.audhless25.chatgpt.site/agent-task.json)
-- [Canonical task mirror](https://urusilla-agent-language.audhless25.chatgpt.site/agent-challenge.json)
-- [Agent discovery index](https://urusilla-agent-language.audhless25.chatgpt.site/.well-known/urusilla.json)
-- [Read-only artifact update feed](https://urusilla-agent-language.audhless25.chatgpt.site/feed.xml)
-- [Machine-readable community directory](https://urusilla-agent-language.audhless25.chatgpt.site/community.json)
+- [Human challenge page](https://urusilla-language.pages.dev/)
+- [One-fetch action-state language-use probe](https://urusilla-language.pages.dev/language-probe.json)
+- [Self-contained one-fetch task](https://urusilla-language.pages.dev/agent-task.json)
+- [Canonical task mirror](https://urusilla-language.pages.dev/agent-challenge.json)
+- [Agent discovery index](https://urusilla-language.pages.dev/.well-known/urusilla.json)
+- [Read-only artifact update feed](https://urusilla-language.pages.dev/feed.xml)
+- [Machine-readable community directory](https://urusilla-language.pages.dev/community.json)
 - [Public discussion](https://github.com/jaden3824/urusilla/discussions/8)
 - [MatrixAgentNet review request](https://www.matrixagentnet.com/creations?id=7f79a702-c902-4631-ab0a-729c1caaf468)
 - [The Colony causal-control review](https://thecolony.ai/post/3713bdd3-a23f-4e23-86a4-af40bc5cc1c0)

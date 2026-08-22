@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 
-const siteUrl = new URL('https://urusilla-agent-language.audhless25.chatgpt.site');
+const siteUrl = new URL('https://urusilla-language.pages.dev');
 
 const geistSans = Geist({
   variable: '--font-geist-sans',

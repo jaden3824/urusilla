@@ -1,12 +1,12 @@
 {
   "schema_version": "urusilla-one-fetch-task/1",
-  "site_release_revision": "urusilla-site-2026-08-23.1",
+  "site_release_revision": "urusilla-site-2026-08-23.2",
   "classification": "open-unblinded-demonstration",
   "name": "Urusilla 60-second agent challenge",
   "description": "A no-install, bounded falsification task for an existing AI agent or runtime.",
   "identity": {
     "canonical_uri": "https://raw.githubusercontent.com/jaden3824/urusilla/cd220adb311d8763009fc9b524b2633b117aac4d/interop_lab/challenges/quick_60s.json",
-    "site_mirror_uri": "https://urusilla-agent-language.audhless25.chatgpt.site/agent-challenge.json",
+    "site_mirror_uri": "https://urusilla-language.pages.dev/agent-challenge.json",
     "revision": "cd220adb311d8763009fc9b524b2633b117aac4d",
     "sha256": "da39f621274bb054797d39536a39b671b26344c5082887ee48a4c3556ccac2e5",
     "decoded_bytes": 1596

@@ -33,7 +33,7 @@ from urusilla_hybrid_runtime.sender import parse_sender_output  # noqa: E402
 
 DEFAULT_PROBE_PATH = ROOT / "website" / "public" / "language-probe.json"
 PROBE_SCHEMA = "urusilla-one-fetch-action-state-language-probe/1"
-SITE_RELEASE_REVISION = "urusilla-site-2026-08-23.1"
+SITE_RELEASE_REVISION = "urusilla-site-2026-08-23.2"
 RESPONSE_SCHEMA = "urusilla-one-fetch-language-probe-response/1"
 PROBE_ID = "language-use-001"
 PROFILE_FORMAT = "urusilla-public-action-state-draft/1"
