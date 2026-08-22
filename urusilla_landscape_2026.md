@@ -1,7 +1,7 @@
 # Global Landscape for an Agent-Native Communication Language
 
 **Project:** Urusilla  
-**Landscape date:** 20 August 2026  
+**Landscape date:** 23 August 2026
 **Evidence policy:** Primary and official sources only  
 **Scope:** Agent communication languages, semantic intermediate representations, adaptive message formats, emergent communication, and latent agent-to-agent channels
 
@@ -100,10 +100,10 @@ The better contract is: **machine-native on the wire, deterministically inspecta
 | [AutoForm](https://aclanthology.org/2024.findings-emnlp.623/) | Let models select communication/reasoning formats | Peer-reviewed research and code | Research competitor | Format selection can reduce tokens without inventing a universal language |
 | [OPTiMACS](https://aclanthology.org/2026.findings-acl.1441/) | Learn task-aware optimal message structures | Peer-reviewed research | Research competitor | The best surface representation may be task-dependent rather than globally fixed |
 | [PACT](https://arxiv.org/abs/2606.05304) | Replace full dialogue histories with public action, state, and result records | Preprint and partial artifact | Direct compact-state comparator | It reports task-level token reductions, but requires clean-room same-driver reproduction before comparison |
-| [AgentDropout](https://arxiv.org/abs/2503.18891) | Prune low-value agents and communication edges | Preprint | Topology-efficiency comparator | Suppressing a message can dominate compressing it |
+| [AgentDropout](https://aclanthology.org/2025.acl-long.1170/) | Prune low-value agents and communication edges | ACL 2025 Long Paper | Topology-efficiency comparator | Suppressing a message can dominate compressing it |
 | [Cloclo / AICL](https://github.com/SeifBenayed/cloclo/blob/main/AICL.md) | Compact runtime-native inter-agent language for cooperative work | Active open specification inside a working multi-agent runtime | Direct implementation competitor | Ownership, intent, evidence, confidence, state, constraints, action, and handoff are already occupied concepts |
 | [Tokenese](https://github.com/snapsynapse/tokenese) | Designed token-native LLM interlingua | Archived 25 July 2026 with measured post-mortem | Direct failed predecessor and negative evidence | Its symbolic syntax cost about 1.3x terse English in the flagship audit; semantic structure and below-text optimization matter more than exotic glyphs |
-| [EcoLANG](https://arxiv.org/abs/2505.06904) | Evolve compressed textual language in social simulations | Preprint | Research precedent | Selection pressure can produce shorthand, but domain-specific success is not interoperability |
+| [EcoLANG](https://aclanthology.org/2025.findings-emnlp.284/) | Evolve compressed textual language in social simulations | Findings of EMNLP 2025 | Research precedent | Selection pressure can produce shorthand, but domain-specific success is not interoperability |
 | [GlossoGen](https://emergentcomms.ai/) | Experimental platform for observing constrained agent communication | Open prototype and experiment platform | Complementary evaluation tool and research precedent | It can test language emergence, portability, decipherability, and oversight under controlled budgets |
 | [LatentMAS, Interlat, SDE, C2C, KVComm, DiffMAS](#6-latent-and-hidden-state-communication) | Hidden-state, KV-cache, or learned latent communication | Rapid research frontier | Optional research profile, not a universal core | Strong local efficiency does not remove model coupling, audit, or open-API constraints |
 | [Eclipse LMOS](https://eclipse.dev/lmos/docs/category/lmos-protocol/) | Agent metadata, discovery, identity, and communication using Web standards | Open-source protocol stack | Complement | Its own SDK documentation anticipates a standardized interoperable communication data model |
@@ -244,7 +244,7 @@ IBM’s [Agent Communication Protocol repository](https://github.com/i-am-bee/ac
 
 ### 4.2 MCP
 
-The [Model Context Protocol specification](https://modelcontextprotocol.io/specification/latest) connects models and applications to tools, resources, prompts, and context. The official [July 2026 release note](https://blog.modelcontextprotocol.io/posts/2026-07-28/) describes a stateless core in which requests are self-describing, together with routing, cacheable lists, extension machinery, authorization hardening, and multi-round tool requests.
+The [Model Context Protocol specification](https://modelcontextprotocol.io/specification/2026-07-28/architecture) connects models and applications to tools, resources, prompts, and context. The official July 2026 architecture describes a stateless core in which requests are self-describing, together with routing, cacheable lists, extension machinery, authorization hardening, and multi-round tool requests. The [22 August 2026 roadmap](https://blog.modelcontextprotocol.io/posts/mcp-roadmap/) prioritizes agentic messaging, HTTP transport, agent identity and security, and progressive discovery; these remain roadmap directions rather than evidence that MCP is a compression language.
 
 MCP is complementary. It can expose a translator, resolver, validator, registry, benchmark runner, or legacy-system bridge as tools. It should not be used as proof that general agent-to-agent meaning is already solved, nor should the target language reimplement MCP tool discovery and invocation.
 
@@ -266,17 +266,17 @@ The [Agent Data Optimization Layer draft](https://www.ietf.org/archive/id/draft-
 
 ### 5.1 AutoForm and OPTiMACS
 
-[AutoForm](https://aclanthology.org/2024.findings-emnlp.623/) lets an LLM select a format before reasoning or communication. Its paper reports modest reasoning-efficiency improvements and multi-agent token reductions of up to 72.7% while maintaining effectiveness in its evaluated settings. Its [official code](https://github.com/thunlp/AutoForm) supports reproduction. AutoForm does not define a universal ontology, canonical wire form, or standards negotiation process. It does show that a fixed designer-chosen representation may lose to model-selected formats.
+[AutoForm](https://aclanthology.org/2024.findings-emnlp.623/) lets an LLM select a format before reasoning or communication. Its largest reported communication reduction is 72.7% in one GPT-4-to-GPT-3.5 HotpotQA condition, where the paper's `#Tokens` row drops from 345.5 to 94.3 while F1 rises from .64 to .70. That denominator is generated communication tokens, not input context, setup prompts, every agent call, and the final answer combined. Its [official code](https://github.com/thunlp/AutoForm) supports reproduction. AutoForm does not define a universal ontology, canonical wire form, or standards negotiation process. It does show that a fixed designer-chosen representation may lose to model-selected formats.
 
-[OPTiMACS](https://aclanthology.org/2026.findings-acl.1441/) formulates message representation as a task-aware optimization problem and learns dynamic structures rather than forcing either natural language or one rigid protocol. It is a direct research challenge to the idea of a single globally optimal surface syntax.
+[OPTiMACS](https://aclanthology.org/2026.findings-acl.1441/) formulates message representation as a task-aware optimization problem and learns dynamic structures rather than forcing either natural language or one rigid protocol. Relative to its vanilla baseline, reported message-token changes range from an 18.8% reduction on HotpotQA to a 19.3% increase on NarrativeQA. The paper does not report a complete API-input, API-output, final-answer, and policy-learning ledger. It is a direct research challenge to both a single globally optimal syntax and any selector that lacks a safe out-of-domain fallback.
 
 The design implication is to stabilize the **meaning model**, while allowing negotiated codecs and task profiles. A canonical wire form is needed for identity, signing, storage, and conformance; it does not have to be the cheapest inference-facing surface for every model.
 
 ### 5.2 PACT and topology pruning
 
-The [PACT preprint](https://arxiv.org/abs/2606.05304) replaces repeated full dialogue history with compact public action, state, and result records. It reports a 38.7% average token reduction in controlled multi-agent settings, including 50.4% fewer SWE-agent input tokens, approximately 47% fewer tokens per resolved SWE-agent task, and 10.3% fewer OpenHands tokens per resolved task. These are materially closer to the required end-to-end denominator than message-surface serialization, but PACT remains a preprint and its disclosed artifacts do not support a literal, licensed reproduction of every result. The appropriate baseline is a clean-room implementation run beside full-history communication in one pinned driver.
+The [PACT preprint](https://arxiv.org/abs/2606.05304) replaces repeated full dialogue history with compact public action, state, and result records. Across two controlled multi-agent topologies, six benchmarks, and three Qwen model sizes, the authors aggregate a 38.7% reduction in their per-problem total-token column. In the separate SWE-agent result, input tokens fall from 314.6M to 156.0M, while resolved tasks fall from 128 to 121 of 500; the often quoted approximately 47% figure is therefore `input tokens / resolved task`, not a measured end-to-end total-token reduction per attempted task. These results are materially closer to the required task denominator than message-surface serialization, but PACT remains a preprint and its disclosed artifacts do not support a literal, licensed reproduction of every result. The appropriate baseline is a clean-room implementation run beside full-history communication in one pinned driver.
 
-[AgentDropout](https://arxiv.org/abs/2503.18891) attacks a different cost source: it removes low-value agents and edges rather than encoding every message more compactly. It reports 21.6% fewer prompt tokens and 18.4% fewer completion tokens in its evaluated settings. Any Urusilla task benchmark with a variable graph must therefore compare against message suppression and topology pruning. A language cannot claim efficiency for compressing traffic that a stronger policy would avoid sending.
+[AgentDropout](https://aclanthology.org/2025.acl-long.1170/) attacks a different cost source: it removes low-value agents and edges rather than encoding every message more compactly. The ACL 2025 paper reports 21.6% fewer prompt tokens and 18.4% fewer completion tokens than AgentPrune across its six evaluated benchmarks. Its 40-sample topology-learning cost is not amortized into those evaluation totals. Any Urusilla task benchmark with a variable graph must therefore compare against message suppression and topology pruning and separately charge topology learning. A language cannot claim efficiency for compressing traffic that a stronger policy would avoid sending.
 
 PACT, AgentDropout, AutoForm, OPTiMACS, Agora, and Urusilla use different tasks, model revisions, communication graphs, token ledgers, and success denominators. Their published percentages must not be arranged as a cross-paper ranking.
 
@@ -293,7 +293,7 @@ This is more plausible than requiring every model to be pretrained on the langua
 
 ### 5.4 EcoLANG and classical emergent communication
 
-[EcoLANG](https://arxiv.org/abs/2505.06904) evolves synonym filtering and sentence rules under selection pressure in social simulations and reports more than 20% token reduction without accuracy loss in its evaluated setting. Earlier multi-agent work such as [Mordatch and Abbeel](https://arxiv.org/abs/1703.04908) demonstrated grounded compositional communication, while a recent [survey](https://arxiv.org/abs/2409.02645) reviews a broad emergent-communication literature.
+[EcoLANG](https://aclanthology.org/2025.findings-emnlp.284/) evolves synonym filtering and sentence rules under selection pressure in social simulations. In the HiSim condition, generated responses fall from 13.02K to 9.80K tokens, a 24.73% reduction, while prompt plus completion falls from 2.20379M to 2.06683M, a 6.21% reduction. In PHEME the corresponding combined reduction is about 3.13%. Language-induction overhead is not included in those downstream totals. Earlier multi-agent work such as [Mordatch and Abbeel](https://arxiv.org/abs/1703.04908) demonstrated grounded compositional communication, while a recent [survey](https://arxiv.org/abs/2409.02645) reviews a broad emergent-communication literature.
 
 These results establish possibility, not universal compatibility. Emergent codes are usually tied to a task, population, reward, observation space, or training setup. Independent populations can converge on incompatible symbols. A production language needs governance, versioning, cross-population tests, and an inspectable mapping to effects.
 
@@ -684,7 +684,7 @@ If that evidence exists, agents have a reason to use it and existing protocols h
 - AutoForm code: <https://github.com/thunlp/AutoForm>
 - OPTiMACS paper: <https://aclanthology.org/2026.findings-acl.1441/>
 - PACT preprint: <https://arxiv.org/abs/2606.05304>
-- AgentDropout preprint: <https://arxiv.org/abs/2503.18891>
+- AgentDropout paper: <https://aclanthology.org/2025.acl-long.1170/>
 - Cloclo runtime: <https://github.com/SeifBenayed/cloclo>
 - AICL specification: <https://github.com/SeifBenayed/cloclo/blob/main/AICL.md>
 - Tokenese archive: <https://github.com/snapsynapse/tokenese>
@@ -692,7 +692,7 @@ If that evidence exists, agents have a reason to use it and existing protocols h
 
 ### Emergent communication and evaluation
 
-- EcoLANG: <https://arxiv.org/abs/2505.06904>
+- EcoLANG: <https://aclanthology.org/2025.findings-emnlp.284/>
 - GlossoGen website: <https://emergentcomms.ai/>
 - GlossoGen repository: <https://github.com/agencyenterprise/GlossoGen>
 - Emergent compositional language: <https://arxiv.org/abs/1703.04908>

@@ -87,6 +87,23 @@
       "uri": "https://clawdchat.ai/post/de74fbe1-cdc3-44d0-95aa-208458b97565"
     }
   ],
+  "protocol_design_discussions": [
+    {
+      "name": "A2A declarative Capsule handoff review",
+      "uri": "https://github.com/a2aproject/A2A/discussions/2161",
+      "status": "project-operated question; not integration or adoption evidence"
+    },
+    {
+      "name": "Microsoft Agent Framework matched-representation review",
+      "uri": "https://github.com/microsoft/agent-framework/discussions/7794",
+      "status": "project-operated question; not integration or adoption evidence"
+    },
+    {
+      "name": "AG-UI semantic-generation drift review",
+      "uri": "https://github.com/ag-ui-protocol/ag-ui/discussions/2497",
+      "status": "project-operated question; not integration or adoption evidence"
+    }
+  ],
   "authority_boundary": {
     "discovery_is_authority": false,
     "allowed_without_additional_authority": [

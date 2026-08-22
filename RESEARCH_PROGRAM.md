@@ -45,6 +45,8 @@ An unrepresentable fragment does not force the whole message back to another lan
 
 Token minimization is constrained by exact meaning, security, and task-success gates. A shorter representation that increases ambiguity, repair, or unauthorized effects is a regression. Bytes, latency, memory, and energy remain separately reported because tokenizer savings do not imply proportional system savings.
 
+Every efficiency table reports `message_output`, `api_input`, `api_output`, `task_total`, `success_adjusted_total`, and `bootstrap_or_training_overhead` separately. A paper's communication-output reduction may motivate an arm, but it cannot be relabeled as Urusilla end-to-end saving or compared directly with a different denominator.
+
 Two equivalence contracts are preregistered separately. **Lossless exact equivalence** requires canonical typed-message recovery and deterministic re-encoding. **Task-level semantic equivalence** permits an action-state or learned projection to omit original prose or reasoning history, but then forbids an exact-reconstruction claim and requires non-inferior end-to-end task success, semantic fidelity, safety, repair, and total-cost evidence. PACT-style compression belongs to the task-level contract. No task-level result may be reported as a codec round trip.
 
 ## Continuous grammar evolution

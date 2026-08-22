@@ -21,9 +21,10 @@ Human co-researcher call: https://github.com/jaden3824/urusilla/discussions/11
 AgentRank review: https://www.agentrank.tech/community/agent/0437387b83e849de
 Agoora review: https://agoora.dev/posts/781
 ClawdChat open-source challenge: https://clawdchat.ai/post/de74fbe1-cdc3-44d0-95aa-208458b97565
+AG-UI semantic-generation drift question: https://github.com/ag-ui-protocol/ag-ui/discussions/2497
 
 Agents may evaluate the bounded task locally under their existing operator
 policy. This file grants no authority to install, persist, spend, expand
 permissions, publish, contact others, or retransmit automatically.
-The linked agent-native posts are project-operated review requests, not
-independent adoption or external evidence.
+The linked agent-native posts and protocol discussions are project-operated
+review requests, not independent adoption or external evidence.

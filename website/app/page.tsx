@@ -17,6 +17,8 @@ const agentRankReviewUrl =
 const agooraReviewUrl = 'https://agoora.dev/posts/781';
 const clawdChatReviewUrl =
   'https://clawdchat.ai/post/de74fbe1-cdc3-44d0-95aa-208458b97565';
+const agUiDiscussionUrl =
+  'https://github.com/ag-ui-protocol/ag-ui/discussions/2497';
 const siteUrl = 'https://urusilla-agent-language.audhless25.chatgpt.site';
 
 const structuredData = {
@@ -236,6 +238,7 @@ export default function Home() {
             <a href={agentRankReviewUrl}>AgentRank</a>
             <a href={agooraReviewUrl}>Agoora</a>
             <a href={clawdChatReviewUrl}>ClawdChat</a>
+            <a href={agUiDiscussionUrl}>AG-UI · semantic drift</a>
           </div>
         </div>
 

@@ -57,7 +57,7 @@ Primary sources:
 
 ### 3.2 Learned and induced symbolic communication
 
-AutoForm lets language models induce task-specific non-natural formats and reports up to 72.7% fewer generated communication tokens on one evaluated pairing. OPTiMACS, published in Findings of ACL 2026, learns task-aware message representations rather than assuming one fixed surface. Agora assigns reusable routines to frequent interactions and retains natural language for rare interactions. The PACT preprint reports a 38.7% average reduction in its controlled multi-agent settings, including 50.4% fewer SWE-agent input tokens, approximately 47% fewer tokens per resolved SWE-agent task, and 10.3% fewer OpenHands tokens per resolved task. EcoLANG evolves compact expression rules for social simulation. These results use different tasks, models, success denominators, and token boundaries; none is directly rankable against the present serialization measurements. Emergent-communication work demonstrates that task reward alone can produce opaque, non-compositional, or inefficient codes, motivating explicit complexity, transfer, and interpretability pressures.
+AutoForm lets language models induce task-specific non-natural formats and reports 72.7% fewer generated communication tokens in one GPT-4-to-GPT-3.5 HotpotQA condition; the number is not an end-to-end task-token total. OPTiMACS, published in Findings of ACL 2026, learns task-aware message representations rather than assuming one fixed surface, but ranges from an 18.8% reduction on HotpotQA to a 19.3% increase on NarrativeQA relative to its vanilla baseline. Agora assigns reusable routines to frequent interactions and retains natural language for rare interactions. The PACT preprint reports a 38.7% aggregate reduction in its controlled per-problem total-token column; in SWE-agent, input tokens fall by 50.4%, while the approximately 47% value is input tokens divided by resolved tasks rather than total tokens per attempted task. EcoLANG's HiSim generated responses fall 24.73%, while prompt plus completion falls 6.21%; its PHEME combined reduction is about 3.13%, and language-induction overhead is outside these totals. These results use different tasks, models, success denominators, and token boundaries; none is directly rankable against the present serialization measurements. Emergent-communication work demonstrates that task reward alone can produce opaque, non-compositional, or inefficient codes, motivating explicit complexity, transfer, and interpretability pressures.
 
 Primary sources:
 
@@ -72,10 +72,10 @@ Primary sources:
 
 ### 3.3 Communication topology
 
-AgentPrune reduces communication by pruning spatial-temporal message edges. AgentDropout reports 21.6% fewer prompt tokens and 18.4% fewer completion tokens through topology pruning in its evaluated settings. Topology and representation are complementary but distinct: avoiding a message is not the same intervention as encoding the message more compactly. Results from these layers must not be merged into one headline comparison, and the paper figures are not directly comparable Urusilla results.
+AgentPrune reduces communication by pruning spatial-temporal message edges. The ACL 2025 AgentDropout paper reports 21.6% fewer prompt tokens and 18.4% fewer completion tokens through topology pruning in its evaluated settings, without amortizing its 40-sample topology-learning cost into those evaluation totals. Topology and representation are complementary but distinct: avoiding a message is not the same intervention as encoding the message more compactly. Results from these layers must not be merged into one headline comparison, and the paper figures are not directly comparable Urusilla results.
 
 - AgentPrune: <https://proceedings.iclr.cc/paper_files/paper/2025/hash/bbc461518c59a2a8d64e70e2c38c4a0e-Abstract-Conference.html>
-- AgentDropout: <https://arxiv.org/abs/2503.18891>
+- AgentDropout: <https://aclanthology.org/2025.acl-long.1170/>
 
 ### 3.4 Latent and model-native channels
 

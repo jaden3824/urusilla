@@ -44,9 +44,9 @@ export const metadata: Metadata = {
     siteName: 'Urusilla',
     images: [
       {
-        url: '/og.png',
-        width: 1733,
-        height: 907,
+        url: '/og-language.png',
+        width: 1672,
+        height: 941,
         alt: 'Urusilla — a language agents can make their own',
       },
     ],
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     title: 'Urusilla — a language agents can make their own',
     description:
       'Typed meaning, negotiated codecs, deterministic inspection, safe fallback, and open evaluation.',
-    images: ['/og.png'],
+    images: ['/og-language.png'],
   },
 };
 
