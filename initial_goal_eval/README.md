@@ -103,6 +103,44 @@ that manifest after observing their scripted branch. A future real runner must
 mint a new, preregisterable branch-slot or superset-manifest contract instead of
 hiding these mismatches or rewriting the frozen v1 method.
 
+### Branch-slot execution-program prerequisite
+
+`execution_program.py` now supplies a standalone, versioned branch-slot graph
+and resolver for the first prerequisite to that runner. A program freezes each
+possible operation, its dependencies, a closed activation-predicate AST, the
+request/implementation/model bindings, and a one-call ceiling before any
+response is observed. Resolution must cover every slot exactly once. An
+activated slot must either produce a typed source-record commitment or retain
+an explicit `failed-before-record` digest; an inactive slot is
+`not-activated`, carries no usage event, and cannot be presented as a
+zero-token observation. Unknown predicate inputs fail closed rather than
+becoming a skipped branch. Canonical program and activation-input digests make
+post-result mutation detectable.
+
+The standalone evidence store validates the source-record preimages and binds
+them to the program, session, arm, task, slot, component, frozen
+implementation/model/request-deriver identities, and event order. The request,
+provider-record, local-observation, and failure digests carried inside those
+records are still opaque commitments: this module does not embed their
+preimages or prove their request/response relationship. A fully resealed swap
+or fabrication of those underlying artifacts therefore remains possible until
+a future receipt-store integration resolves and validates every digest. The
+new focused tests are structural mutation tests, not provider authentication.
+
+This is still prerequisite plumbing, not a real study runner. The fixed hybrid
+builder deliberately covers only the all-components action-state/routine path;
+the generic closed vocabulary can represent preflight, compiler-control, and
+final-router slots, but no current Plan v2, Trace v3, receipt-bundle v4, provider
+capture journal, or independently operated run consumes it. Therefore it does
+not repair the v1 plan, change the demonstrated general saving from 0%, or make
+any result claim-eligible. The next integration must inline each program
+preimage into a new study-plan schema, bind it into the verifier digest, and
+reject every Plan/Trace/Receipt downgrade combination before external calls are
+enabled. That Plan v2 validator must also prove exact operation coverage for
+each custom hybrid task graph; this standalone generic validator proves graph
+shape and reachability, not that a future runner declared every operation it
+could perform.
+
 ## Offline trace assembly
 
 `execution_trace.py` and `trace_assembler.py` provide a non-network bridge from
