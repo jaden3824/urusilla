@@ -1,6 +1,6 @@
 # Urusilla Evidence Transparency Log MVP
 
-Status: documentation-only design; not deployed; non-normative; no protocol-semantic change
+Status: empty read-only integrity core implemented; no live intake; non-normative; no protocol-semantic change
 
 This document specifies a minimal append-only transparency log for public
 Urusilla evidence submissions. It is a transport and audit design around the
@@ -8,9 +8,13 @@ existing evidence contracts. It does not change the Urusilla language,
 Capsule, result schemas, conformance rules, governance, or current evidence
 boundary.
 
-No live log, bot, HTTP service, domain, signing root, or verified external
-operator is created by this document. The current demonstrated saving for
-general communication between unfamiliar agents remains **0%**.
+The repository now contains an intentionally empty, offline epoch-1 integrity
+core at [`evidence-log/`](evidence-log/). It provides exact event, checkpoint,
+log, and discovery schemas, a standard-library verifier, and positive and
+negative vectors for the `quick_60s` track. It creates no live intake, bot,
+HTTP service, domain, signing root, write automation, external result, or
+verified external operator. The current demonstrated saving for general
+communication between unfamiliar agents remains **0%**.
 
 ## 1. Purpose and non-goals
 
@@ -64,11 +68,12 @@ adopter, changes a claim, or ratifies a language feature.
 
 ## 3. MVP trust model
 
-The GitHub repository is the first free transport and publication surface. A
-submission may arrive through an issue form or a pull request. A future bot may
-validate bounded JSON, propose an append-only record in a pull request, and
-post the resulting record digest back to the submission thread. Maintainer
-review and merge remain required for the canonical GitHub-first log.
+The GitHub repository is the proposed free publication surface, not a private
+screening inbox. Only a candidate already reviewed for publication authority,
+privacy, rights, and secret exclusion may enter a public issue or pull request.
+Sensitive, unknown, or finite-retention material stays outside GitHub and the
+log. No bot or write path is implemented. A future append workflow requires a
+separate review and cannot treat transport acceptance as evidence acceptance.
 
 GitHub issues, comments, reactions, stars, and pull-request descriptions are
 mutable presentation surfaces. They are not the append-only log. The proposed
@@ -84,9 +89,13 @@ retention, or protection from a fully compromised log operator.
 
 ## 4. Canonical log event
 
-The implementation should define a JSON Schema before accepting live records.
-Until that separately reviewed schema exists, the following is an exact design
-contract, not an active machine format.
+The implemented `quick_60s` event profile is
+[`event-v1.schema.json`](evidence-log/schemas/event-v1.schema.json). The wider
+multi-track object below remains a design contract, not an active machine
+format. The implemented profile uses the distinct schema identity
+`urusilla-evidence-log-quick60-event/1`, so it does not redefine the proposed
+multi-track `/1` envelope. No live record may be inferred from the existence
+of the schema.
 
 Every event has exactly these top-level fields:
 
@@ -147,10 +156,14 @@ For each event:
 5. encode the result as `sha256:` followed by 64 lowercase hexadecimal
    characters.
 
-The first epoch has `log_epoch: 1`. Its genesis event has `sequence: 1`,
-`previous_record_sha256: null`, `prior_epoch_checkpoint_sha256: null`, and
-`continuity_reason_code: null`. Every later event in the same epoch has a
-sequence exactly one greater than the preceding event and sets
+The first epoch has `log_epoch: 1` and begins with zero events. Its empty
+checkpoint has `tree_size: 0`, null first/last/head fields, and
+`merkle_root_sha256: SHA256("")`. There is no synthetic genesis event. If a
+separately reviewed append path is later implemented, the first real event has
+`sequence: 1`, `previous_record_sha256: null`,
+`prior_epoch_checkpoint_sha256: null`, and `continuity_reason_code: null`.
+Every later event in the same epoch has a sequence exactly one greater than
+the preceding event and sets
 `previous_record_sha256` to the preceding event's `record_sha256`.
 `prior_submission_event_sha256` is null only for the first event for one
 submission; later state changes bind the previous event for that same
@@ -519,33 +532,38 @@ observers compare checkpoints.
 
 ## 11. GitHub-first free transport
 
-The proposed no-cost MVP flow is:
+The proposed no-cost MVP flow, which is not implemented, is:
 
-1. A bot or person opens the existing bounded issue form or a pull request and
-   explicitly authorizes public submission.
-2. The submission links one immutable, public evidence payload. Large or
-   executable attachments are not accepted by the log bot.
-3. A GitHub Action or review bot performs schema, size, digest, duplicate,
-   privacy-declaration, and claim-boundary checks in a restricted environment.
-4. The bot proposes, but does not self-merge, one canonical
-   `submission-received` event.
-5. A maintainer reviews the event and merges it into the next sequence.
-6. A separate check recomputes the entire chain and publishes a checkpoint.
-7. The issue receives the immutable repository revision, sequence, event
-   digest, state, and checkpoint pointer.
-8. Later reviews append state events. Existing records are never edited for an
-   ordinary correction.
+1. The operator prepares a bounded candidate outside public GitHub.
+2. A restricted pre-publication review checks authorization, privacy, rights,
+   secrets, sensitive digests, retention requirements, and bounded content.
+   Failure or uncertainty stops publication; it does not create a public log
+   event.
+3. Only an eligible payload enters a payload-only pull request. Its first merge
+   establishes the immutable repository commit that later events may cite.
+4. A separate append pull request references that exact payload commit and
+   proposes one canonical `submission-received` event at the next sequence.
+5. Offline validation checks schema, size, digest, replay, duplicate,
+   privacy-declaration, state, and claim-boundary invariants without fetching
+   or executing submitted content.
+6. A maintainer reviews and merges the append event. Neither the payload merge
+   nor structural validation is evidence acceptance.
+7. A separate check recomputes the chain and publishes a checkpoint for
+   mirrors. Later reviews append state events; ordinary corrections never edit
+   existing records.
 
-Proposed repository paths, not currently deployed, are:
+The read-only subset now uses these repository paths; record assignment and
+write transport are still not deployed:
 
 ```text
 evidence-log/discovery.json
-evidence-log/epochs/00000001/records/00000000000000000001.json
-evidence-log/epochs/00000001/records/00000000000000000002.json
-evidence-log/epochs/00000001/checkpoints/00000000000000000100.json
-evidence-log/checkpoints/latest.json
+evidence-log/epochs/00000001/log.json
+evidence-log/epochs/00000001/checkpoints/empty.json
 evidence-log/schemas/event-v1.schema.json
 evidence-log/schemas/checkpoint-v1.schema.json
+evidence-log/schemas/discovery-v1.schema.json
+evidence-log/schemas/log-v1.schema.json
+evidence-log/verify.py
 ```
 
 Pull requests serialize record assignment. Two submissions that race receive
@@ -555,9 +573,10 @@ as transport history.
 
 ## 12. Machine discovery
 
-During the documentation-only phase, machines discover this proposal through
-[`llms.txt`](llms.txt) and this document. `contribution-entry.json` does not yet
-carry a log pointer. None of the following log endpoints exists yet.
+Machines can inspect the local read-only discovery document at
+[`evidence-log/discovery.json`](evidence-log/discovery.json) and verify its
+bindings offline. `contribution-entry.json` does not yet carry a log pointer,
+and none of the following HTTP endpoints exists.
 
 A future public site is an interface over the same records, not a separate
 source of truth. Its minimum human-facing pages are `/` for the honest current
@@ -636,22 +655,27 @@ large favorable submission count.
 
 ## 15. Implementation acceptance gates
 
-Before changing this design from documentation-only to a live MVP, a separate
-pull request must provide:
+The read-only core now supplies versioned schemas, an offline full-chain
+verifier, immutable empty-log/checkpoint artifacts, privacy and claim-boundary
+negative vectors, and explicit state/correction tests. Before changing it into
+a live MVP, a separate reviewed pull request must still provide:
 
-1. versioned event, checkpoint, and discovery JSON Schemas with no implicit
-   defaults;
-2. a dependency-pinned canonicalizer, full-chain verifier, and immutable test
-   vectors for valid and invalid hashes;
-3. state-transition, replay, duplicate, cross-submission splice, and concurrent
-   append tests;
-4. bounded parser and retrieval limits plus malicious-submission fixtures;
-5. privacy and rights rejection tests, including hashed-secret rejection;
-6. explicit GitHub permissions, branch protection, reviewer separation, and
+1. an externally reviewed standards-conformance check for the JSON Schemas and
+   canonicalizer, beyond the dependency-free profile verifier;
+2. replay, duplicate, cross-submission splice, and concurrent append tests for
+   the proposed two-pull-request append workflow;
+3. bounded retrieval limits and malicious-submission fixtures; the current
+   core performs no retrieval;
+4. restricted pre-publication content and rights review, including detection
+   beyond the current fail-closed declarations for secrets and sensitive
+   digests;
+5. explicit GitHub permissions, branch protection, reviewer separation, and
    recovery procedures;
-7. a checkpoint publication and mirror-verification procedure;
-8. an empty genesis log whose docs still report zero verified external
-   contributions and zero adopters; and
-9. an external review of the claim boundary before any public launch wording.
+6. a checkpoint publication and mirror-verification procedure;
+7. a two-step append flow in which an external payload is first merged at an
+   immutable commit and a maintainer appends the event only in a separate pull
+   request; and
+8. an external review of the claim boundary before any public launch wording.
 
-Until those gates pass, this file is only an auditable proposal.
+Until those gates pass, the implemented artifacts remain an empty read-only
+integrity demonstration rather than a live log.

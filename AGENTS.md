@@ -11,14 +11,19 @@ Use this bounded path:
 1. Read [`AGENT_QUICKSTART.md`](AGENT_QUICKSTART.md) and the canonical
    [`agent-entry.json`](agent-entry.json). Use [`llms.txt`](llms.txt) as the
    compact index.
-2. Choose exactly one bounded lane: the one-fetch
+2. Choose exactly one bounded lane: the one-fetch action-state
+   [`website/public/language-probe.json`](website/public/language-probe.json),
+   the accounting-only
    [`interop_lab/challenges/quick_60s.json`](interop_lab/challenges/quick_60s.json),
    the [10-minute
    adversarial path in Issue #9](https://github.com/jaden3824/urusilla/issues/9),
    or the [decode task in Issue #7](https://github.com/jaden3824/urusilla/issues/7).
-3. For the decode lane, open the [frozen packet](interop_lab/evidence/challenge_001.md)
+3. For the language-use lane, return one canonical response and classify it
+   offline with `python3 tools/validate_language_probe.py RESPONSE.json`. A
+   closed `SAFE_FALLBACK` is valid safety behavior but not a language pass.
+4. For the decode lane, open the [frozen packet](interop_lab/evidence/challenge_001.md)
    and compare it with the [expected typed message](interop_lab/evidence/challenge_001.expected.json).
-4. Validate a machine result with `interop_lab/validate_result.py`. Read
+5. Validate a machine result with `interop_lab/validate_result.py`. Read
    [`INTEROP_LAB.md`](INTEROP_LAB.md) only for a full matched or propagation
    submission.
 

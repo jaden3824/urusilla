@@ -17,6 +17,7 @@ from typing import Any, Iterable, Mapping, Sequence
 
 METHOD_SCHEMA = "urusilla-initial-goal-frozen-method/1"
 PLAN_SCHEMA = "urusilla-initial-goal-study-plan/1"
+PLAN_SCHEMA_V2 = "urusilla-initial-goal-study-plan/2"
 RESULT_SCHEMA = "urusilla-initial-goal-study-result/1"
 SESSION_RESULT_SCHEMA = "urusilla-initial-goal-matched-session-result/1"
 FROZEN_METHOD_PATH = Path(__file__).with_name("frozen_method_plan.json")
@@ -27,6 +28,8 @@ VERIFIER_BUNDLE_FILES = (
     Path(__file__).with_name("terminal_contract.py"),
     Path(__file__).with_name("provider_artifact_store.py"),
     Path(__file__).with_name("receipt_store.py"),
+    Path(__file__).with_name("execution_trace.py"),
+    Path(__file__).with_name("execution_program.py"),
     Path(__file__).with_name("verifier.py"),
     FROZEN_METHOD_PATH,
 )
@@ -123,6 +126,151 @@ def verifier_bundle_sha256() -> str:
     except OSError as exc:
         raise VerificationError(f"cannot hash verifier bundle: {exc}") from exc
     return "sha256:" + digest.hexdigest()
+
+
+def plan_model_binding_sha256(model: Mapping[str, Any]) -> str:
+    """Domain-separate one exact frozen model/settings row for Plan v2."""
+
+    row = _object(model, "receiver_model")
+    _exact(row, {"family", "model_id", "settings_sha256"}, "receiver_model")
+    _identifier(row["family"], "receiver_model.family")
+    _identifier(row["model_id"], "receiver_model.model_id")
+    _sha(row["settings_sha256"], "receiver_model.settings_sha256")
+    return sha256_ref(
+        {
+            "schema_version": "urusilla-initial-goal-plan-model-binding/1",
+            "family": row["family"],
+            "model_id": row["model_id"],
+            "settings_sha256": row["settings_sha256"],
+        }
+    )
+
+
+def plan_v2_hybrid_request_deriver_sha256(
+    *,
+    locks: Mapping[str, Any],
+    baseline_artifacts: Mapping[str, Any],
+) -> str:
+    """Bind one hybrid request slot to every route-defining frozen artifact.
+
+    Plan v2 uses one external ``primary`` slot because exactly one of routine,
+    action-state, raw, or JSON can execute.  This domain-separated composite is
+    the precommitted request-deriver identity for that slot and for the bounded
+    raw/JSON fallback slot.  In particular, neither baseline prompt artifact
+    can be exchanged while preserving the commitment.
+    """
+
+    lock_map = _object(locks, "locks")
+    required_locks = {"capsule", "sender", "router", "receiver"}
+    missing_locks = required_locks - set(lock_map)
+    if missing_locks:
+        raise VerificationError(
+            f"locks is missing hybrid request authority: {sorted(missing_locks)}"
+        )
+    baseline_map = _object(baseline_artifacts, "baseline_artifacts")
+    _exact(baseline_map, BASELINES, "baseline_artifacts")
+
+    return sha256_ref(
+        {
+            "schema_version": (
+                "urusilla-initial-goal-plan-v2-hybrid-request-deriver/1"
+            ),
+            "candidate": {
+                "capsule_sha256": _sha(lock_map["capsule"], "locks.capsule"),
+                "sender_sha256": _sha(lock_map["sender"], "locks.sender"),
+                "router_sha256": _sha(lock_map["router"], "locks.router"),
+                "receiver_sha256": _sha(lock_map["receiver"], "locks.receiver"),
+            },
+            "baseline_request_artifacts": {
+                "raw-concise": _sha(
+                    baseline_map["raw-concise"],
+                    "baseline_artifacts.raw-concise",
+                ),
+                "ordinary-json": _sha(
+                    baseline_map["ordinary-json"],
+                    "baseline_artifacts.ordinary-json",
+                ),
+            },
+            "primary_routes": ["routine", "action-state", "raw", "json"],
+            "fallback_routes": ["raw", "json"],
+        }
+    )
+
+
+def _validate_plan_v2_program_bindings(
+    program: Mapping[str, Any],
+    *,
+    locks: Mapping[str, str],
+    baseline_artifacts: Mapping[str, str],
+    receiver_model: Mapping[str, Any],
+    path: str,
+) -> None:
+    """Cross-bind every canonical program component to Plan authority.
+
+    Plan v2 deliberately uses the session receiver model for every external
+    model-backed slot.  A future schema may add a multi-role model registry;
+    opaque per-slot model digests are not accepted as a substitute here.
+    """
+
+    component_lock = {
+        "sender-compiler": "sender",
+        "preflight-router": "router",
+        "compiler-control": "router",
+        "final-router": "router",
+        "fallback-control": "router",
+        "receiver": "receiver",
+        "primary": "receiver",
+        "fallback-receiver": "receiver",
+        "fidelity-verifier": "semantic_scorer",
+        "output-validator": "parse_scorer",
+        "task-judge": "task_scorer",
+        "parse-judge": "parse_scorer",
+        "semantic-judge": "semantic_scorer",
+        "negative-judge": "negative_scorer",
+    }
+    arm_id = program["arm_id"]
+    expected_model_binding = plan_model_binding_sha256(receiver_model)
+    expected_hybrid_request_deriver = plan_v2_hybrid_request_deriver_sha256(
+        locks=locks,
+        baseline_artifacts=baseline_artifacts,
+    )
+    for slot_index, slot in enumerate(program["slots"]):
+        slot_path = f"{path}.program.slots[{slot_index}]"
+        component = slot["component"]
+        if component == "setup":
+            expected_implementation = (
+                locks["capsule"]
+                if arm_id == "hybrid-router"
+                else baseline_artifacts[arm_id]
+            )
+        else:
+            lock_name = component_lock.get(component)
+            if lock_name is None:
+                raise VerificationError(
+                    f"{slot_path}.component has no Plan-v2 authority binding"
+                )
+            expected_implementation = locks[lock_name]
+        if slot["implementation_sha256"] != expected_implementation:
+            raise VerificationError(
+                f"{slot_path}.implementation_sha256 differs from its plan lock"
+            )
+        if slot["source_kind"] == "external-response":
+            expected_request_deriver = (
+                baseline_artifacts[arm_id]
+                if component == "receiver" and arm_id in baseline_artifacts
+                else expected_hybrid_request_deriver
+                if arm_id == "hybrid-router"
+                and component in {"primary", "fallback-receiver"}
+                else expected_implementation
+            )
+            if slot["request_deriver_sha256"] != expected_request_deriver:
+                raise VerificationError(
+                    f"{slot_path}.request_deriver_sha256 differs from its plan lock"
+                )
+            if slot["model_binding_sha256"] != expected_model_binding:
+                raise VerificationError(
+                    f"{slot_path}.model_binding_sha256 differs from the session model"
+                )
 
 
 def strict_json_loads(text: str, *, max_bytes: int = 64 * 1024 * 1024) -> Any:
@@ -381,8 +529,9 @@ def validate_study_plan(value: Any, method: Mapping[str, Any] | None = None) -> 
         },
         "plan",
     )
-    if plan["schema_version"] != PLAN_SCHEMA:
+    if plan["schema_version"] not in {PLAN_SCHEMA, PLAN_SCHEMA_V2}:
         raise VerificationError("study plan schema differs")
+    plan_schema = plan["schema_version"]
     if plan["status"] != "frozen-preregistered-no-results":
         raise VerificationError("study plan is not frozen before results")
     _identifier(plan["study_id"], "plan.study_id")
@@ -458,6 +607,7 @@ def validate_study_plan(value: Any, method: Mapping[str, Any] | None = None) -> 
     if len(baselines) != 2:
         raise VerificationError("study plan requires raw and JSON baselines")
     observed_baselines: list[str] = []
+    baseline_artifacts: dict[str, str] = {}
     for index, raw in enumerate(baselines):
         item = _object(raw, f"plan.baselines[{index}]")
         _exact(
@@ -466,7 +616,10 @@ def validate_study_plan(value: Any, method: Mapping[str, Any] | None = None) -> 
             f"plan.baselines[{index}]",
         )
         observed_baselines.append(item["arm_id"])
-        _sha(item["artifact_sha256"], f"plan.baselines[{index}].artifact_sha256")
+        baseline_artifacts[item["arm_id"]] = _sha(
+            item["artifact_sha256"],
+            f"plan.baselines[{index}].artifact_sha256",
+        )
         _sha(item["selection_evidence_sha256"], f"plan.baselines[{index}].selection_evidence_sha256")
         if item["selected_before_hidden_reveal"] is not True:
             raise VerificationError("baseline selection occurred after hidden reveal")
@@ -486,12 +639,17 @@ def validate_study_plan(value: Any, method: Mapping[str, Any] | None = None) -> 
 
     model_rows = _list(plan["receiver_models"], "plan.receiver_models")
     model_families: list[str] = []
+    model_by_family: dict[str, dict[str, Any]] = {}
     for index, raw in enumerate(model_rows):
         item = _object(raw, f"plan.receiver_models[{index}]")
         _exact(item, {"family", "model_id", "settings_sha256"}, f"plan.receiver_models[{index}]")
-        model_families.append(_identifier(item["family"], f"plan.receiver_models[{index}].family"))
+        family = _identifier(
+            item["family"], f"plan.receiver_models[{index}].family"
+        )
+        model_families.append(family)
         _identifier(item["model_id"], f"plan.receiver_models[{index}].model_id")
         _sha(item["settings_sha256"], f"plan.receiver_models[{index}].settings_sha256")
+        model_by_family[family] = item
     if len(set(model_families)) != len(model_families) or len(model_families) < 2:
         raise VerificationError("study plan needs at least two distinct receiver families")
 
@@ -534,6 +692,11 @@ def validate_study_plan(value: Any, method: Mapping[str, Any] | None = None) -> 
     for index, raw in enumerate(sessions):
         path = f"plan.sessions[{index}]"
         item = _object(raw, path)
+        session_execution_field = (
+            "arm_execution_manifest_sha256"
+            if plan_schema == PLAN_SCHEMA
+            else "arm_execution_programs"
+        )
         _exact(
             item,
             {
@@ -545,7 +708,7 @@ def validate_study_plan(value: Any, method: Mapping[str, Any] | None = None) -> 
                 "boundary_auditor_id",
                 "cold_start",
                 "arm_order",
-                "arm_execution_manifest_sha256",
+                session_execution_field,
                 "tasks",
             },
             path,
@@ -569,20 +732,6 @@ def validate_study_plan(value: Any, method: Mapping[str, Any] | None = None) -> 
             raise VerificationError("every matched session must start cold")
         if type(item["arm_order"]) is not list or sorted(item["arm_order"]) != sorted(ARMS):
             raise VerificationError(f"{path}.arm_order must contain every arm once")
-        execution_manifests = _object(
-            item["arm_execution_manifest_sha256"],
-            f"{path}.arm_execution_manifest_sha256",
-        )
-        _exact(
-            execution_manifests,
-            ARMS,
-            f"{path}.arm_execution_manifest_sha256",
-        )
-        for arm_id in ARMS:
-            _sha(
-                execution_manifests[arm_id],
-                f"{path}.arm_execution_manifest_sha256.{arm_id}",
-            )
         tasks = _list(item["tasks"], f"{path}.tasks")
         if not tasks:
             raise VerificationError(f"{path} has no tasks")
@@ -607,6 +756,69 @@ def validate_study_plan(value: Any, method: Mapping[str, Any] | None = None) -> 
             parse_probes += int(_boolean(task["parse_probe"], f"{task_path}.parse_probe"))
             semantic_probes += int(_boolean(task["semantic_probe"], f"{task_path}.semantic_probe"))
             negative_probes += int(_boolean(task["negative_probe"], f"{task_path}.negative_probe"))
+        if plan_schema == PLAN_SCHEMA:
+            execution_manifests = _object(
+                item["arm_execution_manifest_sha256"],
+                f"{path}.arm_execution_manifest_sha256",
+            )
+            _exact(
+                execution_manifests,
+                ARMS,
+                f"{path}.arm_execution_manifest_sha256",
+            )
+            for arm_id in ARMS:
+                _sha(
+                    execution_manifests[arm_id],
+                    f"{path}.arm_execution_manifest_sha256.{arm_id}",
+                )
+        else:
+            # Local import avoids a module cycle: execution_program imports the
+            # shared strict primitives from this module.
+            from .execution_program import (
+                execution_program_sha256,
+                validate_goal_arm_execution_program,
+            )
+
+            execution_programs = _object(
+                item["arm_execution_programs"],
+                f"{path}.arm_execution_programs",
+            )
+            _exact(execution_programs, ARMS, f"{path}.arm_execution_programs")
+            expected_task_refs = [
+                {"task_id": task["task_id"], "task_sha256": task["task_sha256"]}
+                for task in tasks
+            ]
+            for arm_id in ARMS:
+                program_path = f"{path}.arm_execution_programs.{arm_id}"
+                wrapper = _object(execution_programs[arm_id], program_path)
+                _exact(wrapper, {"program_sha256", "program"}, program_path)
+                declared_digest = _sha(
+                    wrapper["program_sha256"], f"{program_path}.program_sha256"
+                )
+                program = validate_goal_arm_execution_program(wrapper["program"])
+                if program["session_id"] != session_id:
+                    raise VerificationError(
+                        f"{program_path} is bound to another frozen session"
+                    )
+                if program["arm_id"] != arm_id:
+                    raise VerificationError(
+                        f"{program_path} is bound to another frozen arm"
+                    )
+                if program["task_refs"] != expected_task_refs:
+                    raise VerificationError(
+                        f"{program_path} does not cover the exact planned tasks"
+                    )
+                if execution_program_sha256(program) != declared_digest:
+                    raise VerificationError(
+                        f"{program_path} digest differs from its inline preimage"
+                    )
+                _validate_plan_v2_program_bindings(
+                    program,
+                    locks=locks,
+                    baseline_artifacts=baseline_artifacts,
+                    receiver_model=model_by_family[item["receiver_family"]],
+                    path=program_path,
+                )
         stratum = (item["domain_id"], item["receiver_family"], item["operator_id"])
         strata_counts[stratum] = strata_counts.get(stratum, 0) + 1
     if len(set(session_ids)) != len(session_ids):
@@ -623,6 +835,7 @@ def validate_study_plan(value: Any, method: Mapping[str, Any] | None = None) -> 
         raise VerificationError("study plan requires parse, semantic, and negative probes")
     return {
         "valid": True,
+        "plan_schema_version": plan_schema,
         "plan_sha256": sha256_ref(plan),
         "method_sha256": sha256_ref(frozen_method),
         "sessions": len(sessions),

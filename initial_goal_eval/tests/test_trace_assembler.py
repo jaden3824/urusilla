@@ -1623,6 +1623,131 @@ class TraceAssemblerTests(unittest.TestCase):
         ]
         self.assertEqual(capture_statuses, ["completed", "completed"])
 
+    def test_portable_bundle_requires_both_semantic_validator_preimages(self):
+        plan, trace, stores = make_fixture(
+            completed_primary_validation_fallback=True
+        )
+        assembled = assemble_execution_trace(plan, trace, stores)
+        bundle = deepcopy(assembled.receipt_bundle)
+        hybrid = assembled.result["records"][0]["arms"][2]
+        validator_event = next(
+            event for event in hybrid["events"] if event["phase"] == "safety"
+        )
+        usage_receipt = next(
+            receipt
+            for receipt in bundle["receipts"]
+            if sha256_ref(receipt) == validator_event["usage_receipt_sha256"]
+        )
+        evidence_sha256 = usage_receipt["source_payload"][
+            "raw_receipt_sha256"
+        ]
+        manifest = next(
+            item
+            for item in bundle["arm_execution_manifests"]
+            if item["session_id"] == assembled.result["records"][0]["session_id"]
+            and item["arm_id"] == "hybrid-router"
+        )
+        manifest_sha256 = next(
+            event["source_commitment_sha256"]
+            for event in manifest["events"]
+            if event["sequence"] == validator_event["sequence"]
+        )
+
+        for missing_sha256, error_prefix in (
+            (manifest_sha256, "v3-validator-manifest-preimage-missing:"),
+            (evidence_sha256, "v3-validator-evidence-preimage-missing:"),
+        ):
+            with self.subTest(error_prefix=error_prefix):
+                incomplete = deepcopy(bundle)
+                incomplete["source_commitment_preimages"] = [
+                    entry
+                    for entry in incomplete["source_commitment_preimages"]
+                    if entry["source_commitment_sha256"] != missing_sha256
+                ]
+                validation = ReceiptStore.from_object(incomplete).validate(
+                    plan,
+                    assembled.result,
+                    diagnostic_issuer_id=ASSEMBLER_DIAGNOSTIC_ISSUER_ID,
+                )
+
+                self.assertFalse(validation.complete)
+                self.assertTrue(
+                    any(
+                        error.startswith(error_prefix)
+                        for error in validation.errors
+                    )
+                )
+
+    def test_coordinated_validator_mutation_and_reseal_is_rejected(self):
+        plan, trace, stores = make_fixture(
+            completed_primary_validation_fallback=True
+        )
+        assembled = assemble_execution_trace(plan, trace, stores)
+        bundle = deepcopy(assembled.receipt_bundle)
+        result = deepcopy(assembled.result)
+        hybrid = result["records"][0]["arms"][2]
+        validator_event = next(
+            event for event in hybrid["events"] if event["phase"] == "safety"
+        )
+        usage_receipt = next(
+            receipt
+            for receipt in bundle["receipts"]
+            if sha256_ref(receipt) == validator_event["usage_receipt_sha256"]
+        )
+        old_evidence_sha256 = usage_receipt["source_payload"][
+            "raw_receipt_sha256"
+        ]
+        evidence_entry = next(
+            entry
+            for entry in bundle["source_commitment_preimages"]
+            if entry["source_commitment_sha256"] == old_evidence_sha256
+        )
+        evidence = evidence_entry["source_commitment"]
+
+        # Simulate an attacker who changes the semantic verdict and then
+        # coherently recalculates every downstream content digest they control.
+        evidence["verdict"] = "valid"
+        evidence["reason_code"] = "semantic-valid"
+        evidence["output_sha256"] = post_receiver_validation_output_sha256(
+            input_sha256=evidence["input_sha256"],
+            verdict=evidence["verdict"],
+            reason_code=evidence["reason_code"],
+        )
+        replacement_evidence_sha256 = sha256_ref(evidence)
+        evidence_entry["source_commitment_sha256"] = (
+            replacement_evidence_sha256
+        )
+        usage_receipt["source_payload"]["raw_receipt_sha256"] = (
+            replacement_evidence_sha256
+        )
+        usage_receipt["binding"]["output_sha256"] = evidence[
+            "output_sha256"
+        ]
+        usage_receipt["source_sha256"] = sha256_ref(
+            usage_receipt["source_payload"]
+        )
+        validator_event["output_sha256"] = evidence["output_sha256"]
+        validator_event["usage_receipt_sha256"] = sha256_ref(usage_receipt)
+
+        validation = ReceiptStore.from_object(bundle).validate(
+            plan,
+            result,
+            diagnostic_issuer_id=ASSEMBLER_DIAGNOSTIC_ISSUER_ID,
+        )
+
+        self.assertFalse(validation.complete)
+        self.assertTrue(
+            any(
+                error.startswith(
+                    (
+                        "v3-validator-verdict-mismatch:",
+                        "v3-validator-reason-mismatch:",
+                    )
+                )
+                for error in validation.errors
+            )
+        )
+
     def test_router_decision_must_precede_semantic_invalid_primary(self):
         plan, trace, _ = make_fixture(
             completed_primary_validation_fallback=True

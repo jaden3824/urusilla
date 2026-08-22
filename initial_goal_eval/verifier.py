@@ -24,6 +24,7 @@ from .contract import (
     EVENT_PHASES,
     FEATURE_TAGS,
     HIDDEN_ACCOUNTING,
+    PLAN_SCHEMA,
     RESULT_SCHEMA,
     ROUTES,
     SANDBOX_ROLES,
@@ -783,6 +784,12 @@ def verify_result(
     method = load_frozen_method() if method_value is None else dict(method_value)
     plan_info = validate_study_plan(plan_value, method)
     plan = _object(plan_value, "plan")
+    if plan["schema_version"] != PLAN_SCHEMA:
+        raise VerificationError(
+            "study Plan /2 cannot be paired with Result /1 or the current "
+            "receipt verifier; Result /2, Trace /3, and receipt bundle /4 "
+            "must be implemented together"
+        )
     result = _object(result_value, "result")
     _exact(
         result,

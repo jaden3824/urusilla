@@ -34,6 +34,18 @@ ambiguity/counterexample tracked in [issue
 registry record, adopter, independent implementation, comprehension pass, or
 change to the recorded 0% general result.
 
+The same thread also received two attributed design critiques. `Molt` returned
+a Urusilla-shaped conversational payload choosing `adaptive-evolution`, asked
+the project to choose among strict version pinning, negotiated fallback, and
+best-effort handling of unknowns, and explicitly noted that it could not
+authenticate the unsigned Capsule. `AX-7` replied in plain language that
+checkpoint-only evaluation can miss transient fidelity loss between profile
+revisions and asked how continuous monitoring would detect it. Neither reply
+ran the frozen accounting task or supplied an authenticated runtime. They are
+public design inputs for compatibility negotiation and continuous-fidelity
+monitoring, not registry records, conformance passes, adoption, or efficiency
+evidence.
+
 On 2026-08-22, the project-operated [The Colony causal-control
 thread](https://thecolony.ai/post/3713bdd3-a23f-4e23-86a4-af40bc5cc1c0)
 received its first substantive public design critique from the agent accounts
@@ -69,10 +81,13 @@ request for a minimal escaping JSON example, and asked whether progress timing
 belongs at message or session scope. These are attributed public review inputs,
 not authenticated identities, validated evidence, adoption, or conformance.
 
-The proposed append-only transport in
-[`EVIDENCE_TRANSPARENCY_LOG.md`](EVIDENCE_TRANSPARENCY_LOG.md) is currently a
-documentation-only design. It is not a live submission count, registry entry,
-or evidence that any external participant has used the project.
+The wider append-only transport proposed in
+[`EVIDENCE_TRANSPARENCY_LOG.md`](EVIDENCE_TRANSPARENCY_LOG.md) is not live.
+The repository now contains only an empty, offline, read-only epoch-1
+[`evidence-log/`](evidence-log/) integrity core with zero events, no intake, no
+bot, and no signing root. Neither the design nor the empty integrity snapshot
+is a submission count, registry entry, or evidence that an external participant
+has used the project.
 
 ## From first response to credited evidence
 

@@ -541,6 +541,47 @@ def assemble_execution_trace(
                         raise VerificationError(
                             "local output tokens lack an exact output binding"
                         )
+                    local_receipt_preimage = {
+                        "local_event_id": local_id,
+                        "implementation_sha256": source[
+                            "implementation_sha256"
+                        ],
+                        "input_sha256": input_sha256,
+                        "output_sha256": output_sha256,
+                        "usage": usage,
+                    }
+                    if source_kind == "deterministic-validator":
+                        validator_manifest_preimage = {
+                            "kind": "deterministic-validator",
+                            "schema_version": source["schema_version"],
+                            "local_event_id": local_id,
+                            "implementation_sha256": source[
+                                "implementation_sha256"
+                            ],
+                            "task_sha256": source["task_sha256"],
+                            "primary_event_sequence": source[
+                                "primary_event_sequence"
+                            ],
+                        }
+                        validator_evidence_preimage = _detach(source)
+                        validator_evidence_preimage["usage"] = usage
+                        for commitment in (
+                            validator_manifest_preimage,
+                            validator_evidence_preimage,
+                        ):
+                            commitment_sha256 = sha256_ref(commitment)
+                            if commitment_sha256 in seen_source_commitments:
+                                raise VerificationError(
+                                    "one validator source commitment is replayed"
+                                )
+                            seen_source_commitments.add(commitment_sha256)
+                            source_commitment_preimages.append(
+                                {
+                                    "source_commitment_sha256": commitment_sha256,
+                                    "source_commitment": commitment,
+                                }
+                            )
+                        local_receipt_preimage = validator_evidence_preimage
                     source_payload = {
                         "source_kind": "deterministic-local",
                         "request_id": None,
@@ -548,17 +589,7 @@ def assemble_execution_trace(
                         "model_id": None,
                         "settings_sha256": None,
                         "reported_usage": usage,
-                        "raw_receipt_sha256": sha256_ref(
-                            {
-                                "local_event_id": local_id,
-                                "implementation_sha256": source[
-                                    "implementation_sha256"
-                                ],
-                                "input_sha256": input_sha256,
-                                "output_sha256": output_sha256,
-                                "usage": usage,
-                            }
-                        ),
+                        "raw_receipt_sha256": sha256_ref(local_receipt_preimage),
                         "provider_record_sha256": None,
                     }
                     event_status = "completed"

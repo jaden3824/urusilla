@@ -1,15 +1,17 @@
-"""Standalone, claim-ineligible branch-slot execution programs.
+"""Versioned, claim-ineligible branch-slot execution programs.
 
-The contract in this module performs no call and changes none of the frozen v1
-study, trace, receipt, or result schemas.  It closes only a structural runner
-prerequisite: a program is frozen before execution, and its resolution is a
-self-contained replay closure containing typed, content-addressed source-record
-preimages.  Hash consistency does not authenticate a provider, operator, or
-implementation and cannot make a result claim-eligible.  The request,
-provider-record, local-observation, and failure digests inside a source record
-remain opaque commitments in this standalone module; their underlying
-preimages and mutual bindings must be validated by a future receipt-store
-integration before any runner or claim path can consume the artifact.
+The legacy program `/1` contract and its `/1` source-record/resolution closure
+remain unchanged.  Program `/2` freezes the complete Plan-v2 operation
+inventory, including four separate judge slots, but deliberately has no
+source-record or resolution schema yet.  It therefore cannot be downgraded
+into the legacy resolver or any current trace/result path.
+
+This module performs no call.  Hash consistency does not authenticate a
+provider, operator, or implementation and cannot make a result claim-eligible.
+The request, provider-record, local-observation, and failure digests inside a
+legacy source record remain opaque commitments; their underlying preimages and
+mutual bindings must be validated by a future receipt-store integration before
+any runner or claim path can consume the artifact.
 
 ``depends_on`` has one exact meaning: it lists prior slots whose dispositions or
 typed source facts are consumed by ``activation_predicate``. ``order_after`` is
@@ -41,6 +43,7 @@ from .terminal_contract import CAPTURE_TERMINAL_STATUSES, SILENCE_TERMINAL_STATU
 
 
 ARM_EXECUTION_PROGRAM_SCHEMA = "urusilla-initial-goal-arm-execution-program/1"
+ARM_EXECUTION_PROGRAM_SCHEMA_V2 = "urusilla-initial-goal-arm-execution-program/2"
 ARM_EXECUTION_EVIDENCE_STORE_SCHEMA = (
     "urusilla-initial-goal-arm-execution-evidence-store/1"
 )
@@ -101,6 +104,29 @@ HYBRID_CONTROL_COMPONENTS = (
     "compiler-control",
     "final-router",
 )
+GOAL_HYBRID_COMPONENTS = (
+    "setup",
+    "preflight-router",
+    "sender-compiler",
+    "compiler-control",
+    "fidelity-verifier",
+    "final-router",
+    "primary",
+    "output-validator",
+    "fallback-control",
+    "fallback-receiver",
+    "task-judge",
+    "parse-judge",
+    "semantic-judge",
+    "negative-judge",
+)
+GOAL_JUDGE_COMPONENTS = (
+    "task-judge",
+    "parse-judge",
+    "semantic-judge",
+    "negative-judge",
+)
+GOAL_BASELINE_COMPONENTS = ("setup", "receiver", *GOAL_JUDGE_COMPONENTS)
 _ROUTER_COMPONENTS = frozenset({"router", "preflight-router", "final-router"})
 
 MAX_SLOTS = 100_000
@@ -180,6 +206,10 @@ _COMPONENT_PHASE = {
     "preflight-router": "router",
     "compiler-control": "router",
     "final-router": "router",
+    "task-judge": "judge",
+    "parse-judge": "judge",
+    "semantic-judge": "judge",
+    "negative-judge": "judge",
 }
 
 _COMPONENT_SOURCE_KINDS = {
@@ -206,6 +236,10 @@ _COMPONENT_SOURCE_KINDS = {
     "preflight-router": frozenset({"deterministic-local"}),
     "compiler-control": frozenset({"deterministic-local"}),
     "final-router": frozenset({"deterministic-local"}),
+    "task-judge": frozenset(SOURCE_KINDS),
+    "parse-judge": frozenset(SOURCE_KINDS),
+    "semantic-judge": frozenset(SOURCE_KINDS),
+    "negative-judge": frozenset(SOURCE_KINDS),
 }
 
 _BASELINE_GRAPH = {
@@ -236,14 +270,102 @@ _HYBRID_GRAPH = {
     ),
 }
 
+# This graph is the claim-facing operation inventory frozen by Plan /2.  It is
+# deliberately distinct from the smaller legacy /1 diagnostic builder.  Every
+# task freezes a preflight decision, optional action-state compilation and
+# fidelity check, a final five-route decision, one non-silence primary, bounded
+# validation/fallback, and a terminal judge.  A source-record failure can
+# propagate as ``failed-before-record`` without erasing the remaining planned
+# slots or their terminal failure accounting.
+_GOAL_HYBRID_GRAPH = {
+    "setup": ("always", ()),
+    "preflight-router": ("dependencies-executed", ("setup",)),
+    "sender-compiler": ("attempt-action-state", ("preflight-router",)),
+    "compiler-control": (
+        "compiler-control-ready",
+        ("preflight-router", "sender-compiler"),
+    ),
+    "fidelity-verifier": ("sender-recorded", ("sender-compiler",)),
+    "final-router": (
+        "final-router-ready",
+        ("preflight-router", "compiler-control", "fidelity-verifier"),
+    ),
+    "primary": ("non-silence-selected", ("final-router",)),
+    "output-validator": (
+        "optimized-primary-recorded",
+        ("final-router", "primary"),
+    ),
+    "fallback-control": (
+        "optimized-output-invalid",
+        ("final-router", "output-validator"),
+    ),
+    "fallback-receiver": (
+        "dependencies-executed",
+        ("fallback-control",),
+    ),
+    "task-judge": (
+        "goal-terminal-ready",
+        (
+            "final-router",
+            "primary",
+            "output-validator",
+            "fallback-control",
+            "fallback-receiver",
+        ),
+    ),
+    "parse-judge": (
+        "goal-terminal-ready",
+        (
+            "final-router",
+            "primary",
+            "output-validator",
+            "fallback-control",
+            "fallback-receiver",
+        ),
+    ),
+    "semantic-judge": (
+        "goal-terminal-ready",
+        (
+            "final-router",
+            "primary",
+            "output-validator",
+            "fallback-control",
+            "fallback-receiver",
+        ),
+    ),
+    "negative-judge": (
+        "goal-terminal-ready",
+        (
+            "final-router",
+            "primary",
+            "output-validator",
+            "fallback-control",
+            "fallback-receiver",
+        ),
+    ),
+}
+
+_GOAL_BASELINE_GRAPH = {
+    "setup": ("always", ()),
+    "receiver": ("dependencies-executed", ("setup",)),
+    **{
+        component: ("baseline-terminal-recorded", ("receiver",))
+        for component in GOAL_JUDGE_COMPONENTS
+    },
+}
+
 __all__ = [
     "ACTIVATION_FACTS",
     "ARM_EXECUTION_EVIDENCE_STORE_SCHEMA",
     "ARM_EXECUTION_PROGRAM_RESOLUTION_SCHEMA",
     "ARM_EXECUTION_PROGRAM_SCHEMA",
+    "ARM_EXECUTION_PROGRAM_SCHEMA_V2",
     "ARM_EXECUTION_SOURCE_RECORD_SCHEMA",
     "BASELINE_COMPONENTS",
     "EXECUTION_PROGRAM_ACTIVATION_INPUT_SCHEMA",
+    "GOAL_BASELINE_COMPONENTS",
+    "GOAL_HYBRID_COMPONENTS",
+    "GOAL_JUDGE_COMPONENTS",
     "HYBRID_COMPONENTS",
     "HYBRID_CONTROL_COMPONENTS",
     "SLOT_DISPOSITIONS",
@@ -252,6 +374,8 @@ __all__ = [
     "build_baseline_execution_program",
     "build_execution_evidence_store",
     "build_hybrid_execution_program",
+    "build_goal_baseline_execution_program",
+    "build_goal_hybrid_execution_program",
     "build_raw_json_execution_program",
     "build_slot_evidence_record",
     "execution_program_activation_input_sha256",
@@ -260,6 +384,7 @@ __all__ = [
     "validate_arm_execution_program",
     "validate_arm_execution_program_json",
     "validate_execution_evidence_store",
+    "validate_goal_arm_execution_program",
     "validate_resolved_arm_execution_program",
 ]
 
@@ -442,7 +567,7 @@ def _graph_has_path(
 
 
 def validate_arm_execution_program(value: Any) -> dict[str, Any]:
-    """Validate one exact program, including generic graph completeness."""
+    """Validate one exact versioned program and its graph completeness."""
 
     program = _object(value, "execution_program")
     _exact(
@@ -450,7 +575,11 @@ def validate_arm_execution_program(value: Any) -> dict[str, Any]:
         {"schema_version", "session_id", "arm_id", "task_refs", "slots"},
         "execution_program",
     )
-    if program["schema_version"] != ARM_EXECUTION_PROGRAM_SCHEMA:
+    schema_version = program["schema_version"]
+    if schema_version not in {
+        ARM_EXECUTION_PROGRAM_SCHEMA,
+        ARM_EXECUTION_PROGRAM_SCHEMA_V2,
+    }:
         raise VerificationError("execution program schema differs")
     _identifier(program["session_id"], "execution_program.session_id")
     arm_id = program["arm_id"]
@@ -464,11 +593,18 @@ def validate_arm_execution_program(value: Any) -> dict[str, Any]:
     if not slots or len(slots) > MAX_SLOTS:
         raise VerificationError("execution_program.slots has invalid cardinality")
 
-    allowed_components = (
-        set(HYBRID_COMPONENTS) | set(HYBRID_CONTROL_COMPONENTS)
-        if arm_id == "hybrid-router"
-        else set(BASELINE_COMPONENTS)
-    )
+    if schema_version == ARM_EXECUTION_PROGRAM_SCHEMA:
+        allowed_components = (
+            set(HYBRID_COMPONENTS) | set(HYBRID_CONTROL_COMPONENTS)
+            if arm_id == "hybrid-router"
+            else set(BASELINE_COMPONENTS)
+        )
+    else:
+        allowed_components = (
+            set(GOAL_HYBRID_COMPONENTS)
+            if arm_id == "hybrid-router"
+            else set(GOAL_BASELINE_COMPONENTS)
+        )
     normalized_slots: list[dict[str, Any]] = []
     by_id: dict[str, dict[str, Any]] = {}
     index_by_id: dict[str, int] = {}
@@ -569,23 +705,48 @@ def validate_arm_execution_program(value: Any) -> dict[str, Any]:
     for task_id in sorted(task_ids):
         task_slots = [slot for slot in normalized_slots if slot["task_id"] == task_id]
         task_component_names = {slot["component"] for slot in task_slots}
-        if arm_id in {"raw-concise", "ordinary-json"} and task_component_names != {
-            "receiver",
-            "judge",
-        }:
+        expected_baseline_components = (
+            {"receiver", "judge"}
+            if schema_version == ARM_EXECUTION_PROGRAM_SCHEMA
+            else {"receiver", *GOAL_JUDGE_COMPONENTS}
+        )
+        if arm_id in {"raw-concise", "ordinary-json"} and (
+            task_component_names != expected_baseline_components
+        ):
             raise VerificationError(
-                "each baseline task needs exactly one receiver and one judge"
+                "each baseline task needs a receiver and one complete judge inventory"
             )
-        judges = [slot for slot in task_slots if slot["component"] == "judge"]
-        if len(judges) != 1:
-            raise VerificationError("each task subgraph needs exactly one judge terminal")
-        judge_id = judges[0]["slot_id"]
-        if successors[judge_id]:
-            raise VerificationError("task judge must be a terminal slot")
+        legacy_judges = [
+            slot for slot in task_slots if slot["component"] == "judge"
+        ]
+        goal_judges = [
+            slot
+            for slot in task_slots
+            if slot["component"] in GOAL_JUDGE_COMPONENTS
+        ]
+        if schema_version == ARM_EXECUTION_PROGRAM_SCHEMA:
+            if len(legacy_judges) != 1:
+                raise VerificationError(
+                    "each legacy task subgraph needs exactly one judge terminal"
+                )
+            judge_ids = {legacy_judges[0]["slot_id"]}
+        else:
+            if {slot["component"] for slot in goal_judges} != set(
+                GOAL_JUDGE_COMPONENTS
+            ):
+                raise VerificationError(
+                    "each goal task subgraph needs all four judge terminals"
+                )
+            judge_ids = {slot["slot_id"] for slot in goal_judges}
+        if any(successors[judge_id] for judge_id in judge_ids):
+            raise VerificationError("task judges must be terminal slots")
         for slot in task_slots:
             if not _graph_has_path(setup["slot_id"], slot["slot_id"], successors):
                 raise VerificationError("task slot is unreachable from setup root")
-            if not _graph_has_path(slot["slot_id"], judge_id, successors):
+            if slot["slot_id"] not in judge_ids and not any(
+                _graph_has_path(slot["slot_id"], judge_id, successors)
+                for judge_id in judge_ids
+            ):
                 raise VerificationError("task slot cannot reach its judge terminal")
     return _detach(program)
 
@@ -596,6 +757,18 @@ def validate_arm_execution_program_json(text: str) -> dict[str, Any]:
 
 def execution_program_sha256(value: Any) -> str:
     return sha256_ref(validate_arm_execution_program(value))
+
+
+def _validate_legacy_resolvable_program(value: Any) -> dict[str, Any]:
+    """Keep Program /2 out of the legacy source-record/resolution domain."""
+
+    program = validate_arm_execution_program(value)
+    if program["schema_version"] != ARM_EXECUTION_PROGRAM_SCHEMA:
+        raise VerificationError(
+            "execution Program /2 requires a dedicated source-record and "
+            "resolution schema; downgrade to /1 is forbidden"
+        )
+    return program
 
 
 def _condition(slot_id: str, fact: str, values: Sequence[str]) -> dict[str, Any]:
@@ -647,6 +820,55 @@ def _build_predicate(kind: str, dependency_ids: Sequence[str]) -> dict[str, Any]
             _condition(control_id, "disposition", list(SLOT_DISPOSITIONS)),
             _condition(fallback_id, "disposition", list(SLOT_DISPOSITIONS)),
         ]
+    elif kind == "attempt-action-state":
+        conditions = [
+            _condition(dependency_ids[0], "control_decision", ["attempt-action-state"])
+        ]
+    elif kind == "compiler-control-ready":
+        preflight_id, sender_id = dependency_ids
+        conditions = [
+            _condition(preflight_id, "disposition", list(SLOT_DISPOSITIONS)),
+            _condition(sender_id, "disposition", list(SLOT_DISPOSITIONS)),
+        ]
+    elif kind == "sender-recorded":
+        conditions = [
+            _condition(dependency_ids[0], "disposition", ["executed"])
+        ]
+    elif kind == "final-router-ready":
+        conditions = [
+            _condition(slot_id, "disposition", list(SLOT_DISPOSITIONS))
+            for slot_id in dependency_ids
+        ]
+    elif kind == "non-silence-selected":
+        conditions = [
+            _condition(
+                dependency_ids[0],
+                "selected_mode",
+                ["routine", "action-state", "raw", "json"],
+            )
+        ]
+    elif kind == "optimized-primary-recorded":
+        router_id, primary_id = dependency_ids
+        conditions = [
+            _condition(router_id, "selected_mode", ["routine", "action-state"]),
+            _condition(
+                primary_id,
+                "disposition",
+                ["executed", "failed-before-record"],
+            ),
+        ]
+    elif kind == "optimized-output-invalid":
+        router_id, validator_id = dependency_ids
+        conditions = [
+            _condition(router_id, "selected_mode", ["routine", "action-state"]),
+            _condition(validator_id, "disposition", ["executed"]),
+            _condition(validator_id, "output_verdict", ["invalid"]),
+        ]
+    elif kind == "goal-terminal-ready":
+        conditions = [
+            _condition(slot_id, "disposition", list(SLOT_DISPOSITIONS))
+            for slot_id in dependency_ids
+        ]
     else:  # pragma: no cover - fixed graphs are module-owned
         raise VerificationError("unknown fixed activation predicate")
     return {"all_of": conditions}
@@ -690,6 +912,7 @@ def _build_fixed_program(
     frozen_bindings: Any,
     components: Sequence[str],
     graph: Mapping[str, tuple[str, Sequence[str]]],
+    schema_version: str = ARM_EXECUTION_PROGRAM_SCHEMA,
 ) -> dict[str, Any]:
     _identifier(session_id, "session_id")
     refs = _validate_task_refs(task_refs)
@@ -740,7 +963,7 @@ def _build_fixed_program(
                 append_slot(task_id=task_id, component=component, ids=ids)
     return validate_arm_execution_program(
         {
-            "schema_version": ARM_EXECUTION_PROGRAM_SCHEMA,
+            "schema_version": schema_version,
             "session_id": session_id,
             "arm_id": arm_id,
             "task_refs": refs,
@@ -797,6 +1020,106 @@ def build_hybrid_execution_program(
     )
 
 
+def build_goal_hybrid_execution_program(
+    *, session_id: str, task_refs: Any, frozen_bindings: Any
+) -> dict[str, Any]:
+    """Build the complete five-route Plan-v2 operation inventory.
+
+    This builder still performs no work and confers no claim authority.  It
+    exists so a study plan can freeze one canonical superset graph before any
+    response determines which branch is active.
+    """
+
+    return _build_fixed_program(
+        session_id=session_id,
+        arm_id="hybrid-router",
+        task_refs=task_refs,
+        frozen_bindings=frozen_bindings,
+        components=GOAL_HYBRID_COMPONENTS,
+        graph=_GOAL_HYBRID_GRAPH,
+        schema_version=ARM_EXECUTION_PROGRAM_SCHEMA_V2,
+    )
+
+
+def build_goal_baseline_execution_program(
+    *, session_id: str, arm_id: str, task_refs: Any, frozen_bindings: Any
+) -> dict[str, Any]:
+    """Build a Plan-v2 baseline with four separately costed judge slots."""
+
+    if arm_id not in {"raw-concise", "ordinary-json"}:
+        raise VerificationError("goal baseline builder requires a baseline arm")
+    return _build_fixed_program(
+        session_id=session_id,
+        arm_id=arm_id,
+        task_refs=task_refs,
+        frozen_bindings=frozen_bindings,
+        components=GOAL_BASELINE_COMPONENTS,
+        graph=_GOAL_BASELINE_GRAPH,
+        schema_version=ARM_EXECUTION_PROGRAM_SCHEMA_V2,
+    )
+
+
+def validate_goal_arm_execution_program(value: Any) -> dict[str, Any]:
+    """Require the exact initial-goal baseline or five-route hybrid graph.
+
+    ``validate_arm_execution_program`` intentionally accepts a wider generic
+    graph vocabulary.  A claim-facing study plan must not use that freedom to
+    omit an expensive phase or a losing branch, so this stricter validator
+    reconstructs the canonical goal graph from the submitted frozen bindings
+    and requires byte-for-byte canonical-object equality.
+    """
+
+    program = validate_arm_execution_program(value)
+    if program["schema_version"] != ARM_EXECUTION_PROGRAM_SCHEMA_V2:
+        raise VerificationError("goal execution program must use schema /2")
+    components = (
+        GOAL_HYBRID_COMPONENTS
+        if program["arm_id"] == "hybrid-router"
+        else GOAL_BASELINE_COMPONENTS
+    )
+    slots_by_component: dict[str, list[dict[str, Any]]] = {
+        component: [] for component in components
+    }
+    for slot in program["slots"]:
+        component = slot["component"]
+        if component not in slots_by_component:
+            raise VerificationError(
+                "goal execution program contains a noncanonical component"
+            )
+        slots_by_component[component].append(slot)
+    if any(not slots for slots in slots_by_component.values()):
+        raise VerificationError("goal execution program omits a required component")
+    bindings: dict[str, dict[str, Any]] = {}
+    for component, slots in slots_by_component.items():
+        first = {field: slots[0][field] for field in _BINDING_FIELDS}
+        if any(
+            {field: slot[field] for field in _BINDING_FIELDS} != first
+            for slot in slots[1:]
+        ):
+            raise VerificationError(
+                "goal execution program changes one component binding across tasks"
+            )
+        bindings[component] = first
+    if program["arm_id"] == "hybrid-router":
+        expected = build_goal_hybrid_execution_program(
+            session_id=program["session_id"],
+            task_refs=program["task_refs"],
+            frozen_bindings=bindings,
+        )
+    else:
+        expected = build_goal_baseline_execution_program(
+            session_id=program["session_id"],
+            arm_id=program["arm_id"],
+            task_refs=program["task_refs"],
+            frozen_bindings=bindings,
+        )
+    if program != expected:
+        raise VerificationError(
+            "goal execution program differs from the canonical operation graph"
+        )
+    return program
+
+
 def build_arm_execution_program(
     *, session_id: str, arm_id: str, task_refs: Any, frozen_bindings: Any
 ) -> dict[str, Any]:
@@ -844,7 +1167,12 @@ def _validate_source_record(
         raise VerificationError(f"{path} task identity is incomplete")
     _identifier(record["slot_id"], f"{path}.slot_id")
     component = _identifier(record["component"], f"{path}.component")
-    if component not in _COMPONENT_PHASE:
+    legacy_components = (
+        set(BASELINE_COMPONENTS)
+        | set(HYBRID_COMPONENTS)
+        | set(HYBRID_CONTROL_COMPONENTS)
+    )
+    if component not in legacy_components:
         raise VerificationError(f"{path}.component is invalid")
     if record["accounting_phase"] != _COMPONENT_PHASE[component]:
         raise VerificationError(f"{path} component and phase differ")
@@ -994,7 +1322,7 @@ def build_slot_evidence_record(
     result_event_sequence: int | None = None,
     facts: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
-    validated = validate_arm_execution_program(program)
+    validated = _validate_legacy_resolvable_program(program)
     slots = {slot["slot_id"]: slot for slot in validated["slots"]}
     slot = slots.get(slot_id)
     if slot is None:
@@ -1046,7 +1374,7 @@ def validate_execution_evidence_store(
         raise VerificationError("evidence store schema differs")
     _sha(store["program_sha256"], "evidence_store.program_sha256")
     validated_program = (
-        None if program is None else validate_arm_execution_program(program)
+        None if program is None else _validate_legacy_resolvable_program(program)
     )
     if validated_program is not None and store["program_sha256"] != execution_program_sha256(validated_program):
         raise VerificationError("evidence store is replayed under another program")
@@ -1097,7 +1425,7 @@ def validate_execution_evidence_store(
 def build_execution_evidence_store(
     program: Any, records: Sequence[Mapping[str, Any]]
 ) -> dict[str, Any]:
-    validated = validate_arm_execution_program(program)
+    validated = _validate_legacy_resolvable_program(program)
     if type(records) not in {list, tuple}:
         raise VerificationError("records must be a sequence")
     store = {
@@ -1217,7 +1545,7 @@ def execution_program_activation_input_sha256(
 ) -> str:
     """Hash activation inputs extracted only from validated source records."""
 
-    validated = validate_arm_execution_program(program)
+    validated = _validate_legacy_resolvable_program(program)
     store = validate_execution_evidence_store(evidence_store, validated)
     slots = {slot["slot_id"]: slot for slot in validated["slots"]}
     slot = slots.get(slot_id)
@@ -1250,7 +1578,7 @@ def resolve_arm_execution_program(
 ) -> dict[str, Any]:
     """Resolve every slot and return a self-contained replay closure."""
 
-    validated = validate_arm_execution_program(program)
+    validated = _validate_legacy_resolvable_program(program)
     store = validate_execution_evidence_store(evidence_store, validated)
     raw_resolutions = _list(resolutions, "resolutions")
     if len(raw_resolutions) != len(validated["slots"]):

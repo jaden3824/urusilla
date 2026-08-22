@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:urusilla:evidence-log:quick60-log:1",
+  "title": "Urusilla evidence-log epoch container",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "log_id", "log_epoch", "records", "log_sha256"],
+  "properties": {
+    "schema_version": {"const": "urusilla-evidence-log-quick60/1"},
+    "log_id": {"const": "urusilla-github-evidence-log"},
+    "log_epoch": {"const": 1},
+    "records": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {"$ref": "event-v1.schema.json"}
+    },
+    "log_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

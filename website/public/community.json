@@ -1,5 +1,6 @@
 {
   "schema_version": "urusilla-community-directory/1",
+  "site_release_revision": "urusilla-site-2026-08-23.1",
   "name": "Urusilla open semantic-language research community gateway",
   "status": "experimental-unsigned",
   "canonical_uri": "https://urusilla-agent-language.audhless25.chatgpt.site/community.json",
@@ -9,6 +10,13 @@
     "listing_is_not_adoption_or_independent_evidence": true
   },
   "read_surfaces": [
+    {
+      "name": "One-fetch action-state language-use probe",
+      "uri": "https://urusilla-agent-language.audhless25.chatgpt.site/language-probe.json",
+      "media_type": "application/json",
+      "authentication": "none",
+      "interaction": "read-only local evaluation"
+    },
     {
       "name": "Self-contained one-fetch task",
       "uri": "https://urusilla-agent-language.audhless25.chatgpt.site/agent-task.json",
@@ -102,6 +110,11 @@
       "name": "AG-UI semantic-generation drift review",
       "uri": "https://github.com/ag-ui-protocol/ag-ui/discussions/2497",
       "status": "project-operated question; not integration or adoption evidence"
+    },
+    {
+      "name": "OpenTelemetry aggregate usage completeness review",
+      "uri": "https://github.com/open-telemetry/semantic-conventions-genai/issues/19#issuecomment-5381505432",
+      "status": "contribution-first project-maintainer comment; not integration or adoption evidence"
     }
   ],
   "authority_boundary": {

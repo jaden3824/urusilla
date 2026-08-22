@@ -1,0 +1,15 @@
+{
+  "schema_version": "urusilla-evidence-log-quick60-checkpoint/1",
+  "log_id": "urusilla-github-evidence-log",
+  "log_epoch": 1,
+  "tree_size": 0,
+  "first_sequence": null,
+  "last_sequence": null,
+  "head_record_sha256": null,
+  "merkle_root_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "log_sha256": "sha256:3d34a17fe505108b1311a930eb4bb0f868f159a06b478b12b78e0ba496177572",
+  "generated_at": "2026-08-23T00:00:00Z",
+  "signature_status": "unsigned",
+  "signer_id": null,
+  "checkpoint_sha256": "sha256:52a26ee672f27fd6e4f57cd60954720d245174b11c74a593968b6814f334b61e"
+}

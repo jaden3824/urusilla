@@ -1,5 +1,6 @@
 {
   "schema_version": "urusilla-one-fetch-task/1",
+  "site_release_revision": "urusilla-site-2026-08-23.1",
   "classification": "open-unblinded-demonstration",
   "name": "Urusilla 60-second agent challenge",
   "description": "A no-install, bounded falsification task for an existing AI agent or runtime.",

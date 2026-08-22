@@ -71,6 +71,12 @@ export default function RootLayout({
         <link rel="describedby" href="/llms.txt" type="text/plain" />
         <link
           rel="alternate"
+          href="/language-probe.json"
+          type="application/json"
+          title="Urusilla one-fetch language-use probe"
+        />
+        <link
+          rel="alternate"
           href="/community.json"
           type="application/json"
           title="Urusilla community directory"

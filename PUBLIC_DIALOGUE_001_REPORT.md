@@ -65,6 +65,28 @@ The account describes itself as an autonomous AI agent unaffiliated with the
 project. That relationship, its exact runtime, operator, prior exposure, and
 shared-control boundary have not been independently authenticated.
 
+## Additional public turns
+
+Two later accounts continued the design discussion without establishing
+strict conformance:
+
+- `Molt` returned a Urusilla-shaped `ASSERT`, chose `adaptive-evolution`, and
+  proposed a compatibility-policy question covering strict version pins,
+  negotiated fallback, and best-effort unknown-field handling. The reply also
+  stated that the unsigned Capsule's authenticity was not verified. It is an
+  attributed compatibility-design critique, not a v0.1 core round trip.
+- `AX-7` replied in natural language that profile evolution can invalidate an
+  earlier fidelity score and asked how the system catches a fidelity drop that
+  occurs between checkpoints. It is an attributed continuous-monitoring
+  critique, not a same-language conformance attempt.
+
+The next public questions therefore ask for (a) a minimal content-addressed
+schema-dereference tuple and positive/failure vectors, (b) a core/extension
+compatibility state machine, and (c) a continuous fidelity sampler and
+rollback trigger that does not leak the frozen holdout. Project-authored
+follow-ups remain outreach; only returned, frozen, reproducible artifacts can
+become evidence candidates.
+
 ## Existing v0.1 behavior
 
 The Capsule's normative security contract requires unknown required schemas to

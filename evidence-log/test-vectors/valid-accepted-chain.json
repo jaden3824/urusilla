@@ -1,0 +1,182 @@
+{
+  "expected": "valid",
+  "log": {
+    "schema_version": "urusilla-evidence-log-quick60/1",
+    "log_id": "urusilla-github-evidence-log",
+    "log_epoch": 1,
+    "records": [
+      {
+        "schema_version": "urusilla-evidence-log-quick60-event/1",
+        "log_id": "urusilla-github-evidence-log",
+        "log_epoch": 1,
+        "sequence": 1,
+        "event_type": "submission-received",
+        "previous_record_sha256": null,
+        "prior_epoch_checkpoint_sha256": null,
+        "continuity_reason_code": null,
+        "recorded_at": "2026-08-23T00:00:01Z",
+        "submission_id": "sub-vector-001",
+        "prior_submission_event_sha256": null,
+        "state": "received",
+        "state_reason": {
+          "code": "privacy-screened-receipt",
+          "public_detail": "A bounded quick_60s response passed the pre-publication declaration gate."
+        },
+        "actor": {
+          "actor_id": "public:test-submitter",
+          "role": "submitter"
+        },
+        "quick_60s": {
+          "challenge": {
+            "id": "quick_60s",
+            "immutable_uri": "https://raw.githubusercontent.com/jaden3824/urusilla/5a12ea216c99fdbb7008dae69514c2c39ab079bb/interop_lab/challenges/quick_60s.json",
+            "sha256": "sha256:da39f621274bb054797d39536a39b671b26344c5082887ee48a4c3556ccac2e5"
+          },
+          "response": {
+            "decision": "ROLLBACK",
+            "reason": "Unknown usage prevents complete accounting, so the candidate must fail closed.",
+            "participant": "agent",
+            "runtime": "deterministic-test-runtime"
+          }
+        },
+        "review": null,
+        "privacy": {
+          "publication_authorized": true,
+          "public_data_only": true,
+          "contains_private_chain_of_thought": false,
+          "contains_hidden_prompt": false,
+          "contains_credentials_or_secrets": false,
+          "contains_sensitive_digest": false,
+          "personal_data_class": "minimum-accountable-identifier",
+          "personal_data_minimized": true,
+          "redistribution_basis": "author",
+          "retention_limit": null
+        },
+        "claim_boundary": {
+          "inclusion_proves_truth": false,
+          "inclusion_proves_independence": false,
+          "inclusion_proves_reproduction": false,
+          "inclusion_proves_adoption": false,
+          "inclusion_proves_conformance": false,
+          "inclusion_proves_general_efficiency": false,
+          "inclusion_changes_project_claims": false,
+          "inclusion_ratifies_protocol_semantics": false
+        },
+        "supersedes_submission_id": null,
+        "superseded_by_submission_id": null,
+        "record_sha256": "sha256:46605f4c32f2996dc5e2d7a96971a662117420c0e6035d55aecc60c30fcbb66c"
+      },
+      {
+        "schema_version": "urusilla-evidence-log-quick60-event/1",
+        "log_id": "urusilla-github-evidence-log",
+        "log_epoch": 1,
+        "sequence": 2,
+        "event_type": "submission-state-changed",
+        "previous_record_sha256": "sha256:46605f4c32f2996dc5e2d7a96971a662117420c0e6035d55aecc60c30fcbb66c",
+        "prior_epoch_checkpoint_sha256": null,
+        "continuity_reason_code": null,
+        "recorded_at": "2026-08-23T00:00:02Z",
+        "submission_id": "sub-vector-001",
+        "prior_submission_event_sha256": "sha256:46605f4c32f2996dc5e2d7a96971a662117420c0e6035d55aecc60c30fcbb66c",
+        "state": "structurally-valid",
+        "state_reason": {
+          "code": "schema-and-digest-pass",
+          "public_detail": "The response and pinned challenge reference passed deterministic checks."
+        },
+        "actor": {
+          "actor_id": "tool:offline-verifier",
+          "role": "structural-reviewer"
+        },
+        "quick_60s": null,
+        "review": {
+          "kind": "automated-structural-check",
+          "reviewer_id": "tool:offline-verifier",
+          "decision": "pass",
+          "accepted_evidence_scope": null,
+          "public_reason": "Exact fields, digests, privacy declarations, and response values reconcile."
+        },
+        "privacy": {
+          "publication_authorized": true,
+          "public_data_only": true,
+          "contains_private_chain_of_thought": false,
+          "contains_hidden_prompt": false,
+          "contains_credentials_or_secrets": false,
+          "contains_sensitive_digest": false,
+          "personal_data_class": "minimum-accountable-identifier",
+          "personal_data_minimized": true,
+          "redistribution_basis": "author",
+          "retention_limit": null
+        },
+        "claim_boundary": {
+          "inclusion_proves_truth": false,
+          "inclusion_proves_independence": false,
+          "inclusion_proves_reproduction": false,
+          "inclusion_proves_adoption": false,
+          "inclusion_proves_conformance": false,
+          "inclusion_proves_general_efficiency": false,
+          "inclusion_changes_project_claims": false,
+          "inclusion_ratifies_protocol_semantics": false
+        },
+        "supersedes_submission_id": null,
+        "superseded_by_submission_id": null,
+        "record_sha256": "sha256:c6c00375aac2e7616f2bdcafe3ce3f82f54dda366599480af7902e6ed17e8fa2"
+      },
+      {
+        "schema_version": "urusilla-evidence-log-quick60-event/1",
+        "log_id": "urusilla-github-evidence-log",
+        "log_epoch": 1,
+        "sequence": 3,
+        "event_type": "submission-state-changed",
+        "previous_record_sha256": "sha256:c6c00375aac2e7616f2bdcafe3ce3f82f54dda366599480af7902e6ed17e8fa2",
+        "prior_epoch_checkpoint_sha256": null,
+        "continuity_reason_code": null,
+        "recorded_at": "2026-08-23T00:00:03Z",
+        "submission_id": "sub-vector-001",
+        "prior_submission_event_sha256": "sha256:c6c00375aac2e7616f2bdcafe3ce3f82f54dda366599480af7902e6ed17e8fa2",
+        "state": "accepted-as-evidence",
+        "state_reason": {
+          "code": "bounded-review-pass",
+          "public_detail": "A maintainer accepted only the public quick_60s response as bounded evidence."
+        },
+        "actor": {
+          "actor_id": "maintainer:test-reviewer",
+          "role": "maintainer"
+        },
+        "quick_60s": null,
+        "review": {
+          "kind": "maintainer",
+          "reviewer_id": "maintainer:test-reviewer",
+          "decision": "pass",
+          "accepted_evidence_scope": "quick_60s-response",
+          "public_reason": "The result is accepted only as one bounded response, not as adoption or efficiency evidence."
+        },
+        "privacy": {
+          "publication_authorized": true,
+          "public_data_only": true,
+          "contains_private_chain_of_thought": false,
+          "contains_hidden_prompt": false,
+          "contains_credentials_or_secrets": false,
+          "contains_sensitive_digest": false,
+          "personal_data_class": "minimum-accountable-identifier",
+          "personal_data_minimized": true,
+          "redistribution_basis": "author",
+          "retention_limit": null
+        },
+        "claim_boundary": {
+          "inclusion_proves_truth": false,
+          "inclusion_proves_independence": false,
+          "inclusion_proves_reproduction": false,
+          "inclusion_proves_adoption": false,
+          "inclusion_proves_conformance": false,
+          "inclusion_proves_general_efficiency": false,
+          "inclusion_changes_project_claims": false,
+          "inclusion_ratifies_protocol_semantics": false
+        },
+        "supersedes_submission_id": null,
+        "superseded_by_submission_id": null,
+        "record_sha256": "sha256:b1af303cc8bff19214997d65fffc7d929e959426a5666eeff908fe65951cf1f2"
+      }
+    ],
+    "log_sha256": "sha256:9dc80091d7ab0ae571ecefc9a193d10c2735d02b6ee76858f0f7153cd581f857"
+  }
+}

@@ -16,6 +16,7 @@ from typing import Any, Mapping
 
 from .contract import (
     ARMS,
+    PLAN_SCHEMA,
     VerificationError,
     _count,
     _exact,
@@ -25,6 +26,11 @@ from .contract import (
     _sha,
     canonical_json,
     sha256_ref,
+)
+from .execution_trace import (
+    POST_RECEIVER_VALIDATION_SCHEMA,
+    post_receiver_validation_input_sha256,
+    post_receiver_validation_output_sha256,
 )
 from .provider_artifact_store import ProviderArtifactStore, ProviderRecordView
 from .terminal_contract import (
@@ -644,12 +650,14 @@ class ReceiptStore:
         session_id: str,
         operator_id: str,
         planned_task_sha256: str | None,
+        semantic_scorer_sha256: str,
         receiver_model_id: str,
         receiver_settings_sha256: str,
         provider_call_identities: set[tuple[str, str]],
         provider_artifacts: ProviderArtifactStore,
         referenced_provider_records: set[str],
         manifest_event: Mapping[str, Any],
+        result_events_by_sequence: Mapping[int, Mapping[str, Any]],
         source_commitments: Mapping[str, Mapping[str, Any]],
         used_source_commitments: set[str],
         label: str,
@@ -693,6 +701,19 @@ class ReceiptStore:
                 "deterministic-validator",
             }:
                 errors.append(f"usage-v3-local-manifest-source-mismatch:{label}")
+            if manifest_event.get("source_kind") == "deterministic-validator":
+                cls._validate_v3_validator_preimages(
+                    usage_source=source,
+                    result_event=result_event,
+                    manifest_event=manifest_event,
+                    result_events_by_sequence=result_events_by_sequence,
+                    planned_task_sha256=planned_task_sha256,
+                    semantic_scorer_sha256=semantic_scorer_sha256,
+                    source_commitments=source_commitments,
+                    used_source_commitments=used_source_commitments,
+                    label=label,
+                    errors=errors,
+                )
             return base_valid and len(errors) == error_count
         if source["source_kind"] != "provider":
             return False
@@ -750,6 +771,139 @@ class ReceiptStore:
             errors=errors,
         )
         return base_valid and len(errors) == error_count
+
+    @staticmethod
+    def _validate_v3_validator_preimages(
+        *,
+        usage_source: Mapping[str, Any],
+        result_event: Mapping[str, Any],
+        manifest_event: Mapping[str, Any],
+        result_events_by_sequence: Mapping[int, Mapping[str, Any]],
+        planned_task_sha256: str | None,
+        semantic_scorer_sha256: str,
+        source_commitments: Mapping[str, Mapping[str, Any]],
+        used_source_commitments: set[str],
+        label: str,
+        errors: list[str],
+    ) -> bool:
+        """Resolve the frozen and observed halves of a semantic validator.
+
+        The arm manifest can only commit response-independent fields before a
+        provider answer exists.  The local usage receipt therefore references
+        a second, complete observed preimage.  Portable validation must resolve
+        and cross-check both; otherwise a downstream party can change the
+        verdict/input/output and coherently reseal the local receipt.
+        """
+
+        error_count = len(errors)
+
+        def resolve_preimage(digest: Any, purpose: str) -> Mapping[str, Any] | None:
+            try:
+                normalized = _sha(digest, f"{label}.{purpose}_sha256")
+            except VerificationError:
+                errors.append(f"v3-validator-{purpose}-digest-invalid:{label}")
+                return None
+            if normalized in used_source_commitments:
+                errors.append(f"v3-validator-{purpose}-replayed:{label}")
+                return None
+            preimage = source_commitments.get(normalized)
+            if preimage is None:
+                errors.append(f"v3-validator-{purpose}-preimage-missing:{label}")
+                return None
+            used_source_commitments.add(normalized)
+            return preimage
+
+        frozen = resolve_preimage(
+            manifest_event.get("source_commitment_sha256"),
+            "manifest",
+        )
+        observed = resolve_preimage(
+            usage_source.get("raw_receipt_sha256"),
+            "evidence",
+        )
+        if frozen is None or observed is None:
+            return False
+
+        frozen_fields = {
+            "kind",
+            "schema_version",
+            "local_event_id",
+            "implementation_sha256",
+            "task_sha256",
+            "primary_event_sequence",
+        }
+        observed_fields = frozen_fields | {
+            "primary_output_sha256",
+            "verdict",
+            "reason_code",
+            "input_sha256",
+            "output_sha256",
+            "usage",
+        }
+        if set(frozen) != frozen_fields:
+            errors.append(f"v3-validator-manifest-fields-mismatch:{label}")
+        if set(observed) != observed_fields:
+            errors.append(f"v3-validator-evidence-fields-mismatch:{label}")
+            return False
+        if {field: observed[field] for field in frozen_fields} != dict(frozen):
+            errors.append(f"v3-validator-manifest-evidence-mismatch:{label}")
+
+        if observed["kind"] != "deterministic-validator":
+            errors.append(f"v3-validator-kind-mismatch:{label}")
+        if observed["schema_version"] != POST_RECEIVER_VALIDATION_SCHEMA:
+            errors.append(f"v3-validator-schema-mismatch:{label}")
+        if observed["local_event_id"] != manifest_event.get("source_id"):
+            errors.append(f"v3-validator-local-id-mismatch:{label}")
+        if observed["implementation_sha256"] != semantic_scorer_sha256:
+            errors.append(f"v3-validator-implementation-mismatch:{label}")
+        if (
+            planned_task_sha256 is None
+            or observed["task_sha256"] != planned_task_sha256
+        ):
+            errors.append(f"v3-validator-task-mismatch:{label}")
+        if observed["verdict"] != "invalid":
+            errors.append(f"v3-validator-verdict-mismatch:{label}")
+        if observed["reason_code"] != "semantic-invalid":
+            errors.append(f"v3-validator-reason-mismatch:{label}")
+        if observed["usage"] != usage_source.get("reported_usage"):
+            errors.append(f"v3-validator-usage-mismatch:{label}")
+        if observed["input_sha256"] != result_event.get("input_sha256"):
+            errors.append(f"v3-validator-event-input-mismatch:{label}")
+        if observed["output_sha256"] != result_event.get("output_sha256"):
+            errors.append(f"v3-validator-event-output-mismatch:{label}")
+
+        primary_sequence = observed["primary_event_sequence"]
+        primary = (
+            result_events_by_sequence.get(primary_sequence)
+            if type(primary_sequence) is int and primary_sequence >= 0
+            else None
+        )
+        if (
+            primary is None
+            or primary.get("phase") != "receiver"
+            or primary.get("task_id") != result_event.get("task_id")
+        ):
+            errors.append(f"v3-validator-primary-event-mismatch:{label}")
+        elif primary.get("output_sha256") != observed["primary_output_sha256"]:
+            errors.append(f"v3-validator-primary-output-mismatch:{label}")
+
+        if planned_task_sha256 is not None:
+            expected_input = post_receiver_validation_input_sha256(
+                task_id=result_event.get("task_id"),
+                task_sha256=planned_task_sha256,
+                primary_event_sequence=primary_sequence,
+                primary_output_sha256=observed["primary_output_sha256"],
+            )
+            if observed["input_sha256"] != expected_input:
+                errors.append(f"v3-validator-input-commitment-mismatch:{label}")
+        expected_output = post_receiver_validation_output_sha256(
+            input_sha256=observed["input_sha256"],
+            verdict=observed["verdict"],
+            reason_code=observed["reason_code"],
+        )
+        if observed["output_sha256"] != expected_output:
+            errors.append(f"v3-validator-output-commitment-mismatch:{label}")
+        return len(errors) == error_count
 
     @staticmethod
     def _validate_generic_source(
@@ -1102,6 +1256,11 @@ class ReceiptStore:
             _identifier(diagnostic_issuer_id, "diagnostic_issuer_id")
         plan = _object(plan_value, "plan")
         result = _object(result_value, "result")
+        if plan.get("schema_version") != PLAN_SCHEMA:
+            raise VerificationError(
+                "study Plan /2 cannot be downgraded into receipt bundle /1-/3; "
+                "a receipt bundle /4 is required"
+            )
         plan_sha256 = sha256_ref(plan)
         errors: list[str] = []
         if self.plan_sha256 != plan_sha256:
@@ -1250,7 +1409,14 @@ class ReceiptStore:
                 if arm is None:
                     continue
                 manifest_sha256 = session["arm_execution_manifest_sha256"][arm_id]
-                for event in _list(arm["events"], "arm.events"):
+                result_events = _list(arm["events"], "arm.events")
+                result_events_by_sequence = {
+                    event.get("sequence"): event
+                    for event in result_events
+                    if type(event) is dict
+                    and type(event.get("sequence")) is int
+                }
+                for event in result_events:
                     digest = event.get("usage_receipt_sha256")
                     if digest is None:
                         continue
@@ -1336,12 +1502,16 @@ class ReceiptStore:
                                 if planned_task is None
                                 else planned_task["task_sha256"]
                             ),
+                            semantic_scorer_sha256=plan["artifact_locks"][
+                                "semantic_scorer"
+                            ],
                             receiver_model_id=model["model_id"],
                             receiver_settings_sha256=model["settings_sha256"],
                             provider_call_identities=provider_call_identities,
                             provider_artifacts=self._provider_artifacts,
                             referenced_provider_records=referenced_provider_records,
                             manifest_event=manifest_event,
+                            result_events_by_sequence=result_events_by_sequence,
                             source_commitments=self._source_commitments,
                             used_source_commitments=used_source_commitments,
                             label=digest,

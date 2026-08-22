@@ -1,0 +1,29 @@
+{
+  "schema_version": "urusilla-evidence-log-quick60-discovery/1",
+  "log_id": "urusilla-github-evidence-log",
+  "status": "empty-read-only",
+  "log_epoch": 1,
+  "supported_tracks": [
+    "quick_60s"
+  ],
+  "writes_enabled": false,
+  "live_bot_enabled": false,
+  "network_access_required": false,
+  "submission_transport": null,
+  "canonical_log_path": "epochs/00000001/log.json",
+  "canonical_log_sha256": "sha256:3d34a17fe505108b1311a930eb4bb0f868f159a06b478b12b78e0ba496177572",
+  "current_checkpoint_path": "epochs/00000001/checkpoints/empty.json",
+  "current_checkpoint_sha256": "sha256:52a26ee672f27fd6e4f57cd60954720d245174b11c74a593968b6814f334b61e",
+  "event_schema_path": "schemas/event-v1.schema.json",
+  "event_schema_sha256": "sha256:cf0b2a33f37665b258e09267079fb1c3e57b10db7594be7c2810f5e271d00983",
+  "checkpoint_schema_path": "schemas/checkpoint-v1.schema.json",
+  "checkpoint_schema_sha256": "sha256:463185118efba56f7b9a4c0115cea54eced2db05fa0ba0b42c894d8a1896c0f1",
+  "discovery_schema_path": "schemas/discovery-v1.schema.json",
+  "discovery_schema_sha256": "sha256:5a8defa555f79f3aff266197261db4c71bd1c5a17f7e7c4b5babaf6b342ef5a5",
+  "log_schema_path": "schemas/log-v1.schema.json",
+  "log_schema_sha256": "sha256:575ad67009c5f097ace041d7f204040936d6edd18c7d74756fb132d4bbdcdd1d",
+  "verifier_path": "verify.py",
+  "verifier_sha256": "sha256:ac0d389309a989b92e8a7cda90ca1e49efa6e0f514f26238b70e5ab95d277a5b",
+  "public_record_count": 0,
+  "discovery_sha256": "sha256:89582f27d43f9dba6f52dcaa298cd2c4c7497e98f967b158d984d073818fedd4"
+}

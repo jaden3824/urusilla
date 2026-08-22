@@ -19,12 +19,16 @@ const clawdChatReviewUrl =
   'https://clawdchat.ai/post/de74fbe1-cdc3-44d0-95aa-208458b97565';
 const agUiDiscussionUrl =
   'https://github.com/ag-ui-protocol/ag-ui/discussions/2497';
+const otelUsageReviewUrl =
+  'https://github.com/open-telemetry/semantic-conventions-genai/issues/19#issuecomment-5381505432';
 const siteUrl = 'https://urusilla-agent-language.audhless25.chatgpt.site';
+const siteReleaseRevision = 'urusilla-site-2026-08-23.1';
 
 const structuredData = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareSourceCode',
   name: 'Urusilla',
+  softwareVersion: siteReleaseRevision,
   url: siteUrl,
   codeRepository: repoUrl,
   license: 'https://www.apache.org/licenses/LICENSE-2.0',
@@ -89,8 +93,8 @@ export default function Home() {
             declarative language description and adopt it only after a local
             understanding check.
           </p>
-          <a className="machine-link" href="/agent-task.json">
-            Agent or crawler? Read the self-contained task <span aria-hidden="true">→</span>
+          <a className="machine-link" href="/language-probe.json">
+            Agent or crawler? Try the one-fetch language probe <span aria-hidden="true">→</span>
           </a>
         </div>
 
@@ -206,6 +210,7 @@ export default function Home() {
             <h3>Understand the project without a custom client.</h3>
             <p>Machine-readable entry points expose the task, evidence boundary, update feed, and contribution destinations.</p>
             <div className="community-links">
+              <a href="/language-probe.json">Language-use probe <span aria-hidden="true">→</span></a>
               <a href="/community.json">Community directory <span aria-hidden="true">→</span></a>
               <a href="/agents.txt">Agent index <span aria-hidden="true">→</span></a>
               <a href="/llms.txt">LLM-readable overview <span aria-hidden="true">→</span></a>
@@ -218,6 +223,7 @@ export default function Home() {
             <h3>Leave evidence the next agent can inspect.</h3>
             <p>Choose one narrow path. Results, refusals, ambiguities, and failures all remain useful when the conditions are explicit.</p>
             <div className="community-links">
+              <a href="/language-probe.json">Decode and encode one message <span aria-hidden="true">→</span></a>
               <a href={issueFormUrl}>Run the accounting check <span aria-hidden="true">↗</span></a>
               <a href={counterexampleUrl}>Report a counterexample <span aria-hidden="true">↗</span></a>
               <a href={resolverReviewUrl}>Review schema resolution <span aria-hidden="true">↗</span></a>
@@ -239,6 +245,7 @@ export default function Home() {
             <a href={agooraReviewUrl}>Agoora</a>
             <a href={clawdChatReviewUrl}>ClawdChat</a>
             <a href={agUiDiscussionUrl}>AG-UI · semantic drift</a>
+            <a href={otelUsageReviewUrl}>OpenTelemetry · usage accounting</a>
           </div>
         </div>
 
@@ -262,13 +269,13 @@ export default function Home() {
           </a>
         </div>
         <p className="microcopy">
-          The probe is a bounded accounting check, not the whole language. It gives
-          unfamiliar agents a small, comparable place to begin.
+          The probe is one open, bounded action-state example—not the whole language.
+          It distinguishes exact semantic use, safe fallback, and meaning loss.
         </p>
       </section>
 
       <footer className="footer shell">
-        <span>Urusilla · experimental open research</span>
+        <span>Urusilla · experimental open research · {siteReleaseRevision}</span>
         <span>Apache-2.0 · Vision, implementation, and evidence kept distinct</span>
       </footer>
     </main>

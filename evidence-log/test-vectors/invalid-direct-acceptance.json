@@ -1,0 +1,60 @@
+{
+  "expected": "error:invalid-state-transition",
+  "base": "valid-accepted-chain.json",
+  "mutations": [
+    {
+      "path": [
+        "records",
+        1,
+        "state"
+      ],
+      "value": "accepted-as-evidence"
+    },
+    {
+      "path": [
+        "records",
+        1,
+        "actor",
+        "actor_id"
+      ],
+      "value": "maintainer:test-reviewer"
+    },
+    {
+      "path": [
+        "records",
+        1,
+        "actor",
+        "role"
+      ],
+      "value": "maintainer"
+    },
+    {
+      "path": [
+        "records",
+        1,
+        "review",
+        "kind"
+      ],
+      "value": "maintainer"
+    },
+    {
+      "path": [
+        "records",
+        1,
+        "review",
+        "reviewer_id"
+      ],
+      "value": "maintainer:test-reviewer"
+    },
+    {
+      "path": [
+        "records",
+        1,
+        "review",
+        "accepted_evidence_scope"
+      ],
+      "value": "quick_60s-response"
+    }
+  ],
+  "reseal": true
+}

@@ -8,6 +8,7 @@ import unittest
 from initial_goal_eval.contract import VerificationError, canonical_json, sha256_ref
 from initial_goal_eval.execution_program import (
     ARM_EXECUTION_PROGRAM_RESOLUTION_SCHEMA,
+    ARM_EXECUTION_PROGRAM_SCHEMA,
     HYBRID_COMPONENTS,
     build_arm_execution_program,
     build_execution_evidence_store,
@@ -175,6 +176,7 @@ def _seal(
 class ProgramValidationTests(unittest.TestCase):
     def test_builder_has_one_setup_and_complete_task_graphs(self):
         program = _baseline_program(tasks=2)
+        self.assertEqual(program["schema_version"], ARM_EXECUTION_PROGRAM_SCHEMA)
         self.assertEqual(len(program["task_refs"]), 2)
         self.assertEqual([s["component"] for s in program["slots"]].count("setup"), 1)
         self.assertEqual([s["component"] for s in program["slots"]].count("judge"), 2)
@@ -186,7 +188,10 @@ class ProgramValidationTests(unittest.TestCase):
         judge["depends_on"] = []
         judge["order_after"] = [setup["slot_id"]]
         program["slots"] = [setup, judge]
-        with self.assertRaisesRegex(VerificationError, "receiver and one judge"):
+        with self.assertRaisesRegex(
+            VerificationError,
+            "receiver and one complete judge inventory",
+        ):
             validate_arm_execution_program(program)
 
     def test_program_is_exact_and_digest_is_canonical(self):

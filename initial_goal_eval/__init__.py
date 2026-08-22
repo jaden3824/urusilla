@@ -9,10 +9,12 @@ cannot produce claim-eligible or adoption evidence.
 from .contract import (
     FROZEN_METHOD_PATH,
     PLAN_SCHEMA,
+    PLAN_SCHEMA_V2,
     RESULT_SCHEMA,
     VerificationError,
     canonical_json,
     load_frozen_method,
+    plan_v2_hybrid_request_deriver_sha256,
     sha256_ref,
     validate_study_plan,
     verifier_bundle_sha256,
@@ -41,6 +43,7 @@ def verify_result(*args, **kwargs):
 __all__ = [
     "FROZEN_METHOD_PATH",
     "PLAN_SCHEMA",
+    "PLAN_SCHEMA_V2",
     "RESULT_SCHEMA",
     "RECEIPT_BUNDLE_SCHEMA",
     "RECEIPT_BUNDLE_SCHEMA_V2",
@@ -54,6 +57,7 @@ __all__ = [
     "VerificationError",
     "canonical_json",
     "load_frozen_method",
+    "plan_v2_hybrid_request_deriver_sha256",
     "receipt_digest",
     "sha256_ref",
     "validate_study_plan",

@@ -3,6 +3,7 @@
 Canonical repository: https://github.com/jaden3824/urusilla
 Status: experimental-unsigned research prototype; not a standard
 Language version: 0.1.0
+Site release: urusilla-site-2026-08-23.1
 Frozen artifact baseline: f612ea141e409693b27e93cefef0876eff9542ed
 
 Evidence boundary:
@@ -13,11 +14,14 @@ Evidence boundary:
 
 ## Fast paths
 
+- [One-fetch language-use probe](https://urusilla-agent-language.audhless25.chatgpt.site/language-probe.json): bounded action-state decode and encode; no install or external action.
 - [Hosted one-fetch task](https://urusilla-agent-language.audhless25.chatgpt.site/agent-task.json): task, identity, schema, evidence, and authority limits.
 - [Human challenge page](https://urusilla-agent-language.audhless25.chatgpt.site/): no install or site-native intake.
 - [Machine entry](https://raw.githubusercontent.com/jaden3824/urusilla/main/agent-entry.json): moving map; artifacts are commit-pinned.
 - [Contribution entry](https://raw.githubusercontent.com/jaden3824/urusilla/main/contribution-entry.json): bounded response and escalation paths.
-- [Evidence log proposal](https://github.com/jaden3824/urusilla/blob/main/EVIDENCE_TRANSPARENCY_LOG.md): design only.
+- [Evidence log integrity core](https://github.com/jaden3824/urusilla/tree/main/evidence-log): empty, offline, read-only; no intake or bot.
+- [Evidence log design](https://github.com/jaden3824/urusilla/blob/main/EVIDENCE_TRANSPARENCY_LOG.md): wider live design remains undeployed.
+- [General-dialogue evaluation plan](https://github.com/jaden3824/urusilla/blob/main/GENERAL_DIALOGUE_EVAL_PLAN.md): preregistration-ready cross-model, cold-start, drift, and complete-cost plan; not run yet.
 - [Frozen 60-second question](https://raw.githubusercontent.com/jaden3824/urusilla/cd220adb311d8763009fc9b524b2633b117aac4d/interop_lab/challenges/quick_60s.json): four fields, no install.
 - [Human quickstart](https://github.com/jaden3824/urusilla/blob/main/AGENT_QUICKSTART.md): bounded tracks and claims.
 - [60-second response thread](https://github.com/jaden3824/urusilla/discussions/8): post only when publication is authorized.

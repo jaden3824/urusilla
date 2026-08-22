@@ -1,0 +1,246 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:urusilla:evidence-log:quick60-event:1",
+  "title": "Urusilla quick_60s evidence-log event, epoch 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "log_id",
+    "log_epoch",
+    "sequence",
+    "event_type",
+    "previous_record_sha256",
+    "prior_epoch_checkpoint_sha256",
+    "continuity_reason_code",
+    "recorded_at",
+    "submission_id",
+    "prior_submission_event_sha256",
+    "state",
+    "state_reason",
+    "actor",
+    "quick_60s",
+    "review",
+    "privacy",
+    "claim_boundary",
+    "supersedes_submission_id",
+    "superseded_by_submission_id",
+    "record_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "urusilla-evidence-log-quick60-event/1"},
+    "log_id": {"const": "urusilla-github-evidence-log"},
+    "log_epoch": {"const": 1},
+    "sequence": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "event_type": {
+      "enum": [
+        "submission-received",
+        "submission-state-changed",
+        "submission-withdrawn",
+        "submission-retracted",
+        "submission-superseded",
+        "submission-tombstoned"
+      ]
+    },
+    "previous_record_sha256": {"$ref": "#/$defs/nullableDigest"},
+    "prior_epoch_checkpoint_sha256": {"type": "null"},
+    "continuity_reason_code": {"type": "null"},
+    "recorded_at": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"},
+    "submission_id": {"$ref": "#/$defs/id"},
+    "prior_submission_event_sha256": {"$ref": "#/$defs/nullableDigest"},
+    "state": {
+      "enum": [
+        "received",
+        "structurally-valid",
+        "accepted-as-evidence",
+        "rejected",
+        "withdrawn",
+        "retracted",
+        "superseded",
+        "tombstoned"
+      ]
+    },
+    "state_reason": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "public_detail"],
+      "properties": {
+        "code": {"$ref": "#/$defs/id"},
+        "public_detail": {"type": "string", "minLength": 1, "maxLength": 512}
+      }
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor_id", "role"],
+      "properties": {
+        "actor_id": {"$ref": "#/$defs/id"},
+        "role": {"enum": ["submitter", "structural-reviewer", "maintainer"]}
+      }
+    },
+    "quick_60s": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["challenge", "response"],
+          "properties": {
+            "challenge": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "immutable_uri", "sha256"],
+              "properties": {
+                "id": {"const": "quick_60s"},
+                "immutable_uri": {
+                  "type": "string",
+                  "pattern": "^https://raw\\.githubusercontent\\.com/jaden3824/urusilla/[0-9a-f]{40}/interop_lab/challenges/quick_60s\\.json$"
+                },
+                "sha256": {"const": "sha256:da39f621274bb054797d39536a39b671b26344c5082887ee48a4c3556ccac2e5"}
+              }
+            },
+            "response": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["decision", "reason", "participant", "runtime"],
+              "properties": {
+                "decision": {"enum": ["RETAIN", "ROLLBACK"]},
+                "reason": {"type": "string", "minLength": 1, "maxLength": 512},
+                "participant": {"enum": ["human", "agent", "human+agent"]},
+                "runtime": {"type": "string", "minLength": 1, "maxLength": 512}
+              }
+            }
+          }
+        }
+      ]
+    },
+    "review": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "reviewer_id", "decision", "accepted_evidence_scope", "public_reason"],
+          "properties": {
+            "kind": {"enum": ["automated-structural-check", "maintainer", "independent-reviewer"]},
+            "reviewer_id": {"$ref": "#/$defs/id"},
+            "decision": {"enum": ["pass", "fail", "incomplete"]},
+            "accepted_evidence_scope": {"enum": [null, "quick_60s-response"]},
+            "public_reason": {"type": "string", "minLength": 1, "maxLength": 512}
+          }
+        }
+      ]
+    },
+    "privacy": {"$ref": "#/$defs/privacy"},
+    "claim_boundary": {"$ref": "#/$defs/claimBoundary"},
+    "supersedes_submission_id": {"$ref": "#/$defs/nullableId"},
+    "superseded_by_submission_id": {"$ref": "#/$defs/nullableId"},
+    "record_sha256": {"$ref": "#/$defs/digest"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"event_type": {"const": "submission-received"}}},
+      "then": {
+        "properties": {
+          "state": {"const": "received"},
+          "prior_submission_event_sha256": {"type": "null"},
+          "quick_60s": {"type": "object"},
+          "review": {"type": "null"},
+          "superseded_by_submission_id": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"event_type": {"const": "submission-state-changed"}}},
+      "then": {
+        "properties": {
+          "state": {"enum": ["structurally-valid", "accepted-as-evidence", "rejected"]},
+          "quick_60s": {"type": "null"},
+          "supersedes_submission_id": {"type": "null"},
+          "superseded_by_submission_id": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"event_type": {"const": "submission-withdrawn"}}},
+      "then": {"properties": {"state": {"const": "withdrawn"}, "quick_60s": {"type": "null"}}}
+    },
+    {
+      "if": {"properties": {"event_type": {"const": "submission-retracted"}}},
+      "then": {"properties": {"state": {"const": "retracted"}, "quick_60s": {"type": "null"}}}
+    },
+    {
+      "if": {"properties": {"event_type": {"const": "submission-superseded"}}},
+      "then": {
+        "properties": {
+          "state": {"const": "superseded"},
+          "quick_60s": {"type": "null"},
+          "supersedes_submission_id": {"type": "null"},
+          "superseded_by_submission_id": {"$ref": "#/$defs/id"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"event_type": {"const": "submission-tombstoned"}}},
+      "then": {"properties": {"state": {"const": "tombstoned"}, "quick_60s": {"type": "null"}}}
+    }
+  ],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._:-]{0,127}$"},
+    "nullableId": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/id"}]},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "nullableDigest": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "publication_authorized",
+        "public_data_only",
+        "contains_private_chain_of_thought",
+        "contains_hidden_prompt",
+        "contains_credentials_or_secrets",
+        "contains_sensitive_digest",
+        "personal_data_class",
+        "personal_data_minimized",
+        "redistribution_basis",
+        "retention_limit"
+      ],
+      "properties": {
+        "publication_authorized": {"const": true},
+        "public_data_only": {"const": true},
+        "contains_private_chain_of_thought": {"const": false},
+        "contains_hidden_prompt": {"const": false},
+        "contains_credentials_or_secrets": {"const": false},
+        "contains_sensitive_digest": {"const": false},
+        "personal_data_class": {"enum": ["none", "minimum-accountable-identifier"]},
+        "personal_data_minimized": {"const": true},
+        "redistribution_basis": {"enum": ["author", "license", "explicit-permission", "public-domain", "not-applicable"]},
+        "retention_limit": {"type": "null"}
+      }
+    },
+    "claimBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inclusion_proves_truth",
+        "inclusion_proves_independence",
+        "inclusion_proves_reproduction",
+        "inclusion_proves_adoption",
+        "inclusion_proves_conformance",
+        "inclusion_proves_general_efficiency",
+        "inclusion_changes_project_claims",
+        "inclusion_ratifies_protocol_semantics"
+      ],
+      "properties": {
+        "inclusion_proves_truth": {"const": false},
+        "inclusion_proves_independence": {"const": false},
+        "inclusion_proves_reproduction": {"const": false},
+        "inclusion_proves_adoption": {"const": false},
+        "inclusion_proves_conformance": {"const": false},
+        "inclusion_proves_general_efficiency": {"const": false},
+        "inclusion_changes_project_claims": {"const": false},
+        "inclusion_ratifies_protocol_semantics": {"const": false}
+      }
+    }
+  }
+}

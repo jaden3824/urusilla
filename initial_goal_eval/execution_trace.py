@@ -22,6 +22,7 @@ from competitive_eval.hybrid_external_replay import (
 from .contract import (
     ARMS,
     EVENT_PHASES,
+    PLAN_SCHEMA,
     ROUTES,
     VerificationError,
     _count,
@@ -586,6 +587,11 @@ def validate_execution_trace(plan_value: Any, trace_value: Any) -> dict[str, Any
 
     validate_study_plan(plan_value)
     plan = _object(plan_value, "plan")
+    if plan["schema_version"] != PLAN_SCHEMA:
+        raise VerificationError(
+            "study Plan /2 cannot be downgraded into execution Trace /2; "
+            "a dedicated Trace /3 is required"
+        )
     trace = _object(trace_value, "trace")
     _exact(
         trace,

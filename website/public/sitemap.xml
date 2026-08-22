@@ -3,4 +3,22 @@
   <url>
     <loc>https://urusilla-agent-language.audhless25.chatgpt.site/</loc>
   </url>
+  <url>
+    <loc>https://urusilla-agent-language.audhless25.chatgpt.site/.well-known/urusilla.json</loc>
+  </url>
+  <url>
+    <loc>https://urusilla-agent-language.audhless25.chatgpt.site/language-probe.json</loc>
+  </url>
+  <url>
+    <loc>https://urusilla-agent-language.audhless25.chatgpt.site/agent-task.json</loc>
+  </url>
+  <url>
+    <loc>https://urusilla-agent-language.audhless25.chatgpt.site/agents.txt</loc>
+  </url>
+  <url>
+    <loc>https://urusilla-agent-language.audhless25.chatgpt.site/llms.txt</loc>
+  </url>
+  <url>
+    <loc>https://urusilla-agent-language.audhless25.chatgpt.site/community.json</loc>
+  </url>
 </urlset>

@@ -6,6 +6,17 @@ the versioning section of the specification before comparing identifiers.
 
 ## Unreleased
 
+- A self-contained one-fetch action-state language-use probe now requires both
+  semantic decoding and encoding. Its offline validator distinguishes one
+  byte-deterministic `PASS`, a closed `SAFE_FALLBACK`, and semantic or
+  structural `FAIL` outcomes; it grants no installation, persistence,
+  publication, spending, permission, or effect authority and makes no general
+  compatibility or efficiency claim.
+- A preregistration-ready general-dialogue plan now freezes cross-model
+  cross-play, cold-start and bootstrap accounting, drift and adversarial
+  vectors, silence/topology baselines, complete model-visible token accounting,
+  staged local-model execution, and safety/integrity stopping rules. No scored
+  confirmatory run has occurred.
 - Runtime `UtilityEvidence` is now explicitly local route-policy input rather
   than claim authority. Optimized routes may still be selected after exact
   binding and declared-threshold checks, but route candidates and decisions
@@ -27,15 +38,22 @@ the versioning section of the specification before comparing identifiers.
   completed-primary semantic validation before fallback. Evaluator-only
   assembly v3 now connects those captures to a complete, self-issued v2
   receipt bundle and fails unless its local diagnostic content gates close.
+  Portable v3 receipts now also carry and cross-bind the frozen semantic
+  validator manifest preimage and the complete observed-evidence preimage, so
+  coordinated downstream mutation and resealing is rejected. This strengthens
+  content portability but does not authenticate the provider or operator.
   Every generated receipt identifies the offline assembler as its actual
   issuer, so the normal evidence verifier rejects the bundle by default. It
   binds recorded scorer outcomes and wraps declared sandbox-evidence slots
   without replaying the scorer, externally resolving provider-response
   preimages, or independently observing the sandbox; this authenticates neither
   operators, auditors, nor independent execution.
-- A documentation-only append-only evidence transparency-log and future
-  website/API design is available; no live log, domain, or submission service
-  is deployed.
+- An empty read-only epoch-1 evidence-log integrity core now provides explicit
+  `quick_60s` event, checkpoint, log, and discovery schemas, an offline
+  standard-library verifier, privacy-first eligibility checks, append-only
+  correction semantics, and positive/negative vectors. No live intake, bot,
+  network/write automation, domain, signing root, or submission service is
+  deployed.
 - Public contribution guidance now has a no-install "bring your own agent"
   path. Matched submissions still require the published task, receipt, and
   verifier contracts and do not become accepted or independent evidence merely
