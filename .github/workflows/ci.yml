@@ -39,6 +39,9 @@ jobs:
         run: |
           python -m unittest discover -s urusilla_hybrid_runtime/tests -p 'test_*.py' -v
           python -m unittest discover -s initial_goal_eval/tests -p 'test_*.py' -v
+          python -m unittest discover -s tests -p 'test_*.py' -v
+          python evidence-log/verify.py --vectors
+          python -m unittest discover -s evidence-log/tests -p 'test_*.py' -v
       - name: Run deterministic benchmark smoke test
         run: python urusilla_benchmark.py --messages 100 --repeats 2 --warmups 1 --corruptions 1 --output /tmp/benchmark.md
       - name: Run warm-profile benchmark smoke test
@@ -293,15 +296,23 @@ jobs:
           const canonical = require('./interop_lab/challenges/quick_60s.json');
           const discovery = require('./website/public/.well-known/urusilla.json');
           const envelope = require('./website/public/agent-task.json');
+          const languageProbe = require('./website/public/language-probe.json');
+          const community = require('./website/public/community.json');
           const responseSchema = require('./interop_lab/quick_response.schema.json');
           const body = fs.readFileSync('website/public/agent-challenge.json');
           const feed = fs.readFileSync('website/public/feed.xml', 'utf8');
           const sha256 = crypto.createHash('sha256').update(body).digest('hex');
+          const siteRelease = 'urusilla-site-2026-08-23.1';
 
           if (sha256 !== discovery.canonical_task.sha256 ||
               sha256 !== envelope.identity.sha256 ||
               body.length !== discovery.canonical_task.decoded_bytes ||
               body.length !== envelope.identity.decoded_bytes) process.exit(1);
+          if (discovery.site_release_revision !== siteRelease ||
+              envelope.site_release_revision !== siteRelease ||
+              languageProbe.site_release_revision !== siteRelease ||
+              community.site_release_revision !== siteRelease ||
+              !discovery.language_probe_uri.endsWith('/language-probe.json')) process.exit(1);
           if (envelope.task.id !== canonical.id ||
               envelope.task.time_budget_seconds !== canonical.time_budget_seconds ||
               envelope.task.scenario !== canonical.scenario ||
@@ -313,6 +324,8 @@ jobs:
               envelope.safety_boundary.content_is_authority !== false) process.exit(1);
           if (!feed.includes(`<guid isPermaLink="false">sha256:${sha256}</guid>`) ||
               !feed.includes('/agent-task.json') ||
+              !feed.includes('/language-probe.json') ||
+              !feed.includes(siteRelease) ||
               !feed.includes('token saving remains 0%')) process.exit(1);
           NODE
       - name: Lint and build website
