@@ -98,8 +98,8 @@ inventory covers tokenizer and chat-template artifacts, an acyclic closed path
 DAG, a pre-call source-enforced inclusive token cap, and raw plus JSON success
 receipts bound to every artifact bundle.
 
-This preflight does not yet compile those bytes into exact token vectors and
-phase bounds. Therefore `numeric_screen_permitted` is always false even when
+The `/1` preflight remains an inventory binder and never changes meaning: its
+`numeric_screen_permitted` field is always false even when
 `inventory_complete` is true. It never selects a session length:
 `selected_session_length` is always null and `receiver_ceiling_run_permitted`
 is always false. Zero and unknown baseline
@@ -107,10 +107,60 @@ success remain distinct: a content-bound all-zero receipt is complete inventory
 but yields no finite comparator, while an absent receipt leaves inventory
 incomplete. Neither becomes an assumed positive denominator. The current
 no-input invocation is deterministically `blocked`.
-The missing content-derived compiler must be implemented and separately
-validated before any numeric release is possible. Inventory completeness
-authenticates neither artifact origin nor a later provider run and carries no
-efficiency, version, adoption, or claim status.
+
+[`content_bound_compiler_v1.py`](content_bound_compiler_v1.py) is the separate
+semantic layer that the inventory binder deliberately lacked. It requires a
+closed row manifest, exact final UTF-8 model-input bytes for the fixed 128-task
+prefix order, a declarative tokenizer specification, one task-root prompt on
+every allowed endpoint path, per-call inclusive caps with one frozen compiler
+contract, task-ordered baseline success evidence, and a complete node-to-phase
+mapping for the closed DAG. It executes no supplied code. The built-in byte-unit
+engine is restricted to the named synthetic conformance receiver and cannot be
+used as a real-model tokenizer. The optional Hugging Face tokenizer engine loads
+only the supplied local `tokenizer.json` bytes under the exact
+`tokenizers==0.21.4` runtime, binds the installed distribution-file hashes, and
+performs no download or cache lookup. It accepts only deterministic declared
+model types, rejects nonzero tokenizer dropout, and requires two consecutive
+encodes of each unique prompt to produce identical IDs. The final-input declaration binds the
+receiver model/settings, tokenizer, tokenizer specification, and complete
+prompt set while explicitly recording that provider authentication is absent.
+
+The compiler uses DAG dynamic programming rather than enumerating logical
+paths. Candidate vectors contain exact final-input lower bounds; baseline
+vectors use the declared inclusive per-call cap as an upper bound. It emits a
+per-node derivation trace and then invokes the corrected `/3` arithmetic
+consumer in
+[`feasibility_kill_screen_v3.py`](feasibility_kill_screen_v3.py). `/3`
+distinguishes a conditional zero lower bound from `proved-absent` and from a
+present deterministic `proved-zero` phase; legacy `/2` remains unchanged.
+The `/3` result embeds and hashes the full legacy arithmetic-assumption contract
+as well as the corrected zero-label semantics. Baseline evidence `/3` binds the
+complete compilation manifest, domain, tokenizer, model/settings, exact task
+order and prompt preimages, receiver-output preimages, attempt-ledger digests,
+scorer identity, and declared safe-success verdict. The compiler structurally
+replays and re-hashes those receipt preimages; it does not re-execute or
+authenticate the scorer. Reusing the receipts after remapping the program or
+caps fails closed; weak `/1` and prior `/2` receipts are rejected.
+
+The compiler binds all transitive project modules used by the calculation and
+the Python runtime in one closed bundle. It applies bounded manifest, evidence,
+receiver-output, per-case, batch-byte, node, plan, screen, and result budgets;
+expanded prompt-reference work and unique tokenizer constructions have separate
+case/batch budgets, while prompt counts and hashes are memoized per artifact.
+Duplicate case, row, or manifest identities reject before compilation. These
+limits prevent the 128-case interface from becoming an unbounded parser,
+tokenizer-work, or trace-allocation surface.
+
+Successful compilation permits only the conditional zero-call arithmetic
+screen. It publishes all session lengths with a strictly positive residual but
+selects none, and `kill_decision_permitted` remains false. Provider cap
+enforcement, actual prompt delivery, baseline
+evidence authenticity, live-call authorization, and all claim-facing fields
+remain false. No tracked real row currently supplies these artifacts, so this
+implementation closes the compiler-code blocker but does not create a real
+feasibility result or token-saving result. Inventory or compilation
+completeness authenticates neither artifact origin nor a later provider run and
+carries no efficiency, version, adoption, or claim status.
 
 ### Perfect-sender receiver-ceiling diagnostic
 
@@ -175,11 +225,55 @@ boundary. No scorer kind receives a projected
 `judge` event: a caller-labelled deterministic local scorer does not prove that
 the callable made no hidden model call, and a null-usage local event is not
 assembler-consumable. A future runner must instead supply a separately captured
-judge event. A failed primary call remains
-unknown-cost after a successful fallback, a failed scorer remains null and
-unknown-cost, a terminal no-output failure keeps `output_sha256: null`, and an
-parse, semantic, negative, or preservation observations inconsistent with the
-caller-declared probe flags are rejected.
+judge event. A failed primary call remains unknown-cost after a successful
+fallback, a failed scorer remains null and unknown-cost, and a terminal
+no-output failure keeps `output_sha256: null`. A scorer observation outside the
+declared parse, semantic, negative, or preservation scope becomes an explicit
+failed score instead of throwing away the already incurred execution ledger.
+
+`run_preselected_scored_hybrid_task()` closes the preceding chronology gap for
+the same diagnostic boundary. It validates task and scorer metadata before any
+receiver call, invokes the runtime's real `prepare_message()` exactly once, and
+requires the sealed candidate order to contain silence, routine, action-state,
+raw concise text, and JSON. Every available request must retain
+`natural_language_expansion: null` and `decode_before_model: false`. The chosen
+route therefore precedes every receiver outcome: verified silence makes zero
+receiver calls, while the other four routes use their direct request and retain
+the existing bounded fallback and unknown-cost behavior. This wrapper still
+uses injected adapters and creates no provider, credential, spending, or
+external-action authority.
+
+This entry point currently accepts exactly one exact user-message preimage.
+That restriction prevents a multi-message task digest from being attached to a
+receiver request that contains only the final message; full conversation
+projection remains a future Plan/trace requirement. Exact Capsule,
+receiver-capability, and task-context types plus the static adapter, compiler,
+validator, counter, verifier, and scorer call surfaces are checked before
+preparation or receiver execution. Property-backed fake interfaces are rejected
+without evaluating the property. Pre-outcome local usage may report only setup
+and router work; repair, fallback, tool, safety, and judge costs remain unknown
+until an outcome-scoped capture exists.
+
+`prepare_message()` also snapshots the exact built-in forecast and utility-
+evidence dictionaries plus the mutable routine payload before invoking any
+counter, verifier, or compiler callback. The preflight, action-attempt check,
+and final five-route decision receive fresh read-only views of that same master
+snapshot. A callback therefore cannot change a later route by mutating the
+caller's dictionaries between the two router passes. Custom mapping accessors
+are not executed and fail closed.
+
+[`runtime_diagnostic_trace.py`](runtime_diagnostic_trace.py) provides a separate
+canonical `runtime-diagnostic-trace/1` projection for one sealed scored task.
+It cross-binds the five candidate requests and costs, selected and final routes,
+primary and fallback executions, native event ledger, terminal output, scorer
+locks and observation, and caller-reported totals. Its validator rejects
+ordinary tampering, cross-task rebinding, and coordinated malformed re-hashing.
+Every plan, provider, normalizer, scorer-authentication, and claim field is
+fixed false or null, and tests prove that this artifact cannot enter current
+Trace `/2`, Result `/1`, or Receipt `/3` consumers. The digest supplies local
+integrity and reproducibility, not a signature or evidence authenticity; a
+fully fabricated but internally consistent replacement still requires the
+future authenticated evidence layer to detect.
 
 This is a provider-neutral diagnostic bridge, not a generic study runner or a
 claim gate. Current tests use project-authored fake adapters and scorers. The
@@ -199,12 +293,14 @@ has a separate semantic-verification phase, whereas the frozen trace has no such
 phase; one runtime fallback has both local and receiver events, whereas trace v2
 permits one fallback event per task; and an exact cold direct-request projection
 exists only for the action-state primary, not a raw/JSON runtime fallback.
-Moreover, the current plan freezes an arm manifest whose event list includes
-fallback and validator slots before execution, even though fallback existence is
-decided only after the primary response. Synthetic fixtures currently construct
-that manifest after observing their scripted branch. A future real runner must
-mint a new, preregisterable branch-slot or superset-manifest contract instead of
-hiding these mismatches or rewriting the frozen v1 method.
+Plan `/2` now freezes the needed branch-slot superset before execution,
+including the five-route decision, optional sender/fidelity path, bounded
+fallback, and four judge slots. However, Program `/2` deliberately has no
+matching source-record, evidence-store, resolution, trace, or result schema. A
+future real runner must define that versioned receipt closure and bind
+authenticated provider, scorer, sandbox, and independent-operator chronology
+instead of downgrading Program `/2` into the legacy trace or treating this
+diagnostic wrapper as study evidence.
 
 ## Matched-session three-arm diagnostic
 

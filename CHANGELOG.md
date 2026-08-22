@@ -6,6 +6,54 @@ the versioning section of the specification before comparing identifiers.
 
 ## Unreleased
 
+- The provider-neutral runtime/scorer diagnostic can now perform its own
+  pre-outcome five-route preparation. It validates static scoring metadata
+  before any receiver call, invokes the real runtime preparation once, requires
+  the complete silence/routine/action-state/raw/JSON candidate matrix, and
+  rejects any model request that expands back to prose or decodes before the
+  model. Verified silence makes no receiver call; the other routes retain the
+  existing direct request, bounded fallback, final-output-only scoring, and
+  unknown-cost ledger behavior. Exact one-message task binding prevents a full
+  conversation digest from being attached to a last-message-only request;
+  malformed or property-backed callback interfaces fail before compilation or
+  receiver use. Out-of-scope scorer observations become failed, unknown-cost
+  scores without discarding the execution ledger, and pre-outcome local usage
+  can cover only setup/router work. Routing now snapshots exact forecast,
+  evidence, and routine inputs once, so callback mutation cannot alter the
+  second routing pass. A separate canonical runtime-diagnostic trace cross-binds
+  the five-route matrix, executions, ledger, terminal output, and scorer
+  observation, rejects coordinated malformed re-hashing, and is explicitly
+  incompatible with Trace `/2`, Result `/1`, and Receipt `/3`. Both artifacts
+  use caller-injected adapters and remain unbound to Plan `/2`, provider/scorer
+  authentication, and every claim-facing field.
+- A separate content-bound compiler now converts closed exact-byte fixtures
+  into replayable per-node derivation traces and conservative 1..128 phase
+  vectors without executing supplied code or calling a model. It rejects
+  opaque tokenizer bytes, extra prompt/template/cap artifacts, arbitrary cap
+  text, reordered task evidence, and weak baseline receipt `/1`. Baseline
+  success evidence `/3` also binds the complete compilation-manifest digest, in
+  addition to the domain, tokenizer, model/settings, task order, exact input and
+  output preimages, attempt ledgers, and scorer verdicts. The compiler rejects
+  program/cap remapping under replayed receipts, oversized manifests or
+  evidence, excessive per-case or batch bytes/nodes, and duplicate rows before
+  compilation. Its closed bundle digest covers every transitive project module
+  used by the calculation plus the Python runtime; the Hugging Face lane also
+  binds the actual installed `tokenizers` distribution files, rejects
+  stochastic dropout or unsupported model types, and requires repeated encodes
+  to agree. Expanded prompt references and unique tokenizer constructions have
+  separate batch budgets; prompt token counts and digests are memoized by exact
+  artifact identity. The
+  corrected feasibility consumer `/3` distinguishes a conditional numerical
+  zero lower bound from `proved-absent` and a present `proved-zero` local phase;
+  its result embeds and hashes the complete legacy `/2` arithmetic assumptions.
+  Successful compilation permits only conditional zero-call screening and
+  publishes eligible session lengths without selecting one; it explicitly sets
+  `kill_decision_permitted` false. Provider cap enforcement, prompt delivery,
+  evidence authenticity, receiver calls, claims, and protocol promotion remain
+  false. Current positive compiler fixtures use a byte-unit tokenizer that is
+  restricted to one named synthetic conformance receiver; it cannot impersonate
+  a real receiver model. No tracked real domain/model row or new token-saving
+  result exists.
 - The zero-call feasibility screen now accepts a baseline safe-success lower
   bound of zero without inventing a positive denominator. A zero-bound baseline
   cannot provide a finite tokens-per-safe-task upper bound; if both baselines

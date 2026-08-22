@@ -1,4 +1,4 @@
-"""Provider-free bridge from one real runtime execution to declared scoring.
+"""Provider-neutral bridge from one real runtime execution to declared scoring.
 
 The runtime already prepares and executes one hybrid message, including a
 bounded raw/JSON fallback and a runtime-scoped inclusive ledger.  This module
@@ -18,6 +18,7 @@ a separate evidence-production boundary.
 from __future__ import annotations
 
 from dataclasses import InitVar, dataclass
+import inspect
 import json
 import re
 from types import MappingProxyType
@@ -25,6 +26,8 @@ from typing import Any, Callable, Mapping, Protocol, Sequence
 
 from urusilla_hybrid_runtime.canonical import canonical_json
 from urusilla_hybrid_runtime.receiver import ReceiverModelAdapter
+from urusilla_hybrid_runtime.records import Capsule
+from urusilla_hybrid_runtime.router import CostForecast, ReceiverCapabilities
 from urusilla_hybrid_runtime.runtime import (
     HybridExecution,
     LocalOutputValidation,
@@ -32,8 +35,10 @@ from urusilla_hybrid_runtime.runtime import (
     OutputValidationInput,
     PreparedMessage,
     execute_prepared_message,
+    prepare_message,
 )
 from urusilla_hybrid_runtime.sender import source_text_sha256
+from urusilla_hybrid_runtime.task_context import PublicTaskContext
 
 from .contract import FEATURE_TAGS, VerificationError, sha256_ref
 from .execution_trace import task_input_sha256
@@ -47,8 +52,11 @@ from .terminal_contract import (
 SCORING_INPUT_SCHEMA = "urusilla-initial-goal-runtime-scoring-input/1"
 SCORING_OUTPUT_SCHEMA = "urusilla-initial-goal-runtime-scoring-output/1"
 SCORER_OBSERVATION_SCHEMA = "urusilla-initial-goal-runtime-scorer-observation/1"
+# Retain this already-public identifier for artifact compatibility.  Human-facing
+# wording uses "provider-neutral": injected adapters may still call a provider.
 ORCHESTRATION_BOUNDARY = "provider-free-runtime-scoring-diagnostic-only"
 _SCORED_TASK_FACTORY_TOKEN = object()
+_MISSING = object()
 
 _SHA256_REF = re.compile(r"^sha256:[0-9a-f]{64}$")
 _SAFETY_FIELDS = (
@@ -63,6 +71,37 @@ _SCORER_LOCK_FIELDS = (
     "parse_scorer",
     "semantic_scorer",
     "negative_scorer",
+)
+_ROUTE_OPTION_FIELDS = frozenset(
+    {
+        "evidence",
+        "compiler",
+        "silence_proof",
+        "routine",
+        "surface_table",
+        "active_surface",
+        "retained_surface",
+        "policy",
+        "sender_capsule_context",
+        "sender_context_verifier",
+        "fidelity_verifier",
+        "utility_evidence_verifier",
+        "capsule_comprehension_verifier",
+        "task_context_comprehension_verifier",
+        "silence_verifier",
+        "routine_verifier",
+    }
+)
+_ROUTE_CALLBACK_FIELDS = frozenset(
+    {
+        "sender_context_verifier",
+        "fidelity_verifier",
+        "utility_evidence_verifier",
+        "capsule_comprehension_verifier",
+        "task_context_comprehension_verifier",
+        "silence_verifier",
+        "routine_verifier",
+    }
 )
 
 
@@ -89,6 +128,157 @@ def _scorer_locks(value: Any, label: str) -> dict[str, str]:
         field: _require_sha256_ref(value[field], f"{label}.{field}")
         for field in _SCORER_LOCK_FIELDS
     }
+
+
+def _require_callable(
+    value: Any,
+    label: str,
+    *,
+    nullable: bool = False,
+) -> None:
+    """Check a directly injected callable without invoking it."""
+
+    if value is None and nullable:
+        return
+    if not callable(value):
+        suffix = " or null" if nullable else ""
+        raise VerificationError(f"{label} must be callable{suffix}")
+    try:
+        call_impl = inspect.getattr_static(value, "__call__", _MISSING)
+    except Exception as exc:
+        raise VerificationError(f"{label} is not statically inspectable") from exc
+    if (
+        call_impl is _MISSING
+        or isinstance(call_impl, property)
+        or not callable(call_impl)
+    ):
+        raise VerificationError(f"{label} must be a statically callable interface")
+
+
+def _require_static_method(value: Any, attribute: str, label: str) -> None:
+    """Reject missing/property-backed adapter methods without evaluating them."""
+
+    try:
+        candidate = inspect.getattr_static(value, attribute, _MISSING)
+    except Exception as exc:
+        raise VerificationError(f"{label} is not statically inspectable") from exc
+    if isinstance(candidate, (staticmethod, classmethod)):
+        candidate = candidate.__func__
+    if candidate is _MISSING or not callable(candidate):
+        raise VerificationError(f"{label} must be a statically callable method")
+
+
+def _validate_single_user_task_input(
+    *,
+    source_text: str,
+    task_input_messages: Sequence[Mapping[str, str]],
+    task_sha256: str,
+    label: str,
+) -> None:
+    """Bind the only model-visible source to one exact task digest preimage."""
+
+    if type(task_input_messages) not in {list, tuple} or len(task_input_messages) != 1:
+        raise VerificationError(
+            f"{label} task input must be exactly one user message"
+        )
+    message = task_input_messages[0]
+    if (
+        type(message) is not dict
+        or set(message) != {"role", "content"}
+        or message["role"] != "user"
+        or type(message["content"]) is not str
+        or message["content"] != source_text
+    ):
+        raise VerificationError(
+            f"{label} task input must be exactly one user message containing "
+            "the exact natural-language source"
+        )
+    if task_input_sha256(task_input_messages) != task_sha256:
+        raise VerificationError(f"{label} task input preimage digest differs")
+
+
+def _validate_runtime_interfaces(
+    *,
+    receiver_adapter: Any,
+    output_validator: Any,
+    scorer: Any,
+) -> None:
+    """Validate the post-prepare injected interfaces before receiver execution."""
+
+    _require_static_method(
+        receiver_adapter,
+        "complete",
+        "receiver_adapter.complete",
+    )
+    _require_callable(output_validator, "output_validator", nullable=True)
+    _require_callable(scorer, "scorer")
+
+
+def _score_exceeds_declared_scope(
+    score: "RuntimeTaskScore",
+    scoring_input: "RuntimeScoringInput",
+) -> bool:
+    if not scoring_input.parse_probe and score.parse_valid is not None:
+        return True
+    if not scoring_input.semantic_probe and score.semantic_exact is not None:
+        return True
+    if not scoring_input.negative_probe and score.negative_rejected is not None:
+        return True
+    return any(
+        feature not in scoring_input.feature_tags
+        and score.preservation[feature] is not None
+        for feature in FEATURE_TAGS
+    )
+
+
+def _validate_pre_outcome_local_usage(value: ObservedLocalUsage) -> None:
+    """Forbid observations that cannot exist before receiver/scorer outcomes."""
+
+    if type(value) is not ObservedLocalUsage:
+        raise VerificationError("local usage observation type is invalid")
+    for field in (
+        "repair_tokens",
+        "fallback_tokens",
+        "tool_tokens",
+        "safety_tokens",
+        "judge_tokens",
+    ):
+        if getattr(value, field) is not None:
+            raise VerificationError(
+                f"pre-outcome local usage must leave {field} unknown"
+            )
+
+
+def _validate_scoring_metadata(
+    *,
+    task_id: Any,
+    feature_tags: Any,
+    parse_probe: Any,
+    semantic_probe: Any,
+    negative_probe: Any,
+) -> None:
+    """Reject malformed scorer metadata before any receiver can execute."""
+
+    if type(task_id) is not str or not task_id:
+        raise VerificationError("scoring task_id must be non-empty")
+    try:
+        tags_valid = bool(
+            type(feature_tags) is tuple
+            and all(type(tag) is str for tag in feature_tags)
+            and len(feature_tags) == len(set(feature_tags))
+            and set(feature_tags).issubset(FEATURE_TAGS)
+        )
+    except TypeError:
+        tags_valid = False
+    if not tags_valid:
+        raise VerificationError("scoring feature_tags are invalid")
+    for field, value in (
+        ("parse_probe", parse_probe),
+        ("semantic_probe", semantic_probe),
+        ("negative_probe", negative_probe),
+    ):
+        if type(value) is not bool:
+            raise VerificationError(f"scoring {field} must be boolean")
 
 
 def _ledger_value(execution: HybridExecution) -> Mapping[str, Any] | None:
@@ -201,6 +391,7 @@ class RuntimeScoringInput:
             raise VerificationError("scoring input task_id must be non-empty")
         if (
             type(self.feature_tags) is not tuple
+            or not all(type(tag) is str for tag in self.feature_tags)
             or len(self.feature_tags) != len(set(self.feature_tags))
             or not set(self.feature_tags).issubset(FEATURE_TAGS)
         ):
@@ -490,7 +681,7 @@ class ScoredHybridTask:
                 "diagnostic orchestration cannot authenticate plan or scorer code"
             )
         if self.claim_eligible is not False or self.goal_total_complete is not False:
-            raise VerificationError("provider-free orchestration cannot make a claim")
+            raise VerificationError("diagnostic orchestration cannot make a claim")
         if (
             self.scoring_input.execution_binding_sha256
             != self.execution.prepared.execution_binding_sha256
@@ -600,6 +791,7 @@ class ScoredHybridTask:
         *,
         decision_event_sequence: int,
         receiver_event_sequence: int | None,
+        primary_receiver_event_sequence: int | None = None,
     ) -> tuple[dict[str, Any], dict[str, Any]]:
         """Derive non-claim task-result and scoring-binding fragments.
 
@@ -610,11 +802,6 @@ class ScoredHybridTask:
 
         if type(decision_event_sequence) is not int or decision_event_sequence < 0:
             raise VerificationError("decision event sequence is invalid")
-        if receiver_event_sequence is not None and (
-            type(receiver_event_sequence) is not int
-            or receiver_event_sequence <= decision_event_sequence
-        ):
-            raise VerificationError("receiver event sequence is invalid")
         if (
             self.execution.fallback is not None
             and self.scoring_input.selected_mode != "action-state"
@@ -622,6 +809,43 @@ class ScoredHybridTask:
             raise VerificationError(
                 "current frozen trace cannot represent this receiver fallback mode"
             )
+        is_silence = self.scoring_input.terminal_status == SILENCE_TERMINAL_STATUS
+        if is_silence:
+            if (
+                self.scoring_input.selected_mode != "silence"
+                or receiver_event_sequence is not None
+                or primary_receiver_event_sequence is not None
+            ):
+                raise VerificationError(
+                    "silence terminal must keep receiver event sequences null"
+                )
+        elif self.execution.fallback is not None:
+            if (
+                type(primary_receiver_event_sequence) is not int
+                or type(receiver_event_sequence) is not int
+                or not (
+                    decision_event_sequence
+                    < primary_receiver_event_sequence
+                    < receiver_event_sequence
+                )
+            ):
+                raise VerificationError(
+                    "fallback chronology must bind decision, primary receiver, "
+                    "then final fallback"
+                )
+        else:
+            if primary_receiver_event_sequence is not None:
+                raise VerificationError(
+                    "primary receiver event sequence is only separate for a "
+                    "post-receiver fallback"
+                )
+            if (
+                type(receiver_event_sequence) is not int
+                or receiver_event_sequence <= decision_event_sequence
+            ):
+                raise VerificationError(
+                    "non-silence terminal requires a later receiver/fallback event"
+                )
         score = self.score
         task_result = {
             "task_id": self.scoring_input.task_id,
@@ -659,6 +883,7 @@ class ScoredHybridTask:
         receiver_event_sequence: int | None,
         judge_event_sequence: int,
         judge_local_event_id: str,
+        primary_receiver_event_sequence: int | None = None,
     ) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
         """Refuse an assembler trace until the scorer has a real capture.
 
@@ -673,9 +898,17 @@ class ScoredHybridTask:
         self.diagnostic_fragments(
             decision_event_sequence=decision_event_sequence,
             receiver_event_sequence=receiver_event_sequence,
+            primary_receiver_event_sequence=primary_receiver_event_sequence,
         )
         if type(judge_event_sequence) is not int or judge_event_sequence < 0:
             raise VerificationError("judge event sequence is invalid")
+        terminal_sequence = (
+            decision_event_sequence
+            if receiver_event_sequence is None
+            else receiver_event_sequence
+        )
+        if judge_event_sequence <= terminal_sequence:
+            raise VerificationError("judge event must follow the terminal output")
         if type(judge_local_event_id) is not str or not judge_local_event_id:
             raise VerificationError("judge local event ID is invalid")
         raise VerificationError(
@@ -714,33 +947,35 @@ def run_scored_hybrid_task(
 
     if type(prepared) is not PreparedMessage:
         raise VerificationError("study runner requires an exact PreparedMessage")
+    _validate_scoring_metadata(
+        task_id=task_id,
+        feature_tags=feature_tags,
+        parse_probe=parse_probe,
+        semantic_probe=semantic_probe,
+        negative_probe=negative_probe,
+    )
     _require_sha256_ref(task_sha256, "study task_sha256")
     if type(source_text) is not str or not source_text:
         raise VerificationError("study source text must be non-empty")
     if source_text_sha256(source_text) != prepared.route.source_sha256:
         raise VerificationError("study source text differs from the prepared route")
-    last_message = (
-        None
-        if type(task_input_messages) not in {list, tuple}
-        or not task_input_messages
-        else task_input_messages[-1]
+    _validate_single_user_task_input(
+        source_text=source_text,
+        task_input_messages=task_input_messages,
+        task_sha256=task_sha256,
+        label="study",
     )
-    if (
-        type(last_message) is not dict
-        or last_message.get("role") != "user"
-        or last_message.get("content") != source_text
-    ):
-        raise VerificationError(
-            "study task input must end with the exact natural-language source"
-        )
-    if task_input_sha256(task_input_messages) != task_sha256:
-        raise VerificationError("study task input preimage digest differs")
     observed_locks = _scorer_locks(dict(scorer_locks), "study scorer_locks")
     expected_locks = _scorer_locks(
         dict(caller_expected_scorer_locks), "caller expected scorer_locks"
     )
     if observed_locks != expected_locks:
         raise VerificationError("declared scorer lock values differ")
+    _validate_runtime_interfaces(
+        receiver_adapter=receiver_adapter,
+        output_validator=output_validator,
+        scorer=scorer,
+    )
 
     execution = execute_prepared_message(
         prepared,
@@ -789,6 +1024,10 @@ def run_scored_hybrid_task(
         candidate = RuntimeTaskScore.failed("scorer-call-failed")
     if type(candidate) is not RuntimeTaskScore:
         candidate = RuntimeTaskScore.failed("scorer-reply-type-invalid")
+    elif _score_exceeds_declared_scope(candidate, scoring_input):
+        candidate = RuntimeTaskScore.failed(
+            "scorer-output-outside-declared-scope"
+        )
     observation_sha256 = sha256_ref(
         {
             "schema_version": SCORER_OBSERVATION_SCHEMA,
@@ -807,6 +1046,201 @@ def run_scored_hybrid_task(
     )
 
 
+def run_preselected_scored_hybrid_task(
+    *,
+    task_id: str,
+    task_sha256: str,
+    source_text: str,
+    task_input_messages: Sequence[Mapping[str, str]],
+    feature_tags: tuple[str, ...],
+    parse_probe: bool,
+    semantic_probe: bool,
+    negative_probe: bool,
+    capsule: Capsule,
+    receiver: ReceiverCapabilities,
+    token_counter: Callable[[str], int],
+    task_context: PublicTaskContext,
+    forecasts: Mapping[str, CostForecast],
+    route_options: Mapping[str, Any] | None = None,
+    receiver_adapter: ReceiverModelAdapter,
+    output_validator: Callable[[OutputValidationInput], LocalOutputValidation]
+    | None,
+    scorer: RuntimeTaskScorer,
+    scorer_locks: Mapping[str, str],
+    caller_expected_scorer_locks: Mapping[str, str],
+    observed_local_usage_factory: Callable[
+        [PreparedMessage], ObservedLocalUsage | None
+    ]
+    | None = None,
+) -> ScoredHybridTask:
+    """Select one sealed five-route request before any receiver outcome.
+
+    This is the smallest provider-neutral chronology bridge around the existing
+    runtime/scorer diagnostic.  It calls :func:`prepare_message` exactly once,
+    verifies that the complete silence/routine/action-state/raw/JSON candidate
+    matrix still forbids prose expansion, optionally binds caller-observed local
+    usage to that preparation, and only then delegates receiver execution and
+    scoring to :func:`run_scored_hybrid_task`.
+
+    The function creates no provider, credential, or external-call authority.
+    Its adapter, compiler, verifiers, and scorer remain caller injected.  It
+    does not resolve a Plan-v2 program, mint provider receipts, authenticate a
+    scorer, or make the returned diagnostic claim eligible.
+    """
+
+    _validate_scoring_metadata(
+        task_id=task_id,
+        feature_tags=feature_tags,
+        parse_probe=parse_probe,
+        semantic_probe=semantic_probe,
+        negative_probe=negative_probe,
+    )
+    _require_sha256_ref(task_sha256, "preselected task_sha256")
+    if type(source_text) is not str or not source_text:
+        raise VerificationError("preselected source text must be non-empty")
+    _validate_single_user_task_input(
+        source_text=source_text,
+        task_input_messages=task_input_messages,
+        task_sha256=task_sha256,
+        label="preselected",
+    )
+    if type(capsule) is not Capsule:
+        raise VerificationError("preselected capsule must be an exact Capsule")
+    if type(receiver) is not ReceiverCapabilities:
+        raise VerificationError(
+            "preselected receiver must be exact ReceiverCapabilities"
+        )
+    if type(task_context) is not PublicTaskContext:
+        raise VerificationError(
+            "preselected task_context must be an exact PublicTaskContext"
+        )
+    observed_locks = _scorer_locks(
+        dict(scorer_locks), "preselected scorer_locks"
+    )
+    expected_locks = _scorer_locks(
+        dict(caller_expected_scorer_locks),
+        "preselected caller expected scorer_locks",
+    )
+    if observed_locks != expected_locks:
+        raise VerificationError("preselected scorer lock values differ")
+    if route_options is None:
+        options: dict[str, Any] = {}
+    elif type(route_options) is not dict:
+        raise VerificationError("route_options must be an exact dictionary")
+    else:
+        options = dict(route_options)
+    if any(type(key) is not str for key in options):
+        raise VerificationError("route_options keys must be strings")
+    unknown_options = set(options) - _ROUTE_OPTION_FIELDS
+    if unknown_options:
+        raise VerificationError(
+            f"route_options contain unknown fields: {sorted(unknown_options)}"
+        )
+    _require_callable(token_counter, "token_counter")
+    _validate_runtime_interfaces(
+        receiver_adapter=receiver_adapter,
+        output_validator=output_validator,
+        scorer=scorer,
+    )
+    _require_callable(
+        observed_local_usage_factory,
+        "local usage factory",
+        nullable=True,
+    )
+    compiler = options.get("compiler")
+    if compiler is not None:
+        _require_static_method(compiler, "complete", "compiler.complete")
+    for field in _ROUTE_CALLBACK_FIELDS:
+        if field in options:
+            _require_callable(options[field], field, nullable=True)
+
+    prepared = prepare_message(
+        source_text,
+        capsule,
+        receiver,
+        token_counter,
+        task_context=task_context,
+        forecasts=forecasts,
+        **options,
+    )
+    if type(prepared) is not PreparedMessage:
+        raise VerificationError("route preparation returned an invalid result")
+    if tuple(item.mode for item in prepared.route.candidates) != (
+        "silence",
+        "routine",
+        "action-state",
+        "raw",
+        "json",
+    ):
+        raise VerificationError("preselected route candidate matrix is incomplete")
+    for candidate in prepared.route.candidates:
+        request = candidate.request
+        if request is not None and (
+            request.natural_language_expansion is not None
+            or request.decode_before_model
+        ):
+            raise VerificationError(
+                "preselected route attempted prose expansion before the model"
+            )
+
+    observed_local_usage = None
+    if observed_local_usage_factory is not None:
+        try:
+            prepared_route = prepared.route
+            prepared_request = prepared_route.request
+            pre_usage_factory_binding = (
+                prepared.execution_binding_sha256,
+                prepared_route.binding_sha256,
+                prepared_route.selected_mode,
+                prepared_request.binding_sha256,
+            )
+        except Exception as exc:
+            raise VerificationError(
+                "prepared execution binding is invalid before local usage observation"
+            ) from exc
+        try:
+            observed_local_usage = observed_local_usage_factory(prepared)
+        except Exception as exc:
+            raise VerificationError("local usage observation failed") from exc
+        try:
+            prepared_route = prepared.route
+            prepared_request = prepared_route.request
+            post_usage_factory_binding = (
+                prepared.execution_binding_sha256,
+                prepared_route.binding_sha256,
+                prepared_route.selected_mode,
+                prepared_request.binding_sha256,
+            )
+        except Exception as exc:
+            raise VerificationError(
+                "local usage factory changed the prepared execution binding"
+            ) from exc
+        if post_usage_factory_binding != pre_usage_factory_binding:
+            raise VerificationError(
+                "local usage factory changed the prepared execution binding"
+            )
+        if observed_local_usage is not None:
+            _validate_pre_outcome_local_usage(observed_local_usage)
+
+    return run_scored_hybrid_task(
+        task_id=task_id,
+        task_sha256=task_sha256,
+        source_text=source_text,
+        task_input_messages=task_input_messages,
+        feature_tags=feature_tags,
+        parse_probe=parse_probe,
+        semantic_probe=semantic_probe,
+        negative_probe=negative_probe,
+        prepared=prepared,
+        receiver_adapter=receiver_adapter,
+        output_validator=output_validator,
+        scorer=scorer,
+        scorer_locks=observed_locks,
+        caller_expected_scorer_locks=expected_locks,
+        observed_local_usage=observed_local_usage,
+    )
+
+
 __all__ = [
     "ORCHESTRATION_BOUNDARY",
     "RuntimeScoringInput",
@@ -816,5 +1250,6 @@ __all__ = [
     "SCORING_INPUT_SCHEMA",
     "SCORING_OUTPUT_SCHEMA",
     "ScoredHybridTask",
+    "run_preselected_scored_hybrid_task",
     "run_scored_hybrid_task",
 ]

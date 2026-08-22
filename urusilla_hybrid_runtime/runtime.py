@@ -4,9 +4,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
 import re
+from types import MappingProxyType
 from typing import Callable, Mapping
 
-from .canonical import canonical_json, sha256_text
+from .canonical import canonical_json, sha256_text, strict_json_loads
+from .errors import RoutingError
 from .fidelity import FidelityVerification, FidelityVerificationInput
 from .records import Capsule
 from .receiver import (
@@ -76,6 +78,128 @@ _TOTAL_ONLY_MODEL_COMPONENTS = {
     "semantic-fidelity-verifier",
 }
 _LOCAL_SETUP_SCOPE = "runtime-local-exclusive-of-cold-comprehension"
+
+
+def _clone_exact_artifact(value, expected_type, label: str):
+    """Clone a trusted exact dataclass without walking arbitrary properties."""
+
+    if value is None:
+        return None
+    if type(value) is not expected_type:
+        raise RoutingError(f"routing snapshot {label} must use its exact type")
+    try:
+        if expected_type is RoutineInvocation:
+            # Routine payload is the one typed artifact with a deliberately
+            # JSON-shaped mutable interior.  Canonical round-trip both validates
+            # it without invoking user-defined copy hooks and deeply detaches it.
+            payload = strict_json_loads(
+                canonical_json(object.__getattribute__(value, "payload"))
+            )
+            return replace(value, payload=payload)
+        return replace(value)
+    except Exception as exc:
+        raise RoutingError(f"routing snapshot could not clone {label}") from exc
+
+
+def _snapshot_typed_mapping(
+    value: Mapping[str, object] | None,
+    expected_value_type,
+    label: str,
+    *,
+    optional: bool = False,
+) -> tuple[tuple[str, object], ...]:
+    """Capture an exact built-in mapping without trusting custom accessors."""
+
+    if value is None:
+        if optional:
+            return ()
+        raise RoutingError(f"routing snapshot {label} cannot be null")
+    if type(value) is not dict:
+        raise RoutingError(f"routing snapshot {label} must be an exact dict")
+    try:
+        items = tuple(value.items())
+    except Exception as exc:
+        raise RoutingError(f"routing snapshot could not read {label}") from exc
+    if any(type(key) is not str for key, _ in items):
+        raise RoutingError(f"routing snapshot {label} keys must be strings")
+    if len({key for key, _ in items}) != len(items):
+        raise RoutingError(f"routing snapshot {label} contains duplicate keys")
+    if any(type(item) is not expected_value_type for _, item in items):
+        raise RoutingError(
+            f"routing snapshot {label} values must use their exact type"
+        )
+    return tuple(
+        sorted(
+            (
+                key,
+                _clone_exact_artifact(item, expected_value_type, f"{label}[{key!r}]"),
+            )
+            for key, item in items
+        )
+    )
+
+
+@dataclass(frozen=True)
+class _RoutingInputSnapshot:
+    """Callback-isolated source of every mutable routing pass input.
+
+    The master values are captured before any verifier, counter, or compiler is
+    invoked.  Each pass receives a fresh typed clone, so a callback can mutate
+    neither caller-owned mappings nor a prior pass view to alter a later route.
+    """
+
+    forecast_items: tuple[tuple[str, object], ...]
+    evidence_items: tuple[tuple[str, object], ...]
+    routine: RoutineInvocation | None
+
+    @classmethod
+    def capture(
+        cls,
+        *,
+        forecasts: Mapping[str, CostForecast],
+        evidence: Mapping[str, UtilityEvidence] | None,
+        routine: RoutineInvocation | None,
+    ) -> "_RoutingInputSnapshot":
+        return cls(
+            forecast_items=_snapshot_typed_mapping(
+                forecasts, CostForecast, "forecasts"
+            ),
+            evidence_items=_snapshot_typed_mapping(
+                evidence, UtilityEvidence, "evidence", optional=True
+            ),
+            routine=_clone_exact_artifact(routine, RoutineInvocation, "routine"),
+        )
+
+    def materialize(
+        self,
+    ) -> tuple[
+        Mapping[str, CostForecast],
+        Mapping[str, UtilityEvidence],
+        RoutineInvocation | None,
+    ]:
+        forecasts = MappingProxyType(
+            {
+                key: _clone_exact_artifact(
+                    value, CostForecast, f"forecasts[{key!r}]"
+                )
+                for key, value in self.forecast_items
+            }
+        )
+        evidence = MappingProxyType(
+            {
+                key: _clone_exact_artifact(
+                    value, UtilityEvidence, f"evidence[{key!r}]"
+                )
+                for key, value in self.evidence_items
+            }
+        )
+        return (
+            forecasts,
+            evidence,
+            _clone_exact_artifact(
+                self.routine, RoutineInvocation, "routine"
+            ),
+        )
 
 
 @dataclass(frozen=True)
@@ -1263,17 +1387,24 @@ def prepare_message(
     action.
     """
 
+    snapshot = _RoutingInputSnapshot.capture(
+        forecasts=forecasts,
+        evidence=evidence,
+        routine=routine,
+    )
+    first_forecasts, first_evidence, first_routine = snapshot.materialize()
+
     first = plan_route(
         source_text,
         capsule,
         receiver,
         token_counter,
         task_context=task_context,
-        forecasts=forecasts,
-        evidence=evidence,
+        forecasts=first_forecasts,
+        evidence=first_evidence,
         compile_outcome=None,
         silence_proof=silence_proof,
-        routine=routine,
+        routine=first_routine,
         policy=policy,
         utility_evidence_verifier=utility_evidence_verifier,
         capsule_comprehension_verifier=capsule_comprehension_verifier,
@@ -1284,7 +1415,8 @@ def prepare_message(
     if first.selected_mode in {"silence", "routine"}:
         return PreparedMessage(route=first, compilation=None)
 
-    action_evidence = None if evidence is None else evidence.get("action-state")
+    attempt_forecasts, attempt_evidence, _ = snapshot.materialize()
+    action_evidence = attempt_evidence.get("action-state")
     if compiler is None or fidelity_verifier is None or not should_attempt_action_state(
         receiver,
         capsule,
@@ -1292,12 +1424,12 @@ def prepare_message(
         action_evidence,
         policy,
         best_baseline_tokens=first.best_baseline_tokens,
-        forecast=forecasts.get("action-state", CostForecast()),
+        forecast=attempt_forecasts.get("action-state", CostForecast()),
         token_counter=token_counter,
         evidence_verifier=utility_evidence_verifier,
         capsule_comprehension_verifier=capsule_comprehension_verifier,
         task_context_comprehension_verifier=task_context_comprehension_verifier,
-        surface_forecast=forecasts.get("action-state-surface"),
+        surface_forecast=attempt_forecasts.get("action-state-surface"),
         surface_table=surface_table,
         active_surface=active_surface,
         retained_surface=retained_surface,
@@ -1347,21 +1479,22 @@ def prepare_message(
                 total_tokens=None,
                 usage_complete=False,
             )
+    final_forecasts, final_evidence, final_routine = snapshot.materialize()
     final = plan_route(
         source_text,
         capsule,
         receiver,
         token_counter,
         task_context=task_context,
-        forecasts=forecasts,
-        evidence=evidence,
+        forecasts=final_forecasts,
+        evidence=final_evidence,
         compile_outcome=compilation,
         fidelity_verification=fidelity_verification,
         surface_table=surface_table,
         active_surface=active_surface,
         retained_surface=retained_surface,
         silence_proof=silence_proof,
-        routine=routine,
+        routine=final_routine,
         policy=policy,
         utility_evidence_verifier=utility_evidence_verifier,
         capsule_comprehension_verifier=capsule_comprehension_verifier,

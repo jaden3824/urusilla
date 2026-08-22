@@ -1867,6 +1867,161 @@ class EvidenceAndRoutingTests(TestCase):
         self.assertFalse(prepared.external_effects_performed)
         self.assertIn(self.state.canonical_text, prepared.route.request.model_visible_text)
 
+    def test_compiler_cannot_change_final_route_by_mutating_caller_inputs(self) -> None:
+        source = "Verify artifact seven without external effects. " * 800
+        forecasts = complete_forecasts()
+        evidence = {"action-state": passing_evidence()}
+        policy = action_policy()
+
+        class MutatingCompiler(FakeCompiler):
+            def complete(inner_self, prompt):
+                forecasts.clear()
+                forecasts["raw"] = CostForecast(complete=False)
+                evidence.clear()
+                return super().complete(prompt)
+
+        compiler = MutatingCompiler(
+            ModelReply(sender_output(self.state), "model-a", 10)
+        )
+        prepared = prepare_message(
+            source,
+            self.capsule,
+            self.receiver,
+            char_count,
+            task_context=TASK_CONTEXT,
+            forecasts=forecasts,
+            evidence=evidence,
+            compiler=compiler,
+            fidelity_verifier=verify_fidelity,
+            policy=policy,
+            utility_evidence_verifier=verify_utility,
+            capsule_comprehension_verifier=verify_comprehension,
+            task_context_comprehension_verifier=verify_task_context,
+        )
+
+        self.assertEqual(compiler.calls, 1)
+        self.assertEqual(evidence, {})
+        self.assertEqual(prepared.route.selected_mode, "action-state")
+        self.assertEqual(prepared.route.selected_cost.sender_tokens, 10)
+
+    def test_verifier_cannot_change_later_passes_by_mutating_caller_maps(self) -> None:
+        source = "Verify artifact seven without external effects. " * 800
+        forecasts = complete_forecasts()
+        evidence = {"action-state": passing_evidence()}
+        verifier_calls = 0
+
+        def mutating_verifier(item, *args):
+            nonlocal verifier_calls
+            verifier_calls += 1
+            forecasts.clear()
+            forecasts["action-state"] = CostForecast(complete=False)
+            evidence.clear()
+            return verify_utility(item, *args)
+
+        compiler = FakeCompiler(
+            ModelReply(sender_output(self.state), "model-a", 10)
+        )
+        prepared = prepare_message(
+            source,
+            self.capsule,
+            self.receiver,
+            char_count,
+            task_context=TASK_CONTEXT,
+            forecasts=forecasts,
+            evidence=evidence,
+            compiler=compiler,
+            fidelity_verifier=verify_fidelity,
+            policy=action_policy(),
+            utility_evidence_verifier=mutating_verifier,
+            capsule_comprehension_verifier=verify_comprehension,
+            task_context_comprehension_verifier=verify_task_context,
+        )
+
+        self.assertGreaterEqual(verifier_calls, 3)
+        self.assertEqual(evidence, {})
+        self.assertEqual(prepared.route.selected_mode, "action-state")
+
+    def test_utility_verifier_cannot_mutate_evidence_after_binding(self) -> None:
+        source = "Verify artifact seven without external effects. " * 800
+        low_evidence = replace(
+            passing_evidence(),
+            domain_count=0,
+            model_family_count=0,
+            independent_operator_count=0,
+            parse_validity=0.10,
+            semantic_fidelity=0.10,
+            task_success_difference_lcb=-1.0,
+            total_token_reduction_lcb=0.0,
+            negative_rejection=0.10,
+        )
+        self.assertFalse(low_evidence.declared_thresholds_passed)
+
+        def mutating_verifier(item, *_args):
+            original_binding = item.binding_sha256
+            original_verifier = item.verifier_sha256
+            object.__setattr__(item, "domain_count", 3)
+            object.__setattr__(item, "model_family_count", 2)
+            object.__setattr__(item, "independent_operator_count", 2)
+            object.__setattr__(item, "parse_validity", 0.99)
+            object.__setattr__(item, "semantic_fidelity", 0.95)
+            object.__setattr__(item, "task_success_difference_lcb", -0.01)
+            object.__setattr__(item, "total_token_reduction_lcb", 0.20)
+            object.__setattr__(item, "negative_rejection", 0.999)
+            return LocalArtifactVerification(
+                passed=True,
+                verifier_sha256=original_verifier,
+                input_binding_sha256=original_binding,
+            )
+
+        compiler = FakeCompiler(
+            ModelReply(sender_output(self.state), "model-a", 10)
+        )
+        prepared = prepare_message(
+            source,
+            self.capsule,
+            self.receiver,
+            char_count,
+            task_context=TASK_CONTEXT,
+            forecasts=complete_forecasts(),
+            evidence={"action-state": low_evidence},
+            compiler=compiler,
+            fidelity_verifier=verify_fidelity,
+            policy=action_policy(),
+            utility_evidence_verifier=mutating_verifier,
+            capsule_comprehension_verifier=verify_comprehension,
+            task_context_comprehension_verifier=verify_task_context,
+        )
+
+        self.assertEqual(compiler.calls, 0)
+        self.assertIn(prepared.route.selected_mode, {"raw", "json"})
+        self.assertFalse(low_evidence.declared_thresholds_passed)
+
+    def test_custom_mapping_snapshot_fails_without_running_its_accessors(self) -> None:
+        class ExplosiveForecasts(dict):
+            def items(self):
+                raise AssertionError("custom mapping accessor executed")
+
+        compiler = FakeCompiler(
+            ModelReply(sender_output(self.state), "model-a", 10)
+        )
+        with self.assertRaisesRegex(RoutingError, "exact dict"):
+            prepare_message(
+                "Verify artifact seven without external effects. " * 800,
+                self.capsule,
+                self.receiver,
+                char_count,
+                task_context=TASK_CONTEXT,
+                forecasts=ExplosiveForecasts(complete_forecasts()),
+                evidence={"action-state": passing_evidence()},
+                compiler=compiler,
+                fidelity_verifier=verify_fidelity,
+                policy=action_policy(),
+                utility_evidence_verifier=verify_utility,
+                capsule_comprehension_verifier=verify_comprehension,
+                task_context_comprehension_verifier=verify_task_context,
+            )
+        self.assertEqual(compiler.calls, 0)
+
     def test_missing_evidence_prevents_compiler_call_unless_trial_is_explicit(self) -> None:
         compiler = FakeCompiler(ModelReply(sender_output(self.state), "model-a", 10))
         prepared = prepare_message(
@@ -2070,6 +2225,57 @@ class EvidenceAndRoutingTests(TestCase):
             routine_verifier=verify_bound_artifact,
         )
         self.assertIn(fallback.selected_mode, {"raw", "json"})
+
+    def test_routine_payload_is_detached_before_counter_callback_mutation(self) -> None:
+        source = "Repeat the verified read-only status check. " * 500
+        routine = RoutineInvocation(
+            routine_id="status-check",
+            routine_sha256=ROUTINE_DIGEST,
+            routine_definition_text=ROUTINE_DEFINITION_TEXT,
+            source_text=source,
+            source_sha256=source_text_sha256(source),
+            task_context_text=TASK_CONTEXT.canonical_text,
+            task_context_sha256=TASK_CONTEXT.sha256,
+            verifier_sha256="sha256:" + "5" * 64,
+            payload={"artifact": 7},
+            receiver_acknowledged=True,
+            session_local=True,
+            effect_free=True,
+        )
+        mutated = False
+
+        def mutating_counter(text: str) -> int:
+            nonlocal mutated
+            if not mutated:
+                mutated = True
+                routine.payload["artifact"] = 999
+            return len(text)
+
+        prepared = prepare_message(
+            source,
+            self.capsule,
+            ReceiverCapabilities(session_routine_sha256=(ROUTINE_DIGEST,)),
+            mutating_counter,
+            task_context=TASK_CONTEXT,
+            forecasts=complete_forecasts(),
+            evidence={
+                "routine": passing_evidence(
+                    "routine-snapshot", route_mode="routine"
+                )
+            },
+            routine=routine,
+            policy=RouterPolicy(receiver_total_token_ceiling=10_000),
+            utility_evidence_verifier=verify_utility,
+            routine_verifier=verify_bound_artifact,
+        )
+
+        self.assertTrue(mutated)
+        self.assertEqual(routine.payload, {"artifact": 999})
+        self.assertEqual(prepared.route.selected_mode, "routine")
+        self.assertEqual(
+            strict_json_loads(prepared.route.request.payload_text)["invocation"],
+            {"artifact": 7},
+        )
 
     def test_capsule_cold_cost_is_explicit_and_can_change_routing(self) -> None:
         source = "long source " * 2000

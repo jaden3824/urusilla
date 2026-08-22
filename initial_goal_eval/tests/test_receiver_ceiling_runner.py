@@ -6,6 +6,9 @@ from unittest import TestCase
 from unittest.mock import patch
 
 import initial_goal_eval.receiver_ceiling_runner as receiver_ceiling_runner
+from initial_goal_eval.content_bound_compiler_v1 import (
+    build_content_bound_feasibility_screen,
+)
 from initial_goal_eval.matched_session_pilot import (
     ComprehensionProviderResult,
     NormalizedProviderUsage,
@@ -19,6 +22,9 @@ from initial_goal_eval.receiver_ceiling_runner import (
     SyntheticReceiverCeilingAuthorization,
     receiver_ceiling_experiment_binding_sha256,
     run_perfect_sender_matched_session,
+)
+from initial_goal_eval.tests.test_content_bound_compiler_v1 import (
+    _make_case as _make_content_bound_case,
 )
 from urusilla_hybrid_runtime.canonical import canonical_json, sha256_text
 from urusilla_hybrid_runtime.receiver import ReceiverModelReply
@@ -708,6 +714,32 @@ class ReceiverCeilingRunnerTests(TestCase):
         ):
             _run(provider, fixtures, blocked)
         self.assertEqual(provider.call_count, 0)
+
+    def test_content_bound_screen_cannot_authorize_receiver_calls(self):
+        fixtures = _fixtures()
+        screen = build_content_bound_feasibility_screen(
+            [_make_content_bound_case()]
+        )
+        self.assertTrue(screen["numeric_screen_permitted"])
+        self.assertTrue(screen["eligible_session_lengths"])
+        self.assertIsNone(screen["selected_session_length"])
+        self.assertFalse(screen["receiver_ceiling_run_permitted"])
+
+        selected = screen["eligible_session_lengths"][0]
+        forged = {
+            **screen,
+            "selected_session_length": selected,
+            "receiver_ceiling_run_permitted": True,
+        }
+        for label, preflight in (("screen", screen), ("forged", forged)):
+            with self.subTest(label=label):
+                provider = FakeOfflineProvider(fixtures)
+                with self.assertRaisesRegex(
+                    ReceiverCeilingError,
+                    "exact synthetic authorization type is required",
+                ):
+                    _run(provider, fixtures, preflight)
+                self.assertEqual(provider.call_count, 0)
 
     def test_host_declaration_rejects_false_without_claiming_a_sandbox(self):
         fixtures = _fixtures()

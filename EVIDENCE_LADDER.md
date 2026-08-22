@@ -27,9 +27,20 @@ until the failing component changes:
    It must never be replaced with an assumed success. If neither raw nor JSON
    has a positive evidence-bound lower bound, the comparison arithmetic stays
    null and the cell is only `not-disproven`.
-   The current content-derived preflight binds artifact inventory but always
-   keeps numeric permission false because the compiler from those bytes to exact
-   token vectors and phase bounds is not implemented.
+   The content-derived `/1` preflight remains an inventory-only binder and
+   always keeps its own numeric permission false. A separate compiler now
+   derives conservative vectors from a closed 128-task prompt order, exact
+   local tokenizer bytes, a node-to-phase DAG program, inclusive caps, and
+   task-bound baseline evidence, then passes them to the corrected `/3`
+   arithmetic consumer. Its successful synthetic fixtures permit only the
+   zero-call conditional arithmetic and explicitly forbid a kill decision. The
+   byte-unit lane is tied to a named synthetic conformance receiver; a real row
+   must bind its actual local tokenizer and final-input declaration. Receipts
+   bind the whole compilation program, and closed source/runtime plus global
+   input/node/output budgets fail closed against remapping and resource abuse.
+   No tracked real row currently supplies the required exact artifacts;
+   provider cap enforcement, actual prompt delivery, baseline authenticity,
+   session-length selection, and receiver calls therefore remain blocked.
 2. **Perfect-sender receiver ceiling.** On a small staged sample, provide the
    correct public action state directly and test whether two receiver families
    can preserve task success while leaving enough token margin for the later

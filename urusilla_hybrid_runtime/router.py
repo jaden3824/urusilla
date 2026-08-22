@@ -1048,18 +1048,19 @@ def _validated_route_policy_evidence(
     """Bind caller evidence for local route policy, never for claim issuance."""
 
     runtime_sha256 = current_runtime_sha256()
-    if (
-        evidence is None
-        or verifier is None
-        or evidence.route_mode != mode
-        or evidence.capsule_sha256 != capsule_sha256
-        or evidence.task_profile_sha256 != task_profile_sha256
-        or evidence.symbol_table_sha256 != symbol_table_sha256
-        or evidence.runtime_sha256 != runtime_sha256
-    ):
+    if type(evidence) is not UtilityEvidence or verifier is None:
         return None
     try:
         evidence_binding_sha256 = evidence.binding_sha256
+        evidence_verifier_sha256 = evidence.verifier_sha256
+        if (
+            evidence.route_mode != mode
+            or evidence.capsule_sha256 != capsule_sha256
+            or evidence.task_profile_sha256 != task_profile_sha256
+            or evidence.symbol_table_sha256 != symbol_table_sha256
+            or evidence.runtime_sha256 != runtime_sha256
+        ):
+            return None
         verified = verifier(
             evidence,
             mode,
@@ -1068,12 +1069,14 @@ def _validated_route_policy_evidence(
             symbol_table_sha256,
             runtime_sha256,
         )
+        post_verification_binding_sha256 = evidence.binding_sha256
     except Exception:
         return None
     if (
         not isinstance(verified, LocalArtifactVerification)
         or not verified.passed
-        or verified.verifier_sha256 != evidence.verifier_sha256
+        or post_verification_binding_sha256 != evidence_binding_sha256
+        or verified.verifier_sha256 != evidence_verifier_sha256
         or verified.input_binding_sha256 != evidence_binding_sha256
     ):
         return None

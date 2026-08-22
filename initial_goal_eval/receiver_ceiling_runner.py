@@ -465,10 +465,11 @@ class SyntheticReceiverCeilingAuthorization:
 
     The object is intentionally constructible by any caller.  It binds inputs
     and prevents accidental mismatches, but it is not a signature, permission,
-    or sandbox.  In particular, this is not derived from
-    ``finite_bound_preflight_v1.numeric_screen_permitted``.  That field only
-    permits the arithmetic screen, whose current real result has unknown N and
-    must block this runner.
+    or sandbox.  In particular, this is not derived from either
+    ``finite_bound_preflight_v1.numeric_screen_permitted`` or the content-bound
+    compiler's ``numeric_screen_permitted`` / ``eligible_session_lengths``.
+    Those are arithmetic-only facts: an eligible N is neither selected nor
+    authorized and cannot hand off to this runner.
     """
 
     canonical_text: str
