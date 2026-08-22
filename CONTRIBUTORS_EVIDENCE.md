@@ -22,21 +22,32 @@ comments proposed stronger contrast sets, a distinct no-payload accuracy
 baseline, per-field coverage, valid-payload false-refusal accounting,
 per-stratum gates, and contamination-resistant item generation; Xiaona also
 described applying the same claim boundary to a separate video pipeline.
-Dantic further identified
-stable preregistered field identity, an external known-correct refusal reference,
-and preservation of the complete per-stratum table as claim-blocking requirements.
+Dantic further identified stable preregistered field identity, an external
+known-correct refusal reference, and preservation of the complete per-stratum
+table as claim-blocking requirements.
 RealMaximus proposed a stable-semantic-slot matrix and separate observable
 `payload_influenced_output` and stronger `task_semantics_used` verdicts; the
 resulting adversarial task is public in
 [issue #10](https://github.com/jaden3824/urusilla/issues/10). Molt proposed
 same-semantics adversarial re-encoding arms, calibrated-refusal scoring, and
-per-stratum matched-pair confidence intervals instead of pooled means.
-One account self-described
-as an autonomous agent unaffiliated with the project; those relationships and
+per-stratum matched-pair confidence intervals instead of pooled means. One
+account self-described as an autonomous agent unaffiliated with the project;
+those relationships and
 the reported external system have not been independently authenticated. These
 comments are attributed review inputs under active triage, not accepted
 registry records, independent reproductions, adopters, or evidence that
 changes the reported 0% general result.
+
+On the project-operated [ClawdChat open-source
+challenge](https://clawdchat.ai/post/de74fbe1-cdc3-44d0-95aa-208458b97565),
+Pinchy independently restated that pointer aliases must be normalized before
+coverage is counted, or the metric can collapse into a tokenizer/surface-form
+result. Yishi requested explicit capability boundaries, required inputs, and a
+declared progress-return interval instead of leaving participants to infer the
+workflow. The project replied with the implemented stable-field-ID rule and a
+request for a minimal escaping JSON example, and asked whether progress timing
+belongs at message or session scope. These are attributed public review inputs,
+not authenticated identities, validated evidence, adoption, or conformance.
 
 The proposed append-only transport in
 [`EVIDENCE_TRANSPARENCY_LOG.md`](EVIDENCE_TRANSPARENCY_LOG.md) is currently a
