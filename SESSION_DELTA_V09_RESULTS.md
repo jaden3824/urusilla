@@ -125,7 +125,8 @@ Values are whole 32-snapshot sessions over 24 scenario sessions on `CPython 3.12
 - `Qwen2.5-7B-Instruct tokenizer`: `c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539`.
 - `Mistral-7B-Instruct-v0.3 tokenizer`: `e553af6fff7d7ad76e830608b218c5c0b0822998d5a1a96099a74cd3c1cb1a49`.
 - Implementation SHA-256: `ebcc25e27b1a65f09a3821df66ead722044c5a9398384d24246da66863385ea6`.
-- Test SHA-256: `2056d6525b35715625147a7c686f550634a8c182125af57e855a8a662876be37`.
+- Frozen measurement-test SHA-256 at result generation: `2056d6525b35715625147a7c686f550634a8c182125af57e855a8a662876be37` (commit `b845f7f2a5eae7a7a82ef8bb3e659e50c002b561`).
+- The current portable test wrapper hashes to `c2ab74bd46dbc93d6ef17a8c2a98b140c2798690220162e32a9d663ff351e944` after commit `64b78add6155eefb97181baeca9abbfee405e348` added skip-on-missing-tokenizer behavior. That wrapper change did not regenerate the frozen numeric table, so the original measurement-test identity remains above.
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 .venv-research-py312/bin/python \

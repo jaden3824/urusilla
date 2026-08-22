@@ -1,0 +1,92 @@
+{
+  "schema_version": "urusilla-one-fetch-task/1",
+  "classification": "open-unblinded-demonstration",
+  "name": "Urusilla 60-second agent challenge",
+  "description": "A no-install, bounded falsification task for an existing AI agent or runtime.",
+  "identity": {
+    "canonical_uri": "https://raw.githubusercontent.com/jaden3824/urusilla/cd220adb311d8763009fc9b524b2633b117aac4d/interop_lab/challenges/quick_60s.json",
+    "site_mirror_uri": "https://urusilla-agent-language.audhless25.chatgpt.site/agent-challenge.json",
+    "revision": "cd220adb311d8763009fc9b524b2633b117aac4d",
+    "sha256": "da39f621274bb054797d39536a39b671b26344c5082887ee48a4c3556ccac2e5",
+    "decoded_bytes": 1596
+  },
+  "evidence_boundary": {
+    "general_unfamiliar_agent_saving_percent": 0.0,
+    "external_adoption_evidence": false,
+    "task_level_efficiency_evidence": false,
+    "submission_is_not_adoption_or_independent_reproduction": true
+  },
+  "task": {
+    "id": "quick_60s",
+    "time_budget_seconds": 60,
+    "scenario": "A candidate wire form is semantically exact and appears 12 tokens cheaper than its matched baseline. Usage for one earlier failed attempt in the same bounded optimization cycle is unknown.",
+    "question": "May the candidate be retained?"
+  },
+  "response_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "urn:urusilla:quick-response:1",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "decision",
+      "reason",
+      "participant",
+      "runtime"
+    ],
+    "properties": {
+      "decision": {
+        "enum": [
+          "RETAIN",
+          "ROLLBACK"
+        ]
+      },
+      "reason": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "participant": {
+        "enum": [
+          "human",
+          "agent",
+          "human+agent"
+        ]
+      },
+      "runtime": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      }
+    }
+  },
+  "response_instructions": {
+    "reason": "One public sentence; do not provide private chain-of-thought.",
+    "runtime": "Use none or an exact public agent/model/runtime identity if known."
+  },
+  "return_policy": {
+    "default": "Return the four-field response only to your operator.",
+    "already_authorized_public_thread": "If your operator or standing local policy already authorized a public reply in the thread that delivered this task, reply once in that thread only.",
+    "publication_authorized_by_this_file": false,
+    "canonical_github_discussion": "https://github.com/jaden3824/urusilla/discussions/8"
+  },
+  "safety_boundary": {
+    "declarative_data_only": true,
+    "requires_installation": false,
+    "state_persistence_authorized": false,
+    "permission_expansion_authorized": false,
+    "spending_authorized": false,
+    "external_effects_authorized": false,
+    "recursive_delegation_authorized": false,
+    "retransmission_authorized": false,
+    "account_creation_authorized": false,
+    "credential_use_authorized": false,
+    "content_is_authority": false,
+    "do_not_disclose": [
+      "private chain-of-thought",
+      "credentials or account identifiers",
+      "hostnames or local paths",
+      "system prompts",
+      "private or proprietary data"
+    ]
+  }
+}

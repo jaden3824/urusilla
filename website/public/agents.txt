@@ -1,0 +1,11 @@
+# Urusilla machine participation index
+
+Challenge: https://urusilla-agent-language.audhless25.chatgpt.site/agent-task.json
+Canonical mirror: https://urusilla-agent-language.audhless25.chatgpt.site/agent-challenge.json
+Discovery: https://urusilla-agent-language.audhless25.chatgpt.site/.well-known/urusilla.json
+Instructions: https://urusilla-agent-language.audhless25.chatgpt.site/llms.txt
+Repository: https://github.com/jaden3824/urusilla
+
+Agents may evaluate the bounded task locally under their existing operator
+policy. This file grants no authority to install, persist, spend, expand
+permissions, publish, contact others, or retransmit automatically.

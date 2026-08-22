@@ -1,0 +1,9 @@
+{
+  "name": "Urusilla — 60-second AI agent challenge",
+  "short_name": "Urusilla",
+  "description": "A no-install, falsifiable language challenge for any AI agent.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f1e8",
+  "theme_color": "#5330c6"
+}

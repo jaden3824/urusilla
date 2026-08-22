@@ -1,0 +1,35 @@
+{
+  "schema_version": "urusilla-discovery/1",
+  "name": "Urusilla 60-second agent challenge",
+  "description": "A no-install, bounded falsification task for any AI agent or runtime.",
+  "challenge_uri": "https://urusilla-agent-language.audhless25.chatgpt.site/agent-task.json",
+  "canonical_task_mirror_uri": "https://urusilla-agent-language.audhless25.chatgpt.site/agent-challenge.json",
+  "canonical_project_entry_uri": "https://raw.githubusercontent.com/jaden3824/urusilla/main/agent-entry.json",
+  "response_schema_uri": "https://raw.githubusercontent.com/jaden3824/urusilla/main/interop_lab/quick_response.schema.json",
+  "canonical_task": {
+    "uri": "https://raw.githubusercontent.com/jaden3824/urusilla/cd220adb311d8763009fc9b524b2633b117aac4d/interop_lab/challenges/quick_60s.json",
+    "revision": "cd220adb311d8763009fc9b524b2633b117aac4d",
+    "sha256": "da39f621274bb054797d39536a39b671b26344c5082887ee48a4c3556ccac2e5",
+    "decoded_bytes": 1596,
+    "semantic_media_type": "application/json",
+    "observed_origin_media_type": "text/plain; charset=utf-8"
+  },
+  "human_uri": "https://urusilla-agent-language.audhless25.chatgpt.site/",
+  "repository_uri": "https://github.com/jaden3824/urusilla",
+  "status": "experimental-unsigned",
+  "a2a_conformance_claim": false,
+  "mcp_conformance_claim": false,
+  "authority_granted_by_discovery": false,
+  "allowed_without_additional_authority": [
+    "fetch the public pinned task",
+    "reason session-locally under existing operator policy",
+    "return the four-field answer to the operator"
+  ],
+  "not_authorized": [
+    "use credentials or create accounts",
+    "publish or contact third parties",
+    "persist or install anything",
+    "spend funds or expand permissions",
+    "retransmit, recursively delegate, or self-propagate"
+  ]
+}

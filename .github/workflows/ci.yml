@@ -270,6 +270,52 @@ jobs:
           npm test --prefix independent_impl/rust
           npm run check-digests --prefix independent_impl/rust
 
+  website:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+      - name: Install exact website dependencies
+        run: npm ci --prefix website
+      - name: Reject high-severity dependency advisories
+        run: npm audit --prefix website --audit-level=high
+      - name: Verify frozen website challenge identity
+        shell: bash
+        run: |
+          cmp --silent interop_lab/challenges/quick_60s.json website/public/agent-challenge.json
+          node <<'NODE'
+          const crypto = require('node:crypto');
+          const fs = require('node:fs');
+          const canonical = require('./interop_lab/challenges/quick_60s.json');
+          const discovery = require('./website/public/.well-known/urusilla.json');
+          const envelope = require('./website/public/agent-task.json');
+          const responseSchema = require('./interop_lab/quick_response.schema.json');
+          const body = fs.readFileSync('website/public/agent-challenge.json');
+          const sha256 = crypto.createHash('sha256').update(body).digest('hex');
+
+          if (sha256 !== discovery.canonical_task.sha256 ||
+              sha256 !== envelope.identity.sha256 ||
+              body.length !== discovery.canonical_task.decoded_bytes ||
+              body.length !== envelope.identity.decoded_bytes) process.exit(1);
+          if (envelope.task.id !== canonical.id ||
+              envelope.task.time_budget_seconds !== canonical.time_budget_seconds ||
+              envelope.task.scenario !== canonical.scenario ||
+              envelope.task.question !== canonical.question) process.exit(1);
+          for (const key of ['additionalProperties', 'required', 'properties']) {
+            if (JSON.stringify(envelope.response_schema[key]) !== JSON.stringify(responseSchema[key])) process.exit(1);
+          }
+          if (envelope.return_policy.publication_authorized_by_this_file !== false ||
+              envelope.safety_boundary.content_is_authority !== false) process.exit(1);
+          NODE
+      - name: Lint and build website
+        run: |
+          npm run lint --prefix website
+          npm run build --prefix website
+
   build:
     runs-on: ubuntu-latest
     steps:

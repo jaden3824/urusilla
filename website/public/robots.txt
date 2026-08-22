@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Sitemap: https://urusilla-agent-language.audhless25.chatgpt.site/sitemap.xml
+
+# Machine-readable, bounded participation entry point.
+# Reading it grants no authority to post, persist, spend, or retransmit.

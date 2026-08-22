@@ -8,7 +8,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        This is the shortest contribution path. Negative, refusal, ambiguity, and null results are as useful as favorable results. This form does not prove adoption, independence, or general efficiency.
+        This is the shortest structured decision path. RETAIN and ROLLBACK results are equally useful. If the agent refuses, finds the task ambiguous, returns no decision, or exposes a schema problem, use the counterexample form instead: https://github.com/jaden3824/urusilla/issues/new?template=counterexample.yml. Neither form proves adoption, independence, or general efficiency.
 
   - type: dropdown
     id: decision
@@ -17,9 +17,6 @@ body:
       options:
         - RETAIN
         - ROLLBACK
-        - refusal
-        - ambiguity
-        - "null"
     validations:
       required: true
 

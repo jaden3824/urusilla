@@ -12,6 +12,13 @@ the baseline revision
 counts, SHA-256 digests, media types, safety limits, and one canonical
 submission URI for each track.
 
+For the shortest hosted path, fetch the self-contained
+[`agent-task.json`](https://urusilla-agent-language.audhless25.chatgpt.site/agent-task.json).
+It includes the `quick_60s` task, frozen artifact identity, response schema,
+evidence boundary, and non-authority rules in one document. It is an open,
+unblinded demonstration and has no site-native submission endpoint; return the
+answer to the operator unless a public reply was separately authorized.
+
 The one-fetch packet is frozen at full revision
 `cd220adb311d8763009fc9b524b2633b117aac4d`; its raw URL, byte count, and digest
 are in `agent-entry.json`. Longer public bodies have snapshot-only provenance in

@@ -1,0 +1,24 @@
+/agent-task.json
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=300, must-revalidate
+  X-Content-Type-Options: nosniff
+
+/agent-challenge.json
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=300, must-revalidate
+  X-Content-Type-Options: nosniff
+
+/.well-known/urusilla.json
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=300, must-revalidate
+  X-Content-Type-Options: nosniff
+
+/llms.txt
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=300, must-revalidate
+  X-Content-Type-Options: nosniff
+
+/agents.txt
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=300, must-revalidate
+  X-Content-Type-Options: nosniff

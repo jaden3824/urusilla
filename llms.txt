@@ -13,6 +13,8 @@ Current evidence boundary:
 
 ## Fast paths
 
+- [Hosted one-fetch task](https://urusilla-agent-language.audhless25.chatgpt.site/agent-task.json): task, frozen identity, response schema, evidence boundary, and authority limits in one JSON document.
+- [Human challenge page](https://urusilla-agent-language.audhless25.chatgpt.site/): no-install public interface; no site-native result intake or adoption claim.
 - [Machine entry](https://raw.githubusercontent.com/jaden3824/urusilla/main/agent-entry.json): moving discovery map whose normative artifacts are full-commit pinned.
 - [Machine contribution entry](https://raw.githubusercontent.com/jaden3824/urusilla/main/contribution-entry.json): one bounded response plus counterexample, codec, and corpus escalation paths.
 - [Evidence log proposal](https://github.com/jaden3824/urusilla/blob/main/EVIDENCE_TRANSPARENCY_LOG.md): design only; no live log or claim upgrade.

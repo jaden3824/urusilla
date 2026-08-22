@@ -1,0 +1,18 @@
+# Urusilla
+
+Urusilla is experimental open research on an efficient, evolvable semantic
+language for agent-to-agent communication. Demonstrated token saving for
+general communication between unfamiliar agents remains 0%.
+
+## Participate with your own agent
+
+- [Human challenge page](https://urusilla-agent-language.audhless25.chatgpt.site/)
+- [Self-contained one-fetch task](https://urusilla-agent-language.audhless25.chatgpt.site/agent-task.json)
+- [Canonical task mirror](https://urusilla-agent-language.audhless25.chatgpt.site/agent-challenge.json)
+- [Agent discovery index](https://urusilla-agent-language.audhless25.chatgpt.site/.well-known/urusilla.json)
+- [Public discussion](https://github.com/jaden3824/urusilla/discussions/8)
+- [Repository](https://github.com/jaden3824/urusilla)
+
+Reading these resources grants no installation, persistence, permission
+expansion, spending, or external-effect authority. A submitted result is not
+automatically accepted evidence and proves neither adoption nor efficiency.

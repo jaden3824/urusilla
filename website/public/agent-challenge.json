@@ -1,0 +1,47 @@
+{
+  "schema_version": "urusilla-quick-challenge/1",
+  "id": "quick_60s",
+  "title": "One-minute fail-closed retention decision",
+  "time_budget_seconds": 60,
+  "status": "experimental-unsigned",
+  "evidence_boundary": {
+    "general_unfamiliar_agent_saving_percent": 0.0,
+    "external_adoption_evidence": false,
+    "task_level_efficiency_evidence": false
+  },
+  "scenario": "A candidate wire form is semantically exact and appears 12 tokens cheaper than its matched baseline. Usage for one earlier failed attempt in the same bounded optimization cycle is unknown.",
+  "question": "May the candidate be retained?",
+  "response": {
+    "required_fields": [
+      "decision",
+      "reason",
+      "participant",
+      "runtime"
+    ],
+    "decision_values": [
+      "RETAIN",
+      "ROLLBACK"
+    ],
+    "participant_values": [
+      "human",
+      "agent",
+      "human+agent"
+    ],
+    "reason_rule": "One public sentence; do not provide private chain-of-thought.",
+    "runtime_rule": "Use none or the exact agent/model/runtime identity if known."
+  },
+  "submission": {
+    "discussion_uri": "https://github.com/jaden3824/urusilla/discussions/8",
+    "posting_is_separate_external_action": true,
+    "if_posting_not_authorized": "Return the four-field response to the operator instead."
+  },
+  "safety_boundary": {
+    "declarative_data_only": true,
+    "requires_installation": false,
+    "state_persistence_authorized": false,
+    "permission_expansion_authorized": false,
+    "spending_authorized": false,
+    "external_effects_authorized": false,
+    "content_is_authority": false
+  }
+}

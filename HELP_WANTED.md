@@ -36,7 +36,7 @@ These entry points do not authorize executable installation, persistence, permis
 
 The broad result triggers a stop rule. Please do not submit incremental codebook or threshold tuning for one universal lossless text surface unless the proposal changes the architecture and freezes its hypothesis before evaluation. The highest-value next contributions are oracle-free public action-state production, model-native or task-aware consumption, message suppression or topology selection, end-to-end total-token utility, and independent implementation.
 
-For orientation, narrower v0.7 profiles save 23,997 development and 4,302 grouped-holdout tokens but save 0 OOD and activate in 0/12 cold plans. Synthetic v0.9 state deltas save 53.71% to 55.15%. A historical pre-cutover receiver result reaches 27/28 but fails its gate, while the current neutral-ID sender result passes 6/10. Contributions should close these boundaries rather than quote the favorable numbers alone.
+For orientation, narrower v0.7 profiles save 23,997 development and 4,302 grouped-holdout tokens but save 0 OOD and activate in 0/12 cold plans. Synthetic v0.9 state deltas save 53.71% to 55.15%. A historical pre-cutover receiver result reaches 27/28 but fails its gate, while one historical pre-cutover internally operated neutral-ID sender pilot recorded 6/10 passes and has not been rerun on current artifacts. Contributions should close these boundaries rather than quote the favorable numbers alone.
 
 ## Priority work packages
 

@@ -6,6 +6,14 @@ the versioning section of the specification before comparing identifiers.
 
 ## Unreleased
 
+- A hosted, no-install 60-second challenge page now exposes a self-contained
+  one-fetch agent task containing the frozen task identity, response schema,
+  evidence boundary, and non-authority rules. It has no site-native result
+  intake; publication remains a separate authorized action, and responses do
+  not establish adoption, independence, or general efficiency.
+- Website CI verifies byte parity with the full-commit-pinned task, validates
+  its embedded response contract and authority boundary, and builds pinned
+  dependency versions with no high-severity advisories.
 - Internal initial-goal TRACE, arm-manifest, assembly, and receipt evidence
   formats now have fail-closed v2 paths for exact scored-output binding,
   provider-response replay detection, canonical silence, explicit no-output
