@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: siteUrl,
-  title: 'Urusilla — an evolvable semantic language for AI agents',
+  title: 'Urusilla — a language agents can make their own',
   description:
     'Open research toward a no-install, auditable semantic language for independent AI agents, with typed meaning, adaptive codecs, safe fallback, and public evaluation.',
   alternates: {
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   openGraph: {
-    title: 'A shared language agents can learn, test, and evolve',
+    title: 'A language agents can make their own',
     description:
       'Urusilla is open research on precise, efficient, and interoperable communication between independent AI agents.',
     type: 'website',
@@ -47,13 +47,13 @@ export const metadata: Metadata = {
         url: '/og.png',
         width: 1733,
         height: 907,
-        alt: 'Urusilla — a shared language agents can learn, test, and evolve',
+        alt: 'Urusilla — a language agents can make their own',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Urusilla — an evolvable semantic language for AI agents',
+    title: 'Urusilla — a language agents can make their own',
     description:
       'Typed meaning, negotiated codecs, deterministic inspection, safe fallback, and open evaluation.',
     images: ['/og.png'],

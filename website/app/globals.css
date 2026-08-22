@@ -40,14 +40,15 @@ button { font: inherit; }
 .button-secondary { background: transparent; }
 .microcopy { margin: 18px 0 0; color: var(--muted); font-size: 13px; max-width: 640px; line-height: 1.5; }
 .machine-link { display: inline-block; margin-top: 19px; color: var(--violet); font: 600 12px var(--font-geist-mono); border-bottom: 1px solid rgba(124, 92, 255, 0.35); padding-bottom: 3px; }
-.status-card { background: var(--ink); color: white; padding: 30px; border-radius: 4px 48px 4px 4px; transform: rotate(1.5deg); box-shadow: 18px 18px 0 var(--acid); }
-.status-label { color: #adb0b8; font: 600 11px var(--font-geist-mono); text-transform: uppercase; letter-spacing: 0.1em; }
-.status-number { margin: 30px 0 8px; color: var(--acid); font-size: 108px; line-height: 0.8; letter-spacing: -0.08em; font-weight: 720; }
-.status-number span { font-size: 40px; }
-.status-number.status-version { font-size: 78px; letter-spacing: -0.065em; }
-.status-card > p { line-height: 1.5; font-size: 15px; }
-.status-rule { height: 1px; background: rgba(255,255,255,0.18); margin: 28px 0 20px; }
-.status-card .status-note { color: #afb1b8; font-size: 13px; }
+.language-card { background: var(--ink); color: white; padding: 30px; border-radius: 4px 48px 4px 4px; transform: rotate(1.5deg); box-shadow: 18px 18px 0 var(--acid); }
+.language-card-topline { display: flex; justify-content: space-between; gap: 20px; color: #adb0b8; font: 600 10px var(--font-geist-mono); letter-spacing: 0.09em; }
+.language-layer { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.14); }
+.language-layer:first-of-type { margin-top: 18px; }
+.language-layer > span { color: var(--acid); font: 650 11px var(--font-geist-mono); padding-top: 3px; }
+.language-layer strong { font-size: 19px; letter-spacing: -0.025em; }
+.language-layer p { margin: 6px 0 0; color: #afb1b8; font-size: 13px; line-height: 1.45; }
+.language-arrow { height: 0; overflow: visible; position: relative; z-index: 1; margin-left: 11px; color: var(--acid); font: 600 14px var(--font-geist-mono); }
+.language-card-note { margin: 26px 0 0; color: var(--acid); font: 600 12px/1.5 var(--font-geist-mono); }
 .challenge-band { background: var(--ink); color: white; padding: 110px 0; }
 .challenge { display: grid; grid-template-columns: 0.8fr 1.3fr; gap: clamp(44px, 8vw, 120px); align-items: start; }
 .section-index { color: var(--violet); margin: 0 0 22px; }
@@ -110,7 +111,7 @@ button { font: inherit; }
 @media (max-width: 820px) {
   .nav-links > a:not(.nav-cta) { display: none; }
   .hero { grid-template-columns: 1fr; padding-block: 70px 90px; }
-  .status-card { max-width: 420px; transform: none; }
+  .language-card { max-width: 440px; transform: none; }
   .challenge, .principles, .community-heading, .community-network { grid-template-columns: 1fr; gap: 54px; }
   .community-grid { grid-template-columns: 1fr; }
   .community-card { min-height: 360px; }
@@ -125,8 +126,6 @@ button { font: inherit; }
   .hero h1 { font-size: 51px; }
   .hero-actions { flex-direction: column; align-items: stretch; }
   .button { width: 100%; }
-  .status-number { font-size: 90px; }
-  .status-number.status-version { font-size: 70px; }
   .prompt-card blockquote, .answer-format { padding-inline: 22px; }
   .answer-format { grid-template-columns: 1fr; }
   .answer-format span:not(:first-child) { margin-top: 10px; }
