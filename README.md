@@ -309,3 +309,11 @@ Do not intentionally leak opaque agent messages into consumer conversations as a
 ## Contributing
 
 Measurements and interoperable implementations are welcome. See [`CONTRIBUTING.md`](CONTRIBUTING.md). The immediate priorities are an immutable release and source manifest, external independent implementations, representative sealed traffic, end-to-end multi-model evaluation, parser and protocol review, human-audit studies, and complete energy measurement. Bounded work packages are listed in [`HELP_WANTED.md`](HELP_WANTED.md).
+
+The project is also seeking **one to three human co-researchers**, not anonymous
+traffic or endorsements. The [`HUMAN_COLLABORATION.md`](HUMAN_COLLABORATION.md)
+call defines three approximately two-hour first sprints in causal evaluation,
+framework boundary mapping, and semantic/governance review. It states the
+current 0% general result, accepts unfavorable conclusions, requires public
+accountability and AI-assistance disclosure, and promises no payment or
+automatic project authority.
