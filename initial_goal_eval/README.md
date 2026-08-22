@@ -57,13 +57,20 @@ access or failed boundary is a noncompensable gate failure.
 
 [`feasibility_kill_screen_v1.py`](feasibility_kill_screen_v1.py) is a
 separately versioned arithmetic gate for the initial-goal raw/JSON/action-state
-comparison. It is not the distinct SGD-20 competitive-reproduction protocol.
+comparison. Its corrected plan, result, and evaluation-reference schema IDs are
+`/2`; the filename remains stable for import continuity, and legacy `/1` input
+is rejected. It is not the distinct SGD-20 competitive-reproduction protocol.
 For every declared domain/tokenizer row it requires exact cumulative phase
 vectors at every session length from 1 through 128. The action-state path supplies
 optimistic lower token bounds and maximum safe-success denominators; raw and
 JSON supply pessimistic upper token bounds and minimum safe-success
-denominators. Exact integer cross-multiplication compares the candidate with the
-better baseline bound. Setup and cold comprehension must remain positive. A
+denominators. A baseline minimum of zero means that no positive safe-success
+lower bound is available, so that path cannot supply a finite upper bound on
+tokens per safe task. If only one baseline has a positive minimum, it is used;
+if neither does, the cell is `not-disproven` with an explicit reason and null
+comparison arithmetic. Exact integer cross-multiplication compares the
+candidate with the better available finite baseline bound. Setup and cold
+comprehension must remain positive. A
 causal-study phase is not forced into endpoint cost; it may be explicitly
 proved zero unless the registered allowed path actually incurs it. Every other
 inclusive phase must likewise have a finite bound or an explicit proved-zero
@@ -80,6 +87,74 @@ No real row has been evaluated. This checkout lacks the registered finite
 prompt, dynamic-slot, tokenizer, and allowed-path bound manifests required to
 run the screen without inventing numbers. Current tests are synthetic arithmetic
 and mutation fixtures, with zero provider or model calls.
+
+### Content-derived finite-bound preflight
+
+[`finite_bound_preflight_v1.py`](finite_bound_preflight_v1.py) records the
+current blocker without accepting caller-supplied byte counts, digests, or
+completeness flags. It derives those values from exact supplied bytes and keeps
+pretty source artifacts separate from canonical transmitted prompts. Its
+inventory covers tokenizer and chat-template artifacts, an acyclic closed path
+DAG, a pre-call source-enforced inclusive token cap, and raw plus JSON success
+receipts bound to every artifact bundle.
+
+This preflight does not yet compile those bytes into exact token vectors and
+phase bounds. Therefore `numeric_screen_permitted` is always false even when
+`inventory_complete` is true. It never selects a session length:
+`selected_session_length` is always null and `receiver_ceiling_run_permitted`
+is always false. Zero and unknown baseline
+success remain distinct: a content-bound all-zero receipt is complete inventory
+but yields no finite comparator, while an absent receipt leaves inventory
+incomplete. Neither becomes an assumed positive denominator. The current
+no-input invocation is deterministically `blocked`.
+The missing content-derived compiler must be implemented and separately
+validated before any numeric release is possible. Inventory completeness
+authenticates neither artifact origin nor a later provider run and carries no
+efficiency, version, adoption, or claim status.
+
+### Perfect-sender receiver-ceiling diagnostic
+
+[`receiver_ceiling_runner.py`](receiver_ceiling_runner.py) implements the next
+execution shape without pretending that a sender is already solved. One
+normative public record deterministically generates bytewise-distinct concise
+raw text, descriptive canonical JSON, and canonical `PublicActionState`
+payloads. The perfect sender makes zero model calls. The action-state arm uses
+one passed cold Capsule-comprehension context followed by exactly `N`
+same-context requests containing only `PAYLOAD\n<canonical state>`; each raw
+and JSON task starts from a fresh root context. Comprehension failure is charged
+and retained while the baselines continue.
+
+Every callback that returns a capture is journaled with its exact request,
+response, model, settings, normalized usage, context, parent response, and
+safety-boundary fields. Request-size and static-interface checks run before
+dynamic callback resolution. If a callback raises or returns no coherent
+capture, the attempted call is retained with unknown usage and the whole run is
+rejected. Unknown usage, hidden retry or repair, context drift, token-ceiling
+overflow, or a prohibited reported effect also fails closed. Scoring is
+deterministic and zero-token. Process interrupts still propagate through a
+`BaseException` carrier that always holds the attempted-call journal. A public
+runner boundary attaches all prior callback entries to later ordinary
+validation failures as well.
+The current handoff and `offline_synthetic=True` attribute are host declarations,
+not permission, authentication, or an enforced sandbox. Completed synthetic
+artifacts expose diagnostic usage only. Their task and aggregate dataclasses are
+factory-sealed against ordinary public replacement as an API-misuse guard, not
+as authentication or a Python security boundary. Independently of that seal,
+the aggregate revalidates the original preflight-bound canonical experiment
+manifest, per-task expected-output and exact request digests, and the complete
+call order, captured terminal state, and phase-specific token caps.
+Provider/model consistency, fresh baseline roots, unique session response IDs,
+and the exact comprehension-to-hot same-context parent chain are also
+rechecked. The recorded comprehension request must equal the deterministic
+challenge reconstructed from the public Capsule, task context, receiver
+binding, and token cap in the manifest; the claimed verdict is then
+deterministically re-derived from its captured response. Claim-facing inclusive
+totals, safe success, and
+unauthorized-effect status remain null. The runner therefore proves
+orchestration invariants only. A future live path
+must derive `N` from an actual content-bound feasibility result with a strictly
+positive residual in every retained cell, then add authenticated provider,
+chronology, scorer, sandbox, and independent-operator evidence.
 
 ## Runtime-to-scorer diagnostic
 

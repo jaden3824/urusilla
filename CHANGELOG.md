@@ -6,6 +6,42 @@ the versioning section of the specification before comparing identifiers.
 
 ## Unreleased
 
+- The zero-call feasibility screen now accepts a baseline safe-success lower
+  bound of zero without inventing a positive denominator. A zero-bound baseline
+  cannot provide a finite tokens-per-safe-task upper bound; if both baselines
+  are zero the comparison arithmetic is null and the cell is only
+  `not-disproven`. A content-derived preflight now hashes exact evidence bytes,
+  distinguishes pretty sources from transmitted prompts, and blocks numeric
+  screening when tokenizer, chat-template, path, cap, or baseline success
+  receipts are missing. A content-bound zero receipt is complete inventory,
+  not an assumed positive denominator. It never selects a session length or
+  authorizes a receiver call.
+- The corrected feasibility plan, result, and evaluation-reference schemas are
+  `/2`; legacy `/1` plans are rejected rather than silently receiving the new
+  zero-denominator semantics.
+- A host-declared-synthetic perfect-sender receiver-ceiling runner now binds
+  distinct concise raw, descriptive JSON, and canonical action-state renderings to one
+  normative record. It exercises one cold Capsule comprehension, exact
+  same-context payload-only turns, fresh baseline contexts, deterministic
+  scoring, complete provider-usage journals, and fail-closed retry, context,
+  usage, ceiling, and effect checks. A false or absent host declaration is
+  rejected before any call, but the declaration is not an authenticated or
+  sandbox-enforced boundary. Callback exceptions are retained as attempted
+  calls with unknown usage and reject the run. Oversize requests are rejected
+  before callback resolution, dynamic interface descriptors are inspected
+  without execution, and task plus aggregate results are factory-sealed against
+  ordinary public replacement. The aggregate revalidates its preflight-bound
+  manifest, expected-output and request digests, exact call order, terminal
+  state, token caps, provider/model consistency, fresh baseline roots, and the
+  comprehension-to-hot parent chain. The comprehension verdict is re-derived
+  from its captured response and public manifest inputs, the recorded request
+  must equal the deterministic challenge from those inputs, and session
+  response IDs cannot be reused. Process interrupts
+  propagate through a `BaseException` carrier that always holds the
+  attempted-call journal, and later ordinary validation failures retain prior
+  callback entries. The seal is an API-misuse guard, not authentication.
+  Claim-facing safe success, inclusive totals, and effect status remain null,
+  so this is execution plumbing rather than model or efficiency evidence.
 - An initial-goal-specific zero-call feasibility screen now compares complete action-state
   lower bounds with the better raw/JSON upper cost-per-safe-task bound for every
   session length from 1 through 128. It emits only `impossible`,

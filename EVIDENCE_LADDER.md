@@ -22,11 +22,27 @@ until the failing component changes:
    sender and router cannot leave room for the frozen 20% threshold, do not call
    a model. A result can only be `impossible`, `not-disproven`, or `invalid`;
    `not-disproven` is not positive evidence.
+   A baseline safe-success lower bound of zero is admissible and means that no
+   finite upper bound on tokens per safely completed baseline task is available.
+   It must never be replaced with an assumed success. If neither raw nor JSON
+   has a positive evidence-bound lower bound, the comparison arithmetic stays
+   null and the cell is only `not-disproven`.
+   The current content-derived preflight binds artifact inventory but always
+   keeps numeric permission false because the compiler from those bytes to exact
+   token vectors and phase bounds is not implemented.
 2. **Perfect-sender receiver ceiling.** On a small staged sample, provide the
    correct public action state directly and test whether two receiver families
    can preserve task success while leaving enough token margin for the later
-   sender. Failure kills the current action-state surface, not the general
-   research goal.
+   sender. Select the session length only from content-derived finite-bound
+   manifests that retain a strictly positive residual in every declared cell.
+   Unknown baseline success, tokenizer identity, rendered prompts, path bounds,
+   or source-enforced token ceilings block live calls rather than becoming
+   optimistic defaults. Failure kills the current action-state surface, not the
+   general research goal.
+   The present runner's `offline_synthetic=True` marker is a host declaration,
+   not a sandbox. Callback errors are attempted calls with unknown usage and
+   reject the diagnostic; no claim-facing safe success or inclusive total is
+   emitted.
 3. **Natural-language sender qualification.** Evaluate the sender and fidelity
    check on held-out inputs before combining their failures with receiver or
    router failures. Required parse and fidelity sample sizes and confidence

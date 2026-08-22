@@ -14,6 +14,12 @@ but is not endpoint overhead unless the registered allowed path actually
 incurs it; it may therefore be explicitly proved zero.  Every phase must be
 present and is either finitely bounded or explicitly proved zero.
 
+A baseline minimum safe-success bound of zero is an admissible statement that
+no positive lower bound is known.  Such a path cannot provide a finite upper
+bound on tokens per safe task.  The other baseline is still usable when its
+minimum is positive; when neither minimum is positive, the cell is explicitly
+``not-disproven`` and all comparison arithmetic is null.
+
 The module performs no model, provider, tokenizer, filesystem, network, or
 external call.  It does not verify that a caller's registered bounds are true;
 its result is conditional on the exact digests and assertions in the plan.
@@ -28,12 +34,12 @@ from typing import Any
 from .contract import IDENTIFIER_RE, SHA256_RE, VerificationError, sha256_ref
 
 
-FEASIBILITY_PLAN_SCHEMA = "urusilla-initial-goal-feasibility-kill-screen-plan/1"
+FEASIBILITY_PLAN_SCHEMA = "urusilla-initial-goal-feasibility-kill-screen-plan/2"
 FEASIBILITY_RESULT_SCHEMA = (
-    "urusilla-initial-goal-feasibility-kill-screen-result/1"
+    "urusilla-initial-goal-feasibility-kill-screen-result/2"
 )
 PLAN_STATUS = "frozen-zero-call-bounds"
-EVALUATION_REFERENCE = "urusilla-initial-goal-raw-json-feasibility/1"
+EVALUATION_REFERENCE = "urusilla-initial-goal-raw-json-feasibility/2"
 
 SESSION_LENGTHS = tuple(range(1, 129))
 TARGET_REDUCTION_BASIS_POINTS = 2_000
@@ -59,6 +65,9 @@ PHASES = (
 )
 MANDATORY_CANDIDATE_OBLIGATIONS = ("setup", "comprehension")
 OUTCOMES = ("impossible", "not-disproven", "invalid")
+NO_POSITIVE_BASELINE_SUCCESS_REASON = (
+    "unbounded-no-positive-baseline-safe-success-lower-bound"
+)
 
 _MAX_ROWS = 128
 _MAX_TOKEN_BOUND = (1 << 63) - 1
@@ -92,10 +101,14 @@ def _assumptions() -> dict[str, object]:
         "candidate_success_bound": "maximum-safe-successes-equals-N",
         "baseline_cost_bound": "sum-of-registered-phase-upper-bounds",
         "baseline_success_bound": (
-            "registered-minimum-safe-successes-per-path-and-N"
+            "registered-minimum-safe-successes-per-path-and-N;zero-means-no-positive-guarantee"
         ),
         "baseline_comparator": (
-            "minimum-upper-tokens-per-safe-task-of-raw-concise-and-ordinary-json"
+            "minimum-finite-upper-tokens-per-safe-task-among-baselines-with-"
+            "positive-minimum-safe-successes"
+        ),
+        "no_positive_baseline_success": (
+            "not-disproven-with-null-comparison-arithmetic"
         ),
         "candidate_mandatory_obligations": list(
             MANDATORY_CANDIDATE_OBLIGATIONS
@@ -114,7 +127,7 @@ def _assumptions() -> dict[str, object]:
             "0.80*better_baseline_upper_per_safe_task"
         ),
         "equality_rule": "not-disproven",
-        "unknown_or_unbounded_input": "invalid",
+        "unknown_or_unbounded_token_input": "invalid",
         "bound_truth": (
             "conditional-on-caller-registered-digests-and-completeness-assertions"
         ),
@@ -254,17 +267,22 @@ def _success_vector(
     checked: list[int] = []
     previous = 0
     for index, (item, session_length) in enumerate(zip(items, SESSION_LENGTHS)):
-        if type(item) is not int or item < 1 or item > session_length:
+        if type(item) is not int:
             raise FeasibilityKillScreenError(
-                f"{path}[{index}]:safe-success-bound-must-be-in-1..N"
+                f"{path}[{index}]:integer-safe-success-bound-required"
+            )
+        if path_name == "action-state":
+            if item != session_length:
+                raise FeasibilityKillScreenError(
+                    f"{path}[{index}]:candidate-maximum-must-equal-N"
+                )
+        elif item < 0 or item > session_length:
+            raise FeasibilityKillScreenError(
+                f"{path}[{index}]:baseline-safe-success-bound-must-be-in-0..N"
             )
         if item < previous:
             raise FeasibilityKillScreenError(
                 f"{path}[{index}]:safe-success-bound-must-be-nondecreasing"
-            )
-        if path_name == "action-state" and item != session_length:
-            raise FeasibilityKillScreenError(
-                f"{path}[{index}]:candidate-maximum-must-equal-N"
             )
         checked.append(item)
         previous = item
@@ -477,27 +495,53 @@ def _validate_and_screen(plan: Any) -> dict[str, object]:
                 totals["ordinary-json"][position],
                 successes["ordinary-json"][position],
             )
-            comparison = _fraction_compare(*raw_fraction, *json_fraction)
-            if comparison < 0:
+            raw_has_finite_bound = raw_fraction[1] > 0
+            json_has_finite_bound = json_fraction[1] > 0
+            if raw_has_finite_bound and json_has_finite_bound:
+                comparison = _fraction_compare(*raw_fraction, *json_fraction)
+                if comparison < 0:
+                    selected: str | None = "raw-concise"
+                elif comparison > 0:
+                    selected = "ordinary-json"
+                else:
+                    selected = "tie-raw-concise-and-ordinary-json"
+                selected_fraction: tuple[int, int] | None = (
+                    raw_fraction if comparison <= 0 else json_fraction
+                )
+            elif raw_has_finite_bound:
                 selected = "raw-concise"
-            elif comparison > 0:
+                selected_fraction = raw_fraction
+            elif json_has_finite_bound:
                 selected = "ordinary-json"
+                selected_fraction = json_fraction
             else:
-                selected = "tie-raw-concise-and-ordinary-json"
-            selected_fraction = raw_fraction if comparison <= 0 else json_fraction
+                selected = None
+                selected_fraction = None
             candidate_numerator = totals["action-state"][position]
             candidate_denominator = successes["action-state"][position]
-            baseline_numerator, baseline_denominator = selected_fraction
-
-            kill_left = (
-                candidate_numerator * baseline_denominator * BASIS_POINTS
-            )
-            kill_right = (
-                baseline_numerator
-                * candidate_denominator
-                * REMAINING_COST_BASIS_POINTS
-            )
-            outcome = "impossible" if kill_left > kill_right else "not-disproven"
+            if selected_fraction is None:
+                baseline_numerator: int | None = None
+                baseline_denominator: int | None = None
+                kill_left: int | None = None
+                kill_right: int | None = None
+                comparison_unavailable_reason: str | None = (
+                    NO_POSITIVE_BASELINE_SUCCESS_REASON
+                )
+                outcome = "not-disproven"
+            else:
+                baseline_numerator, baseline_denominator = selected_fraction
+                kill_left = (
+                    candidate_numerator * baseline_denominator * BASIS_POINTS
+                )
+                kill_right = (
+                    baseline_numerator
+                    * candidate_denominator
+                    * REMAINING_COST_BASIS_POINTS
+                )
+                comparison_unavailable_reason = None
+                outcome = (
+                    "impossible" if kill_left > kill_right else "not-disproven"
+                )
             if outcome != "impossible":
                 row_all_impossible = False
                 all_cells_impossible = False
@@ -512,6 +556,7 @@ def _validate_and_screen(plan: Any) -> dict[str, object]:
                     "json_upper_total_tokens": json_fraction[0],
                     "json_min_safe_successes": json_fraction[1],
                     "comparison_bound_source": selected,
+                    "comparison_unavailable_reason": comparison_unavailable_reason,
                     "comparison_upper_total_tokens": baseline_numerator,
                     "comparison_min_safe_successes": baseline_denominator,
                     "kill_left_scaled": kill_left,
@@ -585,6 +630,7 @@ __all__ = [
     "FEASIBILITY_PLAN_SCHEMA",
     "FEASIBILITY_RESULT_SCHEMA",
     "MANDATORY_CANDIDATE_OBLIGATIONS",
+    "NO_POSITIVE_BASELINE_SUCCESS_REASON",
     "OUTCOMES",
     "PATHS",
     "PHASES",

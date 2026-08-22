@@ -69,6 +69,31 @@ its synthetic tests therefore add a cheap stop gate, not empirical efficiency
 evidence. This screen is separate from the SGD-20 competitive-reproduction
 protocol.
 
+The screen's input boundary is now explicit rather than caller-asserted. A
+content-derived preflight hashes exact source and transmitted bytes and records
+tokenizer, chat-template, path-DAG, pre-call inclusive token-cap, and raw/JSON
+success-receipt inventory. It still always blocks numeric screening because no
+implemented compiler derives exact token vectors and phase bounds from those
+bytes. It never chooses a session length or authorizes receiver calls. A separate
+perfect-sender diagnostic can exercise one cold Capsule comprehension followed
+by `N` direct action-state turns while running matched raw and descriptive JSON
+arms in fresh contexts, but its current callback accepts only a caller's
+`offline_synthetic=True` declaration. That declaration is neither authenticated
+nor sandbox-enforced; callback exceptions become attempted calls with unknown
+usage and reject the run. Task and aggregate result construction is factory-sealed
+as an API-misuse guard, not as authentication. The aggregate also revalidates
+the original preflight-bound experiment manifest, per-task expected outputs,
+exact request digests, call order, terminal state, and token caps. Process
+interrupts still propagate through a `BaseException` carrier that always holds
+the attempted-call journal. Provider/model consistency, fresh baseline roots,
+the deterministically re-derived comprehension verdict, and the exact
+deterministic comprehension challenge plus comprehension-to-hot same-context
+parent chain are rechecked; response IDs cannot be reused. Any later ordinary
+validation failure also retains all earlier callback entries.
+These additions create
+an executable receiver-ceiling test shape; they add no real model result and do
+not change the demonstrated general saving.
+
 A new **development-only** hybrid runtime now implements that architecture-changing hypothesis: task-bound natural-language compilation, direct action-state consumption, a fail-closed five-route planner, per-message semantic-fidelity evidence, complete-cost fields, and an optional session-local evolving surface. Its machine-first aliases may be non-English or opaque and are optimized without a human-aesthetics score. Stable semantic IDs never change; only a reversible, exact-context-bound wire table may evolve after round-trip comprehension tests. Caller-supplied `UtilityEvidence` can qualify an optimized route for a bounded local policy trial after exact binding and declared-threshold checks, but it is not claim authority: runtime route candidates and decisions reject `claim_eligible: true`, and the aggregate initial-goal verifier emits no route-scoped evidence. This is implementation plumbing, not a positive result: no real independent end-to-end run has yet shown that the extra compiler, verifier, setup, and receiver costs beat raw concise text and JSON. See [`EVOLVING_SURFACE.md`](EVOLVING_SURFACE.md).
 
 The reference runtime now also closes the local same-context execution gap. A cached receiver capability can be minted only from a passed cold-comprehension attempt and the exact still-active provider-context observation. A factory-sealed session plan then sends the validated public action state directly without prose re-expansion. Malformed state, Capsule/task/context drift, adapter failure, or invalid primary output invalidates that optimized path and invokes its already bound raw/JSON fallback; prohibited authority remains false throughout. Focused and full runtime regressions exercise this path with project-authored adapters. No provider-backed causal intervention or independently operated run has yet shown that a real model used the task-critical semantics, so this is a safer experiment runner rather than language-use or efficiency evidence. See [`urusilla_hybrid_runtime/session_runtime.py`](urusilla_hybrid_runtime/session_runtime.py).

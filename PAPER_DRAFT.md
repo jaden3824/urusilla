@@ -130,6 +130,34 @@ The development runtime has a completed local execution boundary rather than a c
 
 The intended cold-start path is natural language to a public action-state sender, followed by a receiver that reads the Capsule and consumes the validated action-state directly in the same live model context without first expanding it back into natural language. The reference runtime now implements that session-bound path and its one-call fallback contract. Existing builders, exporters, fake adapters, and project-authored fixtures exercise preparation, direct delivery, validation, and fallback boundaries, but no current provider-backed run supplies a causal contrast showing that a real receiver's answer changed with a task-critical payload and remained invariant to a task-irrelevant re-encoding. The five-route utility router and raw/JSON fallback therefore remain a development hypothesis, not demonstrated end-to-end utility or comprehension.
 
+The next receiver-ceiling slice is now executable only as a synthetic
+diagnostic. A deterministic perfect sender binds concise natural language,
+descriptive JSON, and a canonical public action state to the same normative
+record. One cold comprehension context then receives only canonical
+action-state payloads, while raw and JSON controls use fresh root contexts.
+Returned callback captures reject unknown usage, implicit retry or repair,
+context drift, and reported prohibited effects. A callback exception is
+retained as an attempted call with unknown usage and rejects the run. The
+`offline_synthetic=True` attribute is only a host declaration, not an
+authenticated or sandbox-enforced boundary, so claim-facing safe success,
+inclusive totals, and effect status remain null. Task and aggregate results are
+factory-sealed only as an API-misuse guard; the seal is not authentication. The
+aggregate separately revalidates its preflight-bound manifest, expected-output
+and request digests, exact execution order, captured terminal state, and token
+caps. Provider/model consistency, fresh baseline roots, and the exact
+comprehension-to-hot parent chain are rechecked, and session response IDs cannot
+be reused. The recorded comprehension request must equal the deterministic
+challenge reconstructed from public manifest inputs before the verdict is
+re-derived from the captured response. Interrupts
+propagate through a `BaseException` carrier containing their attempt journal,
+and later ordinary validation failures retain earlier callback entries. A
+separate content-derived
+preflight keeps the session length null and numeric permission false: it binds
+the supplied inventory but still lacks the compiler that derives exact token
+vectors and phase bounds from tokenizer, rendered-prompt, path, inclusive-cap,
+and baseline-success bytes. This closes an orchestration gap but adds no real
+receiver result, token-margin estimate, or efficiency claim.
+
 ## 5. Current evaluation
 
 ### 5.1 Corpora

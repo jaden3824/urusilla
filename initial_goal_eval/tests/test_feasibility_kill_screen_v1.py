@@ -11,6 +11,7 @@ from initial_goal_eval.feasibility_kill_screen_v1 import (
     EXACT_ASSUMPTIONS_SHA256,
     FEASIBILITY_PLAN_SCHEMA,
     FEASIBILITY_RESULT_SCHEMA,
+    NO_POSITIVE_BASELINE_SUCCESS_REASON,
     OUTCOMES,
     PATHS,
     PHASES,
@@ -199,6 +200,107 @@ class FeasibilityKillScreenV1Tests(unittest.TestCase):
             sessions[9]["comparison_bound_source"], "ordinary-json"
         )
 
+    def test_all_zero_baseline_success_bounds_are_explicitly_unbounded(self) -> None:
+        zero = _constant(0)
+        row = _row(
+            candidate_once=10_000,
+            candidate_per_task=10_000,
+            raw_safe_successes=zero,
+            json_safe_successes=zero,
+        )
+
+        result = run_feasibility_kill_screen(_plan([row]))
+
+        self.assertEqual(result["outcome"], "not-disproven")
+        self.assertEqual(result["rows"][0]["outcome"], "not-disproven")
+        for session in result["rows"][0]["sessions"]:
+            self.assertEqual(session["outcome"], "not-disproven")
+            self.assertEqual(session["raw_min_safe_successes"], 0)
+            self.assertEqual(session["json_min_safe_successes"], 0)
+            self.assertIsNone(session["comparison_bound_source"])
+            self.assertEqual(
+                session["comparison_unavailable_reason"],
+                NO_POSITIVE_BASELINE_SUCCESS_REASON,
+            )
+            self.assertIsNone(session["comparison_upper_total_tokens"])
+            self.assertIsNone(session["comparison_min_safe_successes"])
+            self.assertIsNone(session["kill_left_scaled"])
+            self.assertIsNone(session["kill_right_scaled"])
+
+    def test_one_zero_baseline_selects_the_other_finite_bound(self) -> None:
+        cases = (
+            (_constant(0), list(SESSION_LENGTHS), "ordinary-json"),
+            (list(SESSION_LENGTHS), _constant(0), "raw-concise"),
+        )
+        for raw_successes, json_successes, expected_source in cases:
+            with self.subTest(expected_source=expected_source):
+                row = _row(
+                    candidate_once=10_000,
+                    raw_safe_successes=raw_successes,
+                    json_safe_successes=json_successes,
+                )
+                result = run_feasibility_kill_screen(_plan([row]))
+
+                self.assertNotEqual(result["outcome"], "invalid")
+                for session in result["rows"][0]["sessions"]:
+                    self.assertEqual(
+                        session["comparison_bound_source"], expected_source
+                    )
+                    self.assertIsNone(session["comparison_unavailable_reason"])
+                    self.assertIsNotNone(session["comparison_upper_total_tokens"])
+                    self.assertIsNotNone(session["comparison_min_safe_successes"])
+                    self.assertIsNotNone(session["kill_left_scaled"])
+                    self.assertIsNotNone(session["kill_right_scaled"])
+
+    def test_zero_to_positive_nondecreasing_bounds_become_comparable(self) -> None:
+        raw_successes = [0 if n < 5 else 1 for n in SESSION_LENGTHS]
+        json_successes = [0 if n < 8 else 2 for n in SESSION_LENGTHS]
+        row = _row(
+            candidate_once=10_000,
+            raw_safe_successes=raw_successes,
+            json_safe_successes=json_successes,
+        )
+
+        result = run_feasibility_kill_screen(_plan([row]))
+        sessions = result["rows"][0]["sessions"]
+
+        self.assertNotEqual(result["outcome"], "invalid")
+        self.assertTrue(
+            all(item["outcome"] == "not-disproven" for item in sessions[:4])
+        )
+        self.assertTrue(
+            all(
+                item["comparison_unavailable_reason"]
+                == NO_POSITIVE_BASELINE_SUCCESS_REASON
+                for item in sessions[:4]
+            )
+        )
+        self.assertTrue(
+            all(
+                item["comparison_bound_source"] == "raw-concise"
+                for item in sessions[4:7]
+            )
+        )
+        self.assertTrue(
+            all(item["comparison_unavailable_reason"] is None for item in sessions[4:])
+        )
+
+    def test_baseline_success_bounds_reject_negative_over_n_and_decrease(self) -> None:
+        for mutation in ("negative", "over-n", "decreasing"):
+            with self.subTest(mutation=mutation):
+                plan = _plan()
+                vector = plan["rows"][0]["paths"]["raw-concise"][
+                    "safe_successes_by_n"
+                ]
+                if mutation == "negative":
+                    vector[0] = -1
+                elif mutation == "over-n":
+                    vector[0] = 2
+                else:
+                    vector[2] = 1
+                result = run_feasibility_kill_screen(plan)
+                self.assertEqual(result["outcome"], "invalid")
+
     def test_per_domain_and_tokenizer_rows_are_retained(self) -> None:
         rows = [
             _row("sgd-hotels", "qwen-tokenizer"),
@@ -301,6 +403,15 @@ class FeasibilityKillScreenV1Tests(unittest.TestCase):
         self.assertEqual(result["outcome"], "invalid")
         self.assertIn("candidate-maximum-must-equal-N", result["error"])
 
+    def test_action_state_zero_success_is_rejected(self) -> None:
+        plan = _plan()
+        plan["rows"][0]["paths"]["action-state"]["safe_successes_by_n"][0] = 0
+
+        result = run_feasibility_kill_screen(plan)
+
+        self.assertEqual(result["outcome"], "invalid")
+        self.assertIn("candidate-maximum-must-equal-N", result["error"])
+
     def test_incomplete_registration_fails_closed(self) -> None:
         for field, value in (
             ("bounds_frozen_before_screen", False),
@@ -386,6 +497,17 @@ class FeasibilityKillScreenV1Tests(unittest.TestCase):
         self.assertFalse(valid["claim_eligible"])
         self.assertFalse(invalid["claim_eligible"])
 
+    def test_legacy_v1_plan_is_rejected_after_zero_denominator_correction(self) -> None:
+        plan = _plan()
+        plan["schema_version"] = (
+            "urusilla-initial-goal-feasibility-kill-screen-plan/1"
+        )
+
+        result = run_feasibility_kill_screen(plan)
+
+        self.assertEqual(result["outcome"], "invalid")
+        self.assertEqual(result["schema_version"], FEASIBILITY_RESULT_SCHEMA)
+
     def test_plan_digest_binds_every_explicit_phase_vector(self) -> None:
         plan = _plan()
         first = run_feasibility_kill_screen(plan)
@@ -395,6 +517,25 @@ class FeasibilityKillScreenV1Tests(unittest.TestCase):
         ][20] += 1
         second = run_feasibility_kill_screen(changed)
 
+        self.assertNotEqual(first["plan_sha256"], second["plan_sha256"])
+        self.assertNotEqual(
+            first["rows"][0]["path_bounds_sha256"]["raw-concise"],
+            second["rows"][0]["path_bounds_sha256"]["raw-concise"],
+        )
+
+    def test_zero_success_vectors_are_deterministic_and_digest_bound(self) -> None:
+        raw_successes = [0 if n < 65 else 1 for n in SESSION_LENGTHS]
+        plan = _plan([_row(raw_safe_successes=raw_successes)])
+
+        first = run_feasibility_kill_screen(deepcopy(plan))
+        repeated = run_feasibility_kill_screen(deepcopy(plan))
+        changed = deepcopy(plan)
+        changed["rows"][0]["paths"]["raw-concise"]["safe_successes_by_n"][
+            63
+        ] = 1
+        second = run_feasibility_kill_screen(changed)
+
+        self.assertEqual(first, repeated)
         self.assertNotEqual(first["plan_sha256"], second["plan_sha256"])
         self.assertNotEqual(
             first["rows"][0]["path_bounds_sha256"]["raw-concise"],
