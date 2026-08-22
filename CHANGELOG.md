@@ -6,6 +6,13 @@ the versioning section of the specification before comparing identifiers.
 
 ## Unreleased
 
+- Runtime `UtilityEvidence` is now explicitly local route-policy input rather
+  than claim authority. Optimized routes may still be selected after exact
+  binding and declared-threshold checks, but route candidates and decisions
+  reject positive claim flags until an authoritative route-scoped producer
+  exists. The claim matrix now also restores the frozen initial-goal token
+  threshold to 20%; a separate competitive lane retains its distinct 25%
+  target.
 - A hosted, no-install 60-second challenge page now exposes a self-contained
   one-fetch agent task containing the frozen task identity, response schema,
   evidence boundary, and non-authority rules. It has no site-native result

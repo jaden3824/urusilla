@@ -972,9 +972,14 @@ class EvidenceAndRoutingTests(TestCase):
             )[0]
         )
 
-    def test_goal_gate_enforces_every_published_threshold(self) -> None:
+    def test_declared_thresholds_cannot_issue_the_initial_goal_claim(self) -> None:
         evidence = passing_evidence()
-        self.assertTrue(evidence.passes_initial_goal_gate)
+        self.assertTrue(evidence.declared_thresholds_passed)
+        self.assertFalse(evidence.passes_initial_goal_gate)
+        self.assertIn(
+            "route-claim-unavailable-no-authoritative-producer",
+            evidence.goal_gate_failures(),
+        )
         mutations = {
             "domain_count": 2,
             "model_family_count": 1,
@@ -992,6 +997,7 @@ class EvidenceAndRoutingTests(TestCase):
                 **{**evidence.__dict__, field: value}
             )
             with self.subTest(field=field):
+                self.assertFalse(changed.declared_thresholds_passed)
                 self.assertFalse(changed.passes_initial_goal_gate)
 
     def test_capability_proof_and_evidence_types_are_strict(self) -> None:
@@ -1133,8 +1139,9 @@ class EvidenceAndRoutingTests(TestCase):
             total_token_reduction_lcb=0.20,
             negative_rejection=0.999,
         )
-        self.assertFalse(original.passes_initial_goal_gate)
-        self.assertTrue(inflated.passes_initial_goal_gate)
+        self.assertFalse(original.declared_thresholds_passed)
+        self.assertTrue(inflated.declared_thresholds_passed)
+        self.assertFalse(inflated.passes_initial_goal_gate)
         self.assertNotEqual(original.binding_sha256, inflated.binding_sha256)
         for name in (
             "route_mode",
@@ -1190,7 +1197,19 @@ class EvidenceAndRoutingTests(TestCase):
             )
         )
         self.assertEqual(freshly_verified.selected_mode, "silence")
-        self.assertTrue(freshly_verified.claim_eligible)
+        self.assertFalse(freshly_verified.claim_eligible)
+        self.assertFalse(freshly_verified.goal_gate_passed)
+        selected = next(
+            item
+            for item in freshly_verified.candidates
+            if item.mode == freshly_verified.selected_mode
+        )
+        self.assertIn(
+            "route-claim-unavailable-no-authoritative-producer",
+            selected.reasons,
+        )
+        with self.assertRaisesRegex(RoutingError, "authoritative route-scoped"):
+            replace(selected, claim_eligible=True)
 
     def test_cross_task_compile_replay_is_rejected_even_with_same_profile(self) -> None:
         source = "Verify artifact seven without external effects. " * 800
@@ -1833,7 +1852,17 @@ class EvidenceAndRoutingTests(TestCase):
         )
         self.assertEqual(compiler.calls, 1)
         self.assertEqual(prepared.route.selected_mode, "action-state")
-        self.assertTrue(prepared.route.claim_eligible)
+        self.assertFalse(prepared.route.claim_eligible)
+        self.assertFalse(prepared.route.goal_gate_passed)
+        selected = next(
+            item
+            for item in prepared.route.candidates
+            if item.mode == "action-state"
+        )
+        self.assertIn(
+            "route-claim-unavailable-no-authoritative-producer",
+            selected.reasons,
+        )
         self.assertEqual(prepared.receiver_model_calls_made, 0)
         self.assertFalse(prepared.external_effects_performed)
         self.assertIn(self.state.canonical_text, prepared.route.request.model_visible_text)

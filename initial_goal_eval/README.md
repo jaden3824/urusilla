@@ -185,6 +185,13 @@ emit `hybrid_system_evidence`; each runtime route still requires a separately
 frozen, route-scoped confirmatory trial before it can receive route-level
 utility evidence.
 
+The runtime enforces this as a construction invariant rather than relying on a
+documentation convention. Caller-supplied route evidence can meet declared
+metric thresholds for bounded local policy use, but `passes_initial_goal_gate`
+remains false, positive route claim flags are rejected, and every constructed
+route decision remains claim-ineligible until an authoritative route-scoped
+producer exists.
+
 ## Causal-use boundary
 
 Passing the v1 aggregate gate would not prove that an action-state payload was

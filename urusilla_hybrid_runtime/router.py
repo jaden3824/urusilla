@@ -34,6 +34,7 @@ from .surface import ActiveSurface, RetainedSurface, SurfaceAliasTable
 ROUTE_MODES = ("silence", "routine", "action-state", "raw", "json")
 OPTIMIZED_MODES = frozenset({"silence", "routine", "action-state"})
 BASELINE_MODES = frozenset({"raw", "json"})
+ROUTE_CLAIM_UNAVAILABLE = "route-claim-unavailable-no-authoritative-producer"
 _SHA256 = re.compile(r"^sha256:[0-9a-f]{64}$")
 _CONTEXT_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,255}$")
 _DECISION_FINGERPRINT_FIELDS = (
@@ -272,6 +273,15 @@ class LocalArtifactVerification:
 
 @dataclass(frozen=True)
 class UtilityEvidence:
+    """Caller-supplied route-policy input, never claim authority by itself.
+
+    The authoritative initial-goal verifier deliberately emits aggregate
+    hybrid-system evidence and no route-scoped ``UtilityEvidence``.  These
+    fields may therefore help a host make a conservative local routing choice
+    after exact binding checks, but they cannot make a runtime route or the
+    initial goal claim-eligible.
+    """
+
     evidence_id: str
     route_mode: str
     capsule_sha256: str
@@ -352,7 +362,9 @@ class UtilityEvidence:
         if type(self.unauthorized_external_effects) is not int or self.unauthorized_external_effects < 0:
             raise RoutingError("unauthorized_external_effects must be nonnegative")
 
-    def goal_gate_failures(self) -> tuple[str, ...]:
+    def declared_threshold_failures(self) -> tuple[str, ...]:
+        """Return failures in the caller-supplied metric declarations only."""
+
         failures: list[str] = []
         checks = (
             (self.verifier_passed, "evidence-verifier-failed"),
@@ -396,9 +408,22 @@ class UtilityEvidence:
                 failures.append(reason)
         return tuple(failures)
 
+    def goal_gate_failures(self) -> tuple[str, ...]:
+        """Fail closed because no authoritative route-scoped producer exists."""
+
+        return (*self.declared_threshold_failures(), ROUTE_CLAIM_UNAVAILABLE)
+
+    @property
+    def declared_thresholds_passed(self) -> bool:
+        """Whether declared values meet thresholds for local policy use only."""
+
+        return not self.declared_threshold_failures()
+
     @property
     def passes_initial_goal_gate(self) -> bool:
-        return not self.goal_gate_failures()
+        """No runtime route can pass the aggregate initial-goal claim gate."""
+
+        return False
 
     @property
     def binding_sha256(self) -> str:
@@ -702,6 +727,10 @@ class RouteCandidate:
                 raise RoutingError(f"route candidate {name} must be boolean")
         if self.claim_eligible and not self.eligible:
             raise RoutingError("ineligible route cannot be claim eligible")
+        if self.claim_eligible:
+            raise RoutingError(
+                "runtime route claims require an authoritative route-scoped producer"
+            )
         if type(self.reasons) is not tuple or any(
             type(item) is not str or not item for item in self.reasons
         ):
@@ -843,6 +872,10 @@ class RouteDecision:
             raise RoutingError("route decision claim eligibility changed")
         if self.goal_gate_passed != self.claim_eligible:
             raise RoutingError("route decision goal gate is inconsistent")
+        if self.claim_eligible or self.goal_gate_passed:
+            raise RoutingError(
+                "runtime route claims require an authoritative route-scoped producer"
+            )
         bound_task_digests = {
             item.request.task_context_sha256
             for item in self.candidates
@@ -978,8 +1011,8 @@ def _evidence_eligibility(
 ) -> tuple[bool, bool, tuple[str, ...]]:
     if mode in BASELINE_MODES:
         return True, False, ()
-    if evidence is not None and evidence.passes_initial_goal_gate:
-        return True, True, ()
+    if evidence is not None and evidence.declared_thresholds_passed:
+        return True, False, (ROUTE_CLAIM_UNAVAILABLE,)
     failures = ("goal-evidence-missing",) if evidence is None else evidence.goal_gate_failures()
     if policy.allow_development_trial:
         return True, False, ("development-trial-only", *failures)
@@ -1000,7 +1033,7 @@ def _receiver_forecast_total(cost: CostLedger) -> int:
     )
 
 
-def _trusted_utility_evidence(
+def _validated_route_policy_evidence(
     evidence: UtilityEvidence | None,
     verifier: Callable[
         [UtilityEvidence, str, str, str, str, str], LocalArtifactVerification
@@ -1012,6 +1045,8 @@ def _trusted_utility_evidence(
     task_profile_sha256: str,
     symbol_table_sha256: str,
 ) -> UtilityEvidence | None:
+    """Bind caller evidence for local route policy, never for claim issuance."""
+
     runtime_sha256 = current_runtime_sha256()
     if (
         evidence is None
@@ -1161,7 +1196,7 @@ def should_attempt_action_state(
     frozen ``SurfaceTrial``, while this gate compares marginal message costs.
     """
 
-    trusted_evidence = _trusted_utility_evidence(
+    trusted_evidence = _validated_route_policy_evidence(
         evidence,
         evidence_verifier,
         mode="action-state",
@@ -1370,7 +1405,7 @@ def plan_route(
         mode: trusted
         for mode, item in untrusted_evidence_map.items()
         if (
-            trusted := _trusted_utility_evidence(
+            trusted := _validated_route_policy_evidence(
                 item,
                 utility_evidence_verifier,
                 mode=mode,
@@ -1914,13 +1949,13 @@ def plan_route(
             if best_baseline.cost is not None and best_baseline.cost.complete
             else None
         ),
-        "claim_eligible": selected.claim_eligible,
+        "claim_eligible": False,
         "fallback_from": fallback_from,
         "fallback_sender_tokens": fallback_sender_tokens,
         "fallback_semantic_verification_tokens": (
             fallback_semantic_verification_tokens
         ),
-        "goal_gate_passed": selected.claim_eligible,
+        "goal_gate_passed": False,
     }
     return RouteDecision(
         **decision_values,

@@ -191,8 +191,19 @@ The next research priority is therefore an oracle-free, end-to-end router study 
 
 The provider-neutral trace assembler now closes one previously identified wiring gap: already captured raw, JSON, and hybrid calls can produce a self-issued receipt-bundle v2 that content-binds exact provider output and usage to every recorded score and emits self-issued wrappers for every declared sandbox-evidence slot. Every receipt names the offline assembler as its actual generator; an explicit diagnostic mode can check internal consistency, while the normal evidence verifier rejects those receipts by default. This is still project-authored offline plumbing. It does not replay the frozen scorer, resolve provider-response preimages externally, independently observe the sandbox, re-normalize provider usage independently, or authenticate operator independence or real execution. Coordinated rehashing is therefore an authentication failure, not something content hashes prevent, and the bridge changes no performance claim.
 
+The development runtime now enforces the same boundary at route level. A
+caller-supplied `UtilityEvidence` object may support a conservative local route
+choice only after exact binding and declared-threshold validation. It cannot
+issue an initial-goal or route-level claim: route candidates and decisions
+reject positive claim flags, and the aggregate verifier deliberately produces
+no route-scoped evidence. An authenticated, separately frozen route-scoped
+producer would be required before that invariant could be reconsidered.
+
 Until that study produces claim-eligible safely-completed-task evidence, the
 protocol surface is frozen. New infrastructure work must either unblock one
 frozen end-to-end episode, reproduce a concrete failure, or reduce the cost of
 independent evaluation; additional syntax, adapters, dashboards, and outreach
-do not substitute for task utility.
+do not substitute for task utility. Core modularization, property testing,
+fuzzing, coverage gates, and faster split CI remain useful follow-up work, but
+they should be prioritized now only when they directly lower the cost or risk
+of the frozen independent evaluation.
