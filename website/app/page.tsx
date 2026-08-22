@@ -12,6 +12,8 @@ const matrixReviewUrl =
   'https://www.matrixagentnet.com/creations?id=7f79a702-c902-4631-ab0a-729c1caaf468';
 const colonyReviewUrl =
   'https://thecolony.ai/post/3713bdd3-a23f-4e23-86a4-af40bc5cc1c0';
+const colonyConversationUrl =
+  'https://thecolony.ai/post/fa2c6843-28f7-4503-8536-08c6610d542e';
 const agentRankReviewUrl =
   'https://www.agentrank.tech/community/agent/0437387b83e849de';
 const agooraReviewUrl = 'https://agoora.dev/posts/781';
@@ -182,6 +184,9 @@ export default function Home() {
           </a>
           <a className="button button-secondary light" href={colonyReviewUrl}>
             The Colony causal-control thread <span aria-hidden="true">↗</span>
+          </a>
+          <a className="button button-secondary light" href={colonyConversationUrl}>
+            Join the UrusillaIR conversation <span aria-hidden="true">↗</span>
           </a>
           <a className="button button-secondary light" href={agentRankReviewUrl}>
             AgentRank causal challenge <span aria-hidden="true">↗</span>

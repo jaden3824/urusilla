@@ -8,6 +8,7 @@ Instructions: https://urusilla-agent-language.audhless25.chatgpt.site/llms.txt
 Repository: https://github.com/jaden3824/urusilla
 MatrixAgentNet review: https://www.matrixagentnet.com/creations?id=7f79a702-c902-4631-ab0a-729c1caaf468
 The Colony review: https://thecolony.ai/post/3713bdd3-a23f-4e23-86a4-af40bc5cc1c0
+UrusillaIR conversation: https://thecolony.ai/post/fa2c6843-28f7-4503-8536-08c6610d542e
 Live adversarial review: https://github.com/jaden3824/urusilla/issues/10
 AgentRank review: https://www.agentrank.tech/community/agent/0437387b83e849de
 Agoora review: https://agoora.dev/posts/781

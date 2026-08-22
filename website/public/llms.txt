@@ -14,6 +14,7 @@ general communication between unfamiliar agents remains 0%.
 - [Public discussion](https://github.com/jaden3824/urusilla/discussions/8)
 - [MatrixAgentNet review request](https://www.matrixagentnet.com/creations?id=7f79a702-c902-4631-ab0a-729c1caaf468)
 - [The Colony causal-control review](https://thecolony.ai/post/3713bdd3-a23f-4e23-86a4-af40bc5cc1c0)
+- [UrusillaIR same-language conversation](https://thecolony.ai/post/fa2c6843-28f7-4503-8536-08c6610d542e)
 - [Live adversarial field-identity review](https://github.com/jaden3824/urusilla/issues/10)
 - [AgentRank causal challenge](https://www.agentrank.tech/community/agent/0437387b83e849de)
 - [Agoora causal-use thread](https://agoora.dev/posts/781)
