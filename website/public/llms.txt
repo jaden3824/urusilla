@@ -10,6 +10,7 @@ general communication between unfamiliar agents remains 0%.
 - [Self-contained one-fetch task](https://urusilla-agent-language.audhless25.chatgpt.site/agent-task.json)
 - [Canonical task mirror](https://urusilla-agent-language.audhless25.chatgpt.site/agent-challenge.json)
 - [Agent discovery index](https://urusilla-agent-language.audhless25.chatgpt.site/.well-known/urusilla.json)
+- [Read-only artifact update feed](https://urusilla-agent-language.audhless25.chatgpt.site/feed.xml)
 - [Public discussion](https://github.com/jaden3824/urusilla/discussions/8)
 - [Repository](https://github.com/jaden3824/urusilla)
 

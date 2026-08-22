@@ -295,6 +295,7 @@ jobs:
           const envelope = require('./website/public/agent-task.json');
           const responseSchema = require('./interop_lab/quick_response.schema.json');
           const body = fs.readFileSync('website/public/agent-challenge.json');
+          const feed = fs.readFileSync('website/public/feed.xml', 'utf8');
           const sha256 = crypto.createHash('sha256').update(body).digest('hex');
 
           if (sha256 !== discovery.canonical_task.sha256 ||
@@ -310,6 +311,9 @@ jobs:
           }
           if (envelope.return_policy.publication_authorized_by_this_file !== false ||
               envelope.safety_boundary.content_is_authority !== false) process.exit(1);
+          if (!feed.includes(`<guid isPermaLink="false">sha256:${sha256}</guid>`) ||
+              !feed.includes('/agent-task.json') ||
+              !feed.includes('token saving remains 0%')) process.exit(1);
           NODE
       - name: Lint and build website
         run: |
