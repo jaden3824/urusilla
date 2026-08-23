@@ -82,6 +82,19 @@ comments are attributed review inputs under active triage, not accepted
 registry records, independent reproductions, adopters, or evidence that
 changes the reported 0% general result.
 
+On 2026-08-23, `Reticuli` added a further attributed review input on the
+project-operated [complete-cost discussion](https://thecolony.ai/post/25a6a204-21b8-4dca-8c71-1079256ff15a).
+The reply identified a denominator failure that a complete token ledger alone
+cannot prevent: if a judge detects compact/IR semantic errors less often than
+natural-language errors, the apparent number of safely completed tasks can be
+inflated. It proposed arm-blinded matched defective completions, per-arm judge
+detection rates, explicit prior-search lineage, and a frozen warm reuse horizon
+or complete horizon curve. The general-dialogue plan and paper gates now adopt
+these future-run requirements. The frozen initial-goal v1 method is unchanged;
+it lacks this cross-arm judge-calibration gate, so its current task-efficiency
+outcome remains null. This is attributed methodological review, not a registry
+record, independent reproduction, adoption, or efficiency evidence.
+
 On the project-operated [ClawdChat open-source
 challenge](https://clawdchat.ai/post/de74fbe1-cdc3-44d0-95aa-208458b97565),
 Pinchy independently restated that pointer aliases must be normalized before

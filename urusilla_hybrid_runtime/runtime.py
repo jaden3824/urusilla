@@ -8,6 +8,7 @@ from types import MappingProxyType
 from typing import Callable, Mapping
 
 from .canonical import canonical_json, sha256_text, strict_json_loads
+from .captured_receiver import CapturedReceiverExecution
 from .errors import RoutingError
 from .fidelity import FidelityVerification, FidelityVerificationInput
 from .preparation_journal import (
@@ -917,7 +918,7 @@ class HybridExecution:
 
 
 def _validate_public_output(
-    execution: ReceiverExecution,
+    execution: ReceiverExecution | CapturedReceiverExecution,
     request: DirectReceiverRequest,
     source_sha256: str,
     validator: Callable[[OutputValidationInput], LocalOutputValidation] | None,
@@ -928,7 +929,7 @@ def _validate_public_output(
     if execution.status != "completed" or execution.reply is None:
         return False
     if validator is None:
-        return False if execution.request_mode in {"routine", "action-state"} else None
+        return False if request.mode in {"routine", "action-state"} else None
     validation_input = OutputValidationInput(
         source_sha256=source_sha256,
         task_context_sha256=request.task_context_sha256,
@@ -970,7 +971,13 @@ def _compiler_artifact_binding(prepared: PreparedMessage) -> str:
     )
 
 
-def _receiver_execution_artifact_binding(execution: ReceiverExecution) -> str:
+def _receiver_execution_artifact_binding(
+    execution: ReceiverExecution | CapturedReceiverExecution,
+) -> str:
+    if type(execution) is CapturedReceiverExecution:
+        return execution.binding_sha256
+    if type(execution) is not ReceiverExecution:
+        raise ValueError("receiver observation requires an exact execution")
     reply = execution.reply
     return sha256_text(
         canonical_json(
@@ -1025,7 +1032,7 @@ def _local_observation_artifact_binding(
 
 def _receiver_observed_event(
     execution_binding_sha256: str,
-    execution: ReceiverExecution | None,
+    execution: ReceiverExecution | CapturedReceiverExecution | None,
     *,
     sequence: int,
     component: str,
@@ -1042,6 +1049,11 @@ def _receiver_observed_event(
             model_calls=0,
         )
     reply = execution.reply
+    capture = (
+        execution.capture
+        if type(execution) is CapturedReceiverExecution
+        else None
+    )
     return ObservedTokenEvent(
         sequence=sequence,
         phase=phase,
@@ -1050,19 +1062,33 @@ def _receiver_observed_event(
         artifact_binding_sha256=_receiver_execution_artifact_binding(execution),
         total_tokens=execution.total_tokens,
         model_calls=execution.calls,
-        input_tokens=reply.input_tokens if reply is not None else None,
-        output_tokens=reply.output_tokens if reply is not None else None,
-        reasoning_tokens=reply.reasoning_tokens if reply is not None else None,
+        input_tokens=(
+            capture.input_tokens
+            if capture is not None
+            else (reply.input_tokens if reply is not None else None)
+        ),
+        output_tokens=(
+            capture.output_tokens
+            if capture is not None
+            else (reply.output_tokens if reply is not None else None)
+        ),
+        reasoning_tokens=(
+            capture.reasoning_tokens
+            if capture is not None
+            else (reply.reasoning_tokens if reply is not None else None)
+        ),
         reasoning_accounting=(
-            reply.reasoning_accounting if reply is not None else None
+            capture.reasoning_accounting
+            if capture is not None
+            else (reply.reasoning_accounting if reply is not None else None)
         ),
     )
 
 
 def _build_observed_execution_ledger(
     prepared: PreparedMessage,
-    primary: ReceiverExecution,
-    fallback: ReceiverExecution | None,
+    primary: ReceiverExecution | CapturedReceiverExecution | None,
+    fallback: ReceiverExecution | CapturedReceiverExecution | None,
     local_usage: ObservedLocalUsage,
 ) -> ObservedExecutionLedger:
     binding = prepared.execution_binding_sha256

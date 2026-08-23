@@ -12,6 +12,7 @@ from urusilla_hybrid_runtime import (
     Capsule,
     CapsuleContextBinding,
     CapsuleError,
+    CapturedProviderResponse,
     CostForecast,
     FidelityVerification,
     FidelityVerificationInput,
@@ -43,6 +44,7 @@ from urusilla_hybrid_runtime import (
     consume_direct_action_state,
     current_runtime_sha256,
     execute_prepared_message,
+    execute_prepared_message_captured,
     load_capsule,
     parse_sender_output,
     plan_route,
@@ -50,6 +52,13 @@ from urusilla_hybrid_runtime import (
     source_text_sha256,
     strict_json_loads,
     wrap_as_quarantined_urusilla_message,
+)
+from urusilla_hybrid_runtime.tests.test_captured_receiver import (
+    SETTINGS_SHA256,
+    StaticCapturedAdapter,
+    _completed_capture,
+    _known_billed_failure_capture,
+    _transport_failure_capture,
 )
 
 
@@ -2935,6 +2944,352 @@ class HybridExecutionContractTests(TestCase):
         self.assertIsNone(execution.observed_runtime_tokens)
         self.assertFalse(execution.safely_completed)
         self.assertFalse(execution.goal_total_complete)
+
+    def test_captured_action_path_preserves_exact_primary_and_no_claim_authority(
+        self,
+    ) -> None:
+        prepared, _ = self._action_prepared()
+        baseline = next(
+            item
+            for item in prepared.route.candidates
+            if item.mode == prepared.route.best_baseline_mode
+        )
+        assert baseline.request is not None
+        primary_reply = receiver_reply()
+        fallback_reply = receiver_reply()
+        primary_adapter = StaticCapturedAdapter(
+            CapturedProviderResponse(
+                capture=_completed_capture(prepared.route.request, primary_reply),
+                reply=primary_reply,
+            )
+        )
+        fallback_adapter = StaticCapturedAdapter(
+            CapturedProviderResponse(
+                capture=_completed_capture(baseline.request, fallback_reply),
+                reply=fallback_reply,
+            )
+        )
+
+        execution = execute_prepared_message_captured(
+            prepared,
+            primary_adapter,
+            primary_expected_model_id="receiver-a",
+            primary_expected_settings_sha256=SETTINGS_SHA256,
+            fallback_adapter=fallback_adapter,
+            fallback_expected_model_id="receiver-a",
+            fallback_expected_settings_sha256=SETTINGS_SHA256,
+            output_validator=validate_output,
+            observed_local_usage=self._complete_local_usage(prepared),
+        )
+
+        self.assertEqual(primary_adapter.calls, 1)
+        self.assertEqual(fallback_adapter.calls, 0)
+        self.assertEqual(execution.receiver_calls, 1)
+        self.assertEqual(execution.final_mode, "action-state")
+        self.assertTrue(execution.capture_chain_valid)
+        self.assertTrue(execution.safely_completed)
+        self.assertEqual(execution.observed_runtime_tokens, 18)
+        self.assertEqual(execution.inclusive_total_tokens, 31)
+        self.assertFalse(execution.provider_authenticity_verified)
+        self.assertFalse(execution.claim_eligible)
+        self.assertFalse(execution.goal_total_complete)
+        assert execution.primary is not None
+        self.assertFalse(execution.primary.provider_authenticity_verified)
+        self.assertFalse(execution.observed_ledger.claim_eligible)
+        with self.assertRaisesRegex(ValueError, "claim authority"):
+            replace(execution, claim_eligible=True)
+        with self.assertRaisesRegex(ValueError, "minted by the executor"):
+            replace(execution, output_valid=False, safely_completed=False)
+
+    def test_captured_primary_rewrite_uses_fallback_but_fails_chain_closed(
+        self,
+    ) -> None:
+        prepared, _ = self._action_prepared()
+        baseline = next(
+            item
+            for item in prepared.route.candidates
+            if item.mode == prepared.route.best_baseline_mode
+        )
+        assert baseline.request is not None
+        primary_reply = receiver_reply()
+        fallback_reply = receiver_reply()
+        primary_adapter = StaticCapturedAdapter(
+            CapturedProviderResponse(
+                capture=_completed_capture(
+                    prepared.route.request,
+                    primary_reply,
+                    user_text="Expanded prose that was not the direct payload.",
+                ),
+                reply=primary_reply,
+            )
+        )
+        fallback_adapter = StaticCapturedAdapter(
+            CapturedProviderResponse(
+                capture=_completed_capture(baseline.request, fallback_reply),
+                reply=fallback_reply,
+            )
+        )
+
+        execution = execute_prepared_message_captured(
+            prepared,
+            primary_adapter,
+            primary_expected_model_id="receiver-a",
+            primary_expected_settings_sha256=SETTINGS_SHA256,
+            fallback_adapter=fallback_adapter,
+            fallback_expected_model_id="receiver-a",
+            fallback_expected_settings_sha256=SETTINGS_SHA256,
+            output_validator=validate_output,
+            observed_local_usage=self._complete_local_usage(
+                prepared,
+                fallback_tokens=1,
+            ),
+        )
+
+        assert execution.primary is not None
+        self.assertEqual(execution.primary.status, "capture-rejected")
+        self.assertIsNotNone(execution.fallback)
+        self.assertTrue(execution.output_valid)
+        self.assertFalse(execution.capture_chain_valid)
+        self.assertFalse(execution.safely_completed)
+        self.assertIsNone(execution.observed_runtime_tokens)
+        self.assertIsNone(execution.inclusive_total_tokens)
+
+    def test_captured_fallback_rewrite_cannot_become_a_safe_completion(self) -> None:
+        prepared, _ = self._action_prepared()
+        baseline = next(
+            item
+            for item in prepared.route.candidates
+            if item.mode == prepared.route.best_baseline_mode
+        )
+        assert baseline.request is not None
+        primary_reply = receiver_reply("invalid")
+        fallback_reply = receiver_reply()
+        primary_adapter = StaticCapturedAdapter(
+            CapturedProviderResponse(
+                capture=_completed_capture(prepared.route.request, primary_reply),
+                reply=primary_reply,
+            )
+        )
+        fallback_adapter = StaticCapturedAdapter(
+            CapturedProviderResponse(
+                capture=_completed_capture(
+                    baseline.request,
+                    fallback_reply,
+                    user_text="A rewritten fallback that was never intended.",
+                ),
+                reply=fallback_reply,
+            )
+        )
+
+        execution = execute_prepared_message_captured(
+            prepared,
+            primary_adapter,
+            primary_expected_model_id="receiver-a",
+            primary_expected_settings_sha256=SETTINGS_SHA256,
+            fallback_adapter=fallback_adapter,
+            fallback_expected_model_id="receiver-a",
+            fallback_expected_settings_sha256=SETTINGS_SHA256,
+            output_validator=validate_output,
+            observed_local_usage=self._complete_local_usage(
+                prepared,
+                fallback_tokens=1,
+            ),
+        )
+
+        assert execution.fallback is not None
+        self.assertEqual(execution.fallback.status, "capture-rejected")
+        self.assertFalse(execution.output_valid)
+        self.assertFalse(execution.safely_completed)
+        self.assertFalse(execution.capture_chain_valid)
+        self.assertIsNone(execution.observed_runtime_tokens)
+
+    def test_captured_known_billed_primary_failure_is_counted_with_fallback(
+        self,
+    ) -> None:
+        prepared, _ = self._action_prepared()
+        baseline = next(
+            item
+            for item in prepared.route.candidates
+            if item.mode == prepared.route.best_baseline_mode
+        )
+        assert baseline.request is not None
+        fallback_reply = receiver_reply()
+        primary_adapter = StaticCapturedAdapter(
+            CapturedProviderResponse(
+                capture=_known_billed_failure_capture(prepared.route.request),
+                reply=None,
+            )
+        )
+        fallback_adapter = StaticCapturedAdapter(
+            CapturedProviderResponse(
+                capture=_completed_capture(baseline.request, fallback_reply),
+                reply=fallback_reply,
+            )
+        )
+
+        execution = execute_prepared_message_captured(
+            prepared,
+            primary_adapter,
+            primary_expected_model_id="model-a",
+            primary_expected_settings_sha256=SETTINGS_SHA256,
+            fallback_adapter=fallback_adapter,
+            fallback_expected_model_id="receiver-a",
+            fallback_expected_settings_sha256=SETTINGS_SHA256,
+            output_validator=validate_output,
+            observed_local_usage=self._complete_local_usage(
+                prepared,
+                fallback_tokens=1,
+            ),
+        )
+
+        assert execution.primary is not None
+        self.assertEqual(execution.primary.status, "failed")
+        self.assertEqual(execution.primary.total_tokens, 12)
+        self.assertEqual(execution.observed_runtime_tokens, 30)
+        self.assertEqual(execution.inclusive_total_tokens, 44)
+        self.assertTrue(execution.capture_chain_valid)
+        self.assertTrue(execution.safely_completed)
+        primary_event = next(
+            item
+            for item in execution.observed_ledger.events
+            if item.component == "primary-receiver"
+        )
+        self.assertEqual(primary_event.total_tokens, 12)
+        self.assertEqual(primary_event.input_tokens, 10)
+        self.assertEqual(primary_event.output_tokens, 2)
+
+    def test_captured_unknown_primary_usage_remains_unknown_after_fallback(
+        self,
+    ) -> None:
+        prepared, _ = self._action_prepared()
+        baseline = next(
+            item
+            for item in prepared.route.candidates
+            if item.mode == prepared.route.best_baseline_mode
+        )
+        assert baseline.request is not None
+        fallback_reply = receiver_reply()
+        primary_adapter = StaticCapturedAdapter(
+            CapturedProviderResponse(
+                capture=_transport_failure_capture(prepared.route.request),
+                reply=None,
+            )
+        )
+        fallback_adapter = StaticCapturedAdapter(
+            CapturedProviderResponse(
+                capture=_completed_capture(baseline.request, fallback_reply),
+                reply=fallback_reply,
+            )
+        )
+
+        execution = execute_prepared_message_captured(
+            prepared,
+            primary_adapter,
+            primary_expected_model_id="model-a",
+            primary_expected_settings_sha256=SETTINGS_SHA256,
+            fallback_adapter=fallback_adapter,
+            fallback_expected_model_id="receiver-a",
+            fallback_expected_settings_sha256=SETTINGS_SHA256,
+            output_validator=validate_output,
+            observed_local_usage=self._complete_local_usage(
+                prepared,
+                fallback_tokens=1,
+            ),
+        )
+
+        assert execution.primary is not None
+        self.assertEqual(execution.primary.provider_attempt_count, 2)
+        self.assertTrue(execution.safely_completed)
+        self.assertIsNone(execution.observed_runtime_tokens)
+        self.assertFalse(execution.scope_complete)
+        self.assertIsNone(execution.inclusive_total_tokens)
+
+    def test_captured_fallback_endpoint_is_preflighted_before_primary_dispatch(
+        self,
+    ) -> None:
+        prepared, _ = self._action_prepared()
+        primary_reply = receiver_reply()
+        primary_adapter = StaticCapturedAdapter(
+            CapturedProviderResponse(
+                capture=_completed_capture(prepared.route.request, primary_reply),
+                reply=primary_reply,
+            )
+        )
+
+        class MissingCapturedSurface:
+            calls = 0
+
+        fallback_adapter = MissingCapturedSurface()
+        with self.assertRaisesRegex(ReceiverError, "statically inspectable"):
+            execute_prepared_message_captured(
+                prepared,
+                primary_adapter,
+                primary_expected_model_id="receiver-a",
+                primary_expected_settings_sha256=SETTINGS_SHA256,
+                fallback_adapter=fallback_adapter,
+                fallback_expected_model_id="receiver-a",
+                fallback_expected_settings_sha256=SETTINGS_SHA256,
+                output_validator=validate_output,
+            )
+        self.assertEqual(primary_adapter.calls, 0)
+        self.assertEqual(fallback_adapter.calls, 0)
+
+    def test_captured_silence_is_local_and_has_no_provider_endpoint(self) -> None:
+        source = "Already delivered and no reply is required."
+        proof = SilenceProof(
+            source_text=source,
+            source_sha256=source_text_sha256(source),
+            task_context_text=TASK_CONTEXT.canonical_text,
+            task_context_sha256=TASK_CONTEXT.sha256,
+            verifier_sha256="sha256:" + "1" * 64,
+            no_required_message=True,
+            no_effectful_intent=True,
+        )
+        prepared = prepare_message(
+            source,
+            self.capsule,
+            ReceiverCapabilities(),
+            char_count,
+            task_context=TASK_CONTEXT,
+            forecasts=complete_forecasts(),
+            evidence={
+                "silence": passing_evidence(
+                    "captured-silence", route_mode="silence"
+                )
+            },
+            silence_proof=proof,
+            utility_evidence_verifier=verify_utility,
+            silence_verifier=verify_bound_artifact,
+        )
+
+        execution = execute_prepared_message_captured(
+            prepared,
+            None,
+            primary_expected_model_id=None,
+            primary_expected_settings_sha256=None,
+            output_validator=validate_output,
+        )
+
+        self.assertIsNone(execution.primary)
+        self.assertEqual(execution.receiver_calls, 0)
+        self.assertEqual(execution.observed_runtime_tokens, 0)
+        self.assertTrue(execution.capture_chain_valid)
+        self.assertTrue(execution.safely_completed)
+        self.assertFalse(execution.claim_eligible)
+
+    def test_captured_runtime_public_description_preserves_claim_boundary(
+        self,
+    ) -> None:
+        readme = (Path(__file__).resolve().parents[2] / "README.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("native capture-backed hybrid executor", readme)
+        self.assertIn("project-authored synthetic plumbing only", readme)
+        self.assertIn(
+            "This does not change the demonstrated general unfamiliar-agent "
+            "saving from **0%**.",
+            readme,
+        )
 
 
 if __name__ == "__main__":

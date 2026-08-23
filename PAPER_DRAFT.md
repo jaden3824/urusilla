@@ -316,6 +316,8 @@ The primary effectiveness outcome is safely completed task success. The primary 
 
 All task input, system, history, visible communication, final-answer, profile, translation, repair, and billed reasoning tokens are counted. Judge tokens are reported separately and included in economic accounting.
 
+Complete cost accounting validates the numerator but not the safe-completion denominator. A claim-bearing study must therefore plant semantically matched known defects in every natural-language, JSON, and Urusilla arm, blind the scorer to arm identity, and publish per-arm detection rates. If a required arm lacks measurable scorer sensitivity or violates a preregistered parity threshold, its tokens per safely completed task and the corresponding efficiency comparison are null. Deterministic scorers require perfect detection on their frozen known-positive set. The current frozen v1 method has no such cross-arm judge-calibration gate and cannot support the efficiency claim.
+
 The frozen initial-goal gate compares the complete hybrid system with the better of concise natural language and canonical JSON under unseen multi-domain, multi-model, independently operated evaluation. Its one-sided 95% lower bound on task-success difference must exceed `-0.01`; the lower bound on total-token reduction must reach `0.20`; unseen-partner parse validity must reach `0.99`; and held-out semantic fidelity must reach `0.95`. Setup, sender, router, receiver, output, reasoning, repair, fallback, tool, safety, and judge costs remain in scope. The repository's separate `25%` threshold for the word **competitive** is stricter. Neither gate has been run to completion.
 
 ### 6.5 Energy hypothesis and break-even

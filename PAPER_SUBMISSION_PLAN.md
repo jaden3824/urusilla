@@ -51,8 +51,10 @@ All items below are required before submitting the current methods/negative-resu
 - Causal controls include at least a valid task-critical payload, a task-critical mutation or removal, and a task-irrelevant re-encoding.
 - Every actual compiler, verifier, setup, router, primary receiver, fallback, repair, tool, safety, and judge call is retained. Unknown usage remains unknown and cannot be imputed as zero.
 - Failed attempts remain in cost denominators. Operation-level success grouping never deduplicates billed attempt-level cost.
+- Matched semantic defects are planted in every representation arm under blinded scoring; per-arm detection rates are published, and missing or materially asymmetric judge calibration makes the safe-completion denominator and efficiency result null.
 - Semantic fidelity, safe task success, refusal, repair, fallback, and prohibited-effect outcomes are reported alongside tokens.
 - All preregistered arms and strata are published, including null, unfavorable, incomplete, and malformed-input outcomes.
+- The preregistration discloses `prior_rounds_seen`, arms dropped before the freeze with reasons and evidence digests, and whether the earlier search space is complete, partial, or unrecoverable. A new freeze does not erase prior exploration.
 - The committed artifact can reproduce tables from immutable raw evidence without manual row selection.
 - AI assistance, human decisions, model versions, provider settings, code revisions, and known conflicts are disclosed according to the selected venue's policy.
 
@@ -63,6 +65,7 @@ Passing this gate makes a methods paper reviewable. It does **not** establish an
 An efficiency or general-language claim remains prohibited unless the frozen initial-goal study also demonstrates, against the better successful baseline of concise natural language and canonical JSON:
 
 - safe-task-success non-inferiority;
+- valid, arm-blinded safe-completion denominators under the matched-defect calibration gate;
 - at least 20% lower fully accounted total tokens per safely completed task;
 - at least 99% unseen-partner parse validity;
 - at least 95% held-out semantic fidelity;
@@ -80,6 +83,7 @@ Stop a deadline-driven submission and retain the work for TMLR if any of the fol
 - the receiver path is exercised only by fake or constant-response adapters;
 - the task or scorer is changed after seeing confirmatory outcomes without labeling the change exploratory;
 - a result depends on excluding failed attempts, fallback calls, or setup cost;
+- per-arm judge sensitivity is missing, unmeasurable, or outside its preregistered parity threshold;
 - the paper would need “universal,” “efficient,” “adopted,” or “energy-saving” language to appear novel; or
 - the anonymous artifact cannot be separated from identifying public project material where double-blind review requires it.
 

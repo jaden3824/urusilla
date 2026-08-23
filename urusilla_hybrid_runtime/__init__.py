@@ -46,6 +46,7 @@ from .captured_receiver import (
     receiver_model_reply_preimage,
     receiver_model_reply_preimage_json,
     receiver_model_reply_preimage_sha256,
+    validate_captured_receiver_endpoint,
 )
 from .captured_judge import (
     CANONICAL_SILENCE_OUTPUT_SHA256,
@@ -184,6 +185,10 @@ from .runtime import (
     merge_observed_setup_event,
     prepare_message,
 )
+from .captured_runtime import (
+    CapturedHybridExecution,
+    execute_prepared_message_captured,
+)
 from .session import (
     ProviderReceiptBinding,
     ReceiverSession,
@@ -283,6 +288,7 @@ __all__ = [
     "CostForecast",
     "CostLedger",
     "CapturedProviderResponse",
+    "CapturedHybridExecution",
     "CapturedCompilerAdapter",
     "CapturedCompilerExecution",
     "CapturedCompilerResponse",
@@ -426,6 +432,7 @@ __all__ = [
     "execute_captured_compiler",
     "execute_captured_judge",
     "execute_prepared_message",
+    "execute_prepared_message_captured",
     "execute_cold_start_preparation",
     "execute_receiver",
     "execute_session_turn",
@@ -466,6 +473,7 @@ __all__ = [
     "sender_prompt_preimage_sha256",
     "source_text_sha256",
     "strict_json_loads",
+    "validate_captured_receiver_endpoint",
     "validate_action_state",
     "validate_state_against_task_context",
     "validate_task_context",

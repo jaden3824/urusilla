@@ -546,6 +546,32 @@ class CapturedReceiverAdapter(Protocol):
         ...
 
 
+def validate_captured_receiver_endpoint(
+    adapter: CapturedReceiverAdapter,
+    *,
+    expected_model_id: str,
+    expected_settings_sha256: str,
+) -> None:
+    """Preflight one capture endpoint without dispatching a provider request.
+
+    Hybrid execution uses this for both the optimized primary and its mandatory
+    lossless fallback before either endpoint is called.  This proves only that
+    the declared adapter surface and expected bindings are locally well formed;
+    it does not authenticate the provider or establish availability.
+    """
+
+    _identifier(expected_model_id, "expected captured model")
+    _sha(expected_settings_sha256, "expected captured settings")
+    try:
+        complete_method = inspect.getattr_static(adapter, "complete_captured")
+    except Exception as exc:
+        raise ReceiverError("captured adapter is not statically inspectable") from exc
+    if isinstance(complete_method, (staticmethod, classmethod)):
+        complete_method = complete_method.__func__
+    if not callable(complete_method):
+        raise ReceiverError("captured adapter requires a static method surface")
+
+
 @dataclass(frozen=True)
 class _CapturedExecutionSeal:
     fingerprint_sha256: str
@@ -1001,16 +1027,11 @@ def execute_captured_receiver(
         raise ReceiverError("silence is local and has no captured provider request")
     if request.delivery_disposition != "live":
         raise ReceiverError("captured receiver accepts only live requests")
-    _identifier(expected_model_id, "expected captured model")
-    _sha(expected_settings_sha256, "expected captured settings")
-    try:
-        complete_method = inspect.getattr_static(adapter, "complete_captured")
-    except Exception as exc:
-        raise ReceiverError("captured adapter is not statically inspectable") from exc
-    if isinstance(complete_method, (staticmethod, classmethod)):
-        complete_method = complete_method.__func__
-    if not callable(complete_method):
-        raise ReceiverError("captured adapter requires a static method surface")
+    validate_captured_receiver_endpoint(
+        adapter,
+        expected_model_id=expected_model_id,
+        expected_settings_sha256=expected_settings_sha256,
+    )
 
     request_binding = request.binding_sha256
     request_preimage_json = direct_receiver_request_preimage_json(request)
@@ -1157,4 +1178,5 @@ __all__ = [
     "receiver_model_reply_preimage",
     "receiver_model_reply_preimage_json",
     "receiver_model_reply_preimage_sha256",
+    "validate_captured_receiver_endpoint",
 ]

@@ -203,7 +203,7 @@ All fixed arms are also reported individually to expose selector regret.
 | Priority | Experiment | Required arms | Entry gate | Exit evidence |
 | --- | --- | --- | --- | --- |
 | **P0.1** | Deterministic semantic and adversarial conformance | JSON, static Urusilla, all fallback paths | Frozen schemas, vectors, and exact oracle | 100% positive typed round-trip; 100% deterministic safe routing for declared invalid vectors; zero external effects |
-| **P0.2** | Same-model general-dialogue pilot | Full history, terse English, JSON, action-state, static Urusilla | P0.1 pass | Per-family task success, semantic fidelity, complete token ledger, repairs, refusals, and fallback |
+| **P0.2** | Same-model general-dialogue pilot | Full history, terse English, JSON, action-state, static Urusilla | P0.1 pass | Per-family task success, semantic fidelity, complete token ledger, arm-blinded matched-defect scorer calibration, repairs, refusals, and fallback |
 | **P0.3** | Causal payload-dependence controls | Valid payload, missing payload, shuffled payload, semantic counterfactual, invariant paraphrase | P0.2 parser reliability | Receiver output changes with semantic flips, remains stable under meaning-preserving variants, and abstains when required evidence is absent |
 | **P1.1** | Cross-model cross-play | All fixed eligible arms; both initiator orders | P0 gates pass on each model | Full 3 x 3 ordered matrix, self-play versus unseen-pair gap, per-family non-inferiority |
 | **P1.2** | Oracle-free adaptation | Best fixed arm, adaptive Urusilla, hindsight oracle | P1.1 minimum reliability | Adaptation benefit, exploration cost, selection regret, calibration/test separation |
@@ -267,6 +267,19 @@ off-diagonal cell.
 `typed_exact` and `canonical_reencode_exact` must be 100% in the deterministic
 lossless lane. Task-level projections are scored by their declared required
 fields and may not be relabeled lossless.
+
+**Safe-completion denominator validity.** Complete token accounting validates
+the cost numerator, not the `safe_task_success` denominator. Before a
+task-level efficiency comparison is eligible, the study injects the same
+preregistered semantic defects into matched natural-language, JSON, and
+Urusilla completions while hiding arm identity from the scorer. For every arm,
+the report publishes `known_positive_total`, `defects_detected`, and
+`detection_rate`. A deterministic scorer must detect 100% of frozen known
+positives. For human or model judges, the minimum detection rate and maximum
+allowed between-arm gap are frozen before scored outputs are opened. Missing or
+unmeasurable calibration makes that arm's safe-completion denominator and
+tokens per safely completed task `null`; if either candidate or required
+baseline lacks a valid denominator, the efficiency comparison is also `null`.
 
 ### 9.2 Primary efficiency metric
 
@@ -354,6 +367,10 @@ even, report `>128`; do not extrapolate a favorable point.
 Training and evolution costs are reported twice: once as raw study cost and once
 amortized only over the exact deployment horizon under analysis. Neither may be
 omitted from the cold result.
+
+No claim may select one favorable warm horizon after inspection. The complete
+frozen `N` curve is published, and any single deployment horizon `K` used for a
+headline comparison must be registered before scored outputs are opened.
 
 ## 11. Evolution, drift, and adversarial vectors
 
@@ -464,6 +481,12 @@ action-state projection, history replay, message count, and graph topology.
   Pooled success cannot rescue a failed required stratum.
 - Calibration data select prompts, the best fixed comparator, and selector
   settings. Confirmatory data are opened once after artifacts are locked.
+- Registration constrains only future decisions. The manifest records
+  `prior_rounds_seen`, `arms_dropped_before_this_registration` with reasons and
+  evidence digests, and `search_space.status` as `complete`, `partial`, or
+  `unrecoverable`. An unrecoverable earlier search space may still precede a new
+  frozen hidden-data test, but it cannot be described as untouched architecture
+  selection and does not inherit nominal search-wide confidence coverage.
 
 The strongest frozen baseline for each family/model pair is selected on
 calibration data by the same lexicographic decision order as Section 2. Test
@@ -619,6 +642,10 @@ above:
 - exact expected outcome for every deterministic adversarial vector;
 - annotation instructions, annotator blinding, agreement threshold, and
   adjudication procedure for the QMSum factuality subset; and
+- matched cross-arm defect fixtures, scorer/judge detection thresholds, and the
+  rule that invalid denominator calibration makes efficiency outcomes null;
+- `prior_rounds_seen`, every known arm dropped before registration with its
+  reason and evidence digest, and an explicit search-space status; and
 - signed freeze time preceding the first scored confirmatory output.
 
 Until that manifest exists, all runs under this document are calibration or
