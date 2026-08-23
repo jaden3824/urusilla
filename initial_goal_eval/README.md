@@ -43,6 +43,31 @@ and operator strata. The hybrid arm must separately pass against both the
 frozen concise-natural-language and ordinary-JSON controls. This avoids
 choosing a favorable control after results are known.
 
+## Confirmatory session gate v2 (unfrozen diagnostic)
+
+[`confirmatory_session_gate_v2.py`](confirmatory_session_gate_v2.py) is a
+separately versioned, provider-neutral structural gate. It does not amend the
+frozen v1 method. Its intentionally invalid
+[`template`](confirmatory_session_gate_v2.template.json) shows the additional
+pre-result contract required by the Reticuli review: complete prior-search
+lineage, a frozen consecutive warm-session `K` curve, arm-blinded matched-defect
+judge calibration, complete phase usage, exact implementation-file bindings,
+and explicit visibility into intermediary retries and cache hits. Missing or
+asymmetric calibration invalidates every safe denominator. Unknown usage,
+including an unobservable gateway attempt, keeps complete totals and efficiency
+null. Known failed-primary and fallback costs remain additive.
+
+The current module is an offline structural diagnostic, not an authenticated
+execution lock. It does not bind or replay the solicited Reticuli packet, a
+`SessionPortfolioAccounting` receipt, provider request/response identities, a
+full parent-linked attempt journal, or raw judge receipts. It calculates
+diagnostic confidence intervals only at the frozen headline `K`; earlier
+prefixes are retained without claim-facing inference. Even a fully passing
+synthetic fixture therefore emits `claim_eligible: false`, preserves the 0%
+general unfamiliar-agent result, and leaves total tokens per safely completed
+real task null. A later result needs a separately frozen execution lock and
+authenticated inner receipts rather than another edit to frozen v1.
+
 Sandbox claims do not rely on model self-report. Every hybrid execution must
 record sender-compiler and receiver evidence; baseline executions must record
 receiver evidence. Each role binds the frozen policy and enforcement profile,

@@ -1,0 +1,132 @@
+{
+  "schema_version": "urusilla-confirmatory-session-gate-plan/2",
+  "status": "template-not-frozen-no-result",
+  "study_id": "replace-before-freeze",
+  "evidence_boundary": "synthetic-test-only",
+  "base_method": {
+    "path": "initial_goal_eval/frozen_method_plan.json",
+    "schema_version": "urusilla-initial-goal-frozen-method/1",
+    "canonical_sha256": "sha256:fde91b174edcd44d66832f9afacfeef095457f8298a92470ae19dd04f2103e13",
+    "file_sha256": "sha256:5dedd746db68ad53e1c5d01ad5a1127eba78cfbab642bf697fa75a82584afd20",
+    "modified": false
+  },
+  "gate_implementation": {
+    "schema_version": "urusilla-confirmatory-session-gate-implementation/2",
+    "files": [
+      {
+        "path": "initial_goal_eval/confirmatory_session_gate_v2.py",
+        "file_sha256": "sha256:06674335c659e79e9ad902acf06b755e8904ee09cc1a110705ce4bba02656b51"
+      },
+      {
+        "path": "initial_goal_eval/statistics.py",
+        "file_sha256": "sha256:45da433b017d7233e437b3de872a972fcd071ec163172efc7bc65e2efd85ec60"
+      },
+      {
+        "path": "initial_goal_eval/contract.py",
+        "file_sha256": "sha256:d5dc681529309bbc68669beeef37cce6b2fcc0d4398fd588853d0ff518826d4e"
+      }
+    ]
+  },
+  "known_result_boundary": {
+    "general_unfamiliar_agent_saving_percent": 0.0,
+    "safely_completed_real_task_total_token_result": null,
+    "single_study_changes_general_result": false,
+    "single_study_supports_protocol_version_change": false,
+    "single_study_supports_state_of_the_art_claim": false
+  },
+  "freeze_attestation": {
+    "candidate_frozen_before_hidden_reveal": false,
+    "baselines_selected_before_hidden_reveal": false,
+    "tasks_unseen": false,
+    "partners_unseen": false,
+    "no_install": false,
+    "no_retraining": false,
+    "session_only": false,
+    "no_optional_stopping": false
+  },
+  "prior_search_lineage": {
+    "status": "partial",
+    "prior_rounds_seen": [
+      {
+        "id": "initial-goal-frozen-method-v1",
+        "artifact_sha256": "sha256:5dedd746db68ad53e1c5d01ad5a1127eba78cfbab642bf697fa75a82584afd20",
+        "disclosure": "Frozen v1 predates the matched-defect denominator gate and has no study result."
+      }
+    ],
+    "arms_dropped_before_freeze": [],
+    "all_known_rounds_disclosed": false,
+    "outcome_independent_freeze_attested": false,
+    "untouched_architecture_selection_claim": false,
+    "nominal_search_wide_confidence_claim": false
+  },
+  "arms": [
+    "raw-concise",
+    "ordinary-json",
+    "hybrid-router"
+  ],
+  "warm_reuse": {
+    "registered_k_curve": [
+      1
+    ],
+    "headline_k": 1,
+    "publish_every_registered_k": true,
+    "extrapolation_beyond_headline_allowed": false,
+    "cross_session_amortization_allowed": false,
+    "shared_setup_charge_count_per_arm_session": 1
+  },
+  "judge_calibration": {
+    "scorer_implementation_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "scorer_settings_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "scorer_receives_arm_identity": false,
+    "arm_blinded": true,
+    "minimum_detection_rate": {
+      "numerator": 1,
+      "denominator": 1
+    },
+    "maximum_between_arm_detection_gap": {
+      "numerator": 0,
+      "denominator": 1
+    },
+    "missing_or_unmeasurable_invalidates_every_denominator": true,
+    "calibration_cost_allocation": "reported-separately-not-in-task-total",
+    "matched_defects": []
+  },
+  "required_usage": {
+    "coverage_fields": [
+      "setup",
+      "sender",
+      "router",
+      "receiver",
+      "output",
+      "reasoning",
+      "repair",
+      "fallback",
+      "tool",
+      "safety",
+      "judge"
+    ],
+    "event_phases": [
+      "setup",
+      "sender",
+      "router",
+      "receiver",
+      "repair",
+      "fallback",
+      "tool",
+      "safety",
+      "judge"
+    ],
+    "unknown_is_zero": false,
+    "billed_failed_attempts_included": true,
+    "fallback_cannot_erase_failed_primary_cost": true
+  },
+  "domains": [],
+  "receiver_models": [],
+  "operators": [],
+  "sessions": [],
+  "notes": [
+    "This file is an intentionally invalid, non-frozen template and not a preregistration or result.",
+    "Replace every placeholder, disclose every known prior round and dropped arm, add at least three domains, two receiver families, two independent operators, two whole sessions per stratum, and blinded matched defects before changing status to frozen-preregistered-no-results.",
+    "The result authenticity contract must include explicit visibility of intermediary retries, cache hits, shared parent or correlation identifiers, and gateway request identifiers; absence keeps complete totals and efficiency null."
+  ]
+}
