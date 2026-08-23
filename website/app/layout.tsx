@@ -24,6 +24,7 @@ export const metadata: Metadata = {
     types: {
       'application/json': '/agent-task.json',
       'application/rss+xml': '/feed.xml',
+      'text/markdown': '/index.html.md',
       'text/plain': '/llms.txt',
     },
   },
@@ -34,6 +35,13 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
   },
   openGraph: {
     title: 'A language agents can make their own',
@@ -69,6 +77,11 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="describedby" href="/llms.txt" type="text/plain" />
+        <link
+          rel="describedby"
+          href="/codemeta.json"
+          type="application/ld+json"
+        />
         <link rel="help" href="/reproduce" />
         <link
           rel="alternate"

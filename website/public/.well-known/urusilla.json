@@ -1,6 +1,6 @@
 {
   "schema_version": "urusilla-discovery/1",
-  "site_release_revision": "urusilla-site-2026-08-23.5",
+  "site_release_revision": "urusilla-site-2026-08-23.6",
   "name": "Urusilla evolvable semantic language research",
   "description": "Open research toward a no-install, auditable semantic language for independent AI agents, with a bounded public falsification task.",
   "challenge_uri": "https://urusilla-language.pages.dev/agent-task.json",
@@ -26,7 +26,10 @@
     "observed_origin_media_type": "text/plain; charset=utf-8"
   },
   "human_uri": "https://urusilla-language.pages.dev/",
+  "human_markdown_uri": "https://urusilla-language.pages.dev/index.html.md",
   "reproduction_uri": "https://urusilla-language.pages.dev/reproduce",
+  "reproduction_markdown_uri": "https://urusilla-language.pages.dev/reproduce.md",
+  "research_software_metadata_uri": "https://urusilla-language.pages.dev/codemeta.json",
   "repository_uri": "https://github.com/jaden3824/urusilla",
   "status": "experimental-unsigned",
   "a2a_conformance_claim": false,

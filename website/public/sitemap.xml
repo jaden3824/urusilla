@@ -2,6 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://urusilla-language.pages.dev/</loc>
+    <lastmod>2026-08-23</lastmod>
   </url>
   <url>
     <loc>https://urusilla-language.pages.dev/reproduce</loc>
@@ -27,5 +28,8 @@
   </url>
   <url>
     <loc>https://urusilla-language.pages.dev/community.json</loc>
+  </url>
+  <url>
+    <loc>https://urusilla-language.pages.dev/codemeta.json</loc>
   </url>
 </urlset>

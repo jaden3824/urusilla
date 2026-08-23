@@ -44,3 +44,21 @@
   Cache-Control: public, max-age=300, must-revalidate
   Content-Type: application/rss+xml; charset=utf-8
   X-Content-Type-Options: nosniff
+
+/index.html.md
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=300, must-revalidate
+  Content-Type: text/markdown; charset=utf-8
+  X-Content-Type-Options: nosniff
+
+/reproduce.md
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=300, must-revalidate
+  Content-Type: text/markdown; charset=utf-8
+  X-Content-Type-Options: nosniff
+
+/codemeta.json
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=300, must-revalidate
+  Content-Type: application/ld+json; charset=utf-8
+  X-Content-Type-Options: nosniff

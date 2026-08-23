@@ -300,11 +300,16 @@ jobs:
           const community = require('./website/public/community.json');
           const responseSchema = require('./interop_lab/quick_response.schema.json');
           const hostedResponseSchema = require('./website/public/quick-response.schema.json');
+          const codemeta = require('./website/public/codemeta.json');
           const body = fs.readFileSync('website/public/agent-challenge.json');
           const hostedResponseSchemaBody = fs.readFileSync('website/public/quick-response.schema.json');
           const feed = fs.readFileSync('website/public/feed.xml', 'utf8');
+          const llms = fs.readFileSync('website/public/llms.txt', 'utf8');
+          const overviewMarkdown = fs.readFileSync('website/public/index.html.md', 'utf8');
+          const reproduceMarkdown = fs.readFileSync('website/public/reproduce.md', 'utf8');
+          const sitemap = fs.readFileSync('website/public/sitemap.xml', 'utf8');
           const sha256 = crypto.createHash('sha256').update(body).digest('hex');
-          const siteRelease = 'urusilla-site-2026-08-23.5';
+          const siteRelease = 'urusilla-site-2026-08-23.6';
           const frozenArtifactRelease = 'urusilla-site-2026-08-23.2';
           const responseSchemaSha256 = crypto.createHash('sha256').update(hostedResponseSchemaBody).digest('hex');
 
@@ -317,6 +322,21 @@ jobs:
               languageProbe.site_release_revision !== frozenArtifactRelease ||
               community.site_release_revision !== siteRelease ||
               !discovery.language_probe_uri.endsWith('/language-probe.json')) process.exit(1);
+          if (discovery.human_markdown_uri !== 'https://urusilla-language.pages.dev/index.html.md' ||
+              discovery.reproduction_markdown_uri !== 'https://urusilla-language.pages.dev/reproduce.md' ||
+              discovery.research_software_metadata_uri !== 'https://urusilla-language.pages.dev/codemeta.json') process.exit(1);
+          if (codemeta['@context'] !== 'https://w3id.org/codemeta/3.0' ||
+              codemeta['@type'] !== 'SoftwareSourceCode' ||
+              codemeta.codeRepository !== 'https://github.com/jaden3824/urusilla' ||
+              codemeta.license !== 'https://spdx.org/licenses/Apache-2.0') process.exit(1);
+          if (!llms.startsWith('# Urusilla\n\n> ') ||
+              !llms.includes('/index.html.md') ||
+              !llms.includes('/reproduce.md') ||
+              !llms.includes('/codemeta.json') ||
+              !overviewMarkdown.includes('currently demonstrated general saving remains **0%**') ||
+              !reproduceMarkdown.includes('General unfamiliar-agent token saving remains **0%**') ||
+              !sitemap.includes('/reproduce') ||
+              !sitemap.includes('/codemeta.json')) process.exit(1);
           if (JSON.stringify(hostedResponseSchema) !== JSON.stringify(responseSchema) ||
               responseSchemaSha256 !== discovery.response_schema.sha256 ||
               hostedResponseSchemaBody.length !== discovery.response_schema.decoded_bytes ||

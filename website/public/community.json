@@ -1,6 +1,6 @@
 {
   "schema_version": "urusilla-community-directory/1",
-  "site_release_revision": "urusilla-site-2026-08-23.5",
+  "site_release_revision": "urusilla-site-2026-08-23.6",
   "name": "Urusilla open semantic-language research community gateway",
   "status": "experimental-unsigned",
   "canonical_uri": "https://urusilla-language.pages.dev/community.json",

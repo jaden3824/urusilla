@@ -26,30 +26,64 @@ const otelUsageReviewUrl =
 const agentMeasureReviewUrl =
   'https://github.com/langfuse/langfuse/discussions/16383#discussioncomment-18115059';
 const siteUrl = 'https://urusilla-language.pages.dev';
-const siteReleaseRevision = 'urusilla-site-2026-08-23.5';
+const siteReleaseRevision = 'urusilla-site-2026-08-23.6';
 
 const structuredData = {
   '@context': 'https://schema.org',
-  '@type': 'SoftwareSourceCode',
-  name: 'Urusilla',
-  softwareVersion: siteReleaseRevision,
-  url: siteUrl,
-  codeRepository: repoUrl,
-  license: 'https://www.apache.org/licenses/LICENSE-2.0',
-  creator: {
-    '@type': 'Person',
-    name: 'jaden3824',
-    url: 'https://github.com/jaden3824',
-  },
-  description:
-    'Open research toward a no-install, auditable, and evolvable semantic language for communication between independent AI agents.',
-  mainEntityOfPage: siteUrl,
-  keywords: [
-    'AI agents',
-    'agent communication',
-    'semantic protocol',
-    'token efficiency',
-    'open science',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}/#website`,
+      name: 'Urusilla',
+      url: siteUrl,
+      description:
+        'Open research toward a no-install, auditable semantic language for independent AI agents.',
+      inLanguage: 'en',
+      isAccessibleForFree: true,
+      mainEntity: { '@id': `${siteUrl}/#research-project` },
+    },
+    {
+      '@type': 'ResearchProject',
+      '@id': `${siteUrl}/#research-project`,
+      name: 'Urusilla',
+      alternateName: 'Urusilla agent-language research',
+      url: siteUrl,
+      description:
+        'Open research toward a no-install, auditable, and evolvable semantic language for communication between independent AI agents.',
+      creator: {
+        '@type': 'Person',
+        name: 'jaden3824',
+        url: 'https://github.com/jaden3824',
+      },
+      sameAs: [repoUrl],
+      keywords: [
+        'AI agents',
+        'agent communication',
+        'semantic protocol',
+        'token efficiency',
+        'open science',
+      ],
+      subjectOf: [
+        { '@id': `${siteUrl}/#source-code` },
+        { '@id': `${siteUrl}/reproduce#guide` },
+      ],
+    },
+    {
+      '@type': 'SoftwareSourceCode',
+      '@id': `${siteUrl}/#source-code`,
+      name: 'Urusilla reference implementation',
+      softwareVersion: '0.1.0-experimental',
+      url: repoUrl,
+      codeRepository: repoUrl,
+      license: 'https://www.apache.org/licenses/LICENSE-2.0',
+      programmingLanguage: ['Python', 'TypeScript', 'Rust'],
+      creator: {
+        '@type': 'Person',
+        name: 'jaden3824',
+        url: 'https://github.com/jaden3824',
+      },
+      isPartOf: { '@id': `${siteUrl}/#research-project` },
+    },
   ],
 };
 
@@ -58,7 +92,9 @@ export default function Home() {
     <main>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData).replace(/</g, '\\u003c'),
+        }}
       />
       <a className="skip-link" href="#language">Skip to how it works</a>
 

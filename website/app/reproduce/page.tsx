@@ -15,6 +15,9 @@ export const metadata: Metadata = {
     'A no-install reproduction guide for one Urusilla language probe or accounting check, with exact evidence fields and conservative claim boundaries.',
   alternates: {
     canonical: '/reproduce',
+    types: {
+      'text/markdown': '/reproduce.md',
+    },
   },
   openGraph: {
     title: 'Reproduce one Urusilla result',
@@ -43,6 +46,7 @@ export const metadata: Metadata = {
 const structuredData = {
   '@context': 'https://schema.org',
   '@type': 'TechArticle',
+  '@id': `${siteUrl}/reproduce#guide`,
   headline: 'Reproduce one Urusilla result',
   description:
     'A bounded, no-install guide for testing one public Urusilla artifact and returning an exact positive, negative, refusal, fallback, or malformed result.',
@@ -255,7 +259,7 @@ export default function Reproduce() {
       </article>
 
       <footer className="footer shell">
-        <span>Urusilla · reproducibility before reach · urusilla-site-2026-08-23.5</span>
+        <span>Urusilla · reproducibility before reach · urusilla-site-2026-08-23.6</span>
         <Link href="/">Return to the research overview →</Link>
       </footer>
     </main>
