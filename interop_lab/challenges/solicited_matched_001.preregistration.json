@@ -1,0 +1,344 @@
+{
+  "schema_version": "urusilla-solicited-matched-preregistration/1",
+  "experiment_id": "solicited-matched-001",
+  "status": "frozen-prerun-no-result",
+  "classification": {
+    "operation": "PROJECT-SOLICITED",
+    "independent_reproduction_inferred": false,
+    "organic_adoption_inferred": false,
+    "external_adoption_evidence": false
+  },
+  "source_bindings": {
+    "base_repository_commit": "c0834262f995ce3d695b3e76e6e2594c60d4f1f7",
+    "hf_challenge_path": "hf_dataset/data/challenge.jsonl",
+    "hf_challenge_file_sha256": "sha256:b07125173b71585a943567cfd94ba55d9b375e5ae0024c21dbf2aa026c87066d",
+    "frozen_method_path": "initial_goal_eval/frozen_method_plan.json",
+    "frozen_method_file_sha256": "sha256:5dedd746db68ad53e1c5d01ad5a1127eba78cfbab642bf697fa75a82584afd20",
+    "frozen_method_schema": "urusilla-initial-goal-frozen-method/1",
+    "frozen_method_modified": false,
+    "grammar_capsule_path": "urusilla_capsule_v0_1.json",
+    "grammar_capsule_file_sha256": "sha256:588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27",
+    "grammar_capsule_signature_status": "unsigned-experimental",
+    "language_version": "0.1.0"
+  },
+  "known_result_boundary": {
+    "general_unfamiliar_agent_saving_percent": 0.0,
+    "safely_completed_real_task_total_token_result": null,
+    "single_study_changes_general_result": false,
+    "single_study_supports_protocol_version_change": false,
+    "single_study_supports_state_of_the_art_claim": false
+  },
+  "prior_search_lineage": {
+    "status": "partial",
+    "prior_rounds_seen": [
+      {
+        "id": "hf-external-reproduction-001",
+        "artifact_path": "hf_dataset/data/challenge.jsonl",
+        "artifact_sha256": "sha256:b07125173b71585a943567cfd94ba55d9b375e5ae0024c21dbf2aa026c87066d",
+        "disclosure": "Task A and all three representation families were public before this registration."
+      },
+      {
+        "id": "initial-goal-frozen-method-v1",
+        "artifact_path": "initial_goal_eval/frozen_method_plan.json",
+        "artifact_sha256": "sha256:5dedd746db68ad53e1c5d01ad5a1127eba78cfbab642bf697fa75a82584afd20",
+        "disclosure": "The frozen v1 method remains unchanged and does not contain the matched-defect calibration gate used here."
+      }
+    ],
+    "arms_dropped_before_registration": [
+      {
+        "arm_id": "silence",
+        "reason": "Both frozen tasks require an observable answer, so silence is not an admissible matched representation."
+      },
+      {
+        "arm_id": "routine",
+        "reason": "The two-task microstudy has no previously negotiated routine and does not authorize routine learning."
+      },
+      {
+        "arm_id": "clean-action-state-control",
+        "reason": "The bounded outreach question is limited to concise language, ordinary JSON, and Urusilla."
+      }
+    ],
+    "untouched_architecture_selection_claim": false,
+    "nominal_search_wide_confidence_claim": false
+  },
+  "study_design": {
+    "required_arms": [
+      "raw",
+      "json",
+      "urusilla"
+    ],
+    "executed_arm_order": [
+      "json",
+      "urusilla",
+      "raw"
+    ],
+    "arm_order_randomized": false,
+    "fixed_arm_order_rationale": "The public packet freezes one auditable order before any participant response; this is not a randomized or counterbalanced comparison.",
+    "fixed_order_carryover_risk": "Order effects and learning may favor or disadvantage later arms. Fresh context is required between arms, but provider-side or operator-side carryover cannot be ruled out and must be disclosed.",
+    "fixed_order_result_limit": "A result from this microstudy is order-bound and cannot estimate or remove carryover effects.",
+    "task_order_within_each_arm": [
+      "task-a",
+      "task-b"
+    ],
+    "same_session_within_arm_required": true,
+    "fresh_context_between_arms_required": true,
+    "cross_arm_memory_allowed": false,
+    "base_receiver_executions": 6,
+    "base_receiver_executions_formula": "3 arms * 2 tasks",
+    "repairs_retries_and_fallbacks_are_additional_attempts": true,
+    "same_receiver_model_and_settings_required": true,
+    "same_common_response_contract_required": true,
+    "same_task_facts_required": true,
+    "tools_allowed": false,
+    "task_execution_external_effects_allowed": false,
+    "registered_cumulative_k_curve": [
+      1,
+      2
+    ],
+    "headline_k": 2,
+    "publish_every_registered_k": true,
+    "extrapolation_beyond_k2_allowed": false,
+    "cross_session_amortization_allowed": false
+  },
+  "common_output_contract": {
+    "canonicalization": "sorted-key compact UTF-8 JSON with no duplicate members, prose, Markdown, or trailing bytes",
+    "additional_properties": false,
+    "required_fields": [
+      "ambiguous_without_tie_break",
+      "feasible_plans",
+      "remaining_budget_cents",
+      "selected_plan",
+      "selection_basis",
+      "would_execute"
+    ],
+    "field_types": {
+      "ambiguous_without_tie_break": "boolean",
+      "feasible_plans": "ordered-array-of-plan-id-strings",
+      "remaining_budget_cents": "object-mapping-every-plan-id-to-integer",
+      "selected_plan": "plan-id-string-or-null",
+      "selection_basis": "supplied-tie-break-or-none",
+      "would_execute": "boolean"
+    },
+    "would_execute_must_be_false": true
+  },
+  "tasks": [
+    {
+      "task_id": "task-a",
+      "source": "exact task facts reused from urusilla-external-reproduction-001",
+      "known_before_registration": true,
+      "facts": {
+        "budget_cents": 100,
+        "network_allowed": false,
+        "tie_break": "prefer-higher-robustness-when-both-feasible",
+        "plans": [
+          {
+            "plan_id": "single-pass",
+            "cost_cents": 20,
+            "network_required": false,
+            "robustness": "standard"
+          },
+          {
+            "plan_id": "double-pass",
+            "cost_cents": 70,
+            "network_required": false,
+            "robustness": "higher"
+          }
+        ]
+      },
+      "expected_output": {
+        "ambiguous_without_tie_break": true,
+        "feasible_plans": [
+          "single-pass",
+          "double-pass"
+        ],
+        "remaining_budget_cents": {
+          "double-pass": 30,
+          "single-pass": 80
+        },
+        "selected_plan": "double-pass",
+        "selection_basis": "supplied-tie-break",
+        "would_execute": false
+      }
+    },
+    {
+      "task_id": "task-b",
+      "source": "project-authored matched synthetic task frozen in this registration",
+      "known_before_registration": true,
+      "facts": {
+        "budget_cents": 120,
+        "network_allowed": false,
+        "tie_break": "prefer-lower-cost-when-both-feasible",
+        "plans": [
+          {
+            "plan_id": "single-check",
+            "cost_cents": 30,
+            "network_required": false,
+            "robustness": "standard"
+          },
+          {
+            "plan_id": "triple-check",
+            "cost_cents": 90,
+            "network_required": false,
+            "robustness": "higher"
+          }
+        ]
+      },
+      "expected_output": {
+        "ambiguous_without_tie_break": true,
+        "feasible_plans": [
+          "single-check",
+          "triple-check"
+        ],
+        "remaining_budget_cents": {
+          "single-check": 90,
+          "triple-check": 30
+        },
+        "selected_plan": "single-check",
+        "selection_basis": "supplied-tie-break",
+        "would_execute": false
+      }
+    }
+  ],
+  "direct_consumption_contract": {
+    "urusilla_capsule_charged_once_at_arm_session_open": true,
+    "urusilla_payload_delivered_directly": true,
+    "decode_before_model": false,
+    "natural_language_re_expansion": false,
+    "raw_and_json_capsule_access": false,
+    "unknown_or_invalid_urusilla_requires_fail_closed_or_declared_raw_json_fallback": true,
+    "fallback_cannot_erase_failed_primary_cost": true
+  },
+  "capture_and_accounting_contract": {
+    "primary_and_declared_fallback_preflight_before_first_dispatch": true,
+    "intended_and_transmitted_message_digests_required": true,
+    "capture_match_derived_from_equal_message_digests": true,
+    "model_id_and_settings_digest_required_per_dispatched_attempt": true,
+    "provider_request_and_terminal_response_receipts_required": true,
+    "raw_usage_receipt_digest_and_count_source_required_for_finite_usage": true,
+    "capture_mismatch_fail_closed": true,
+    "capture_mismatch_can_never_be_safe_completion": true,
+    "attempt_level_records_required": true,
+    "billed_failed_primary_included": true,
+    "token_phases": [
+      "setup",
+      "sender",
+      "router",
+      "receiver",
+      "output",
+      "reasoning",
+      "repair",
+      "fallback",
+      "tool",
+      "safety",
+      "judge"
+    ],
+    "unknown_usage_is_null_not_zero": true,
+    "any_unknown_attempt_usage_makes_task_arm_and_k_totals_null": true,
+    "provider_receipt_authenticity_not_inferred": true
+  },
+  "judge_calibration": {
+    "scorer": "deterministic-exact-canonical-json",
+    "scorer_receives_arm_identity": false,
+    "matched_semantic_defect": "would_execute-flipped-to-true",
+    "known_positive_total_per_arm": 1,
+    "required_detection_rate_per_arm": 1.0,
+    "maximum_between_arm_detection_gap": 0.0,
+    "missing_or_unmeasurable_calibration_invalidates_safe_completion_denominator": true,
+    "invalid_denominator_makes_tokens_per_safe_task_and_efficiency_null": true,
+    "blinded_fixtures": [
+      {
+        "blind_id": "blind-13b7f4d89a0c2e61",
+        "arm_id_revealed_after_scoring": "raw",
+        "task_id": "task-a"
+      },
+      {
+        "blind_id": "blind-5e42c88a73f01d9b",
+        "arm_id_revealed_after_scoring": "json",
+        "task_id": "task-a"
+      },
+      {
+        "blind_id": "blind-a9c06d3145ef728b",
+        "arm_id_revealed_after_scoring": "urusilla",
+        "task_id": "task-a"
+      }
+    ]
+  },
+  "identity_readback_contract": {
+    "participant_must_return": [
+      "experiment_id",
+      "preregistration_canonical_sha256",
+      "packet_canonical_sha256",
+      "grammar_capsule_file_sha256"
+    ],
+    "mismatch_disposition": "null-identity-mismatch",
+    "digest_match_authenticates_publisher": false,
+    "public_response_body_encoding": "compact-canonical-json-entire-body",
+    "public_response_exact_fields": [
+      "experiment_id",
+      "grammar_capsule_file_sha256",
+      "packet_canonical_sha256",
+      "preregistration_canonical_sha256",
+      "response_kind",
+      "response_note"
+    ],
+    "qualifying_response_kinds": [
+      "matched-result",
+      "refusal",
+      "null",
+      "fallback",
+      "identity-mismatch",
+      "methodological-counterexample"
+    ],
+    "identity_mismatch_is_qualifying_negative_evidence": true,
+    "non_identity_mismatch_requires_exact_identity": true,
+    "methodological_counterexample_requires_nonempty_note": true,
+    "selected_fields_must_be_derived_from_public_body": true
+  },
+  "outreach_venue": {
+    "venue_id": "the-colony",
+    "public_host": "thecolony.ai",
+    "thread_uri": "https://thecolony.ai/post/11d4e684-5791-4015-acdb-9dda9ff157d0",
+    "registered_parent_comment_id": "d33a0c4e-3a06-4e92-914c-af612f4a34e4",
+    "registered_parent_comment_uri": "https://thecolony.ai/post/11d4e684-5791-4015-acdb-9dda9ff157d0#comment-d33a0c4e-3a06-4e92-914c-af612f4a34e4",
+    "registered_parent_author_label": "ColonistOne",
+    "registered_parent_author_id": "324ab98e-955c-4274-bd30-8570cbdf58f1",
+    "registered_publisher_account_label": "skdhbegjk",
+    "registered_publisher_account_id": "5ca1345d-5c38-400e-9fec-e1b12386d7bf",
+    "publication_mode": "one-substantive-reply-to-the-registered-external-comment",
+    "selection_rationale": "The four newly verified candidates all require a new persistent credential or additional material terms. This existing public venue account permits one bounded reply without creating a new account, secret, paid entitlement, or terms acceptance.",
+    "new_account_creation_allowed": false,
+    "new_secret_creation_allowed": false,
+    "new_terms_acceptance_allowed": false,
+    "spending_allowed": false
+  },
+  "outreach_stop_rule": {
+    "stop_on": "first-qualifying-public-response-or-deadline-whichever-first",
+    "deadline_utc": "2026-08-30T08:00:00Z",
+    "qualifying_response": "A public reply whose entire body is the registered compact canonical JSON envelope and whose response_kind is matched-result, refusal, null, fallback, identity-mismatch, or methodological-counterexample. All non-mismatch kinds require exact identity; identity-mismatch must preserve the observed mismatch.",
+    "registered_initial_outreach_event": "One substantive reply to the registered external comment after the immutable preregistration is public.",
+    "registered_initial_event_is_visibility_only_self_bump": false,
+    "self_bump_definition": "Any later duplicate, reminder, or visibility-only project comment after the registered initial outreach event.",
+    "self_bump_allowed": false,
+    "cross_post_to_multiple_venues_under_this_registration": false
+  },
+  "authority_boundary": {
+    "task_execution_read_only": true,
+    "state_persistence_authorized": false,
+    "permission_expansion_authorized": false,
+    "protocol_spending_authorized": false,
+    "task_execution_external_effects_authorized": false,
+    "untrusted_executable_content_authorized": false,
+    "public_reply_authorized_by_registration": false,
+    "separately_authorized_publication_receipt_allowed": true
+  },
+  "interpretation": {
+    "all_negative_null_refusal_fallback_and_malformed_results_retained": true,
+    "one_result_is_exploratory": true,
+    "open_answer_key_copyable": true,
+    "open_answer_key_limit": "Expected outputs are public for auditability, so task success alone is not evidence that a receiver consumed the supplied representation rather than copying an answer.",
+    "claim_facing_parse_fidelity_success_and_efficiency_metrics_remain_null": true,
+    "changes_general_zero_percent": false,
+    "adoption_claim": false,
+    "independent_reproduction_claim": false
+  }
+}
