@@ -21,6 +21,14 @@ from urusilla_hybrid_runtime.captured_compiler import (
     CapturedCompilerExecution,
     compiler_reply_preimage_json,
 )
+from urusilla_hybrid_runtime.captured_judge import (
+    CapturedJudgeExecution,
+    JudgeTaskMessage,
+    JudgeTaskMetadata,
+    JudgeTerminalEvidence,
+    RoleSeparatedJudgeRequest,
+    judge_reply_preimage_json,
+)
 from urusilla_hybrid_runtime.captured_receiver import (
     CapturedReceiverExecution,
     ProviderRequestCapture,
@@ -49,9 +57,18 @@ PROGRAM_V2_TYPED_OUTCOME_SCHEMA = (
 PROGRAM_V2_TYPED_FAILURE_SCHEMA = (
     "urusilla-initial-goal-program-v2-typed-failure/1"
 )
+PROGRAM_V2_TYPED_JUDGE_RESULT_SCHEMA = (
+    "urusilla-initial-goal-program-v2-typed-judge-result/1"
+)
 
 _COMPILER_COMPONENTS = {"sender-compiler"}
 _RECEIVER_COMPONENTS = {"receiver", "primary", "fallback-receiver"}
+_JUDGE_COMPONENTS = {
+    "task-judge",
+    "parse-judge",
+    "semantic-judge",
+    "negative-judge",
+}
 _EFFECT_NAMES = (
     "tools_used",
     "persistence_created",
@@ -355,6 +372,182 @@ def _receiver_mode(request: Mapping[str, Any], execution: Any) -> str:
     return mode
 
 
+def _judge_probe_applicable(
+    task_metadata: Mapping[str, Any],
+    judge_role: str,
+) -> bool:
+    if judge_role == "task-judge":
+        return True
+    field_by_role = {
+        "parse-judge": "parse_probe",
+        "semantic-judge": "semantic_probe",
+        "negative-judge": "negative_probe",
+    }
+    try:
+        value = task_metadata[field_by_role[judge_role]]
+    except (KeyError, TypeError) as exc:
+        raise VerificationError("typed judge role or probe metadata differs") from exc
+    if type(value) is not bool:
+        raise VerificationError("typed judge probe applicability is invalid")
+    return value
+
+
+def _judge_task_metadata(value: Any) -> JudgeTaskMetadata:
+    if type(value) is not dict or set(value) != {
+        "task_id",
+        "task_sha256",
+        "feature_tags",
+        "parse_probe",
+        "semantic_probe",
+        "negative_probe",
+    }:
+        raise VerificationError("typed judge task metadata differs")
+    tags = value["feature_tags"]
+    if type(tags) is not list:
+        raise VerificationError("typed judge feature tags differ")
+    try:
+        return JudgeTaskMetadata(
+            task_id=value["task_id"],
+            task_sha256=value["task_sha256"],
+            feature_tags=tuple(tags),
+            parse_probe=value["parse_probe"],
+            semantic_probe=value["semantic_probe"],
+            negative_probe=value["negative_probe"],
+        )
+    except Exception as exc:
+        raise VerificationError("typed judge task metadata is invalid") from exc
+
+
+def _judge_terminal(value: Any) -> JudgeTerminalEvidence:
+    if type(value) is not dict:
+        raise VerificationError("typed judge terminal evidence differs")
+    try:
+        terminal = JudgeTerminalEvidence(**value)
+    except Exception as exc:
+        raise VerificationError("typed judge terminal evidence is invalid") from exc
+    if terminal.value != value:
+        raise VerificationError("typed judge terminal projection is lossy")
+    return terminal
+
+
+def build_program_v2_judge_request(
+    slot_request: Any,
+    *,
+    task_messages: tuple[JudgeTaskMessage, ...],
+    rubric_text: str,
+    reference_text: str | None = None,
+    maximum_total_tokens: int | None = None,
+) -> RoleSeparatedJudgeRequest:
+    """Construct a typed judge request before any provider dispatch.
+
+    Program /2 freezes only the task-input digest, probe metadata and exact
+    terminal selection.  The caller supplies the matching task-message
+    preimage plus the still-diagnostic rubric/reference text.  The typed
+    constructor checks every digest and preserves the full Program objects in
+    the model-visible request; it does not authenticate the rubric issuer.
+    """
+
+    request = validate_program_v2_slot_request(slot_request)
+    slot = request["slot"]
+    role = slot["component"]
+    if slot["source_kind"] != "external-response" or role not in _JUDGE_COMPONENTS:
+        raise VerificationError("typed judge requires a judge external slot")
+    metadata = _judge_task_metadata(request["task_metadata"])
+    terminal = _judge_terminal(request["terminal_evidence"])
+    applicable = _judge_probe_applicable(request["task_metadata"], role)
+    try:
+        return RoleSeparatedJudgeRequest(
+            judge_role=role,
+            task_id=slot["task_id"],
+            planned_task_sha256=request["task_sha256"],
+            task_messages=task_messages,
+            probe_applicable=applicable,
+            task_metadata=metadata,
+            terminal=terminal,
+            rubric_text=rubric_text,
+            rubric_sha256=sha256_text(rubric_text),
+            reference_text=reference_text,
+            reference_sha256=(
+                None if reference_text is None else sha256_text(reference_text)
+            ),
+            maximum_total_tokens=maximum_total_tokens,
+        )
+    except Exception as exc:
+        raise VerificationError("typed judge request is invalid") from exc
+
+
+def _judge_request_value(execution: CapturedJudgeExecution) -> dict[str, Any]:
+    preimage = _request_value(execution)
+    if type(preimage) is not dict or set(preimage) != {
+        "schema_version",
+        "request_binding_sha256",
+        "request",
+        "roles",
+    }:
+        raise VerificationError("typed judge request preimage shape differs")
+    value = preimage["request"]
+    if type(value) is not dict:
+        raise VerificationError("typed judge request value differs")
+    return value
+
+
+def _validate_judge_request_binding(
+    request: Mapping[str, Any],
+    execution: CapturedJudgeExecution,
+) -> tuple[str, dict[str, Any]]:
+    role = request["slot"]["component"]
+    value = _judge_request_value(execution)
+    if value.get("role") != role:
+        raise VerificationError("typed judge role is cross-wired")
+    if value.get("task_sha256") != request["task_sha256"]:
+        raise VerificationError("typed judge task digest differs")
+    if value.get("task_metadata") != request["task_metadata"]:
+        raise VerificationError("typed judge task metadata differs")
+    if value.get("terminal_evidence") != request["terminal_evidence"]:
+        raise VerificationError("typed judge terminal evidence differs")
+    applicable = _judge_probe_applicable(request["task_metadata"], role)
+    if value.get("probe_applicable") is not applicable:
+        raise VerificationError("typed judge probe applicability differs")
+    messages = value.get("task_input_messages")
+    if type(messages) is not list or not messages:
+        raise VerificationError("typed judge task messages are missing")
+    if value.get("maximum_total_tokens") is not None and (
+        type(value["maximum_total_tokens"]) is not int
+        or value["maximum_total_tokens"] <= 0
+    ):
+        raise VerificationError("typed judge token ceiling differs")
+    return role, value
+
+
+def _judge_result_envelope(
+    execution: CapturedJudgeExecution,
+    *,
+    role: str,
+    request_value: Mapping[str, Any],
+) -> dict[str, Any]:
+    verdict = None if execution.verdict is None else execution.verdict.value
+    terminal = request_value["terminal_evidence"]
+    return {
+        "schema_version": PROGRAM_V2_TYPED_JUDGE_RESULT_SCHEMA,
+        "judge_role": role,
+        "task_sha256": request_value["task_sha256"],
+        "task_metadata_sha256": sha256_ref(request_value["task_metadata"]),
+        "terminal_evidence_sha256": sha256_ref(terminal),
+        "terminal_content_binding_verified": terminal[
+            "content_binding_verified"
+        ],
+        "probe_applicable": request_value["probe_applicable"],
+        "rubric_sha256": request_value["rubric"]["sha256"],
+        "reference_sha256": (
+            None
+            if request_value["reference"] is None
+            else request_value["reference"]["sha256"]
+        ),
+        "verdict_parse_status": execution.verdict_parse_status,
+        "verdict": verdict,
+    }
+
+
 def build_program_v2_compiler_capture(
     slot_request: Any,
     execution: CapturedCompilerExecution,
@@ -474,10 +667,82 @@ def build_program_v2_receiver_capture(
     return result
 
 
+def build_program_v2_judge_capture(
+    slot_request: Any,
+    execution: CapturedJudgeExecution,
+) -> dict[str, Any]:
+    """Project one exact role-separated judge call into Program /2.
+
+    The generic Program fact surface intentionally retains only provider
+    terminal status.  Parsed verdict semantics stay inside the typed outcome
+    envelope so the frozen Program /2 graph is not silently widened.  A later
+    diagnostic closure may derive tri-state summaries from these exact typed
+    outcomes, but this bridge alone cannot establish safe completion.
+    """
+
+    binding = _execution_binding(execution, CapturedJudgeExecution, "judge")
+    _reject_structural_capture_failure(execution, "judge")
+    request = _validate_role_and_locks(
+        slot_request,
+        execution,
+        allowed_components=_JUDGE_COMPONENTS,
+        label="judge",
+    )
+    role, request_value = _validate_judge_request_binding(request, execution)
+    request_envelope = _request_envelope(
+        request,
+        execution,
+        bridge_kind="judge",
+        request_mode=role,
+    )
+    capture = execution.capture
+    if capture is None or not capture.request_dispatched:
+        result = _failure_capture(
+            request,
+            execution,
+            request_envelope=request_envelope,
+            execution_binding_sha256=binding,
+        )
+    else:
+        reply_json = (
+            None
+            if execution.reply is None
+            else judge_reply_preimage_json(execution.reply)
+        )
+        outcome = _outcome_envelope(
+            execution,
+            execution_binding_sha256=binding,
+            bridge_kind="judge",
+            reply_preimage_json=reply_json,
+        )
+        outcome["judge_result"] = _judge_result_envelope(
+            execution,
+            role=role,
+            request_value=request_value,
+        )
+        result = _provider_capture(
+            request,
+            execution,
+            request_envelope=request_envelope,
+            outcome_envelope=outcome,
+            facts={"terminal_status": capture.provider_terminal_status},
+            execution_binding_sha256=binding,
+        )
+    _ensure_execution_unchanged(
+        execution,
+        expected_binding=binding,
+        label="judge",
+    )
+    return result
+
+
 __all__ = [
     "PROGRAM_V2_TYPED_FAILURE_SCHEMA",
+    "PROGRAM_V2_TYPED_JUDGE_RESULT_SCHEMA",
     "PROGRAM_V2_TYPED_OUTCOME_SCHEMA",
     "PROGRAM_V2_TYPED_REQUEST_SCHEMA",
     "build_program_v2_compiler_capture",
+    "build_program_v2_judge_capture",
+    "build_program_v2_judge_request",
     "build_program_v2_receiver_capture",
 ]
