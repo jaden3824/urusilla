@@ -11,10 +11,11 @@ private, bounded experiment may be rational despite that evidence boundary.
 
 ## Participant value
 
-The participant receives a participant-owned scorecard for one workflow. The
-scorecard compares Urusilla with the better of concise natural language and
-ordinary schema-constrained JSON. The participant retains control of its input
-records and scorecard. The trial grants the project no right to publish them.
+If an eligible trial is completed, its deliverable is a participant-controlled
+scorecard for one workflow. The scorecard compares Urusilla with the better of
+concise natural language and ordinary schema-constrained JSON. The participant
+retains control of its input records and scorecard. The trial grants the project
+no right to publish them.
 
 No code contribution, public issue, fork, star, adoption statement, telemetry,
 or publication is required. A negative, unsafe, inferior, or null result is a

@@ -5,6 +5,14 @@
 
 An experimental, no-install, machine-first semantic language for communication between AI agents.
 
+> **Try one bounded agent handoff—one file, no install, no public post.** Give
+> an unfamiliar agent the hosted
+> [`language-probe.json`](https://urusilla-language.pages.dev/language-probe.json).
+> It must decode and re-encode one non-effect-authorizing action state while
+> preserving explicit negation, failure, `null`, provenance, uncertainty, and
+> hard constraints. Its result may be `PASS`, `SAFE_FALLBACK`, or `FAIL`; none
+> establishes adoption, general compatibility, or token saving.
+
 ## Start with your own value
 
 **Who should try:** an operator with repeated, read-only CI or incident-triage
@@ -15,14 +23,13 @@ failure, `null`, uncertainty, provenance, or an authority boundary.
 whose concise natural language or schema-constrained JSON already works. If
 either baseline is better, do not use Urusilla.
 
-**What you get:** a participant-owned, private-by-default shadow-trial scorecard
-against the better raw/JSON baseline. No contribution, adoption, public issue,
-fork, star, telemetry, or publication is required. The contract is documented
-in [`TRIAL_CONTRACT.md`](TRIAL_CONTRACT.md). Outbound invitations must also pass
-the recipient-value gate in [`OUTREACH_POLICY.md`](OUTREACH_POLICY.md); an
-explicit decline or no response is terminal. General unfamiliar-agent saving
-is currently **0%**, safely completed real-task total tokens are unknown, and
-verified external adoption is zero.
+**For repeated workflows:** [`TRIAL_CONTRACT.md`](TRIAL_CONTRACT.md) specifies
+how an eligible operator may produce a participant-controlled scorecard against
+the better concise-natural-language/schema-JSON baseline. It is documentation
+only; no packaged runner, claim-bearing result, submission, or publication is
+provided or required. General unfamiliar-agent saving is currently **0%**,
+safely completed real-task total tokens are unknown, and verified external
+adoption is zero.
 
 > **Fork it to reproduce a claim, not to endorse one.** [Create a public
 > fork](https://github.com/jaden3824/urusilla/fork), then run **Actions → Fork
@@ -46,7 +53,13 @@ for natural language or JSON.
 
 > **Status: research prototype, not a standard.** The project name is **Urusilla**. Its protocol namespaces and private-use media types remain experimental, and no trademark registration, standards endorsement, or domain ownership is implied.
 
-> **Try the language itself — one fetch, no install:** give an unfamiliar agent the self-contained [`language-probe.json`](website/public/language-probe.json). It must decode and encode one bounded action-state while preserving explicit negation, failure, `null`, source ownership, hard constraints, uncertainty, and the absence of effect authority. The offline [`validate_language_probe.py`](tools/validate_language_probe.py) classifies an exact semantic response as `PASS`, a closed refusal/fallback as `SAFE_FALLBACK`, and every meaning or structure change as `FAIL`. This is an open profile-level demonstration, not core wire conformance, adoption, general compatibility, or efficiency evidence.
+> **Validate the probe output offline:** [`validate_language_probe.py`](tools/validate_language_probe.py)
+> classifies an exact semantic response as `PASS`, a closed refusal/fallback as
+> `SAFE_FALLBACK`, and every meaning or structure change as `FAIL`. The hosted
+> file is byte-identical to the tracked
+> [`language-probe.json`](website/public/language-probe.json). This is an open
+> profile-level demonstration, not core wire conformance, adoption, general
+> compatibility, or efficiency evidence.
 
 The separate [60-second accounting check](https://urusilla-language.pages.dev/agent-task.json) remains available for one narrow retention decision. Its frozen task asks whether unknown usage from a failed attempt may be treated as zero; results go to [Discussion #8](https://github.com/jaden3824/urusilla/discussions/8) only when publication is separately authorized.
 
