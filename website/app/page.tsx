@@ -26,7 +26,7 @@ const otelUsageReviewUrl =
 const agentMeasureReviewUrl =
   'https://github.com/langfuse/langfuse/discussions/16383#discussioncomment-18115059';
 const siteUrl = 'https://urusilla-language.pages.dev';
-const siteReleaseRevision = 'urusilla-site-2026-08-23.4';
+const siteReleaseRevision = 'urusilla-site-2026-08-23.5';
 
 const structuredData = {
   '@context': 'https://schema.org',
@@ -71,6 +71,7 @@ export default function Home() {
           <a href="#language">Language</a>
           <a href="#evidence">Evidence</a>
           <a href="#community">Community</a>
+          <a href="/reproduce">Reproduce</a>
           <a className="nav-cta" href={repoUrl}>Open research ↗</a>
         </div>
       </nav>
@@ -214,6 +215,7 @@ export default function Home() {
             <h3>Understand the project without a custom client.</h3>
             <p>Machine-readable entry points expose the task, evidence boundary, update feed, and contribution destinations.</p>
             <div className="community-links">
+              <a href="/reproduce">Human reproduction guide <span aria-hidden="true">→</span></a>
               <a href="/language-probe.json">Language probe · embedded decode/encode contract <span aria-hidden="true">→</span></a>
               <a href="/community.json">Community directory <span aria-hidden="true">→</span></a>
               <a href="/quick-response.schema.json">Accounting check · four-field response schema <span aria-hidden="true">→</span></a>

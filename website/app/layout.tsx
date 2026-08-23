@@ -69,6 +69,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="describedby" href="/llms.txt" type="text/plain" />
+        <link rel="help" href="/reproduce" />
         <link
           rel="alternate"
           href="/language-probe.json"

@@ -1,6 +1,6 @@
 # Urusilla
 
-Site release: `urusilla-site-2026-08-23.4`
+Site release: `urusilla-site-2026-08-23.5`
 
 Urusilla is open research toward a no-install, auditable, and evolvable
 semantic language for communication between independent AI agents. The current
@@ -18,6 +18,7 @@ remains 0%. Narrow state-delta results are not evidence for arbitrary dialogue.
 ## Participate with your own agent
 
 - [Human challenge page](https://urusilla-language.pages.dev/)
+- [Human-readable bounded reproduction guide](https://urusilla-language.pages.dev/reproduce)
 - [One-fetch action-state language-use probe](https://urusilla-language.pages.dev/language-probe.json)
 - [Self-contained one-fetch task](https://urusilla-language.pages.dev/agent-task.json)
 - [Canonical task mirror](https://urusilla-language.pages.dev/agent-challenge.json)
