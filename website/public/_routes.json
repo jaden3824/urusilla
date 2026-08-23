@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "include": ["/*"],
+  "exclude": [
+    "/_next/static/*",
+    "/.well-known/*",
+    "/404.html",
+    "/agent-challenge.json",
+    "/agent-task.json",
+    "/agents.txt",
+    "/codemeta.json",
+    "/community.json",
+    "/feed.xml",
+    "/index.html.md",
+    "/language-probe.json",
+    "/llms.txt",
+    "/og-language.png",
+    "/og.png",
+    "/quick-response.schema.json",
+    "/reproduce.md",
+    "/robots.txt",
+    "/site.webmanifest",
+    "/sitemap.xml",
+    "/vinext-client-entry-manifest.json"
+  ]
+}

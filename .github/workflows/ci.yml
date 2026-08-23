@@ -308,6 +308,7 @@ jobs:
           const overviewMarkdown = fs.readFileSync('website/public/index.html.md', 'utf8');
           const reproduceMarkdown = fs.readFileSync('website/public/reproduce.md', 'utf8');
           const sitemap = fs.readFileSync('website/public/sitemap.xml', 'utf8');
+          const routes = require('./website/public/_routes.json');
           const sha256 = crypto.createHash('sha256').update(body).digest('hex');
           const siteRelease = 'urusilla-site-2026-08-23.6';
           const frozenArtifactRelease = 'urusilla-site-2026-08-23.2';
@@ -337,6 +338,13 @@ jobs:
               !reproduceMarkdown.includes('General unfamiliar-agent token saving remains **0%**') ||
               !sitemap.includes('/reproduce') ||
               !sitemap.includes('/codemeta.json')) process.exit(1);
+          if (routes.version !== 1 ||
+              JSON.stringify(routes.include) !== JSON.stringify(['/*']) ||
+              !routes.exclude.includes('/_next/static/*') ||
+              !routes.exclude.includes('/codemeta.json') ||
+              !routes.exclude.includes('/sitemap.xml') ||
+              routes.exclude.includes('/') ||
+              routes.exclude.includes('/reproduce')) process.exit(1);
           if (JSON.stringify(hostedResponseSchema) !== JSON.stringify(responseSchema) ||
               responseSchemaSha256 !== discovery.response_schema.sha256 ||
               hostedResponseSchemaBody.length !== discovery.response_schema.decoded_bytes ||
