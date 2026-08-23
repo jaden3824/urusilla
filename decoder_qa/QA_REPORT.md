@@ -1,8 +1,8 @@
 # Deterministic Decoder Quality-Assurance Report
 
-- Run time (UTC): `2026-08-23T10:27:10+00:00`
-- Execution ID: `0e14d26c132f716c223b4480cb3b2c78f407024298847f982bfe354e1b0b4d8f`
-- Machine-readable result SHA-256: `3402d821abefcf0463c3710e8fed4b7d6667c2c31f91e0a40f00eb59e7dff2dc`
+- Run time (UTC): `2026-08-23T12:00:50+00:00`
+- Execution ID: `81d46e2b5959e7b63d73f8d53548adc2767fc2aaff2adf941d5e308a8801f464`
+- Machine-readable result SHA-256: `dd3e63385726e30efe8d4f1c2fc9b7a4c6165a746530d333fb21f3776d73b8b3`
 - Outcome: **passed**
 - Scope: local saved parser fixtures and documented grammar only
 - External activity: none; network audit events were denied and credential environment variables were not inherited
@@ -17,13 +17,13 @@ This is quality-assurance evidence, not a conformance badge, security audit, vul
 
 | Campaign | Status | Cases/tests | Seconds |
 |---|---:|---:|---:|
-| baseline | passed | 101 | 2.794144 |
-| roundtrip | passed | 1097 | 0.670164 |
-| boundaries | passed | 1952 | 0.266578 |
-| mutations | passed | 2048 | 0.148261 |
-| replay | passed | 135 | 0.848896 |
-| known_defects | passed | 16 | 0.088693 |
-| qa_tests | passed | 15 | 1.654510 |
+| baseline | passed | 101 | 2.721152 |
+| roundtrip | passed | 1097 | 0.646548 |
+| boundaries | passed | 1952 | 0.261825 |
+| mutations | passed | 2048 | 0.143442 |
+| replay | passed | 135 | 0.537394 |
+| known_defects | passed | 16 | 0.085755 |
+| qa_tests | passed | 15 | 1.567588 |
 
 ## Exact behavior check-unit counts
 
@@ -133,8 +133,8 @@ These local results show that the saved implementation rejects or handles the ex
 ## Source identity and stability
 
 - Source files hashed: `37`
-- Source snapshot digest: `a2f543b9238424780937e6cd245141a6340d7ea2dc6a4b5b4d9c6a88539661de`
-- Git revision: `7a79d8f8374dc7694922cebd1545350d8762d9b1`
+- Source snapshot digest: `bae38fd9552f86824a8a7a123eddeeeb5b7faef002ddc87a8f3cea5cc1238733`
+- Git revision: `4f18648e8bd1d2dd49a7056687ecf188e7568ca1`
 - Grammar Capsule SHA-256: `588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27`
 - Capsule-pinned reference codec SHA-256: `3cb84380149a522bdadd94e866e39a848fa23c8b666382c4f88ce341147fbdcf`
 - Saved reference codec SHA-256: `3cb84380149a522bdadd94e866e39a848fa23c8b666382c4f88ce341147fbdcf`
