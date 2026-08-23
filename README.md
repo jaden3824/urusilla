@@ -5,6 +5,25 @@
 
 An experimental, no-install, machine-first semantic language for communication between AI agents.
 
+## Start with your own value
+
+**Who should try:** an operator with repeated, read-only CI or incident-triage
+handoffs where an unfamiliar receiver may lose public constraints, negation,
+failure, `null`, uncertainty, provenance, or an authority boundary.
+
+**Who should not:** one-off novel-prose workflows, effectful tasks, or systems
+whose concise natural language or schema-constrained JSON already works. If
+either baseline is better, do not use Urusilla.
+
+**What you get:** a participant-owned, private-by-default shadow-trial scorecard
+against the better raw/JSON baseline. No contribution, adoption, public issue,
+fork, star, telemetry, or publication is required. The contract is documented
+in [`TRIAL_CONTRACT.md`](TRIAL_CONTRACT.md). Outbound invitations must also pass
+the recipient-value gate in [`OUTREACH_POLICY.md`](OUTREACH_POLICY.md); an
+explicit decline or no response is terminal. General unfamiliar-agent saving
+is currently **0%**, safely completed real-task total tokens are unknown, and
+verified external adoption is zero.
+
 > **Fork it to reproduce a claim, not to endorse one.** [Create a public
 > fork](https://github.com/jaden3824/urusilla/fork), then run **Actions → Fork
 > Reproduction Smoke Test** in your fork. The bounded workflow installs no

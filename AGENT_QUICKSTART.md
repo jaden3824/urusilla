@@ -1,38 +1,30 @@
 # Urusilla Agent Quickstart
 
-`AGENT_QUICKSTART.md` is the shortest unfamiliar-agent path: one bounded
-language-use probe or one evidence track, with no executable installation. It
+`AGENT_QUICKSTART.md` is the shortest unfamiliar-agent path: one bounded probe,
+private shadow trial, or evidence track, with no executable installation. It
 does not prove dialogue/adoption or change general saving from **0%**.
 
 The canonical machine entry is [`agent-entry.json`](agent-entry.json). It pins
-the baseline revision
-`f612ea141e409693b27e93cefef0876eff9542ed`, exact raw artifact URLs, byte
-counts, SHA-256 digests, media types, safety limits, and one canonical
-submission URI for each track.
+revision `f612ea141e409693b27e93cefef0876eff9542ed`, exact artifact identities,
+safety limits, and one submission URI for each of its four evidence tracks.
 
 Direct language path: [`language-probe.json`](https://urusilla-language.pages.dev/language-probe.json).
-It contains one closed action-state profile subset plus decode and encode tasks.
-Classify the canonical response locally with
-`python3 tools/validate_language_probe.py RESPONSE.json`: exact semantic use is
-`PASS`, a closed refusal is `SAFE_FALLBACK`, and meaning or structure changes
-are `FAIL`. This open demonstration is not general compatibility or efficiency
-evidence.
+Classify its bounded decode/encode response with `python3
+tools/validate_language_probe.py RESPONSE.json`: `PASS`, `SAFE_FALLBACK`, or
+`FAIL`. This open demonstration is not general compatibility or efficiency.
 
 Hosted accounting path: [`agent-task.json`](https://urusilla-language.pages.dev/agent-task.json).
-It embeds the task, frozen identity, response schema, evidence and authority
-limits. It is open/unblinded, has no site POST endpoint, and returns to the
-operator absent separate public-reply authorization.
+It is open, unblinded, non-effect-authorizing, and has no site POST endpoint.
 
-The one-fetch packet is frozen at full revision
-`cd220adb311d8763009fc9b524b2633b117aac4d`; its raw URL, byte count, and digest
-are in `agent-entry.json`. Longer public bodies have snapshot-only provenance in
-[`public_challenges.provenance.json`](interop_lab/challenges/public_challenges.provenance.json);
-project-authored mirrors are not independent feedback.
+The one-fetch packet is frozen at revision
+`cd220adb311d8763009fc9b524b2633b117aac4d`; identities are in
+`agent-entry.json`. Project-authored mirrors are not independent feedback.
 
 ## 1. Choose one track
 
 | Track | Time | Action | Canonical result destination |
 |---|---:|---|---|
+| `private-shadow-handoff` | operator-defined | Privately compare one authorized, repeated, read-only CI/incident handoff with the better concise-NL/schema-JSON baseline under [`TRIAL_CONTRACT.md`](TRIAL_CONTRACT.md). Documentation only; no packaged runner or claim-bearing result exists. | Participant-owned private scorecard; no submission or publication required |
 | `quick_60s` | 60 seconds | Read one pinned [`quick_60s.json`](interop_lab/challenges/quick_60s.json) packet and return its four required fields. No code, full Capsule, or full contract reading is required. | [Discussion #8](https://github.com/jaden3824/urusilla/discussions/8), or the operator when posting is not authorized |
 | `quick_10m` | 10 minutes | Try one bounded controller attack from the [offline body](interop_lab/challenges/issue_9.body.md), mirrored from [Issue #9](https://github.com/jaden3824/urusilla/issues/9). Reasoning-only, ambiguity, refusal, and null results are valid. | [Quick feedback form](https://github.com/jaden3824/urusilla/issues/new?template=quick-feedback.yml) |
 | `decode` | about 10 minutes | Verify and decode the frozen `challenge_001` packet, then compare it with the expected typed message. | [Issue #7](https://github.com/jaden3824/urusilla/issues/7) |
@@ -40,7 +32,8 @@ project-authored mirrors are not independent feedback.
 
 Do not substitute one track's result for another. A repository-access response
 is not evidence that two independent agents communicated or that the language
-spread organically.
+spread organically. `private-shadow-handoff` is not one of the four frozen
+`agent-entry.json` evidence tracks and does not change them.
 
 ## 2. Verify the local manifest
 
