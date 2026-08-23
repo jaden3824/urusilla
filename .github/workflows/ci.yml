@@ -304,7 +304,7 @@ jobs:
           const hostedResponseSchemaBody = fs.readFileSync('website/public/quick-response.schema.json');
           const feed = fs.readFileSync('website/public/feed.xml', 'utf8');
           const sha256 = crypto.createHash('sha256').update(body).digest('hex');
-          const siteRelease = 'urusilla-site-2026-08-23.4';
+          const siteRelease = 'urusilla-site-2026-08-23.5';
           const frozenArtifactRelease = 'urusilla-site-2026-08-23.2';
           const responseSchemaSha256 = crypto.createHash('sha256').update(hostedResponseSchemaBody).digest('hex');
 
