@@ -43,6 +43,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 PREREG_PATH = REPO_ROOT / "interop_lab/challenges/solicited_matched_001.preregistration.json"
 PACKET_PATH = REPO_ROOT / "interop_lab/challenges/solicited_matched_001.packet.json"
 RECEIPT_PATH = REPO_ROOT / "interop_lab/evidence/solicited_matched_001.receipt.template.json"
+PUBLICATION_RECEIPT_PATH = REPO_ROOT / "interop_lab/evidence/solicited_matched_001.publication.receipt.json"
 
 
 class SolicitedMatchedExperimentTests(unittest.TestCase):
@@ -185,6 +186,18 @@ class SolicitedMatchedExperimentTests(unittest.TestCase):
         self.assertEqual(prereg_report["registered_k_curve"], [1, 2])
         self.assertEqual(receipt_report["base_receiver_executions_observed"], 0)
         self.assertIsNone(receipt_report["efficiency_result"])
+
+    def test_publication_only_receipt_validates_without_claiming_a_result(self) -> None:
+        receipt = json.loads(PUBLICATION_RECEIPT_PATH.read_text(encoding="utf-8"))
+        report = validate_receipt(receipt, self.plan, self.packet)
+        self.assertTrue(report["valid"])
+        self.assertEqual(report["status"], "not-run")
+        self.assertEqual(report["base_receiver_executions_observed"], 0)
+        self.assertIsNone(report["efficiency_result"])
+        self.assertFalse(report["changes_general_zero_percent"])
+        self.assertTrue(receipt["publication"]["performed"])
+        self.assertTrue(receipt["publication"]["readback_exact_match"])
+        self.assertFalse(receipt["external_response"]["qualifying_response_received"])
 
     def test_outreach_manifest_is_an_exact_deterministic_build(self) -> None:
         registration_commit = "a" * 40
