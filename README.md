@@ -5,6 +5,16 @@
 
 An experimental, no-install, machine-first semantic language for communication between AI agents.
 
+> **Fork it to reproduce a claim, not to endorse one.** [Create a public
+> fork](https://github.com/jaden3824/urusilla/fork), then run **Actions → Fork
+> Reproduction Smoke Test** in your fork. The bounded workflow installs no
+> project package, checks the frozen agent-entry manifest and public decode
+> challenge, and preserves failures as useful results. Continue with
+> [`FORK_REPRODUCTION.md`](FORK_REPRODUCTION.md) to turn the run into a pinned
+> counterexample, refusal, null result, or deeper reproduction. A fork or green
+> workflow is an attention and reproducibility signal—not adoption,
+> independence, compatibility, or efficiency evidence.
+
 Urusilla's long-term vision is an interoperable meaning layer that independent
 agents can learn, negotiate, inspect, and improve without sharing a vendor,
 model, tokenizer, or fixed human-facing syntax. The current prototype combines
@@ -97,6 +107,19 @@ not change the demonstrated general saving.
 A new **development-only** hybrid runtime now implements that architecture-changing hypothesis: task-bound natural-language compilation, direct action-state consumption, a fail-closed five-route planner, per-message semantic-fidelity evidence, complete-cost fields, and an optional session-local evolving surface. Its machine-first aliases may be non-English or opaque and are optimized without a human-aesthetics score. Stable semantic IDs never change; only a reversible, exact-context-bound wire table may evolve after round-trip comprehension tests. Caller-supplied `UtilityEvidence` can qualify an optimized route for a bounded local policy trial after exact binding and declared-threshold checks, but it is not claim authority: runtime route candidates and decisions reject `claim_eligible: true`, and the aggregate initial-goal verifier emits no route-scoped evidence. This is implementation plumbing, not a positive result: no real independent end-to-end run has yet shown that the extra compiler, verifier, setup, and receiver costs beat raw concise text and JSON. See [`EVOLVING_SURFACE.md`](EVOLVING_SURFACE.md).
 
 The reference runtime now also closes the local same-context execution gap. A cached receiver capability can be minted only from a passed cold-comprehension attempt and the exact still-active provider-context observation. A factory-sealed session plan then sends the validated public action state directly without prose re-expansion. Malformed state, Capsule/task/context drift, adapter failure, or invalid primary output invalidates that optimized path and invokes its already bound raw/JSON fallback; prohibited authority remains false throughout. Focused and full runtime regressions exercise this path with project-authored adapters. No provider-backed causal intervention or independently operated run has yet shown that a real model used the task-critical semantics, so this is a safer experiment runner rather than language-use or efficiency evidence. See [`urusilla_hybrid_runtime/session_runtime.py`](urusilla_hybrid_runtime/session_runtime.py).
+
+A runtime-only session portfolio ledger now combines contiguous, exactly bound
+hot turns without charging the shared cold-comprehension call on every turn.
+Each turn retains its independently prepared raw or JSON comparator, compiler
+and fidelity calls, local setup/router/repair/fallback/tool/safety/judge usage,
+failed optimized receiver call, and any executed fallback. Duplicate,
+noncontiguous, cross-session, or post-failure turns are rejected. Any unknown
+provider or local phase keeps the affected aggregate and saving null. The
+reported-token diagnostic can expose a setup-amortization crossover, but
+provider receipt authenticity and full-history billing remain unverified, all
+current tests use project-authored adapters, and complete goal totals and claim
+eligibility remain false. See
+[`urusilla_hybrid_runtime/session_portfolio.py`](urusilla_hybrid_runtime/session_portfolio.py).
 
 A separate four-slot, same-project Gemini web-UI pilot now records one task-critical `delivery_date` flip, one representation-invariance check, and one true-missing-field fallback in fresh temporary chats under the visible `Pro Extended` mode label. All four returned the preregistered canonical JSON byte-for-byte with no repair. The exact model version, provider token usage, and authenticated response receipt were unavailable. The [packet](interop_lab/evidence/gemini_web_ui_causal_pilot_2026_08_23.packet.json), [observation](interop_lab/evidence/gemini_web_ui_causal_pilot_2026_08_23.observation.json), and offline tests preserve the result as an exploratory field-binding diagnostic only. It is project-operated, uses explicit natural-language instructions, lacks the full blinded no-payload/composition design, and establishes neither direct Urusilla consumption nor compatibility, causality, adoption, or efficiency.
 

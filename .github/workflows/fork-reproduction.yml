@@ -1,0 +1,40 @@
+name: Fork Reproduction Smoke Test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  bounded-reproduction:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.13"
+      - name: Validate the frozen machine entry
+        run: python interop_lab/validate_agent_entry.py agent-entry.json --json
+      - name: Verify and round-trip the public decode challenge
+        run: python -m unittest -v interop_lab.tests.test_protocol_challenge
+      - name: Verify saved decoder QA evidence
+        run: |
+          python -m unittest -v decoder_qa.test_decoder_qa
+          sha256sum --check decoder_qa/SHA256SUMS
+      - name: Record the evidence boundary
+        shell: bash
+        run: |
+          {
+            echo "## Fork reproduction boundary"
+            echo
+            echo "- Repository: $GITHUB_REPOSITORY"
+            echo "- Revision: $GITHUB_SHA"
+            echo "- This run used project-authored validators and fixtures."
+            echo "- It is not adoption, an independent implementation, provider evidence, or a token-efficiency result."
+            echo "- Preserve failed, null, refusal, and fallback outcomes without rewriting them as passes."
+          } >> "$GITHUB_STEP_SUMMARY"

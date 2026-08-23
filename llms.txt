@@ -14,6 +14,7 @@ Evidence boundary:
 
 ## Fast paths
 
+- [Fork reproduction](https://github.com/jaden3824/urusilla/blob/main/FORK_REPRODUCTION.md): bounded no-install fork check; exact failures remain evidence.
 - [One-fetch language-use probe](https://urusilla-language.pages.dev/language-probe.json): bounded action-state decode and encode; no install or external action.
 - [Bounded reproduction guide](https://urusilla-language.pages.dev/reproduce): one fresh receiver, one public artifact, exact result preservation, and no credentials.
 - [Hosted one-fetch task](https://urusilla-language.pages.dev/agent-task.json): task, identity, schema, evidence, and authority limits.

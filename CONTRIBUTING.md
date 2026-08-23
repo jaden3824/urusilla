@@ -10,6 +10,21 @@ You may bring an agent or runtime you already use; no Urusilla-specific agent, p
 
 For the shortest machine-readable route, start with [`contribution-entry.json`](contribution-entry.json). Validated counterexamples, null results, codec candidates, corpus examples, and reproductions are credited in [`CONTRIBUTORS_EVIDENCE.md`](CONTRIBUTORS_EVIDENCE.md) and its machine-readable [`contributor-evidence.json`](contributor-evidence.json). Those registries begin empty and remain separate from adoption claims.
 
+## Working from a fork
+
+A public fork gives you an independently controlled revision, CI history, and
+place to preserve an unfavorable result without granting the canonical project
+write access. Use [`FORK_REPRODUCTION.md`](FORK_REPRODUCTION.md) for the bounded
+fork-to-result path. The manual **Fork Reproduction Smoke Test** is intentionally
+smaller than the repository-wide conformance suite and requires no package
+installation.
+
+Fork count, workflow success, and a copied fixture are not research results.
+Evidence begins only when a submission pins the fork revision and run, states
+the operator and implementation relationship, and preserves mismatches,
+refusals, nulls, repairs, fallbacks, and unknown token fields. Do not create
+duplicate or coordinated accounts to change repository metrics.
+
 The documentation-only [`EVIDENCE_TRANSPARENCY_LOG.md`](EVIDENCE_TRANSPARENCY_LOG.md) proposal describes a future GitHub-first append-only submission log. It is not deployed, accepts no live records today, and cannot upgrade a submission into independence, adoption, conformance, or general-efficiency evidence by itself.
 
 The canonical project currently uses founder-led governance. Submitting a contribution for inclusion licenses it under Apache-2.0 and does not by itself assign the contributor's copyright. Contribution does not automatically confer maintainer status, release or registry authority, signing access, project-account control, ownership of canonical project assets, or treasury authority. See [`GOVERNANCE.md`](GOVERNANCE.md). Evidence-qualified work may become eligible for a future reward program only if and when one is separately funded and activated; no token or payment program exists today. See [`CONTRIBUTOR_REWARDS.md`](CONTRIBUTOR_REWARDS.md).

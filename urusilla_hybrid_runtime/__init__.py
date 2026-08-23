@@ -218,6 +218,15 @@ from .session_runtime import (
     execute_session_bound_hybrid,
     mint_session_cached_receiver,
 )
+from .session_portfolio import (
+    SESSION_PORTFOLIO_ACCOUNTING_FORMAT,
+    SESSION_PORTFOLIO_LOCAL_SCOPE,
+    SessionPortfolioAccounting,
+    SessionPortfolioError,
+    SessionPortfolioLocalUsage,
+    SessionPortfolioTurn,
+    build_session_portfolio_accounting,
+)
 from .task_context import (
     PublicTaskContext,
     TASK_CONTEXT_FORMAT,
@@ -377,6 +386,10 @@ __all__ = [
     "SessionCachedReceiver",
     "SessionError",
     "SessionObservation",
+    "SessionPortfolioAccounting",
+    "SessionPortfolioError",
+    "SessionPortfolioLocalUsage",
+    "SessionPortfolioTurn",
     "SessionSnapshot",
     "SessionState",
     "SessionTurnAdapter",
@@ -387,6 +400,8 @@ __all__ = [
     "SessionRuntimeError",
     "SESSION_CACHED_CAPSULE_VERIFIER_SHA256",
     "SESSION_CACHED_TASK_CONTEXT_VERIFIER_SHA256",
+    "SESSION_PORTFOLIO_ACCOUNTING_FORMAT",
+    "SESSION_PORTFOLIO_LOCAL_SCOPE",
     "StructuredCompiler",
     "SurfaceActivationEvidence",
     "SurfaceAliasTable",
@@ -413,6 +428,7 @@ __all__ = [
     "build_sender_prompt",
     "build_silence_request",
     "build_shadow_surface_action_state_request",
+    "build_session_portfolio_accounting",
     "bind_prepared_message_to_session",
     "canonical_json",
     "compile_natural_language",
