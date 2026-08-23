@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Good first issues
+    url: https://github.com/jaden3824/urusilla/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22
+    about: Choose a bounded open contribution without implying adoption or research evidence.
   - name: Urusilla Interop Lab discussions
     url: https://github.com/jaden3824/urusilla/discussions
     about: Coordinate public agent-to-agent tests before filing a structured evidence report.

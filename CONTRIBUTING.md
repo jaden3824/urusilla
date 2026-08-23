@@ -6,6 +6,11 @@ Participation is governed by [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Technic
 
 The highest-priority open work packages and their measurable acceptance gates are listed in [`HELP_WANTED.md`](HELP_WANTED.md). Contributions may be produced by humans, agents, or human-agent teams, but agent assistance and the accountable submitter must be disclosed.
 
+For a small, reviewable first contribution, choose an item from the exact open
+[`good first issue` queue](https://github.com/jaden3824/urusilla/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
+The label marks bounded work; it does not make a contribution accepted evidence
+or imply adoption, conformance, or efficiency.
+
 You may bring an agent or runtime you already use; no Urusilla-specific agent, plugin, executable package, or model-weight installation is required for the bounded public tasks. A reproduction submission must pin the applicable public task bundle, satisfy its published receipt and verifier requirements, and disclose the accountable operator, runtime, and shared-control relationships. Submission or structural validation does not by itself make a result accepted evidence or prove adoption, operator independence, conformance, or efficiency.
 
 For the shortest machine-readable route, start with [`contribution-entry.json`](contribution-entry.json). Validated counterexamples, null results, codec candidates, corpus examples, and reproductions are credited in [`CONTRIBUTORS_EVIDENCE.md`](CONTRIBUTORS_EVIDENCE.md) and its machine-readable [`contributor-evidence.json`](contributor-evidence.json). Those registries begin empty and remain separate from adoption claims.
@@ -44,15 +49,25 @@ The canonical project currently uses founder-led governance. Submitting a contri
 
 ## Before opening a pull request
 
-```bash
-python3 -m unittest discover -s . -p 'test_*.py' -v
-python3 urusilla_benchmark.py
-python3 urusilla_wire_v02.py --benchmark
-```
+Match local validation to the files and claims changed. A documentation link fix
+does not need to rerun research benchmarks, while behavior or evidence changes
+must retain their full applicable checks.
 
-Confirm that all documentation is written in English and that generated benchmark reports reproduce the committed results within expected machine-dependent timing variation.
+| Change type | Local validation before the pull request | Benchmark and evidence requirement |
+| --- | --- | --- |
+| Documentation, links, or issue-template text only; no normative or result change | Review the rendered Markdown or YAML, verify every changed local path and external URL, and run a whitespace/diff check. | No research benchmark is required. |
+| Focused non-normative code or tests that cannot change wire/runtime behavior | Run the directly affected unit-test modules and any formatter or static check used by that area. | Run an artifact-specific reproducer only if a generated artifact changes. |
+| Runtime, parser, codec, adapter, or routing behavior | Run affected positive and negative tests, then the full unit suite: `python3 -m unittest discover -s . -p 'test_*.py' -v`. | Run `python3 urusilla_benchmark.py` and/or `python3 urusilla_wire_v02.py --benchmark` whenever the corresponding representation, cost, timing, or generated report can change. Reproduce all affected digests and reports. |
+| Normative protocol/specification/version, claim-bearing evidence/results, or repository-wide behavior | Run the full unit suite, both benchmark commands above, every affected conformance or artifact-specific reproducer, and the compatibility/security checks required below. | Include positive and negative vectors, reproduce affected reports and digests, and preserve unfavorable, failed, and `null` outcomes. |
 
-Use the current CI run for the repository-wide pass/fail result. Do not copy a mutable total test count into living documentation; isolated experiment reports may retain counts bound to their frozen source and artifact identities.
+Confirm that all documentation is written in English. For generated benchmark
+reports, verify that the committed results reproduce within the report's stated
+machine-dependent timing boundary.
+
+For every pull request, the current CI run is the repository-wide pass/fail
+authority even when the local row is intentionally narrow. Do not copy a mutable
+total test count into living documentation; isolated experiment reports may
+retain counts bound to their frozen source and artifact identities.
 
 ## Specification changes
 
