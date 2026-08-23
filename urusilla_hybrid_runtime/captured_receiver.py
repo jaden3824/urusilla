@@ -30,18 +30,25 @@ DIRECT_REQUEST_PREIMAGE_SCHEMA = (
 )
 PROVIDER_MESSAGES_SCHEMA = "urusilla-hybrid-provider-messages/1"
 PROVIDER_REQUEST_CAPTURE_SCHEMA = (
-    "urusilla-hybrid-provider-request-capture/1"
+    "urusilla-hybrid-provider-request-capture/2"
 )
 RECEIVER_REPLY_PREIMAGE_SCHEMA = (
     "urusilla-hybrid-receiver-model-reply-preimage/1"
 )
 CAPTURED_RECEIVER_EXECUTION_SCHEMA = (
-    "urusilla-hybrid-captured-receiver-execution/1"
+    "urusilla-hybrid-captured-receiver-execution/2"
 )
 
 MAX_PROVIDER_ATTEMPTS = 8
+MAX_RAW_RECEIPT_BYTES = 1_000_000
 CAPTURE_FAILURE_STAGES = frozenset(
     {"before-dispatch", "transport", "provider", "response-validation"}
+)
+PROVIDER_TERMINAL_STATUSES = frozenset(
+    {"completed", "timeout", "refused", "provider_error"}
+)
+PROVIDER_FAILURE_TERMINAL_STATUSES = frozenset(
+    {"timeout", "refused", "provider_error"}
 )
 
 _SHA256 = re.compile(r"^sha256:[0-9a-f]{64}$")
@@ -61,6 +68,120 @@ def _identifier(value: Any, label: str, *, nullable: bool = False) -> str | None
         suffix = " or null" if nullable else ""
         raise ReceiverError(f"{label} must be a bounded identifier{suffix}")
     return value
+
+
+def _validate_raw_receipt(
+    text: Any,
+    digest: Any,
+    *,
+    required: bool,
+) -> None:
+    if text is None:
+        if digest is not None:
+            raise ReceiverError(
+                "provider receipt digest exists without its exact text"
+            )
+        if required:
+            raise ReceiverError("completed provider capture lacks an exact receipt")
+        return
+    if type(text) is not str or not text:
+        raise ReceiverError("provider receipt must be non-empty text")
+    try:
+        raw = text.encode("utf-8")
+    except UnicodeEncodeError as exc:
+        raise ReceiverError("provider receipt is not UTF-8") from exc
+    if len(raw) > MAX_RAW_RECEIPT_BYTES:
+        raise ReceiverError("provider receipt exceeds the bounded size")
+    _sha(digest, "provider capture receipt")
+    if digest != sha256_text(text):
+        raise ReceiverError("provider receipt digest differs from exact text")
+
+
+def _usage_is_unknown(capture: "ProviderRequestCapture") -> bool:
+    return not capture.usage_complete and all(
+        item is None
+        for item in (
+            capture.input_tokens,
+            capture.output_tokens,
+            capture.reasoning_tokens,
+            capture.reasoning_accounting,
+            capture.provider_total_tokens,
+        )
+    )
+
+
+def _validate_observed_usage(
+    capture: "ProviderRequestCapture",
+    *,
+    require_complete: bool,
+) -> None:
+    accounting = capture.reasoning_accounting
+    if accounting not in {
+        None,
+        "included-in-output",
+        "separately-reported",
+        "not-reported",
+    }:
+        raise ReceiverError("provider reasoning accounting is unknown")
+    if require_complete and not capture.usage_complete:
+        raise ReceiverError("provider capture requires complete usage")
+    if capture.usage_complete:
+        if (
+            capture.input_tokens is None
+            or capture.output_tokens is None
+            or capture.provider_total_tokens is None
+            or accounting is None
+        ):
+            raise ReceiverError("complete provider usage lacks required fields")
+
+    input_tokens = capture.input_tokens
+    output_tokens = capture.output_tokens
+    reasoning_tokens = capture.reasoning_tokens
+    total = capture.provider_total_tokens
+    if accounting is None:
+        if reasoning_tokens is not None:
+            raise ReceiverError(
+                "provider reasoning tokens lack an accounting mode"
+            )
+        return
+    if accounting == "not-reported":
+        if reasoning_tokens is not None:
+            raise ReceiverError("unreported reasoning must remain unknown")
+        if (
+            input_tokens is not None
+            and output_tokens is not None
+            and total is not None
+            and total < input_tokens + output_tokens
+        ):
+            raise ReceiverError("provider total is below visible usage")
+        return
+    if accounting == "included-in-output":
+        if (
+            reasoning_tokens is not None
+            and output_tokens is not None
+            and reasoning_tokens > output_tokens
+        ):
+            raise ReceiverError("included reasoning is inconsistent")
+        if capture.usage_complete and reasoning_tokens is None:
+            raise ReceiverError("included reasoning is incomplete")
+        if (
+            input_tokens is not None
+            and output_tokens is not None
+            and total is not None
+            and total != input_tokens + output_tokens
+        ):
+            raise ReceiverError("included reasoning total does not reconcile")
+        return
+    if capture.usage_complete and reasoning_tokens is None:
+        raise ReceiverError("separate reasoning cannot be unknown")
+    if (
+        input_tokens is not None
+        and output_tokens is not None
+        and reasoning_tokens is not None
+        and total is not None
+        and total != input_tokens + output_tokens + reasoning_tokens
+    ):
+        raise ReceiverError("separate reasoning total does not reconcile")
 
 
 def _json_public_value(value: Any) -> Any:
@@ -180,6 +301,7 @@ class ProviderRequestCapture:
     settings_sha256: str
     provider_request_id: str | None
     provider_response_id: str | None
+    provider_terminal_status: str | None
     reply_preimage_sha256: str | None
     attempt_count: int
     retry_count: int
@@ -189,6 +311,7 @@ class ProviderRequestCapture:
     reasoning_accounting: str | None
     provider_total_tokens: int | None
     usage_complete: bool
+    raw_receipt_text: str | None
     raw_receipt_sha256: str | None
     failure_stage: str | None
     failure_code: str | None
@@ -280,6 +403,11 @@ class ProviderRequestCapture:
                 "provider capture response id",
                 nullable=True,
             )
+            if (
+                type(self.provider_terminal_status) is not str
+                or self.provider_terminal_status not in PROVIDER_TERMINAL_STATUSES
+            ):
+                raise ReceiverError("provider capture terminal status is invalid")
         else:
             if any(
                 item is not None
@@ -295,6 +423,10 @@ class ProviderRequestCapture:
                 raise ReceiverError("an undispatched capture cannot report provider facts")
             if self.attempt_count != 0:
                 raise ReceiverError("an undispatched capture cannot report attempts")
+            if self.provider_terminal_status is not None:
+                raise ReceiverError(
+                    "an undispatched capture cannot report a terminal status"
+                )
 
         if type(self.usage_complete) is not bool:
             raise ReceiverError("provider capture usage completeness must be boolean")
@@ -306,41 +438,22 @@ class ProviderRequestCapture:
                 "completed provider response id",
             )
             _sha(self.reply_preimage_sha256, "completed provider reply preimage")
-            _sha(self.raw_receipt_sha256, "completed provider receipt")
             if self.attempt_count != 1 or self.retry_count != 0:
                 raise ReceiverError(
                     "completed provider usage requires one unretried attempt"
                 )
+            if self.provider_terminal_status != "completed":
+                raise ReceiverError(
+                    "completed capture requires a completed provider terminal"
+                )
             if self.failure_stage is not None or self.failure_code is not None:
                 raise ReceiverError("a completed capture cannot report failure")
-            if not self.usage_complete:
-                raise ReceiverError("a completed capture requires complete usage")
-            if self.input_tokens is None or self.output_tokens is None or self.provider_total_tokens is None:
-                raise ReceiverError("completed provider usage is incomplete")
-            if self.reasoning_accounting not in {
-                "included-in-output",
-                "separately-reported",
-                "not-reported",
-            }:
-                raise ReceiverError("completed reasoning accounting is unknown")
-            if self.reasoning_accounting == "not-reported":
-                if self.reasoning_tokens is not None:
-                    raise ReceiverError("unreported reasoning must remain unknown")
-                minimum = self.input_tokens + self.output_tokens
-                if self.provider_total_tokens < minimum:
-                    raise ReceiverError("provider total is below visible usage")
-            elif self.reasoning_accounting == "included-in-output":
-                if self.reasoning_tokens is None or self.reasoning_tokens > self.output_tokens:
-                    raise ReceiverError("included reasoning is inconsistent")
-                if self.provider_total_tokens != self.input_tokens + self.output_tokens:
-                    raise ReceiverError("included reasoning total does not reconcile")
-            else:
-                if self.reasoning_tokens is None:
-                    raise ReceiverError("separate reasoning cannot be unknown")
-                if self.provider_total_tokens != (
-                    self.input_tokens + self.output_tokens + self.reasoning_tokens
-                ):
-                    raise ReceiverError("separate reasoning total does not reconcile")
+            _validate_observed_usage(self, require_complete=True)
+            _validate_raw_receipt(
+                self.raw_receipt_text,
+                self.raw_receipt_sha256,
+                required=True,
+            )
         else:
             if self.reply_preimage_sha256 is not None:
                 raise ReceiverError("failed provider capture cannot bind a reply")
@@ -351,21 +464,37 @@ class ProviderRequestCapture:
                 raise ReceiverError("before-dispatch failure cannot report dispatch")
             if self.failure_stage != "before-dispatch" and not self.request_dispatched:
                 raise ReceiverError("post-dispatch failure lost its dispatch")
-            if self.usage_complete or any(
-                item is not None
-                for item in (
-                    self.input_tokens,
-                    self.output_tokens,
-                    self.reasoning_tokens,
-                    self.reasoning_accounting,
-                    self.provider_total_tokens,
+            if self.failure_stage == "before-dispatch":
+                if not _usage_is_unknown(self):
+                    raise ReceiverError(
+                        "before-dispatch failure usage must remain unknown"
+                    )
+                if (
+                    self.raw_receipt_text is not None
+                    or self.raw_receipt_sha256 is not None
+                ):
+                    raise ReceiverError(
+                        "before-dispatch failure cannot have a receipt"
+                    )
+            else:
+                if (
+                    self.provider_terminal_status
+                    not in PROVIDER_FAILURE_TERMINAL_STATUSES
+                ):
+                    raise ReceiverError(
+                        "failed dispatched capture requires a failure terminal"
+                    )
+                if self.attempt_count == 1:
+                    _validate_observed_usage(self, require_complete=False)
+                elif not _usage_is_unknown(self):
+                    raise ReceiverError(
+                        "retried failed usage lacks per-attempt evidence"
+                    )
+                _validate_raw_receipt(
+                    self.raw_receipt_text,
+                    self.raw_receipt_sha256,
+                    required=False,
                 )
-            ):
-                raise ReceiverError("failed provider usage must remain unknown")
-            if self.failure_stage == "before-dispatch" and self.raw_receipt_sha256 is not None:
-                raise ReceiverError("before-dispatch failure cannot have a receipt")
-            if self.raw_receipt_sha256 is not None:
-                _sha(self.raw_receipt_sha256, "failed provider receipt")
 
     @property
     def value(self) -> dict[str, Any]:
@@ -430,6 +559,8 @@ def _execution_fingerprint(
     request_binding_sha256: str,
     request_preimage_sha256: str,
     intended_model_visible_sha256: str,
+    expected_model_id: str,
+    expected_settings_sha256: str,
     capture: ProviderRequestCapture | None,
     reply: ReceiverModelReply | None,
     failure: str | None,
@@ -451,6 +582,8 @@ def _execution_fingerprint(
                 # digest before the construction seal is accepted.
                 "request_preimage_sha256": request_preimage_sha256,
                 "intended_model_visible_sha256": intended_model_visible_sha256,
+                "expected_model_id": expected_model_id,
+                "expected_settings_sha256": expected_settings_sha256,
                 "capture_binding_sha256": (
                     None if capture is None else capture.binding_sha256
                 ),
@@ -522,6 +655,8 @@ class CapturedReceiverExecution:
     request_preimage_json: str
     request_preimage_sha256: str
     intended_model_visible_sha256: str
+    expected_model_id: str
+    expected_settings_sha256: str
     capture: ProviderRequestCapture | None
     reply: ReceiverModelReply | None
     failure: str | None
@@ -553,6 +688,11 @@ class CapturedReceiverExecution:
         _sha(
             self.intended_model_visible_sha256,
             "captured execution model-visible digest",
+        )
+        _identifier(self.expected_model_id, "captured execution expected model")
+        _sha(
+            self.expected_settings_sha256,
+            "captured execution expected settings",
         )
         request_preimage = _validated_execution_request_preimage(
             self.request_preimage_json,
@@ -590,6 +730,15 @@ class CapturedReceiverExecution:
                 != self.intended_model_visible_sha256
             ):
                 raise ReceiverError("captured execution and capture visibility differ")
+            if self.capture.settings_sha256 != self.expected_settings_sha256:
+                raise ReceiverError(
+                    "captured execution and expected settings differ"
+                )
+            if (
+                self.capture.request_dispatched
+                and self.capture.model_id != self.expected_model_id
+            ):
+                raise ReceiverError("captured execution and expected model differ")
             request_value = request_preimage["request"]
             if (
                 type(request_value.get("mode")) is not str
@@ -635,7 +784,6 @@ class CapturedReceiverExecution:
                 self.reply is not None
                 or type(self.failure) is not str
                 or not self.failure
-                or self.usage_complete
             ):
                 raise ReceiverError("failed captured execution is inconsistent")
             if (
@@ -646,6 +794,12 @@ class CapturedReceiverExecution:
                 )
             ):
                 raise ReceiverError("failed execution has a non-failure capture")
+            if self.usage_complete is not (
+                False if self.capture is None else self.capture.usage_complete
+            ):
+                raise ReceiverError(
+                    "failed execution usage completeness differs from capture"
+                )
         elif not (
             self.capture is None
             and self.reply is None
@@ -662,6 +816,8 @@ class CapturedReceiverExecution:
             request_binding_sha256=self.request_binding_sha256,
             request_preimage_sha256=self.request_preimage_sha256,
             intended_model_visible_sha256=self.intended_model_visible_sha256,
+            expected_model_id=self.expected_model_id,
+            expected_settings_sha256=self.expected_settings_sha256,
             capture=self.capture,
             reply=self.reply,
             failure=self.failure,
@@ -694,6 +850,16 @@ class CapturedReceiverExecution:
             return None
         return self.capture.provider_total_tokens
 
+    @property
+    def adapter_calls(self) -> int:
+        self.validate()
+        return self.calls
+
+    @property
+    def provider_attempt_count(self) -> int | None:
+        self.validate()
+        return None if self.capture is None else self.capture.attempt_count
+
 
 def _execution(
     *,
@@ -702,6 +868,8 @@ def _execution(
     request_preimage_sha256: str,
     request_binding_sha256: str,
     intended_model_visible_sha256: str,
+    expected_model_id: str,
+    expected_settings_sha256: str,
     capture: ProviderRequestCapture | None,
     reply: ReceiverModelReply | None,
     failure: str | None,
@@ -715,6 +883,8 @@ def _execution(
         "request_preimage_json": request_preimage_json,
         "request_preimage_sha256": request_preimage_sha256,
         "intended_model_visible_sha256": intended_model_visible_sha256,
+        "expected_model_id": expected_model_id,
+        "expected_settings_sha256": expected_settings_sha256,
         "capture": capture,
         "reply": reply,
         "failure": failure,
@@ -868,6 +1038,8 @@ def execute_captured_receiver(
             request_preimage_sha256=request_preimage_sha,
             request_binding_sha256=request_binding,
             intended_model_visible_sha256=intended_model_visible_sha,
+            expected_model_id=expected_model_id,
+            expected_settings_sha256=expected_settings_sha256,
             capture=None,
             reply=None,
             failure=(
@@ -909,6 +1081,8 @@ def execute_captured_receiver(
             request_preimage_sha256=request_preimage_sha,
             request_binding_sha256=request_binding,
             intended_model_visible_sha256=intended_model_visible_sha,
+            expected_model_id=expected_model_id,
+            expected_settings_sha256=expected_settings_sha256,
             capture=None,
             reply=None,
             failure="captured-provider-evidence-invalid",
@@ -922,10 +1096,12 @@ def execute_captured_receiver(
             request_preimage_sha256=request_preimage_sha,
             request_binding_sha256=request_binding,
             intended_model_visible_sha256=intended_model_visible_sha,
+            expected_model_id=expected_model_id,
+            expected_settings_sha256=expected_settings_sha256,
             capture=capture,
             reply=None,
             failure=capture.failure_code,
-            usage_complete=False,
+            usage_complete=capture.usage_complete,
         )
     assert reply is not None
     if (
@@ -938,6 +1114,8 @@ def execute_captured_receiver(
             request_preimage_sha256=request_preimage_sha,
             request_binding_sha256=request_binding,
             intended_model_visible_sha256=intended_model_visible_sha,
+            expected_model_id=expected_model_id,
+            expected_settings_sha256=expected_settings_sha256,
             capture=capture,
             reply=reply,
             failure="receiver-token-budget-exceeded",
@@ -949,6 +1127,8 @@ def execute_captured_receiver(
         request_preimage_sha256=request_preimage_sha,
         request_binding_sha256=request_binding,
         intended_model_visible_sha256=intended_model_visible_sha,
+        expected_model_id=expected_model_id,
+        expected_settings_sha256=expected_settings_sha256,
         capture=capture,
         reply=reply,
         failure=None,

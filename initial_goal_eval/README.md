@@ -296,8 +296,9 @@ exists only for the action-state primary, not a raw/JSON runtime fallback.
 Plan `/2` now freezes the needed branch-slot superset before execution,
 including the five-route decision, optional sender/fidelity path, bounded
 fallback, and four judge slots. However, Program `/2` deliberately has no
-matching source-record, evidence-store, resolution, trace, or result schema. A
-future real runner must define that versioned receipt closure and bind
+claim-facing trace, receipt, or result schema. Its separate structural
+source-record/evidence-store/resolution closure and content-only runner remain
+unauthenticated. A future real runner must define the versioned receipt closure and bind
 authenticated provider, scorer, sandbox, and independent-operator chronology
 instead of downgrading Program `/2` into the legacy trace or treating this
 diagnostic wrapper as study evidence.
@@ -382,16 +383,90 @@ roles or slots, and exact session, arm, task, phase, component,
 request-deriver, implementation, model, and call-ceiling bindings are checked
 at every ingress. Program `/1` and `/2` have no automatic conversion path.
 
-This remains prerequisite plumbing, not a real study runner. The inline
-provider and local observations are self-issued commitments, not authenticated
-receipts. The new closure is intentionally outside the current verifier bundle
-lock and does not connect Plan `/2` to a Trace `/3`, Result `/2`, Receipt `/4`,
-or independently operated run; the current Trace `/2` and Result `/1` entry
-points still reject Plan `/2` rather than silently downgrading it. It therefore
-does not repair legacy Plan `/1`, change the demonstrated general saving from
-0%, or make any result claim-eligible. The next integration must bind an actual
-planned runner, exact provider captures, four judge captures, and authenticated
-receipt preimages before any claim path can open.
+[`program_v2_runtime_runner.py`](program_v2_runtime_runner.py) adds the next
+content-only execution seam. It accepts only an exact frozen Plan `/2`, derives
+the canonical Program `/2` and activation prefix before each slot, and binds
+every invoked adapter call to the plan, program, execution instance, session,
+arm, task, slot, implementation, request deriver, model, and settings. Local,
+provider, and failed-before-record captures retain their exact input, request,
+response, raw-receipt, usage, fact, and self-reported closed-effect preimages.
+Inactive slots never invoke the adapter or mint a zero-cost record. Hidden
+retry aggregates, cross-wired captures, callback-time Plan mutation, reused
+provider identities, and reused raw receipts within one returned runtime
+artifact fail closed. Cross-run freshness still requires an authenticated
+external reservation store and is not verified here. If a required capture or usage value is
+unknown, the content-bound total remains null. Later required judges are still
+attempted after an ordinary adapter exception retained as a
+failed-before-record event. Structurally invalid or cross-wired evidence aborts
+the run immediately instead of paying for more calls through a compromised
+capture path. An adapter exception also leaves every effect observation unknown;
+it is never rewritten into a fabricated all-false safety record.
+
+`four_judge_slots_recorded` means only that every required judge slot has an
+`executed-source` record. It can still include a timeout or provider error and
+does not imply a completed response or distinct parsed verdict. Program `/2`
+facts do not yet contain the judges' verdicts, so the field is not a
+correctness or safe-success result.
+`safely_completed` remains null and all provider, operator, sandbox,
+independence, goal-completeness, and claim authority remains false. The runner
+uses an injected adapter and carries no provider SDK or credentials; current
+tests use project-authored captures and make no model call.
+`capture_internal_binding_verified` means only that the supplied bytes and
+digests are self-consistent. `request_derivation_verified` and
+`raw_usage_normalization_verified` remain false: the runner neither proves that
+the frozen request-deriver produced those bytes nor independently parses a
+provider receipt into normalized usage.
+
+[`runtime_capture_bridge.py`](runtime_capture_bridge.py) adds a narrower,
+construction-only path for the exact captured compiler and direct receiver.
+Its two public builders accept no caller-supplied facts, usage, model, settings,
+or effect observations. They validate the factory-sealed execution, enforce the
+compiler/receiver component and raw/JSON/primary/fallback route boundary, and
+project the retained provider fields into typed request/outcome envelopes.
+Post-dispatch failures remain executed records. Complete billed usage maps into
+the generic Program `/2` usage object only when an exact raw receipt is also
+retained. Exact incomplete fields, and complete provider fields lacking that
+receipt, remain in the typed outcome envelope while the generic total stays
+unknown rather than being promoted to a verified complete cost.
+Before-dispatch failures remain eventless; retry aggregates are rejected.
+A typed factory `capture-rejected` status is structural evidence rejection, not
+an operational provider failure, and the bridge aborts instead of converting
+it into a continuable missing-capture record.
+A typed execution binding is an explicit content identity and cannot be reused
+by another invoked slot in the same runtime artifact, including when no
+provider request ID exists because dispatch never occurred. It is not an
+invocation nonce: two independently produced byte-identical executions have
+the same binding. Uninvoked and activation-unknown slots cannot carry one.
+Typed request, outcome, or failure schema markers also require that top-level
+identity, so removing it cannot downgrade a bridged artifact into an
+unreserved generic capture.
+A compiler fact is derived by strict output parsing and task-context validation
+when the context preimage is present. Receiver captures cannot be relabelled as
+any of the four judges, which still require their own typed role-separated
+capture and parsed-verdict layer.
+
+The bridge, both Python package initializers, and the full eager hybrid runtime
+source inventory are included in the Plan `/2` verifier-byte bundle. This does
+not raise authority: the final
+Program `/2` JSON retains an execution binding but not the private factory seal,
+so an untrusted serialized artifact cannot independently prove that it passed
+the bridge construction path. Provider authentication, frozen request-deriver
+execution, receipt-to-usage normalization, cross-run identity freshness, parsed
+judge verdicts, safe completion, and claim eligibility all remain unverified.
+
+Plan `/2` now binds a separately versioned verifier bundle that includes the
+Program `/2` structural closure, typed construction bridge, and runtime seam.
+The Plan `/1` file inventory
+remains separate, but both digests bind the exact bytes of the current checkout;
+an older frozen Plan `/1` still requires its historical verifier revision. This
+still does not connect Plan `/2` to Trace `/3`, Result
+`/2`, Receipt `/4`, parsed role-separated judge verdicts, provider
+authentication, or an independently operated run; current Trace `/2` and
+Result `/1` entry points continue to reject Plan `/2`. It therefore does not
+repair legacy Plan `/1`, change the demonstrated general saving from 0%, or
+make any result claim-eligible. The next integration must connect the actual
+stepwise hybrid runtime and direct receiver captures, then introduce the four
+new claim-facing schemas together rather than weakening legacy validators.
 
 ## Offline trace assembly
 

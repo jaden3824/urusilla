@@ -21,6 +21,13 @@ PLAN_SCHEMA_V2 = "urusilla-initial-goal-study-plan/2"
 RESULT_SCHEMA = "urusilla-initial-goal-study-result/1"
 SESSION_RESULT_SCHEMA = "urusilla-initial-goal-matched-session-result/1"
 FROZEN_METHOD_PATH = Path(__file__).with_name("frozen_method_plan.json")
+INITIAL_GOAL_PACKAGE_INIT = Path(__file__).with_name("__init__.py")
+HYBRID_RUNTIME_SOURCE_FILES = tuple(
+    sorted(
+        (Path(__file__).parents[1] / "urusilla_hybrid_runtime").glob("*.py"),
+        key=lambda path: path.name,
+    )
+)
 VERIFIER_BUNDLE_FILES = (
     Path(__file__),
     Path(__file__).with_name("authentication.py"),
@@ -30,6 +37,23 @@ VERIFIER_BUNDLE_FILES = (
     Path(__file__).with_name("receipt_store.py"),
     Path(__file__).with_name("execution_trace.py"),
     Path(__file__).with_name("execution_program.py"),
+    Path(__file__).with_name("verifier.py"),
+    FROZEN_METHOD_PATH,
+)
+VERIFIER_BUNDLE_FILES_V2 = (
+    Path(__file__),
+    INITIAL_GOAL_PACKAGE_INIT,
+    Path(__file__).with_name("authentication.py"),
+    Path(__file__).with_name("statistics.py"),
+    Path(__file__).with_name("terminal_contract.py"),
+    Path(__file__).with_name("provider_artifact_store.py"),
+    Path(__file__).with_name("receipt_store.py"),
+    Path(__file__).with_name("execution_trace.py"),
+    Path(__file__).with_name("execution_program.py"),
+    Path(__file__).with_name("execution_program_v2_evidence.py"),
+    Path(__file__).with_name("program_v2_runtime_runner.py"),
+    Path(__file__).with_name("runtime_capture_bridge.py"),
+    *HYBRID_RUNTIME_SOURCE_FILES,
     Path(__file__).with_name("verifier.py"),
     FROZEN_METHOD_PATH,
 )
@@ -111,12 +135,10 @@ def sha256_ref(value: Any) -> str:
     return "sha256:" + hashlib.sha256(raw).hexdigest()
 
 
-def verifier_bundle_sha256() -> str:
-    """Bind the exact independent contract, statistics, verifier, and method."""
-
+def _verifier_bundle_sha256(paths: Sequence[Path]) -> str:
     digest = hashlib.sha256()
     try:
-        for path in VERIFIER_BUNDLE_FILES:
+        for path in paths:
             name = path.name.encode("utf-8")
             content = path.read_bytes()
             digest.update(len(name).to_bytes(8, "big"))
@@ -126,6 +148,22 @@ def verifier_bundle_sha256() -> str:
     except OSError as exc:
         raise VerificationError(f"cannot hash verifier bundle: {exc}") from exc
     return "sha256:" + digest.hexdigest()
+
+
+def verifier_bundle_sha256() -> str:
+    """Bind the current Plan /1 verifier and frozen method file inventory.
+
+    This is a source-byte digest, not a stable release identifier.  A Plan /1
+    frozen against an earlier code revision requires that historical checkout.
+    """
+
+    return _verifier_bundle_sha256(VERIFIER_BUNDLE_FILES)
+
+
+def verifier_bundle_v2_sha256() -> str:
+    """Bind Plan /2 plus its structural evidence and content-only runner."""
+
+    return _verifier_bundle_sha256(VERIFIER_BUNDLE_FILES_V2)
 
 
 def plan_model_binding_sha256(model: Mapping[str, Any]) -> str:
@@ -571,7 +609,12 @@ def validate_study_plan(value: Any, method: Mapping[str, Any] | None = None) -> 
     )
     for key, item in locks.items():
         _sha(item, f"plan.artifact_locks.{key}")
-    if locks["evidence_verifier"] != verifier_bundle_sha256():
+    expected_verifier = (
+        verifier_bundle_v2_sha256()
+        if plan_schema == PLAN_SCHEMA_V2
+        else verifier_bundle_sha256()
+    )
+    if locks["evidence_verifier"] != expected_verifier:
         raise VerificationError("study plan does not bind this exact verifier bundle")
 
     sandbox_boundaries = _object(

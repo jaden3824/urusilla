@@ -10,14 +10,14 @@ the versioning section of the specification before comparing identifiers.
   the preflight route, action-state control decision, actual compiler and
   fidelity calls, and final route. The prepared execution binding includes the
   journal digest, so cross-wired or mutated route/compiler/fidelity artifacts
-  fail closed. A separate captured-receiver path requires exact role-separated
-  provider messages and an exact canonical reply preimage covering text,
-  usage, and prohibited-effect fields. It rejects prose rewriting, request or
-  reply substitution, post-return mutation, and completed calls with
-  aggregated retries; failures with incomplete per-attempt evidence keep usage
-  unknown. These records are caller supplied and unauthenticated, current tests
-  use project-authored adapters, and no provider result or performance claim is
-  added.
+  fail closed. Separate captured-compiler and captured-receiver paths require
+  exact role-separated provider messages and combined capture/reply chains
+  covering output, usage, and prohibited-effect fields. They reject prose or
+  role rewriting, request or reply substitution, post-return mutation, and
+  completed calls with aggregated retries; failures with incomplete
+  per-attempt evidence keep usage unknown. These records are caller supplied
+  and unauthenticated, current tests use project-authored adapters, and no
+  provider result or performance claim is added.
 - A separate Program `/2` structural-evidence closure now embeds and validates
   exact activation, observation, and failure preimages for every frozen branch
   slot, replays the closed activation predicates in canonical slot order, and
@@ -27,9 +27,43 @@ the versioning section of the specification before comparing identifiers.
   and failures before a source record retain unknown usage rather than a
   fabricated zero. This version cannot enter the legacy Program `/1` closure,
   and all plan, provider, operator, and claim authority stays false or null.
-  The records still contain unauthenticated local/provider commitments: no
-  Plan-`/2` runner, Trace `/3`, Result `/2`, Receipt `/4`, authenticated model
-  run, or new token-saving result exists.
+  A new content-only Plan `/2` runner now binds an execution instance and every
+  canonical slot request to the exact frozen plan, activation prefix,
+  implementation, request deriver, model/settings, request/response/raw
+  receipt preimages, and core usage fields. It makes no callback for inactive
+  slots, rejects cross-wire, mutation, retry aggregation, and provider-identity
+  replay within one runtime artifact, preserves unknown usage and unknown
+  effects on ordinary adapter failures, and continues later required judges.
+  Cross-run freshness still requires an external authenticated reservation
+  store. Structurally invalid evidence aborts immediately.
+  Plan `/2` uses a separately versioned verifier bundle including this
+  runner and the structural closure; Plan `/1` retains its own file inventory.
+  Both remain exact current-source digests, so an older frozen plan requires
+  its historical verifier checkout. The
+  adapter and captures remain unauthenticated. Only their internal byte/digest
+  binding is checked; frozen request derivation and raw-receipt usage
+  normalization remain explicitly unverified. Recorded judge slots do not yet
+  bind parsed verdicts. No Trace `/3`, Result `/2`, Receipt `/4`,
+  authenticated model run, safe-success verdict, or new token-saving result
+  exists.
+  A construction-only typed bridge now accepts exact factory-sealed compiler
+  and direct-receiver executions without any free-form model, settings, usage,
+  effects, or fact inputs. It enforces component and route boundaries, derives
+  compiler facts by strict parsing, preserves billed post-dispatch failures,
+  maps complete totals into the generic ledger only with an exact raw receipt,
+  and otherwise keeps exact typed usage while leaving the generic aggregate
+  total unknown. It rejects retry aggregates, bars receiver evidence from
+  judge slots, forbids typed identity on uninvoked activation-unknown slots,
+  and reserves each typed execution content binding once per runtime artifact
+  even when an invoked before-dispatch failure has no provider ID. The
+  validator binds typed envelope markers back to that top-level identity, so
+  stripping the identity cannot bypass the reservation path. The
+  bridge, both package initializers, and the full eager hybrid runtime Python
+  source inventory are part of the Plan `/2` verifier-byte bundle. A serialized
+  generic artifact still cannot prove that
+  it passed this construction path, so every authority boundary remains closed.
+  Factory `capture-rejected` executions are fatal structural evidence failures;
+  they are not downgraded into ordinary operational failure records.
 - The provider-neutral runtime/scorer diagnostic can now perform its own
   pre-outcome five-route preparation. It validates static scoring metadata
   before any receiver call, invokes the real runtime preparation once, requires

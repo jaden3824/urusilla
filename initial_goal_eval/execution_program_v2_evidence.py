@@ -373,6 +373,14 @@ def _validate_usage(
     total = usage["total_tokens"]
     if usage["usage_complete"] is not (total is not None):
         raise VerificationError(f"{path}.usage_complete differs from total")
+    if external and total is None:
+        if (
+            usage["reasoning_tokens"] is not None
+            or usage["reasoning_accounting"] not in (None, "not-reported")
+        ):
+            raise VerificationError(
+                f"{path} partial external usage cannot classify reasoning"
+            )
     if external and total is not None:
         input_tokens = usage["input_tokens"]
         output_tokens = usage["output_tokens"]

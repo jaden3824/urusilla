@@ -27,7 +27,8 @@ from urusilla_hybrid_runtime.task_context import PublicTaskContext
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SETTINGS_SHA256 = "sha256:" + "8" * 64
-RECEIPT_SHA256 = "sha256:" + "9" * 64
+RECEIPT_TEXT = '{"id":"response-001","status":"completed"}'
+RECEIPT_SHA256 = sha256_text(RECEIPT_TEXT)
 
 
 class StaticCapturedAdapter:
@@ -120,6 +121,7 @@ def _completed_capture(
         settings_sha256=SETTINGS_SHA256,
         provider_request_id="request-001",
         provider_response_id="response-001",
+        provider_terminal_status="completed",
         reply_preimage_sha256=receiver_model_reply_preimage_sha256(reply),
         attempt_count=1,
         retry_count=0,
@@ -129,6 +131,7 @@ def _completed_capture(
         reasoning_accounting=reply.reasoning_accounting,
         provider_total_tokens=capture_total,
         usage_complete=True,
+        raw_receipt_text=RECEIPT_TEXT,
         raw_receipt_sha256=RECEIPT_SHA256,
         failure_stage=None,
         failure_code=None,
@@ -154,6 +157,7 @@ def _transport_failure_capture(request) -> ProviderRequestCapture:
         settings_sha256=SETTINGS_SHA256,
         provider_request_id="request-failed",
         provider_response_id=None,
+        provider_terminal_status="timeout",
         reply_preimage_sha256=None,
         attempt_count=2,
         retry_count=1,
@@ -163,9 +167,80 @@ def _transport_failure_capture(request) -> ProviderRequestCapture:
         reasoning_accounting=None,
         provider_total_tokens=None,
         usage_complete=False,
+        raw_receipt_text=None,
         raw_receipt_sha256=None,
         failure_stage="transport",
         failure_code="provider-transport-failed",
+    )
+
+
+def _known_billed_failure_capture(request) -> ProviderRequestCapture:
+    receipt = '{"id":"request-failed","status":"provider_error"}'
+    return ProviderRequestCapture(
+        schema_version=PROVIDER_REQUEST_CAPTURE_SCHEMA,
+        status="failed",
+        request_binding_sha256=request.binding_sha256,
+        request_preimage_sha256=direct_receiver_request_preimage_sha256(request),
+        request_mode=request.mode,
+        request_dispatched=True,
+        transmitted_system_text=request.base_system_text,
+        transmitted_user_text=request.user_data_text,
+        transmitted_messages_sha256=provider_messages_sha256(
+            request.base_system_text,
+            request.user_data_text,
+        ),
+        intended_model_visible_sha256=sha256_text(request.model_visible_text),
+        model_id="model-a",
+        settings_sha256=SETTINGS_SHA256,
+        provider_request_id="request-failed",
+        provider_response_id="error-response-001",
+        provider_terminal_status="provider_error",
+        reply_preimage_sha256=None,
+        attempt_count=1,
+        retry_count=0,
+        input_tokens=10,
+        output_tokens=2,
+        reasoning_tokens=None,
+        reasoning_accounting="not-reported",
+        provider_total_tokens=12,
+        usage_complete=True,
+        raw_receipt_text=receipt,
+        raw_receipt_sha256=sha256_text(receipt),
+        failure_stage="provider",
+        failure_code="provider-call-failed",
+    )
+
+
+def _before_dispatch_failure_capture(request) -> ProviderRequestCapture:
+    return ProviderRequestCapture(
+        schema_version=PROVIDER_REQUEST_CAPTURE_SCHEMA,
+        status="failed",
+        request_binding_sha256=request.binding_sha256,
+        request_preimage_sha256=direct_receiver_request_preimage_sha256(request),
+        request_mode=request.mode,
+        request_dispatched=False,
+        transmitted_system_text=None,
+        transmitted_user_text=None,
+        transmitted_messages_sha256=None,
+        intended_model_visible_sha256=sha256_text(request.model_visible_text),
+        model_id=None,
+        settings_sha256=SETTINGS_SHA256,
+        provider_request_id=None,
+        provider_response_id=None,
+        provider_terminal_status=None,
+        reply_preimage_sha256=None,
+        attempt_count=0,
+        retry_count=0,
+        input_tokens=None,
+        output_tokens=None,
+        reasoning_tokens=None,
+        reasoning_accounting=None,
+        provider_total_tokens=None,
+        usage_complete=False,
+        raw_receipt_text=None,
+        raw_receipt_sha256=None,
+        failure_stage="before-dispatch",
+        failure_code="provider-request-not-dispatched",
     )
 
 
@@ -193,6 +268,8 @@ class CapturedReceiverTests(TestCase):
 
         self.assertEqual(execution.status, "completed")
         self.assertEqual(execution.total_tokens, 12)
+        self.assertEqual(execution.adapter_calls, 1)
+        self.assertEqual(execution.provider_attempt_count, 1)
         self.assertEqual(execution.capture.transmitted_system_text, request.base_system_text)
         self.assertEqual(execution.capture.transmitted_user_text, request.user_data_text)
         self.assertFalse(execution.provider_authenticity_verified)
@@ -306,8 +383,82 @@ class CapturedReceiverTests(TestCase):
         self.assertEqual(execution.status, "failed")
         self.assertEqual(execution.failure, "provider-transport-failed")
         self.assertEqual(execution.capture.attempt_count, 2)
+        self.assertEqual(execution.provider_attempt_count, 2)
         self.assertFalse(execution.usage_complete)
         self.assertIsNone(execution.total_tokens)
+
+    def test_failed_single_attempt_preserves_complete_billed_usage(self) -> None:
+        request = _request()
+        capture = _known_billed_failure_capture(request)
+
+        execution = self._execute(
+            request,
+            CapturedProviderResponse(capture=capture, reply=None),
+        )
+
+        self.assertEqual(execution.status, "failed")
+        self.assertTrue(execution.usage_complete)
+        self.assertEqual(execution.total_tokens, 12)
+        self.assertEqual(execution.provider_attempt_count, 1)
+        self.assertEqual(
+            execution.capture.provider_terminal_status,
+            "provider_error",
+        )
+
+    def test_failed_single_attempt_preserves_partial_usage_without_promoting_it(self) -> None:
+        request = _request()
+        capture = replace(
+            _known_billed_failure_capture(request),
+            output_tokens=None,
+            reasoning_accounting=None,
+            usage_complete=False,
+        )
+
+        execution = self._execute(
+            request,
+            CapturedProviderResponse(capture=capture, reply=None),
+        )
+
+        self.assertEqual(execution.status, "failed")
+        self.assertFalse(execution.usage_complete)
+        self.assertEqual(execution.capture.input_tokens, 10)
+        self.assertEqual(execution.capture.provider_total_tokens, 12)
+        self.assertIsNone(execution.total_tokens)
+
+    def test_before_dispatch_failure_keeps_terminal_receipt_and_usage_unknown(self) -> None:
+        request = _request()
+
+        execution = self._execute(
+            request,
+            CapturedProviderResponse(
+                capture=_before_dispatch_failure_capture(request),
+                reply=None,
+            ),
+        )
+
+        self.assertEqual(execution.status, "failed")
+        self.assertEqual(execution.provider_attempt_count, 0)
+        self.assertFalse(execution.usage_complete)
+        self.assertIsNone(execution.capture.provider_terminal_status)
+        self.assertIsNone(execution.capture.raw_receipt_text)
+        self.assertIsNone(execution.total_tokens)
+
+        with self.assertRaisesRegex(ReceiverError, "before-dispatch"):
+            replace(
+                _before_dispatch_failure_capture(request),
+                provider_total_tokens=1,
+            )
+
+    def test_raw_receipt_text_and_digest_must_match(self) -> None:
+        request = _request()
+        reply = _reply()
+        capture = _completed_capture(request, reply)
+
+        with self.assertRaisesRegex(ReceiverError, "receipt digest differs"):
+            replace(capture, raw_receipt_text="tampered receipt")
+
+        with self.assertRaisesRegex(ReceiverError, "without its exact text"):
+            replace(capture, raw_receipt_text=None)
 
     def test_completed_capture_rejects_retried_aggregate_usage(self) -> None:
         request = _request()
@@ -372,6 +523,46 @@ class CapturedReceiverTests(TestCase):
         with self.assertRaises(ReceiverError):
             _ = execution.total_tokens
 
+    def test_post_return_receipt_mutation_breaks_execution_validation(self) -> None:
+        request = _request()
+        reply = _reply()
+        execution = self._execute(
+            request,
+            CapturedProviderResponse(
+                capture=_completed_capture(request, reply),
+                reply=reply,
+            ),
+        )
+        assert execution.capture is not None
+        object.__setattr__(execution.capture, "raw_receipt_text", "mutated")
+
+        with self.assertRaisesRegex(ReceiverError, "receipt digest differs"):
+            execution.validate()
+
+    def test_expected_model_and_settings_mutation_breaks_validation(self) -> None:
+        request = _request()
+        reply = _reply()
+
+        for field_name, value, pattern in (
+            ("expected_model_id", "model-b", "expected model"),
+            (
+                "expected_settings_sha256",
+                "sha256:" + "7" * 64,
+                "expected settings",
+            ),
+        ):
+            with self.subTest(field_name=field_name):
+                execution = self._execute(
+                    request,
+                    CapturedProviderResponse(
+                        capture=_completed_capture(request, reply),
+                        reply=reply,
+                    ),
+                )
+                object.__setattr__(execution, field_name, value)
+                with self.assertRaisesRegex(ReceiverError, pattern):
+                    execution.validate()
+
     def test_post_return_execution_mutation_breaks_construction_seal(self) -> None:
         request = _request()
         reply = _reply()
@@ -432,6 +623,8 @@ class CapturedReceiverTests(TestCase):
 
         self.assertEqual(execution.status, "failed")
         self.assertEqual(execution.failure, "captured-adapter-call-failed")
+        self.assertEqual(execution.adapter_calls, 1)
+        self.assertIsNone(execution.provider_attempt_count)
         self.assertIsNone(execution.capture)
         self.assertIsNone(execution.total_tokens)
 

@@ -2,16 +2,19 @@
 
 The legacy program `/1` contract and its `/1` source-record/resolution closure
 remain unchanged.  Program `/2` freezes the complete Plan-v2 operation
-inventory, including four separate judge slots, but deliberately has no
-source-record or resolution schema yet.  It therefore cannot be downgraded
-into the legacy resolver or any current trace/result path.
+inventory, including four separate judge slots.  Its separate structural
+evidence closure lives in ``execution_program_v2_evidence.py`` and remains
+claim-ineligible; Program `/2` still cannot be downgraded into the legacy
+resolver or any current trace/result path.
 
 This module performs no call.  Hash consistency does not authenticate a
 provider, operator, or implementation and cannot make a result claim-eligible.
-The request, provider-record, local-observation, and failure digests inside a
-legacy source record remain opaque commitments; their underlying preimages and
-mutual bindings must be validated by a future receipt-store integration before
-any runner or claim path can consume the artifact.
+The request, provider-record, local-observation, and failure digests inside
+Program `/1` source records remain opaque commitments; their underlying
+preimages and mutual bindings must be validated by a receipt-store integration
+before any claim path can consume the artifact.  Program `/2` has a separate
+content-only runtime seam, but caller-supplied preimages do not authenticate
+their origin or establish a safe-success verdict.
 
 ``depends_on`` has one exact meaning: it lists prior slots whose dispositions or
 typed source facts are consumed by ``activation_predicate``. ``order_after`` is

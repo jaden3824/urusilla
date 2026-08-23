@@ -3,8 +3,12 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from pathlib import Path
+from tempfile import TemporaryDirectory
 import unittest
+from unittest.mock import patch
 
+import initial_goal_eval.contract as contract
 from initial_goal_eval.contract import (
     ARMS,
     PLAN_SCHEMA,
@@ -14,6 +18,8 @@ from initial_goal_eval.contract import (
     plan_v2_hybrid_request_deriver_sha256,
     sha256_ref,
     validate_study_plan,
+    verifier_bundle_sha256,
+    verifier_bundle_v2_sha256,
 )
 from initial_goal_eval.execution_program import (
     ARM_EXECUTION_PROGRAM_SCHEMA,
@@ -142,6 +148,7 @@ def build_synthetic_plan_v2() -> dict[str, object]:
     plan, _ = build_synthetic_fixture()
     plan = deepcopy(plan)
     plan["schema_version"] = PLAN_SCHEMA_V2
+    plan["artifact_locks"]["evidence_verifier"] = verifier_bundle_v2_sha256()
     model_by_family = {
         model["family"]: model for model in plan["receiver_models"]
     }
@@ -180,6 +187,46 @@ def build_synthetic_plan_v2() -> dict[str, object]:
 
 
 class PlanV2Tests(unittest.TestCase):
+    def test_plan_versions_bind_distinct_verifier_bundles(self) -> None:
+        plan_v1, _ = build_synthetic_fixture()
+        plan_v2 = build_synthetic_plan_v2()
+
+        self.assertEqual(
+            plan_v1["artifact_locks"]["evidence_verifier"],
+            verifier_bundle_sha256(),
+        )
+        self.assertEqual(
+            plan_v2["artifact_locks"]["evidence_verifier"],
+            verifier_bundle_v2_sha256(),
+        )
+        self.assertNotEqual(verifier_bundle_sha256(), verifier_bundle_v2_sha256())
+
+    def test_plan_v2_bundle_covers_package_import_semantics(self) -> None:
+        paths = set(contract.VERIFIER_BUNDLE_FILES_V2)
+        initial_goal_init = Path(contract.__file__).with_name("__init__.py")
+        runtime_dir = Path(contract.__file__).parents[1] / "urusilla_hybrid_runtime"
+        runtime_sources = set(runtime_dir.glob("*.py"))
+
+        self.assertIn(initial_goal_init, paths)
+        self.assertTrue(runtime_sources)
+        self.assertTrue(runtime_sources.issubset(paths))
+
+        baseline = verifier_bundle_v2_sha256()
+        target = runtime_dir / "__init__.py"
+        with TemporaryDirectory() as temporary_directory:
+            mutated = Path(temporary_directory) / target.name
+            mutated.write_bytes(target.read_bytes() + b" ")
+            patched_paths = tuple(
+                mutated if path == target else path
+                for path in contract.VERIFIER_BUNDLE_FILES_V2
+            )
+            with patch.object(
+                contract,
+                "VERIFIER_BUNDLE_FILES_V2",
+                patched_paths,
+            ):
+                self.assertNotEqual(baseline, verifier_bundle_v2_sha256())
+
     def test_plan_v2_inlines_every_canonical_program_preimage(self) -> None:
         plan = build_synthetic_plan_v2()
         summary = validate_study_plan(plan)

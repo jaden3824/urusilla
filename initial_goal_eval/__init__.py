@@ -18,6 +18,7 @@ from .contract import (
     sha256_ref,
     validate_study_plan,
     verifier_bundle_sha256,
+    verifier_bundle_v2_sha256,
 )
 from .receipt_store import (
     RECEIPT_BUNDLE_SCHEMA,
@@ -62,5 +63,6 @@ __all__ = [
     "sha256_ref",
     "validate_study_plan",
     "verifier_bundle_sha256",
+    "verifier_bundle_v2_sha256",
     "verify_result",
 ]

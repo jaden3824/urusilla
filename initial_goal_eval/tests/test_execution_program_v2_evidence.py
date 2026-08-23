@@ -384,6 +384,65 @@ class ProgramV2EvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(VerificationError, "usage must remain unknown"):
             validate_program_v2_evidence_store(tampered, program)
 
+    def test_partial_external_usage_cannot_classify_reasoning(self):
+        program = _baseline_program()
+        receiver = next(
+            slot for slot in program["slots"] if slot["component"] == "receiver"
+        )
+        setup = program["slots"][0]
+        setup_activation = derive_program_v2_activation_input(
+            program,
+            slot_id=setup["slot_id"],
+            prior_resolutions=[],
+            prior_records=[],
+        )
+        setup_record = build_program_v2_source_record(
+            program,
+            slot_id=setup["slot_id"],
+            record_kind="executed-source",
+            activation_input=setup_activation,
+            result_event_sequence=0,
+            local_observation_sha256=_digest("partial-setup-local"),
+            usage=_local_usage(),
+        )
+        setup_resolution = build_program_v2_resolution_item(
+            program,
+            slot_id=setup["slot_id"],
+            disposition="executed",
+            activation_input=setup_activation,
+            source_record=setup_record,
+        )
+        receiver_activation = derive_program_v2_activation_input(
+            program,
+            slot_id=receiver["slot_id"],
+            prior_resolutions=[setup_resolution],
+            prior_records=[setup_record],
+        )
+        impossible = {
+            "model_calls": 1,
+            "input_tokens": 1,
+            "output_tokens": 2,
+            "reasoning_tokens": 999,
+            "reasoning_accounting": "included-in-output",
+            "total_tokens": None,
+            "usage_complete": False,
+        }
+        with self.assertRaisesRegex(
+            VerificationError,
+            "partial external usage cannot classify reasoning",
+        ):
+            build_program_v2_source_record(
+                program,
+                slot_id=receiver["slot_id"],
+                record_kind="executed-source",
+                activation_input=receiver_activation,
+                result_event_sequence=1,
+                request_sha256=_digest("partial-request"),
+                provider_record_sha256=_digest("partial-provider"),
+                usage=impossible,
+                facts={"terminal_status": "provider_error"},
+            )
+
     def test_generic_noncanonical_program_v2_is_rejected_at_every_ingress(self):
         program = _hybrid_program()
         program["slots"][-1]["order_after"] = [program["slots"][0]["slot_id"]]
