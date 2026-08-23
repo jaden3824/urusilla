@@ -2690,6 +2690,7 @@ class HybridExecutionContractTests(TestCase):
         assert prepared.compilation is not None
         sibling = replace(
             prepared,
+            preparation_journal=None,
             compilation=replace(
                 prepared.compilation,
                 model_id="different-sender-model",

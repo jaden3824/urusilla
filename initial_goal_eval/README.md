@@ -350,10 +350,10 @@ usage event, and cannot be presented as a zero-token observation. Unknown
 predicate inputs fail closed rather than becoming a skipped branch. Canonical
 program and activation-input digests make post-result mutation detectable.
 
-The standalone evidence store validates the source-record preimages and binds
-them to the program, session, arm, task, slot, component, frozen
-implementation/model/request-deriver identities, and event order. The request,
-provider-record, local-observation, and failure digests carried inside those
+The standalone Program `/1` evidence store validates the source-record
+preimages and binds them to the program, session, arm, task, slot, component,
+frozen implementation/model/request-deriver identities, and event order. The
+request, provider-record, local-observation, and failure digests carried inside those
 records are still opaque commitments: this module does not embed their
 preimages or prove their request/response relationship. A fully resealed swap
 or fabrication of those underlying artifacts therefore remains possible until
@@ -370,13 +370,28 @@ of either baseline artifact therefore invalidates the hybrid program binding.
 Program `/1` does not accept this expanded inventory, while Program `/2` is
 explicitly barred from the `/1` source-record and resolution schemas.
 
-This remains prerequisite plumbing, not a real study runner. No current Trace
-`/3`, Program-`/2` source-record/resolution schema, provider capture journal, or
-independently operated run consumes Plan `/2`; the current Trace `/2` and Result
-`/1` entry points reject it rather than silently downgrading. It therefore does
-not repair legacy Plan `/1`, change the demonstrated general saving from 0%, or
-make any result claim-eligible. The next integration must introduce and audit
-the dedicated execution/evidence versions before external calls are enabled.
+[`execution_program_v2_evidence.py`](execution_program_v2_evidence.py) now
+provides a separate Program `/2` source-record, evidence-store, and resolution
+closure. Unlike the `/1` diagnostic, each record carries the canonical
+activation-input preimage plus one typed inline observation or failure
+preimage. Resolution replays every frozen predicate in canonical slot order.
+Executed slots require contiguous event sequences; inactive slots remain
+recordless and eventless; and a failure before any source record retains
+unknown usage instead of inventing a zero. Digests cannot be reused across
+roles or slots, and exact session, arm, task, phase, component,
+request-deriver, implementation, model, and call-ceiling bindings are checked
+at every ingress. Program `/1` and `/2` have no automatic conversion path.
+
+This remains prerequisite plumbing, not a real study runner. The inline
+provider and local observations are self-issued commitments, not authenticated
+receipts. The new closure is intentionally outside the current verifier bundle
+lock and does not connect Plan `/2` to a Trace `/3`, Result `/2`, Receipt `/4`,
+or independently operated run; the current Trace `/2` and Result `/1` entry
+points still reject Plan `/2` rather than silently downgrading it. It therefore
+does not repair legacy Plan `/1`, change the demonstrated general saving from
+0%, or make any result claim-eligible. The next integration must bind an actual
+planned runner, exact provider captures, four judge captures, and authenticated
+receipt preimages before any claim path can open.
 
 ## Offline trace assembly
 

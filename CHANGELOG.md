@@ -6,6 +6,30 @@ the versioning section of the specification before comparing identifiers.
 
 ## Unreleased
 
+- `prepare_message()` now emits a canonical, claim-ineligible chronology for
+  the preflight route, action-state control decision, actual compiler and
+  fidelity calls, and final route. The prepared execution binding includes the
+  journal digest, so cross-wired or mutated route/compiler/fidelity artifacts
+  fail closed. A separate captured-receiver path requires exact role-separated
+  provider messages and an exact canonical reply preimage covering text,
+  usage, and prohibited-effect fields. It rejects prose rewriting, request or
+  reply substitution, post-return mutation, and completed calls with
+  aggregated retries; failures with incomplete per-attempt evidence keep usage
+  unknown. These records are caller supplied and unauthenticated, current tests
+  use project-authored adapters, and no provider result or performance claim is
+  added.
+- A separate Program `/2` structural-evidence closure now embeds and validates
+  exact activation, observation, and failure preimages for every frozen branch
+  slot, replays the closed activation predicates in canonical slot order, and
+  rejects chronology changes, digest reuse across roles or slots, frozen
+  request/model/implementation drift, and coordinated resealing. Executed
+  slots require contiguous event sequences; inactive slots remain recordless,
+  and failures before a source record retain unknown usage rather than a
+  fabricated zero. This version cannot enter the legacy Program `/1` closure,
+  and all plan, provider, operator, and claim authority stays false or null.
+  The records still contain unauthenticated local/provider commitments: no
+  Plan-`/2` runner, Trace `/3`, Result `/2`, Receipt `/4`, authenticated model
+  run, or new token-saving result exists.
 - The provider-neutral runtime/scorer diagnostic can now perform its own
   pre-outcome five-route preparation. It validates static scoring metadata
   before any receiver call, invokes the real runtime preparation once, requires

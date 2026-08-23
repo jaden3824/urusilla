@@ -10,6 +10,10 @@ from typing import Callable, Mapping
 from .canonical import canonical_json, sha256_text, strict_json_loads
 from .errors import RoutingError
 from .fidelity import FidelityVerification, FidelityVerificationInput
+from .preparation_journal import (
+    PreparationJournal,
+    PreparationJournalRecorder,
+)
 from .records import Capsule
 from .receiver import (
     _execute_receiver_request,
@@ -494,6 +498,7 @@ class PreparedMessage:
     persistence_created: bool = False
     permission_expanded: bool = False
     spending_authority_created: bool = False
+    preparation_journal: PreparationJournal | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.route, RouteDecision):
@@ -509,6 +514,14 @@ class PreparedMessage:
             )
         ):
             raise ValueError("message preparation cannot create authority or effects")
+        if self.preparation_journal is not None:
+            if type(self.preparation_journal) is not PreparationJournal:
+                raise ValueError("prepared message journal type is invalid")
+            self.preparation_journal.assert_matches(
+                route=self.route,
+                compilation=self.compilation,
+                fidelity_verification=self.fidelity_verification,
+            )
         if self.compilation is None:
             if self.fidelity_verification is not None:
                 raise ValueError("fidelity verification requires a compilation")
@@ -610,6 +623,11 @@ class PreparedMessage:
                     "selected_mode": self.route.selected_mode,
                     "request_binding_sha256": request.binding_sha256,
                     "route_binding_sha256": self.route.binding_sha256,
+                    "preparation_journal_sha256": (
+                        self.preparation_journal.sha256
+                        if self.preparation_journal is not None
+                        else None
+                    ),
                     "compilation": (
                         None
                         if compilation is None
@@ -1412,30 +1430,70 @@ def prepare_message(
         silence_verifier=silence_verifier,
         routine_verifier=routine_verifier,
     )
+    preparation_journal = PreparationJournalRecorder(first)
     if first.selected_mode in {"silence", "routine"}:
-        return PreparedMessage(route=first, compilation=None)
+        preparation_journal.record_action_control(
+            "skip-action-state",
+            "preflight-terminal-route",
+        )
+        journal = preparation_journal.finish(first)
+        return PreparedMessage(
+            route=first,
+            compilation=None,
+            preparation_journal=journal,
+        )
 
     attempt_forecasts, attempt_evidence, _ = snapshot.materialize()
     action_evidence = attempt_evidence.get("action-state")
-    if compiler is None or fidelity_verifier is None or not should_attempt_action_state(
-        receiver,
-        capsule,
-        task_context,
-        action_evidence,
-        policy,
-        best_baseline_tokens=first.best_baseline_tokens,
-        forecast=attempt_forecasts.get("action-state", CostForecast()),
-        token_counter=token_counter,
-        evidence_verifier=utility_evidence_verifier,
-        capsule_comprehension_verifier=capsule_comprehension_verifier,
-        task_context_comprehension_verifier=task_context_comprehension_verifier,
-        surface_forecast=attempt_forecasts.get("action-state-surface"),
-        surface_table=surface_table,
-        active_surface=active_surface,
-        retained_surface=retained_surface,
-    ):
-        return PreparedMessage(route=first, compilation=None)
+    if compiler is None:
+        attempt_action_state = False
+        action_control_reason = "compiler-unavailable"
+    elif fidelity_verifier is None:
+        attempt_action_state = False
+        action_control_reason = "fidelity-verifier-unavailable"
+    else:
+        attempt_action_state = should_attempt_action_state(
+            receiver,
+            capsule,
+            task_context,
+            action_evidence,
+            policy,
+            best_baseline_tokens=first.best_baseline_tokens,
+            forecast=attempt_forecasts.get("action-state", CostForecast()),
+            token_counter=token_counter,
+            evidence_verifier=utility_evidence_verifier,
+            capsule_comprehension_verifier=capsule_comprehension_verifier,
+            task_context_comprehension_verifier=(
+                task_context_comprehension_verifier
+            ),
+            surface_forecast=attempt_forecasts.get("action-state-surface"),
+            surface_table=surface_table,
+            active_surface=active_surface,
+            retained_surface=retained_surface,
+        )
+        action_control_reason = (
+            "action-state-preflight-passed"
+            if attempt_action_state
+            else "action-state-preflight-rejected"
+        )
+    preparation_journal.record_action_control(
+        (
+            "attempt-action-state"
+            if attempt_action_state
+            else "skip-action-state"
+        ),
+        action_control_reason,
+    )
+    if not attempt_action_state:
+        journal = preparation_journal.finish(first)
+        return PreparedMessage(
+            route=first,
+            compilation=None,
+            preparation_journal=journal,
+        )
 
+    assert compiler is not None
+    assert fidelity_verifier is not None
     compilation = compile_natural_language(
         source_text,
         capsule,
@@ -1445,6 +1503,8 @@ def prepare_message(
         capsule_context_verifier=sender_context_verifier,
         maximum_total_tokens=policy.compiler_token_ceiling,
     )
+    preparation_journal.record_compiler(compilation)
+    preparation_journal.record_compiler_control(compilation)
     fidelity_verification: FidelityVerification | None = None
     if compilation.status == "ok" and compilation.compiled is not None:
         fidelity_input = FidelityVerificationInput(
@@ -1479,6 +1539,7 @@ def prepare_message(
                 total_tokens=None,
                 usage_complete=False,
             )
+        preparation_journal.record_fidelity(fidelity_verification)
     final_forecasts, final_evidence, final_routine = snapshot.materialize()
     final = plan_route(
         source_text,
@@ -1502,8 +1563,10 @@ def prepare_message(
         silence_verifier=silence_verifier,
         routine_verifier=routine_verifier,
     )
+    journal = preparation_journal.finish(final)
     return PreparedMessage(
         route=final,
         compilation=compilation,
         fidelity_verification=fidelity_verification,
+        preparation_journal=journal,
     )
