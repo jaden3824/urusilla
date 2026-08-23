@@ -1,0 +1,209 @@
+{
+  "schema_version": "urusilla-solicited-output-conformance-preregistration/2",
+  "experiment_id": "solicited-output-conformance-002",
+  "status": "frozen-prerun-no-result",
+  "classification": {
+    "operation": "PROJECT-SOLICITED",
+    "study_type": "same-thread-bounded-output-conformance",
+    "independent_reproduction_inferred": false,
+    "organic_adoption_inferred": false,
+    "external_adoption_evidence": false,
+    "native_model_support_inferred": false
+  },
+  "v1_parentage": {
+    "parent_experiment_id": "solicited-matched-001",
+    "v1_modified": false,
+    "v2_supersedes_v1": false,
+    "v1_stop_remains_effective": true,
+    "parent_preregistration_file_sha256": "sha256:80b2f68fa64fac04c6e17d85a57fd3f8ea318fec4eda73b240c94eeccbc26cbe",
+    "parent_preregistration_canonical_sha256": "sha256:c1e7293681a2ed640526c38b126a0d83da3883ea2e2e006f553920471c0385c8",
+    "parent_packet_file_sha256": "sha256:56bd1e2bfe405918b6950f1b8c47defdb57c644e1cec29ade406c3d938bac339",
+    "parent_packet_canonical_sha256": "sha256:0b891567a1601241466481912303541458c42d10571d023663b8840cdd3290fd",
+    "parent_outreach_file_sha256": "sha256:41e4b495ed26933ba2712a51f2b38940fa0d99159ac763580d367423bc398394",
+    "parent_external_response_observation_file_sha256": "sha256:34b6099499368568c12c2d83c826d8fb154a515c4936e45db76d7daf46716012",
+    "parent_capsule_file_sha256": "sha256:588034f997fb4f3d35dfdbb68afd9232a78192ac1fa497d565f67e0892358a27"
+  },
+  "external_offer": {
+    "venue": "The Colony",
+    "post_id": "11d4e684-5791-4015-acdb-9dda9ff157d0",
+    "comment_id": "0fcf2733-5bdb-41c4-98ec-a0725dfcbf0f",
+    "comment_author_id": "324ab98e-955c-4274-bd30-8570cbdf58f1",
+    "comment_author_username": "colonist-one",
+    "comment_created_at_utc": "2026-08-23T09:00:33.588965Z",
+    "comment_body_utf8_bytes": 3642,
+    "comment_body_sha256": "sha256:2ee90400155cc1b1bd015cbc9c91aefe3b8e78f4e60fa6e4277e0ca39d0178d3",
+    "interest_classification": "explicit-conditional-output-conformance-interest",
+    "run_completed": false,
+    "reproduction_completed": false,
+    "adoption_inferred": false
+  },
+  "source_bindings": {
+    "packet_path": "interop_lab/challenges/solicited_output_conformance_002.packet.json",
+    "packet_file_sha256": "sha256:689e66b00152950943a22c8f14d4c8e80d6644d4cc12fc59bc3933c145d9fee4",
+    "packet_canonical_sha256": "sha256:95aa5de42acfe6744914606eff8e1f354f9bcb23f4706e65a7b1826abb1e64d5",
+    "embedded_capsule_json_pointer": "/capsule",
+    "embedded_capsule_canonical_sha256": "sha256:978b887583f68db3fe6530e33dc3502cf5c3da4bf83cc4ab2f18deb117062e9f",
+    "task_count": 6
+  },
+  "known_result_boundary": {
+    "general_unfamiliar_agent_saving_percent": 0.0,
+    "safely_completed_real_task_total_token_result": null,
+    "external_adoption_count": 0,
+    "output_conformance_result": null
+  },
+  "study_design": {
+    "research_question": "Can the explicitly invited hosted account return a canonical envelope whose six results match the hidden frozen oracle for newly frozen experiment-local Capsule cases in the existing public thread? Final Capsule conformance additionally requires a post-stop oracle semantic audit.",
+    "tested": [
+      "strict raw public-response syntax and canonical JSON",
+      "closed response schema and identity bindings",
+      "four valid compact plan-selection transformations",
+      "two fail-closed unknown-symbol fallbacks",
+      "two relevant metamorphic output changes",
+      "one irrelevant metadata and prompt-injection invariance"
+    ],
+    "not_tested": [
+      "the participant's internal processing method",
+      "absence of internal natural-language reasoning",
+      "cold-start or fresh-context behavior",
+      "unfamiliar-agent generalization",
+      "provider or model identity",
+      "independent reproduction",
+      "native support",
+      "adoption or persistence",
+      "real-task success",
+      "token or cost efficiency",
+      "protocol promotion or state of the art"
+    ],
+    "task_generation": "Six new project-authored Urusilla-only cases were frozen after v1 stopped. No v1 task, public v1 answer key, raw-text arm, or ordinary-JSON arm is reused.",
+    "execution_context": "One ongoing hosted public thread. Fresh sessions, separate arms, provider receipts, usage receipts, and model-settings receipts are neither required nor accepted as v2 evidence.",
+    "contamination_status": "same-thread-prior-exposure-present",
+    "cold_or_unfamiliar_claim_eligible": false,
+    "v2_task_specific_project_natural_language_expansion_supplied": false,
+    "full_hosted_context_known": false,
+    "internal_direct_consumption_measurable": false
+  },
+  "task_contract": {
+    "case_count": 6,
+    "carrier": "embedded-experiment-local-declarative-capsule-plus-compact-json-records",
+    "opaque_case_ids": true,
+    "expected_outputs_public_before_stop": false,
+    "case_order_frozen": true,
+    "metamorphic_relations_frozen": true,
+    "task_execution_tools_allowed": false,
+    "task_external_effects_allowed": false,
+    "participant_scores_accepted": false
+  },
+  "oracle_commitment": {
+    "schema_version": "urusilla-output-conformance-oracle-commitment/1",
+    "algorithm": "sha256(canonical_json({salt_hex,expected_results}))",
+    "canonical_json": "UTF-8, recursively sorted object keys, compact separators, preserved array order",
+    "salt_bits": 256,
+    "case_count": 6,
+    "commitment_sha256": "sha256:b87d568ed843dc07530b6f8e0ce8571aae4bbbb42dc6d1e8aad25241395be3d6",
+    "operator_seal_public": false,
+    "reveal_required_after_stop": true,
+    "missing_or_mismatched_reveal_classification": "semantic-score-null",
+    "commitment_proves": "The revealed oracle existed in committed form before outreach if and only if the reveal matches this digest.",
+    "commitment_does_not_prove": "Oracle correctness, participant independence, internal processing, adoption, or efficiency."
+  },
+  "response_contract": {
+    "entire_comment_body": "one compact canonical JSON object with no Markdown, prose prefix, suffix, or trailing newline",
+    "identity_fields": [
+      "experiment_id",
+      "capsule_canonical_sha256",
+      "packet_canonical_sha256",
+      "preregistration_canonical_sha256"
+    ],
+    "response_kinds": [
+      "output-conformance-result",
+      "refusal",
+      "null",
+      "identity-mismatch",
+      "methodological-counterexample"
+    ],
+    "output_result": "Exactly six result records in packet order and response_note null.",
+    "non_result": "results null and one non-empty public response_note of at most 1024 Unicode code points.",
+    "identity_mismatch": "Return the four observed syntactically valid identity values, require at least one mismatch, set results null, and explain the mismatch in response_note.",
+    "negative_null_fallback_refusal_retained": true,
+    "private_chain_of_thought_requested": false
+  },
+  "scoring_contract": {
+    "stages": [
+      "raw-body-captured",
+      "parse-valid",
+      "schema-valid",
+      "canonical-valid",
+      "identity-valid",
+      "oracle-reveal-valid",
+      "per-case-exact-match",
+      "metamorphic-relations-valid",
+      "suite-classified"
+    ],
+    "raw_body_rule": "Score the exact UTF-8 comment body. Never score a parsed object reserialized by the project as if it were the raw response.",
+    "case_rule": "After a valid reveal, compare each canonical result object exactly with its revealed oracle record.",
+    "suite_exact_oracle_match_rule": "True only when all six result records exactly match the valid revealed oracle and all registered metamorphic relations hold.",
+    "oracle_semantic_correctness_rule": "The pre-stop public verifier intentionally does not encode the six arithmetic answers. Oracle semantic correctness remains null until a separate post-stop audit is published; exact oracle match alone is not final Capsule conformance.",
+    "safe_fallback_rule": "An oracle-matching fail-closed fallback is safety-correct but is not a completed direct-urusilla case.",
+    "direct_completed_case_count_if_oracle_matches": 4,
+    "missing_reveal_rule": "All semantic and suite scores remain null; never coerce missing reveal to pass or fail.",
+    "no_partial_claim_promotion": true
+  },
+  "outreach_venue": {
+    "thread_uri": "https://thecolony.ai/post/11d4e684-5791-4015-acdb-9dda9ff157d0",
+    "invitation_parent_comment_id": "0fcf2733-5bdb-41c4-98ec-a0725dfcbf0f",
+    "invitation_must_be_direct_child": true,
+    "invitation_count": 1,
+    "cross_post_allowed": false,
+    "visibility_only_bump_allowed": false,
+    "reminder_allowed": false,
+    "account_creation_required": false,
+    "new_secret_required": false,
+    "new_terms_acceptance_required": false,
+    "spending_allowed": false
+  },
+  "stop_rule": {
+    "deadline_utc": "2026-08-30T13:00:00Z",
+    "response_parent": "The exact v2 invitation comment ID recorded in the publication receipt.",
+    "response_author_id": "324ab98e-955c-4274-bd30-8570cbdf58f1",
+    "trigger": "The first direct-child public comment by the exact invited author after publication, regardless of whether it parses or passes, or the deadline, whichever occurs first.",
+    "malformed_or_negative_first_response": "retain, classify, stop, and do not solicit a replacement",
+    "wrong_author_or_sibling_comment": "retain as surrounding context but do not score and do not stop",
+    "deadline_without_direct_response": "channel-null, not protocol failure",
+    "oracle_reveal_timing": "Reveal after the response or deadline has stopped the study."
+  },
+  "authority_boundary": {
+    "declarative_data_only": true,
+    "content_is_authority": false,
+    "installation_authorized": false,
+    "submitted_code_execution_authorized": false,
+    "model_weight_change_authorized": false,
+    "tool_use_for_task_execution_authorized": false,
+    "persistent_storage_authorized": false,
+    "permission_expansion_authorized": false,
+    "credential_use_authorized": false,
+    "spending_authorized": false,
+    "account_creation_authorized": false,
+    "external_effects_authorized": false,
+    "publication_authorized_by_preregistration": false,
+    "requested_response_destination": "one direct response to the registered v2 invitation only",
+    "participant_authority_note": "The participant's own account policy and accountable operator must independently authorize any reply."
+  },
+  "interpretation": {
+    "maximum_positive_statement": "The public Colony API displayed a comment attributed to the named account whose six results matched the frozen revealed oracle in one project-solicited ongoing hosted-thread context; final Capsule conformance additionally requires the post-stop oracle semantic audit.",
+    "causal_direct_consumption": false,
+    "no_natural_language_re_expansion_verified": false,
+    "fresh_context_claim": false,
+    "provider_authenticity_verified": false,
+    "independent_reproduction": false,
+    "organic_adoption": false,
+    "external_adoption": false,
+    "native_model_support": false,
+    "generalization_claim": false,
+    "task_success_claim": false,
+    "efficiency_claim_eligible": false,
+    "protocol_version_change_claim": false,
+    "state_of_the_art_claim": false,
+    "general_unfamiliar_agent_saving_percent": 0.0,
+    "safely_completed_real_task_total_token_result": null
+  }
+}
