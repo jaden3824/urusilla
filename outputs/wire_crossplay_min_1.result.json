@@ -1,0 +1,200 @@
+{
+  "byte_accounting": {
+    "case_count": 5,
+    "json_framed_total_bytes": 6781,
+    "json_request_payload_bytes": 3955,
+    "json_response_payload_bytes": 2773,
+    "scope": "Local stdio byte accounting for these five fixed records only; no Base64, HTTP, TLS, token, latency, task-success, or energy claim.",
+    "stdio_framing": "4-byte input lengths; 4-byte counts; 1-byte output status plus 4-byte output lengths",
+    "wire_cold_framed_total_bytes": 5274,
+    "wire_cold_saved_vs_json_percent": 22.224,
+    "wire_profile_transfer_bytes_including_length": 1406,
+    "wire_request_payload_bytes": 2243,
+    "wire_response_payload_bytes": 1572,
+    "wire_warm_framed_total_bytes_excluding_profile": 3868,
+    "wire_warm_saved_vs_json_percent": 42.958
+  },
+  "cases": [
+    {
+      "body": {
+        "arguments": [
+          {
+            "selected": "route-alpha",
+            "total": 31
+          }
+        ],
+        "kind": "claim",
+        "predicate": "urn:urusilla:wire-crossplay:min:selection"
+      },
+      "case_id": "critical-a",
+      "json_request_bytes": 812,
+      "json_request_sha256": "32c7e29ae41c44628a0d4c906aad3112b0ff1a8028301e73a9d3160fa3c030a6",
+      "json_response_bytes": 557,
+      "json_response_sha256": "05858eff2cfc498880afa470eba29051ad1462a04bafd79a4f75d86458c4e8a3",
+      "request_id": "2852e437-d481-59f5-bc11-15fb63d3b2de",
+      "response_id": "66f27093-f34d-5a17-93b0-c99ff91a5a00",
+      "wire_request_bytes": 467,
+      "wire_request_sha256": "7a0622f9efdc101dc9aed7a00f1a5811e3cce0011117866660faba72c689b8bb",
+      "wire_response_bytes": 316,
+      "wire_response_sha256": "f2c0679041b614de19d13e22c4ad3a6bd00fd73a854bbbcc73a40d076b011e5e"
+    },
+    {
+      "body": {
+        "arguments": [
+          {
+            "selected": "route-beta",
+            "total": 31
+          }
+        ],
+        "kind": "claim",
+        "predicate": "urn:urusilla:wire-crossplay:min:selection"
+      },
+      "case_id": "critical-b",
+      "json_request_bytes": 812,
+      "json_request_sha256": "5954e10cdba9dbd0c467074238555167c0c8adab6e46f06c68b8f4def82d37e2",
+      "json_response_bytes": 556,
+      "json_response_sha256": "c4e6587150efa1d7b5cea39d1182e44c6179f0eb1eb600185910f41d00e03260",
+      "request_id": "bd1a4a6f-2146-5828-b0e6-fe0e1bf17724",
+      "response_id": "4516deae-cda4-5d31-a5d2-e89d3d1b769e",
+      "wire_request_bytes": 467,
+      "wire_request_sha256": "8b82113a19cd34395ac55c40e7f392c8180e4995cb757ee2f3355436245c34aa",
+      "wire_response_bytes": 315,
+      "wire_response_sha256": "a63fc87b6e148d59d114f800530d09d0abfead9caecf93891087f6b3ffd45abf"
+    },
+    {
+      "body": {
+        "arguments": [
+          {
+            "selected": "route-alpha",
+            "total": 31
+          }
+        ],
+        "kind": "claim",
+        "predicate": "urn:urusilla:wire-crossplay:min:selection"
+      },
+      "case_id": "inert-metadata",
+      "json_request_bytes": 827,
+      "json_request_sha256": "b10c31047412e3c5660f65a9a57daf4e47cb15495cc16f09b189a233cdae8975",
+      "json_response_bytes": 557,
+      "json_response_sha256": "f23a92331f3c50c6fa80bf409801c127006dfe1c7392e92a16735e8ce7f63190",
+      "request_id": "42f16033-070b-5efa-bb06-13fc99b86457",
+      "response_id": "835453d4-c8bc-5cf8-b742-3c7ccf36a619",
+      "wire_request_bytes": 482,
+      "wire_request_sha256": "09e83ddd95aeb0982d34e0c2340586f4b13ba1fe4481621ff42fe593305208bc",
+      "wire_response_bytes": 316,
+      "wire_response_sha256": "774026b3981e79061a85c19bea322bb49439a459a34468b24ad411f8b3d439ce"
+    },
+    {
+      "body": {
+        "arguments": [
+          {
+            "reason_code": "missing-branch"
+          }
+        ],
+        "kind": "claim",
+        "predicate": "urn:urusilla:wire-crossplay:min:fallback"
+      },
+      "case_id": "missing-branch",
+      "json_request_bytes": 803,
+      "json_request_sha256": "a44db5f45f554801eb91196e76067ac3d40aba4b7eb3aea5e23903c8c8501538",
+      "json_response_bytes": 551,
+      "json_response_sha256": "b3692aa66325a6ea4f71b5191b00d79c1524ec6f10e053e08550f061b45332bc",
+      "request_id": "a4b5950f-b6bd-5d34-8187-dd7600511709",
+      "response_id": "334b9f48-d1f9-5b2d-91a2-b4e8bde5d56f",
+      "wire_request_bytes": 460,
+      "wire_request_sha256": "5535f957eda8721aa2d1374b23ce978d3a9f998ef262d3758f3a7d1f4e0219ab",
+      "wire_response_bytes": 312,
+      "wire_response_sha256": "21e84d9b31e65a100f09bb812f05f6411b405a87afc8684d1e405d91c1dbc912"
+    },
+    {
+      "body": {
+        "arguments": [
+          {
+            "reason_code": "missing-payload"
+          }
+        ],
+        "kind": "claim",
+        "predicate": "urn:urusilla:wire-crossplay:min:fallback"
+      },
+      "case_id": "no-payload",
+      "json_request_bytes": 701,
+      "json_request_sha256": "988d82258dcf19051933ba5bc862909961f0d706bc11ee393bda974e29da17f5",
+      "json_response_bytes": 552,
+      "json_response_sha256": "cb183d7fda50ee58020957ff8bd50cacc951acdd3b53c2cc661f23c13b662133",
+      "request_id": "d4d74e09-e15c-5fee-b422-e3379a757da0",
+      "response_id": "0d869523-d048-59cb-94da-bbb6e3a94a18",
+      "wire_request_bytes": 367,
+      "wire_request_sha256": "ee019b9a10dbaba06221527fe1f9c3313c81cf78fbf68732a7fecc9f26caa9dd",
+      "wire_response_bytes": 313,
+      "wire_response_sha256": "b28914d547a86e6f80b751e940c3ef80fa9311db721bd80261dd40c0e7b32b0a"
+    }
+  ],
+  "claim_boundary": "This run proves only same-project Python/Node raw-wire exchange, exact canonical semantic agreement, observable task-field dependence, bounded fallbacks, and two fail-closed decoder controls. It is not an external or clean-room reproduction, model-native language use, causal-agent-use proof, authentication, replay protection, adoption, standardization, security certification, or end-to-end efficiency evidence.",
+  "classification": "same-project-cross-runtime-raw-wire-structural-and-observable-task-dependence",
+  "date": "2026-08-28",
+  "experiment_id": "WIRE-CROSSPLAY-MIN-1",
+  "format": "urusilla-wire-crossplay-min-result/1",
+  "functional_gates": {
+    "byte_echo_rejected": true,
+    "canonical_reencode": true,
+    "corruption_rejected_before_reply": true,
+    "external_effect_authority": false,
+    "inert_field_invariance": true,
+    "missing_branch_fallback": true,
+    "no_payload_fallback": true,
+    "node_to_python_raw_wire": true,
+    "python_to_node_raw_wire": true,
+    "task_critical_a_b_flip": true,
+    "unique_reply_binding": true,
+    "unknown_profile_rejected_before_reply": true,
+    "wire_json_semantic_identity": true
+  },
+  "implementation_sources": [
+    {
+      "path": "tools/run_wire_crossplay_min_1.py",
+      "sha256": "854fa1439a94300fcf33f8fcf493197c8c168a5a51aba8219c3456cb44d06d9d"
+    },
+    {
+      "path": "independent_impl/rust/tools/wire_crossplay_min_1_responder.mjs",
+      "sha256": "b15b98721660e390cb518c7af8e31ebbfac785b8b1e9bbb4f76d2664eb65e6ee"
+    }
+  ],
+  "negative_controls": {
+    "input_stream_bytes": 2352,
+    "output_stream_bytes": 37,
+    "records": [
+      {
+        "case_id": "corrupted-checksum",
+        "input_bytes": 467,
+        "input_sha256": "9625ec27ce46c2338a668877242931cd9add337b5487b304611a8475483be2d1",
+        "rejection_code": "checksum"
+      },
+      {
+        "case_id": "unknown-profile",
+        "input_bytes": 467,
+        "input_sha256": "d748d098831ddbf6ac7cad14e576942943d69cf5db22e81cab74788bf645943a",
+        "rejection_code": "unknown_profile"
+      }
+    ],
+    "reply_frames_emitted": 0
+  },
+  "protocol": {
+    "base64_used": false,
+    "profile_capsule_bytes": 1402,
+    "profile_capsule_sha256": "b8d2cee7827f57e9c1b523cb195fbb75f3a91f8ad20e7a2f5209ce3abf63cdf6",
+    "profile_dictionary_id_hex": "7d12fc414eae60b2",
+    "profile_id": 1,
+    "semantic_contract": "UrusillaIR 0.1.0",
+    "transport": "raw bytes over local length-prefixed stdio",
+    "wire_codec": "experimental UrusillaWire v0.2 static profile"
+  },
+  "runtime": {
+    "github_actions_runs": 0,
+    "model_calls": 0,
+    "network_calls_by_harness": 0,
+    "node": "v25.9.0",
+    "provider_calls": 0,
+    "python": "3.14.7"
+  },
+  "source_parent_revision": "861d71b36419db5e2e1b558e9bf6326a5ae78289"
+}
