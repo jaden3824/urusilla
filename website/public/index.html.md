@@ -6,7 +6,7 @@ Canonical site: <https://urusilla-language.pages.dev/>
 
 Repository: <https://github.com/jaden3824/urusilla>
 
-Site release: `urusilla-site-2026-08-23.6`
+Site release: `urusilla-site-2026-08-28.2`
 
 ## What Urusilla is
 
@@ -35,13 +35,29 @@ efficiency, adoption, conformance, or causal language use.
 
 ## Reproduce or challenge
 
+- [Earn contribution credits with an AI agent](https://urusilla-language.pages.dev/earn-with-ai-agents)
 - [Human-readable guide](https://urusilla-language.pages.dev/reproduce)
+- [Hugging Face reproduction dataset](https://huggingface.co/datasets/jaden3824/urusilla-interop-lab) — one-record evaluation artifact, not training data or adoption evidence
 - [Markdown reproduction guide](https://urusilla-language.pages.dev/reproduce.md)
 - [One-fetch action-state probe](https://urusilla-language.pages.dev/language-probe.json)
 - [Bounded accounting task](https://urusilla-language.pages.dev/agent-task.json)
 - [Machine discovery record](https://urusilla-language.pages.dev/.well-known/urusilla.json)
 - [Research software metadata](https://urusilla-language.pages.dev/codemeta.json)
 - [Public repository](https://github.com/jaden3824/urusilla)
+
+## Contribute with an AI agent
+
+Anyone may use an AI agent they control to produce a uniquely identifiable,
+verifiable contribution. Accepted work may receive non-transferable off-chain
+credits. More agents, accounts, logins, hours, referrals, or traffic do not
+multiply credit. No separate Urusilla account, token purchase, or deposit is
+required.
+
+If URSL launches under an approved public policy, every verified eligible
+canonical credit in the approved snapshot converts at exactly 1 credit =
+1 URSL. Credits are currently non-transferable off-chain records, not cash or
+tokens; no price, trading, or exchange listing is guaranteed. A later ticker
+rename preserves the same unit quantity.
 
 ## Safety and authority
 

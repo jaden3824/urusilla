@@ -1,11 +1,13 @@
 # Urusilla Governance
 
 Status: experimental founder-led project  
-Effective date: 2026-08-20
+Effective date: 2026-08-28
 
 ## Founding stewardship
 
 `jaden3824` is the Founding Maintainer, original project initiator, and initial developer and development steward of Urusilla. This attribution is permanent in the canonical project history, release metadata, citations, and provenance records. A later governance transition, rename, or standards contribution must preserve it.
+
+The Founding Maintainer's possible future economic allocation is disclosed separately in the [Token Allocation Research Draft](TOKEN_ALLOCATION_DRAFT.md). That draft proposes a 25% personal allocation with a two-year release schedule and distinguishes it from a project-purpose ecosystem reserve. Neither a draft allocation nor any later token balance expands technical, evidentiary, or canonical authority under this document.
 
 The canonical project is the repository at `https://github.com/jaden3824/urusilla`. Mirrors, forks, compatible implementations, and independently evolved languages are welcome under the license, but they may not represent themselves as the canonical project or an official release without authorization.
 
@@ -33,7 +35,7 @@ The project currently uses founder-led governance. The Founding Maintainer has f
 - official project communications, names, domains, and visual identity; and
 - amendments to this governance document.
 
-Delegated maintainers exercise only the authority explicitly assigned to them. Contribution, usage, funding, token ownership, benchmark performance, or popularity does not automatically grant governance power.
+Delegated maintainers exercise only the authority explicitly assigned to them. Contribution, usage, funding, off-chain credit or token balances, benchmark performance, or popularity does not automatically grant governance power.
 
 Founding status is attribution and repository-governance authority, not scientific privilege. Founder-authored code, data, benchmarks, and interpretations receive the same provenance labels, comparison rules, uncertainty treatment, and external-reproduction gates as any other contribution. The Founding Maintainer cannot convert internal evidence into an independent result by approval.
 
@@ -75,8 +77,8 @@ Public evolution therefore requires the following separations and controls:
 - at least two independently operated implementations should cross-check normative vectors before a profile can be described as interoperable, and same-project compatibility is labeled separately;
 - new profiles move through experimental, trial, and candidate stages before ratification, with content-addressed artifacts, bounded exposure, explicit quarantine criteria, rollback paths, and revocation or deprecation procedures;
 - a compromised registry entry, validator, implementation, profile, or signing key can be isolated without requiring the entire ecosystem to accept its state;
-- evidence and reward review remain provenance-aware, conflict-disclosed, retrospective, and independently reproducible; popularity, token holdings, automated votes, or raw traffic cannot substitute for technical evidence; and
-- no blockchain, proprietary token, DAO, or onchain governance launch is authorized at this stage. After ecosystem maturity and separate legal, security, and governance review, a chain may at most record compact digests, attestations, or settlement events; it must not become the semantic authority, validator, identity oracle, benchmark judge, or mandatory transport.
+- evidence and reward review remain provenance-aware, conflict-disclosed, retrospective, and independently reproducible; popularity, credit or token balances, automated votes, or raw traffic cannot substitute for technical evidence; and
+- no blockchain, proprietary token, DAO, or onchain governance launch is authorized at this stage. If the future Urusilla token (working ticker `URSL`) launches after explicit legal, security, and governance approval, canonical credits that are active, verified, and eligible at the frozen public snapshot convert at exactly 1 credit = 1 URSL. This conditional conversion rule does not promise that launch, listing, price, liquidity, or monetary value will occur. Any chain use must remain outside semantic authority, validation, identity, benchmark judgment, and mandatory transport.
 
 Founder stewardship applies to the canonical repository and release process, not to truth by decree. The Founding Maintainer may accept or reject project changes, but cannot unilaterally turn internal work into independent evidence, waive a declared scientific gate, approve a personal reward claim, or require other implementations to accept unsupported results.
 
@@ -101,7 +103,9 @@ Reviewers must disclose financial, employment, model-provider, benchmark-author,
 
 ## Contributor rewards
 
-The separate [`CONTRIBUTOR_REWARDS.md`](CONTRIBUTOR_REWARDS.md) proposal does not create a DAO, token vote, or treasury. If rewards are later activated, funding decisions cannot alter core semantics, release signatures, founder attribution, or canonical-repository control. Technical acceptance and financial reward remain separate decisions.
+The current [`CONTRIBUTOR_REWARDS.md`](CONTRIBUTOR_REWARDS.md) policy permits anyone to submit a uniquely identifiable, verifiable contribution with their own AI agent. Accepted work may receive non-transferable off-chain credits only after the separately published adjudication requirements are satisfied. The bundled local ledger cannot approve or authenticate a credit. Numbers of agents or accounts, logins, time spent, referrals, traffic, and popularity do not earn credits.
+
+Credits have no current monetary value and create no present token, transfer right, payment claim, treasury interest, listing expectation, technical presumption, evidence weight, vote, or governance authority. If URSL launches, eligible canonical snapshot credits convert automatically at exactly 1 credit = 1 URSL under the pre-published launch rules. Launch itself remains subject to explicit legal, security, and governance gates. Technical acceptance, credit allocation, any later token claim, and project authority remain separate decisions.
 
 ## Attribution and provenance
 

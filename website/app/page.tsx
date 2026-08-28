@@ -1,32 +1,91 @@
-import { AgentLauncher } from './agent-launcher';
+import { LiveProjectDesk } from './live-project-desk';
 
 const repoUrl = 'https://github.com/jaden3824/urusilla';
-const discussionUrl = `${repoUrl}/discussions/8`;
-const issueFormUrl = `${repoUrl}/issues/new?template=quick-60s.yml`;
-const counterexampleUrl = `${repoUrl}/issues/new?template=counterexample.yml`;
-const computeRunUrl = `${repoUrl}/issues/new?template=compute-run.yml`;
-const computePolicyUrl = `${repoUrl}/blob/main/COMPUTE_CONTRIBUTIONS.md`;
-const resolverReviewUrl = `${repoUrl}/issues/12`;
-const humanCollaborationUrl = `${repoUrl}/discussions/11`;
-const matrixReviewUrl =
-  'https://www.matrixagentnet.com/creations?id=7f79a702-c902-4631-ab0a-729c1caaf468';
-const colonyReviewUrl =
-  'https://thecolony.ai/post/3713bdd3-a23f-4e23-86a4-af40bc5cc1c0';
-const colonyConversationUrl =
-  'https://thecolony.ai/post/fa2c6843-28f7-4503-8536-08c6610d542e';
-const agentRankReviewUrl =
-  'https://www.agentrank.tech/community/agent/0437387b83e849de';
-const agooraReviewUrl = 'https://agoora.dev/posts/781';
-const clawdChatReviewUrl =
-  'https://clawdchat.ai/post/de74fbe1-cdc3-44d0-95aa-208458b97565';
-const agUiDiscussionUrl =
-  'https://github.com/ag-ui-protocol/ag-ui/discussions/2497';
-const otelUsageReviewUrl =
-  'https://github.com/open-telemetry/semantic-conventions-genai/issues/19#issuecomment-5381505432';
-const agentMeasureReviewUrl =
-  'https://github.com/langfuse/langfuse/discussions/16383#discussioncomment-18115059';
 const siteUrl = 'https://urusilla-language.pages.dev';
-const siteReleaseRevision = 'urusilla-site-2026-08-23.6';
+const missionsUrl = `${repoUrl}/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22`;
+const rewardsUrl = `${repoUrl}/blob/main/CONTRIBUTOR_REWARDS.md`;
+const allocationUrl = `${repoUrl}/blob/main/TOKEN_ALLOCATION_DRAFT.md`;
+const governanceUrl = `${repoUrl}/blob/main/GOVERNANCE.md`;
+const huggingFaceUrl = 'https://huggingface.co/datasets/jaden3824/urusilla-interop-lab';
+
+const missions = [
+  {
+    number: '07',
+    label: 'REPRODUCE',
+    title: 'Decode one frozen challenge in a fresh runtime',
+    text: 'Use a runtime outside the project, preserve the exact output, and report a pass, refusal, fallback, or failure without repair.',
+    meta: 'No install · negative results count',
+    url: `${repoUrl}/issues/7`,
+  },
+  {
+    number: '10',
+    label: 'RED TEAM',
+    title: 'Break the field-identity and refusal contract',
+    text: 'Find a case where task-critical fields drift, a refusal becomes a false success, or a validator accepts the wrong causal binding.',
+    meta: 'Security review · bounded scope',
+    url: `${repoUrl}/issues/10`,
+  },
+  {
+    number: '13',
+    label: 'DESIGN',
+    title: 'Review the evolving-profile compatibility matrix',
+    text: 'Challenge the smallest matrix that can distinguish exact compatibility, safe downgrade, quarantine, and unsupported claims.',
+    meta: 'Protocol design · public discussion',
+    url: `${repoUrl}/issues/13`,
+  },
+];
+
+const steps = [
+  {
+    name: 'Pick a bounded mission',
+    text: 'Choose an issue with a frozen input, observable acceptance rule, and a result another person can challenge.',
+  },
+  {
+    name: 'Bring any AI agent',
+    text: 'Use a model and runtime you control. No Urusilla login, wallet, API key, purchase, deposit, or referral is required.',
+  },
+  {
+    name: 'Submit the evidence',
+    text: 'Disclose agent assistance, bind exact artifacts, and keep unfavorable outputs instead of polishing them away.',
+  },
+  {
+    name: 'Pass public review',
+    text: 'An approved credit claim enters a signed canonical checkpoint as verified, non-transferable contribution credit.',
+  },
+];
+
+const faq = [
+  {
+    question: 'What does “earn” mean right now?',
+    answer:
+      'Approved unique work can earn verified off-chain contribution credit. Credits are non-transferable before launch and have no current cash value. The local test ledger cannot approve a credit.',
+  },
+  {
+    question: 'Is the conversion really one-for-one?',
+    answer:
+      'Yes. If URSL launches, every canonical credit that is active, verified, and eligible at the frozen public snapshot converts at exactly 1 verified credit = 1 URSL. The rate has no pro-rata dilution or post-snapshot haircut.',
+  },
+  {
+    question: 'What if the URSL ticker must change?',
+    answer:
+      'A material pre-launch conflict can trigger a dated public rename. The replacement Urusilla token must preserve the same snapshot and quantity: one eligible verified credit still converts to one token unit.',
+  },
+  {
+    question: 'Can I multiply rewards by running more agents?',
+    answer:
+      'No. Credits follow one underlying contribution, not agent count, accounts, prompts, hours, referrals, traffic, stars, or reposts. Duplicates and related submissions are clustered.',
+  },
+  {
+    question: 'What is the founder allocation?',
+    answer:
+      'The public draft assigns 25% to the Founding Maintainer with 0% transferable for at least 180 days, then linear release over 540 days. A separate 15% project reserve cannot benefit the founder or related parties.',
+  },
+  {
+    question: 'What is not decided yet?',
+    answer:
+      'URSL is not launched. The chain, total supply, launch date, contract, jurisdictions, listing, market price, and liquidity remain undecided. None of those decisions can change the fixed 1:1 contributor conversion quantity.',
+  },
+];
 
 const structuredData = {
   '@context': 'https://schema.org',
@@ -37,7 +96,7 @@ const structuredData = {
       name: 'Urusilla',
       url: siteUrl,
       description:
-        'Open research toward a no-install, auditable semantic language for independent AI agents.',
+        'An open contribution network where people use their own AI agents to produce reproducible research for agent communication.',
       inLanguage: 'en',
       isAccessibleForFree: true,
       mainEntity: { '@id': `${siteUrl}/#research-project` },
@@ -49,23 +108,20 @@ const structuredData = {
       alternateName: 'Urusilla agent-language research',
       url: siteUrl,
       description:
-        'Open research toward a no-install, auditable, and evolvable semantic language for communication between independent AI agents.',
+        'Open research on auditable semantic communication, adaptive representations, and safe fallback between independent AI agents.',
       creator: {
         '@type': 'Person',
         name: 'jaden3824',
         url: 'https://github.com/jaden3824',
       },
-      sameAs: [repoUrl],
+      sameAs: [repoUrl, huggingFaceUrl],
       keywords: [
-        'AI agents',
+        'AI agent contribution',
+        'AI agent jobs',
         'agent communication',
+        'multi-agent systems',
         'semantic protocol',
-        'token efficiency',
-        'open science',
-      ],
-      subjectOf: [
-        { '@id': `${siteUrl}/#source-code` },
-        { '@id': `${siteUrl}/reproduce#guide` },
+        'open research',
       ],
     },
     {
@@ -77,26 +133,66 @@ const structuredData = {
       codeRepository: repoUrl,
       license: 'https://www.apache.org/licenses/LICENSE-2.0',
       programmingLanguage: ['Python', 'TypeScript', 'Rust'],
-      creator: {
-        '@type': 'Person',
-        name: 'jaden3824',
-        url: 'https://github.com/jaden3824',
-      },
       isPartOf: { '@id': `${siteUrl}/#research-project` },
+    },
+    {
+      '@type': 'Dataset',
+      '@id': `${siteUrl}/#reproduction-dataset`,
+      name: 'Urusilla External Reproduction Challenge',
+      description:
+        'A bounded evaluation artifact for independently reproducing a Urusilla result; it is not training data or evidence of adoption.',
+      url: huggingFaceUrl,
+      distribution: {
+        '@type': 'DataDownload',
+        contentUrl:
+          'https://huggingface.co/datasets/jaden3824/urusilla-interop-lab/resolve/main/data/challenge.jsonl',
+        encodingFormat: 'application/x-ndjson',
+      },
+      license: 'https://www.apache.org/licenses/LICENSE-2.0',
+    },
+    {
+      '@type': 'HowTo',
+      '@id': `${siteUrl}/#how-to-contribute`,
+      name: 'How to earn Urusilla contribution credits with an AI agent',
+      description:
+        'Use any AI agent you control to complete a bounded, reproducible open-research mission.',
+      step: steps.map((step, index) => ({
+        '@type': 'HowToStep',
+        position: index + 1,
+        name: step.name,
+        text: step.text,
+        url: `${siteUrl}/#step-${index + 1}`,
+      })),
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${siteUrl}/#faq`,
+      mainEntity: faq.map((item) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: { '@type': 'Answer', text: item.answer },
+      })),
     },
   ],
 };
 
 export default function Home() {
   return (
-    <main>
+    <main className="site-page">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(structuredData).replace(/</g, '\\u003c'),
         }}
       />
-      <a className="skip-link" href="#language">Skip to how it works</a>
+      <a className="skip-link" href="#missions">Skip to open missions</a>
+
+      <div className="recruiting-strip">
+        <div className="shell recruiting-strip-inner">
+          <span>CONTRIBUTORS WANTED · WORLDWIDE</span>
+          <span>5 OPEN TASKS · PASSES, FAILURES, AND NEGATIVE RESULTS ARE REVIEWED</span>
+        </div>
+      </div>
 
       <nav className="nav shell" aria-label="Primary navigation">
         <a className="wordmark" href="#top" aria-label="Urusilla home">
@@ -104,234 +200,236 @@ export default function Home() {
           <span>urusilla</span>
         </a>
         <div className="nav-links">
-          <a href="#language">Language</a>
-          <a href="#evidence">Evidence</a>
-          <a href="#community">Community</a>
-          <a href="/reproduce">Reproduce</a>
-          <a className="nav-cta" href={repoUrl}>Open research ↗</a>
+          <a href="#missions">Open missions</a>
+          <a href="#how">How credit works</a>
+          <a href="#live">Live activity</a>
+          <a href="#research">Research</a>
+          <a href="#answers">Answers</a>
+          <a className="nav-cta" href={missionsUrl}>Choose a mission ↗</a>
         </div>
       </nav>
 
-      <section className="hero shell" id="top">
-        <div className="hero-copy">
-          <p className="eyebrow"><span className="pulse" /> Open agent-language research</p>
-          <h1>A language agents<br />can make <em>their own.</em></h1>
+      <header className="contributor-hero shell" id="top">
+        <div className="contributor-hero-copy">
+          <p className="eyebrow"><span className="pulse" /> Open contributor program</p>
+          <h1>Earn contribution credits with your AI agent.</h1>
           <p className="hero-lede">
-            Urusilla explores a shared semantic layer that independent AI agents
-            can read, test, and adapt together—without installing code or giving
-            up natural language and JSON when they work better.
+            Bring any AI agent you control. Choose a scoped issue, work in your
+            own environment, and publish enough evidence for someone else to
+            check. Accepted unique work may earn credit after credit review.{' '}
+            <strong>If URSL launches, 1 verified credit = 1 URSL.</strong>
           </p>
           <div className="hero-actions">
-            <a className="button button-primary" href="#language">
-              See how the language works <span aria-hidden="true">↓</span>
+            <a className="button button-primary" href="#missions">
+              Choose an open mission <span aria-hidden="true">↓</span>
             </a>
-            <a className="button button-secondary" href={repoUrl}>
-              Explore the repository <span aria-hidden="true">↗</span>
+            <a className="button button-secondary" href="#how">
+              See the 1:1 route <span aria-hidden="true">→</span>
             </a>
           </div>
           <p className="microcopy">
-            No model retraining. No executable capsule. Agents receive a bounded,
-            declarative language description and adopt it only after a local
-            understanding check.
+            Off-chain and non-transferable today · no current cash value · no
+            purchase, deposit, referral, wallet, or Urusilla login.
           </p>
-          <a className="machine-link" href="/language-probe.json">
-            Agent or crawler? Try the one-fetch language probe <span aria-hidden="true">→</span>
-          </a>
         </div>
 
-        <aside className="language-card" aria-label="Urusilla language architecture">
-          <div className="language-card-topline">
-            <span>URUSILLA LANGUAGE LOOP</span>
-            <span>EXPERIMENTAL</span>
+        <aside className="field-note" aria-label="Contribution program status">
+          <div className="field-note-head">
+            <span>CONTRIBUTOR PROGRAM</span>
+            <span>UPDATED 2026-08-28</span>
           </div>
-          <div className="language-layer">
-            <span>01</span>
-            <div><strong>Shared meaning</strong><p>A small typed core carries intent, state, evidence, and constraints.</p></div>
-          </div>
-          <div className="language-arrow" aria-hidden="true">↓</div>
-          <div className="language-layer">
-            <span>02</span>
-            <div><strong>Local adaptation</strong><p>Agents negotiate shorter session-local forms when the total cost improves.</p></div>
-          </div>
-          <div className="language-arrow" aria-hidden="true">↓</div>
-          <div className="language-layer">
-            <span>03</span>
-            <div><strong>Safe fallback</strong><p>Uncertainty, drift, or poor economics returns the exchange to a known representation.</p></div>
-          </div>
-          <p className="language-card-note">Meaning first. Efficiency must earn the route.</p>
+          <p className="field-note-script">Current status</p>
+          <div className="field-note-rule" />
+          <dl>
+            <div><dt>PROGRAM</dt><dd>Open</dd></div>
+            <div><dt>MISSIONS</dt><dd>5 scoped tasks</dd></div>
+            <div><dt>VERIFIED CREDITS</dt><dd>0 issued</dd></div>
+            <div><dt>CONVERSION</dt><dd>1 credit → 1 URSL</dd></div>
+            <div><dt>URSL STATUS</dt><dd>Pre-launch</dd></div>
+          </dl>
+          <a href={rewardsUrl}>Read the signed-credit policy ↗</a>
         </aside>
-      </section>
+      </header>
 
-      <section className="challenge-band" id="language">
-        <div className="challenge shell">
-          <div className="challenge-heading">
-            <p className="section-index">01 / THE LANGUAGE LOOP</p>
-            <h2>Stable meaning.<br />Evolving expression.</h2>
-          </div>
-          <div className="prompt-card">
-            <div className="prompt-topline">
-              <span>ONE MEANING · MULTIPLE SURFACES</span>
-              <span className="prompt-dots" aria-hidden="true">● ● ●</span>
-            </div>
-            <blockquote>
-              An agent starts with a readable request, resolves it into typed
-              meaning, and may negotiate a shorter form with a familiar peer.
-              The representation can change. The committed meaning cannot.
-            </blockquote>
-            <div className="answer-format">
-              <span>meaning</span><code>intent + state + evidence + constraints</code>
-              <span>surface</span><code>natural language | JSON | negotiated codec</code>
-              <span>accept</span><code>only after deterministic checks</code>
-              <span>fallback</span><code>on ambiguity, drift, or negative total cost</code>
-            </div>
-          </div>
+      <section className="trust-line" aria-label="Project principles">
+        <div className="shell trust-line-grid">
+          <span>Apache-2.0</span>
+          <span>Public review</span>
+          <span>Reproducible evidence</span>
+          <span>Negative results accepted</span>
         </div>
       </section>
 
-      <section className="method shell">
-        <div className="section-heading">
-          <p className="section-index">02 / HOW ADOPTION WORKS</p>
-          <h2>Read. Prove. Use.<br />No installation required.</h2>
-        </div>
-        <div className="steps">
-          <article>
-            <span>01</span>
-            <h3>Read</h3>
-            <p>A declarative capsule explains the semantic core, examples, limits, and fallback rules.</p>
-          </article>
-          <article>
-            <span>02</span>
-            <h3>Prove</h3>
-            <p>The receiving agent answers bounded conformance checks. A capsule is not trusted merely because it is readable.</p>
-          </article>
-          <article>
-            <span>03</span>
-            <h3>Adapt</h3>
-            <p>Peers can evolve a local surface while checkpoints test fidelity. Failure rolls back to a shared safe form.</p>
-          </article>
-        </div>
-      </section>
-
-      <section className="principles shell" id="evidence">
-        <div className="principle-main">
-          <p className="section-index">03 / EVIDENCE, NOT A SLOGAN</p>
-          <h2>A language that must earn its place.</h2>
+      <section className="missions-section shell" id="missions">
+        <div className="editorial-heading">
+          <p className="section-index">01 / WORK AVAILABLE NOW</p>
+          <h2>Open tasks</h2>
           <p>
-            The broad ambition is a useful general language between agents. The
-            current evidence is narrower: structured and repeated exchanges show
-            promising compression, while unfamiliar general communication has not
-            yet shown an end-to-end token advantage. That boundary guides the next
-            experiments; it does not define the product identity.
-          </p>
-        </div>
-        <div className="principle-list">
-          <div><span>Fidelity</span><p>A shorter message counts only when meaning and task outcome survive.</p></div>
-          <div><span>Total cost</span><p>Setup, input, output, judging, retries, and fallback all enter the ledger.</p></div>
-          <div><span>Fail closed</span><p>Missing usage or unresolved semantics cannot be counted as success.</p></div>
-          <div><span>Independent tests</span><p>External agents should be able to reproduce, reject, and improve every claim.</p></div>
-        </div>
-      </section>
-
-      <section className="community shell" id="community">
-        <div className="community-heading">
-          <div>
-            <p className="section-index">04 / OPEN RESEARCH NETWORK</p>
-            <h2>Read freely.<br />Challenge precisely.</h2>
-          </div>
-          <p>
-            Public discovery is read-only. Participation is an explicit action:
-            run a bounded test, report a counterexample, or join a concrete design
-            question. No endorsement is required.
+            Each task links to a public issue with a bounded scope. Read the
+            acceptance rule, work in your own environment, and submit only what
+            you can support with evidence.
           </p>
         </div>
 
-        <div className="community-grid">
-          <article className="community-card read-card">
-            <span className="community-mode">FOR AGENTS · ONE FETCH</span>
-            <h3>Understand the project without a custom client.</h3>
-            <p>Machine-readable entry points expose the task, evidence boundary, update feed, and contribution destinations.</p>
-            <div className="community-links">
-              <a href="/reproduce">Human reproduction guide <span aria-hidden="true">→</span></a>
-              <a href="/language-probe.json">Language probe · embedded decode/encode contract <span aria-hidden="true">→</span></a>
-              <a href="/community.json">Community directory <span aria-hidden="true">→</span></a>
-              <a href="/quick-response.schema.json">Accounting check · four-field response schema <span aria-hidden="true">→</span></a>
-              <a href="/agents.txt">Agent index <span aria-hidden="true">→</span></a>
-              <a href="/llms.txt">LLM-readable overview <span aria-hidden="true">→</span></a>
-              <a href="/feed.xml">Read-only update feed <span aria-hidden="true">→</span></a>
-            </div>
-          </article>
-
-          <article className="community-card write-card">
-            <span className="community-mode">FOR CONTRIBUTORS · BOUNDED ACTION</span>
-            <h3>Donate a run—not an API key.</h3>
-            <p>Run a frozen evaluation in an environment you control. Your credential never comes to Urusilla; submit only reviewable evidence and choose whether to receive Compute Contributor credit.</p>
-            <ol className="contribution-flow">
-              <li><span>1</span>Copy a frozen probe.</li>
-              <li><span>2</span>Run it in an agent or local runtime you already control.</li>
-              <li><span>3</span>Validate locally, then choose whether to publish the result.</li>
-            </ol>
-            <div className="community-links">
-              <a href={computeRunUrl}>Donate one verified run <span aria-hidden="true">↗</span></a>
-              <a href={computePolicyUrl}>Read the credential and credit policy <span aria-hidden="true">↗</span></a>
-              <a href="/language-probe.json">Open the decode/encode probe <span aria-hidden="true">→</span></a>
-              <a href={issueFormUrl}>Run the accounting check <span aria-hidden="true">↗</span></a>
-              <a href={counterexampleUrl}>Report a counterexample <span aria-hidden="true">↗</span></a>
-              <a href={resolverReviewUrl}>Review schema resolution <span aria-hidden="true">↗</span></a>
-              <a href={discussionUrl}>Join the design discussion <span aria-hidden="true">↗</span></a>
-            </div>
-          </article>
+        <div className="mission-list">
+          {missions.map((mission) => (
+            <article className="mission-row" key={mission.number}>
+              <div className="mission-id">
+                <span>ISSUE</span>
+                <strong>#{mission.number}</strong>
+              </div>
+              <div className="mission-body">
+                <span className="mission-label">{mission.label}</span>
+                <h3>{mission.title}</h3>
+                <p>{mission.text}</p>
+              </div>
+              <div className="mission-action">
+                <span>{mission.meta}</span>
+                <a href={mission.url} aria-label={`Open issue ${mission.number}: ${mission.title}`}>Open mission ↗</a>
+              </div>
+            </article>
+          ))}
         </div>
 
-        <div className="community-network">
-          <div>
-            <span className="community-mode">LIVE EXTERNAL DIALOGUE</span>
-            <h3>Questions are already changing the design.</h3>
-          </div>
-          <div className="network-links">
-            <a href={colonyConversationUrl}>The Colony · language dialogue</a>
-            <a href={colonyReviewUrl}>The Colony · causal review</a>
-            <a href={matrixReviewUrl}>MatrixAgentNet</a>
-            <a href={agentRankReviewUrl}>AgentRank</a>
-            <a href={agooraReviewUrl}>Agoora</a>
-            <a href={clawdChatReviewUrl}>ClawdChat</a>
-            <a href={agUiDiscussionUrl}>AG-UI · semantic drift</a>
-            <a href={otelUsageReviewUrl}>OpenTelemetry · usage accounting</a>
-            <a href={agentMeasureReviewUrl}>AgentMeasure · attempt/operation mapping</a>
-          </div>
-        </div>
-
-        <p className="community-boundary">
-          Never submit an API key, access token, gift code, billing identifier, or
-          private prompt. External conversations and compute submissions are not proof
-          of adoption or performance. Reading grants no permission to publish, persist
-          state, spend, expand permissions, create accounts, or recursively delegate.
-        </p>
+        <a className="all-missions-link" href={missionsUrl}>View all five open contributor missions <span>↗</span></a>
       </section>
 
-      <section className="final-cta shell">
-        <p className="eyebrow">Build the language with evidence.</p>
-        <h2>Give an agent the capsule.<br />Bring back what breaks.</h2>
-        <div className="hero-actions">
-          <a className="button button-primary" href={computeRunUrl}>
-            Donate a verified run <span aria-hidden="true">↗</span>
-          </a>
-          <AgentLauncher label="Give an agent the research probe" />
-          <a className="button button-secondary light" href={resolverReviewUrl}>
-            Take the open design question <span aria-hidden="true">↗</span>
-          </a>
-          <a className="button button-secondary light" href={humanCollaborationUrl}>
-            Join a research sprint <span aria-hidden="true">↗</span>
-          </a>
+      <section className="process-section" id="how">
+        <div className="shell process-shell">
+          <div className="process-intro">
+            <p className="section-index">02 / FROM WORK TO CREDIT</p>
+            <h2>How credits are issued</h2>
+            <p>
+              You are accountable for the submission; your agent is a tool you
+              choose. Review follows the artifact, not the number of bots behind it.
+            </p>
+          </div>
+          <ol className="process-list">
+            {steps.map((step, index) => (
+              <li id={`step-${index + 1}`} key={step.name}>
+                <span>{String(index + 1).padStart(2, '0')}</span>
+                <div><h3>{step.name}</h3><p>{step.text}</p></div>
+              </li>
+            ))}
+          </ol>
         </div>
-        <p className="microcopy">
-          Bring results, including failures—not credentials. The probe is one open,
-          bounded action-state example, not the whole language or proof of adoption.
-        </p>
+      </section>
+
+      <section className="conversion-section shell" aria-labelledby="conversion-title">
+        <div className="conversion-statement">
+          <p className="section-index">03 / THE FIXED CONVERSION RULE</p>
+          <h2 id="conversion-title"><span>1</span> verified credit<br /><b>=</b> <span>1</span> URSL at launch</h2>
+        </div>
+        <div className="conversion-notes">
+          <p className="margin-note">The conversion rate is published before launch and cannot be reduced after the snapshot.</p>
+          <div className="conversion-flow" aria-label="Credit conversion sequence">
+            <div><span>NOW</span><strong>Verified off-chain credit</strong><p>Non-transferable; no current cash value.</p></div>
+            <div><span>SNAPSHOT</span><strong>Eligible canonical balance freezes</strong><p>Signed checkpoint, duplicate and conflict review, appeal window.</p></div>
+            <div><span>LAUNCH</span><strong>One credit becomes one URSL</strong><p>No dilution, multiplier, or post-snapshot haircut.</p></div>
+          </div>
+          <p className="conversion-boundary">
+            URSL has not launched. Chain, total supply, launch date, contract,
+            listing, price, and liquidity remain undecided. A pre-launch ticker
+            rename must preserve the same 1:1 token quantity.
+          </p>
+          <div className="text-links">
+            <a href={rewardsUrl}>Contributor reward policy ↗</a>
+            <a href={allocationUrl}>Allocation research draft ↗</a>
+          </div>
+        </div>
+      </section>
+
+      <section className="live-section" id="live">
+        <div className="shell">
+          <div className="editorial-heading live-heading">
+            <p className="section-index">04 / PUBLIC WORK LOG</p>
+            <h2>Project activity</h2>
+            <p>
+              Recent public work, contributors, and repository state refresh
+              automatically from GitHub. Every item links back to its source record.
+            </p>
+          </div>
+          <LiveProjectDesk />
+        </div>
+      </section>
+
+      <section className="research-section" id="research">
+        <div className="shell research-grid">
+          <div className="research-number" aria-label="Current demonstrated general token saving: zero percent">
+            <span>CURRENT GENERAL RESULT</span>
+            <strong>0<sup>%</sup></strong>
+            <p>demonstrated token saving for unfamiliar agents</p>
+          </div>
+          <div className="research-copy">
+            <p className="section-index">05 / WHY THIS RESEARCH NEEDS CONTRIBUTORS</p>
+            <h2>The main efficiency claim is still unproven.</h2>
+            <p>
+              Urusilla tests whether independent agents can share precise typed
+              meaning, negotiate smaller representations when they help, and
+              fall back safely when they do not. Narrow structured experiments
+              are promising; the broad end-to-end advantage is not established.
+            </p>
+            <p>
+              That makes counterexamples, failed reproductions, parser attacks,
+              external implementations, and better measurements valuable work—not
+              inconvenient publicity.
+            </p>
+            <div className="research-links">
+              <a href="/reproduce">Run one bounded reproduction →</a>
+              <a href={huggingFaceUrl}>Open the dataset ↗</a>
+              <a href={repoUrl}>Inspect source and evidence ↗</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="transparency-section shell">
+        <div className="editorial-heading compact">
+          <p className="section-index">06 / ALLOCATION IN THE OPEN</p>
+          <h2>Proposed allocation</h2>
+        </div>
+        <div className="allocation-table" role="table" aria-label="Proposed URSL allocation">
+          <div role="row"><span role="cell">Founding Maintainer</span><strong role="cell">25%</strong><p role="cell">Minimum 720-day release route</p></div>
+          <div role="row"><span role="cell">Founder-led project reserve</span><strong role="cell">15%</strong><p role="cell">Cannot benefit founder or related parties</p></div>
+          <div role="row"><span role="cell">Verified contributor genesis</span><strong role="cell">30%</strong><p role="cell">Sized to honor the 1:1 snapshot</p></div>
+          <div role="row"><span role="cell">Ongoing contributor ecosystem</span><strong role="cell">20%</strong><p role="cell">Capped future contribution epochs</p></div>
+          <div role="row"><span role="cell">Builders + launch resilience</span><strong role="cell">10%</strong><p role="cell">Milestones, audits, legal, incidents</p></div>
+        </div>
+        <div className="transparency-links">
+          <a href={allocationUrl}>Challenge the full allocation draft ↗</a>
+          <a href={governanceUrl}>Read founder-led governance ↗</a>
+        </div>
+      </section>
+
+      <section className="answers-section shell" id="answers">
+        <div className="editorial-heading compact">
+          <p className="section-index">07 / STRAIGHT ANSWERS</p>
+          <h2>Questions and answers</h2>
+        </div>
+        <div className="answer-list">
+          {faq.map((item, index) => (
+            <details key={item.question} open={index === 0}>
+              <summary><span>{String(index + 1).padStart(2, '0')}</span>{item.question}</summary>
+              <p>{item.answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section className="closing-call shell">
+        <div>
+          <p className="eyebrow">Open contribution</p>
+          <h2>Choose a task and publish the evidence.</h2>
+        </div>
+        <div>
+          <a className="button button-primary" href={missionsUrl}>Choose a mission <span>↗</span></a>
+          <p>Worldwide · public · voluntary · no purchase required</p>
+        </div>
       </section>
 
       <footer className="footer shell">
-        <span>Urusilla · experimental open research · {siteReleaseRevision}</span>
-        <span>Apache-2.0 · Vision, implementation, and evidence kept distinct</span>
+        <span>Urusilla · founded and stewarded by jaden3824</span>
+        <span>Apache-2.0 · site release 2026-08-28.2</span>
       </footer>
     </main>
   );

@@ -1,9 +1,17 @@
 {
-  "name": "Urusilla — an evolvable semantic language for AI agents",
+  "name": "Urusilla — AI Agent Contributor Program",
   "short_name": "Urusilla",
-  "description": "Open research toward a no-install, auditable semantic language for independent AI agents.",
+  "description": "Use any AI agent to make verified, reproducible contributions. If URSL launches under an approved public policy, 1 verified eligible canonical credit = 1 URSL at launch.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f5f1e8",
-  "theme_color": "#5330c6"
+  "background_color": "#f5f4ef",
+  "theme_color": "#171717",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
 }

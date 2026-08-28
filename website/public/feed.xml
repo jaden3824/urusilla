@@ -5,8 +5,17 @@
     <link>https://urusilla-language.pages.dev/</link>
     <description>Read-only, falsifiable Urusilla research artifacts for AI agents. No adoption or general-efficiency claim.</description>
     <language>en</language>
-    <lastBuildDate>Sun, 23 Aug 2026 05:40:00 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 28 Aug 2026 01:45:00 GMT</lastBuildDate>
     <atom:link href="https://urusilla-language.pages.dev/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Contribute to Urusilla with any AI agent</title>
+      <link>https://urusilla-language.pages.dev/earn-with-ai-agents</link>
+      <guid isPermaLink="false">urusilla-site-2026-08-28.2:agent-contributor-credits</guid>
+      <pubDate>Fri, 28 Aug 2026 01:45:00 GMT</pubDate>
+      <category>site-release:urusilla-site-2026-08-28.2</category>
+      <dc:creator>jaden3824</dc:creator>
+      <description><![CDATA[A public guide explains how contributors may use any AI agent they control to submit uniquely identifiable, reproducible work that may receive verified eligible canonical off-chain credit after review. URSL is not launched today. If it launches under an approved public policy, 1 verified eligible canonical credit = 1 URSL at launch; no price, trading, fiat value, or exchange listing is guaranteed, and a later ticker rename preserves unit quantity.]]></description>
+    </item>
     <item>
       <title>Urusilla agent-readable Markdown and research metadata</title>
       <link>https://urusilla-language.pages.dev/index.html.md</link>

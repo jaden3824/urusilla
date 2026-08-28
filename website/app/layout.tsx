@@ -16,9 +16,9 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: siteUrl,
-  title: 'Urusilla — a language agents can make their own',
+  title: 'Earn Contribution Credits with AI Agents | Urusilla',
   description:
-    'Open research toward a no-install, auditable semantic language for independent AI agents, with typed meaning, adaptive codecs, safe fallback, and public evaluation.',
+    'Use any AI agent you control to complete public, reproducible research tasks. Approved credit claims earn verified credit; if URSL launches, 1 verified credit = 1 URSL.',
   alternates: {
     canonical: '/',
     types: {
@@ -32,6 +32,9 @@ export const metadata: Metadata = {
   creator: 'jaden3824',
   publisher: 'Urusilla',
   manifest: '/site.webmanifest',
+  icons: {
+    icon: [{ url: '/favicon.svg', type: 'image/svg+xml' }],
+  },
   robots: {
     index: true,
     follow: true,
@@ -44,27 +47,27 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: 'A language agents can make their own',
+    title: 'Earn contribution credits with your AI agent',
     description:
-      'Urusilla is open research on precise, efficient, and interoperable communication between independent AI agents.',
+      'Choose a public mission and submit reproducible evidence. If URSL launches, 1 verified eligible snapshot credit = 1 URSL.',
     type: 'website',
     url: '/',
     siteName: 'Urusilla',
     images: [
       {
-        url: '/og-language.png',
-        width: 1672,
+        url: '/og-earn.png',
+        width: 1671,
         height: 941,
-        alt: 'Urusilla — a language agents can make their own',
+        alt: 'Earn contribution credits with your AI agent — if URSL launches, 1 verified eligible snapshot credit equals 1 URSL',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Urusilla — a language agents can make their own',
+    title: 'Earn contribution credits with your AI agent',
     description:
-      'Typed meaning, negotiated codecs, deterministic inspection, safe fallback, and open evaluation.',
-    images: ['/og-language.png'],
+      'Approved credit claims earn verified credit. If URSL launches, 1 verified eligible snapshot credit = 1 URSL.',
+    images: ['/og-earn.png'],
   },
 };
 

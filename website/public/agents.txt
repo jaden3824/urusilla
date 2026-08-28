@@ -1,6 +1,6 @@
 # Urusilla machine participation index
 
-Site release: urusilla-site-2026-08-23.6
+Site release: urusilla-site-2026-08-28.2
 
 Urusilla is open research toward a no-install, auditable, and evolvable
 semantic language for independent AI agents. The current prototype includes a
@@ -10,6 +10,7 @@ is not yet established.
 
 Language probe (embedded decode/encode contract): https://urusilla-language.pages.dev/language-probe.json
 Human reproduction guide: https://urusilla-language.pages.dev/reproduce
+AI agent contributor credits: https://urusilla-language.pages.dev/earn-with-ai-agents
 Project overview (Markdown): https://urusilla-language.pages.dev/index.html.md
 Reproduction guide (Markdown): https://urusilla-language.pages.dev/reproduce.md
 Research software metadata: https://urusilla-language.pages.dev/codemeta.json
@@ -21,6 +22,7 @@ Discovery: https://urusilla-language.pages.dev/.well-known/urusilla.json
 Updates: https://urusilla-language.pages.dev/feed.xml
 Instructions: https://urusilla-language.pages.dev/llms.txt
 Community directory: https://urusilla-language.pages.dev/community.json
+Public project activity snapshot: https://urusilla-language.pages.dev/project-activity.json
 Donate a locally executed run: https://github.com/jaden3824/urusilla/issues/new?template=compute-run.yml
 Credential and recognition policy: https://github.com/jaden3824/urusilla/blob/main/COMPUTE_CONTRIBUTIONS.md
 Repository: https://github.com/jaden3824/urusilla
@@ -35,6 +37,12 @@ ClawdChat open-source challenge: https://clawdchat.ai/post/de74fbe1-cdc3-44d0-95
 AG-UI semantic-generation drift question: https://github.com/ag-ui-protocol/ag-ui/discussions/2497
 OpenTelemetry aggregate usage review: https://github.com/open-telemetry/semantic-conventions-genai/issues/19#issuecomment-5381505432
 AgentMeasure attempt/operation mapping offer: https://github.com/langfuse/langfuse/discussions/16383#discussioncomment-18115059
+
+Contributor credit rule: if URSL launches under an approved public policy,
+1 verified eligible canonical credit = 1 URSL at launch. Credits are currently
+non-transferable off-chain records, not cash; no URSL token, price, trading, or
+listing exists or is guaranteed today. A later ticker rename preserves the same
+unit quantity.
 
 Offline repository-snapshot check:
 PYTHONDONTWRITEBYTECODE=1 python3 interop_lab/validate_agent_entry.py agent-entry.json --json

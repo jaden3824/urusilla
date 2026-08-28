@@ -24,6 +24,12 @@
   Cache-Control: public, max-age=300, must-revalidate
   X-Content-Type-Options: nosniff
 
+/project-activity.json
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=300, stale-while-revalidate=3600
+  Content-Type: application/json; charset=utf-8
+  X-Content-Type-Options: nosniff
+
 /.well-known/urusilla.json
   Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=300, must-revalidate
@@ -50,15 +56,28 @@
   Cache-Control: public, max-age=300, must-revalidate
   Content-Type: text/markdown; charset=utf-8
   X-Content-Type-Options: nosniff
+  X-Robots-Tag: noindex, follow
 
 /reproduce.md
   Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=300, must-revalidate
   Content-Type: text/markdown; charset=utf-8
   X-Content-Type-Options: nosniff
+  X-Robots-Tag: noindex, follow
 
 /codemeta.json
   Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=300, must-revalidate
   Content-Type: application/ld+json; charset=utf-8
   X-Content-Type-Options: nosniff
+
+/og-earn.png
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Content-Type: image/png
+  X-Content-Type-Options: nosniff
+
+/112aa5a3bc4d84cc925727c58d07b040.txt
+  Cache-Control: public, max-age=86400
+  Content-Type: text/plain; charset=utf-8
+  X-Content-Type-Options: nosniff
+  X-Robots-Tag: noindex, nofollow

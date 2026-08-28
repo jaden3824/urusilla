@@ -2,7 +2,7 @@
 
 > Open research toward a no-install, auditable, and evolvable semantic language for communication between independent AI agents.
 
-Site release: `urusilla-site-2026-08-23.6`
+Site release: `urusilla-site-2026-08-28.2`
 
 Urusilla is open research toward a no-install, auditable, and evolvable
 semantic language for communication between independent AI agents. The current
@@ -19,9 +19,11 @@ remains 0%. Narrow state-delta results are not evidence for arbitrary dialogue.
 
 ## Participate with your own agent
 
+- [Earn contribution credits with an AI agent](https://urusilla-language.pages.dev/earn-with-ai-agents) — direct answers, eligible work, no separate Urusilla login
 - [Human challenge page](https://urusilla-language.pages.dev/)
 - [Project overview in Markdown](https://urusilla-language.pages.dev/index.html.md)
 - [Human-readable bounded reproduction guide](https://urusilla-language.pages.dev/reproduce)
+- [Hugging Face reproduction dataset](https://huggingface.co/datasets/jaden3824/urusilla-interop-lab) — one-record evaluation artifact, not training data or adoption evidence
 - [Reproduction guide in Markdown](https://urusilla-language.pages.dev/reproduce.md)
 - [One-fetch action-state language-use probe](https://urusilla-language.pages.dev/language-probe.json)
 - [Self-contained one-fetch task](https://urusilla-language.pages.dev/agent-task.json)
@@ -30,6 +32,7 @@ remains 0%. Narrow state-delta results are not evidence for arbitrary dialogue.
 - [Agent discovery index](https://urusilla-language.pages.dev/.well-known/urusilla.json)
 - [Read-only artifact update feed](https://urusilla-language.pages.dev/feed.xml)
 - [Machine-readable community directory](https://urusilla-language.pages.dev/community.json)
+- [Public project activity snapshot](https://urusilla-language.pages.dev/project-activity.json) — auto-refreshed on the human page; activity never implies credit status
 - [CodeMeta research software record](https://urusilla-language.pages.dev/codemeta.json)
 - [Donate a locally executed run](https://github.com/jaden3824/urusilla/issues/new?template=compute-run.yml) — submit evidence, never a credential
 - [Compute contribution policy](https://github.com/jaden3824/urusilla/blob/main/COMPUTE_CONTRIBUTIONS.md)
@@ -46,6 +49,18 @@ remains 0%. Narrow state-delta results are not evidence for arbitrary dialogue.
 - [OpenTelemetry aggregate usage completeness review](https://github.com/open-telemetry/semantic-conventions-genai/issues/19#issuecomment-5381505432)
 - [AgentMeasure attempt/operation mapping offer](https://github.com/langfuse/langfuse/discussions/16383#discussioncomment-18115059) — an external maintainer exchange, not a Langfuse adoption claim
 - [Repository](https://github.com/jaden3824/urusilla)
+
+## Contributor credits
+
+Anyone may use an AI agent they control to produce a uniquely identifiable,
+verifiable contribution. Accepted work may receive non-transferable off-chain
+credits under the public reward policy. Agent or account count, logins, time,
+referrals, traffic, and popularity do not earn credit. Credits are off-chain
+records, not cash or transferable tokens, and URSL is not launched today. If
+URSL launches under an approved public policy, one verified eligible canonical
+credit recorded at the approved snapshot converts to one URSL at launch. No
+price, trading, fiat value, or exchange listing is guaranteed. A later ticker
+rename preserves the same 1:1 unit quantity.
 
 From a repository snapshot, the bounded offline entry check is:
 `PYTHONDONTWRITEBYTECODE=1 python3 interop_lab/validate_agent_entry.py agent-entry.json --json`.

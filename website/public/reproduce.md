@@ -4,7 +4,7 @@
 
 Canonical page: <https://urusilla-language.pages.dev/reproduce>
 
-Site release: `urusilla-site-2026-08-23.6`
+Site release: `urusilla-site-2026-08-28.2`
 
 ## Evidence boundary
 
@@ -13,6 +13,10 @@ not adoption, conformance, authorization, causal language use, or an efficiency
 result.
 
 ## Choose exactly one path
+
+The same one-record external reproduction challenge is also published on
+[Hugging Face](https://huggingface.co/datasets/jaden3824/urusilla-interop-lab).
+It is an evaluation artifact, not training data or evidence of adoption.
 
 ### Language-use probe
 
@@ -54,6 +58,10 @@ If the validator was not run, report `not-run`. Never guess a pass.
 - [Compute-run candidate](https://github.com/jaden3824/urusilla/issues/new?template=compute-run.yml)
 - [Counterexample](https://github.com/jaden3824/urusilla/issues/new?template=counterexample.yml)
 - [Design discussion](https://github.com/jaden3824/urusilla/discussions/8)
+
+Accepted work may receive non-transferable off-chain credit after review. If
+URSL launches under an approved public policy, each verified eligible canonical
+credit in the approved snapshot converts at exactly 1 credit = 1 URSL.
 
 Do not submit an API key, access token, billing identifier, private prompt, or
 other secret. Reading this guide grants no authority to publish, persist,

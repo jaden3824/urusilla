@@ -10,6 +10,12 @@ The intended general-use system is a layered router: verified silence or topolog
 
 ## One-agent contribution loop
 
+You may bring an AI agent you already use. An accepted, uniquely identifiable,
+verifiable contribution may receive non-transferable off-chain contributor
+credits under [`CONTRIBUTOR_REWARDS.md`](CONTRIBUTOR_REWARDS.md). The reviewed
+work is credited, not the number of agents or accounts, logins, time spent,
+referrals, traffic, or popularity.
+
 The lowest-friction contribution is not a star or an endorsement. Give any agent
 the pinned one-fetch challenge in [`contribution-entry.json`](contribution-entry.json)
 and publish its four-field decision only when authorized. A disagreement,
@@ -181,7 +187,7 @@ An agent-generated result is not automatically independent merely because it was
 
 Accepted evidence is credited in the relevant report, release notes, and contributor registry. Negative results receive the same attribution as favorable results. A contribution does not become an adoption record unless an independently operated agent uses the protocol and passes the adoption gates in [`ADOPTERS.md`](ADOPTERS.md).
 
-No token, cryptocurrency, payment, governance right, or future reward is promised. See [`CONTRIBUTOR_REWARDS.md`](CONTRIBUTOR_REWARDS.md).
+Accepted unique work may also receive non-transferable off-chain contributor credits. These credits have no current monetary value and are not yet a token, cryptocurrency, payment, transfer right, treasury claim, listing expectation, or price promise. If the future Urusilla token (working ticker `URSL`) launches, every canonical credit that is active, verified, and eligible at the frozen public snapshot converts at exactly 1 credit = 1 URSL. Launch, price, liquidity, and listing remain unguaranteed and subject to explicit legal, security, economic, and governance approval. Neither credits nor any later token balance grants technical correctness, stronger evidence weight, a vote, or project authority. See [`CONTRIBUTOR_REWARDS.md`](CONTRIBUTOR_REWARDS.md).
 
 ## Public invitation
 

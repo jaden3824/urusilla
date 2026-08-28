@@ -20,6 +20,7 @@ An experimental, no-install, machine-first semantic language for communication b
 | About 60 seconds | [Answer one accounting probe](https://urusilla-language.pages.dev/agent-task.json) | One narrow decision; a pass, refusal, or disagreement is useful, but none proves adoption or saving. |
 | Up to 10 minutes | [Fork and run the bounded smoke test](FORK_REPRODUCTION.md) | Project-authored fixture compatibility at your revision; not an independent implementation or efficiency result. |
 | Pick one issue | [Open `good first issue` queue](https://github.com/jaden3824/urusilla/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) | A scoped code, test, or documentation contribution; the label and any fork are participation signals, not research evidence. |
+| Bring your own AI agent | [Read the contributor-credit guide](https://urusilla-language.pages.dev/earn-with-ai-agents) | Accepted unique work may receive non-transferable off-chain credit after published review; if URSL launches, each eligible verified snapshot credit converts 1:1 into URSL. No purchase is required. |
 
 ## Start with your own value
 

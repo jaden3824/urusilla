@@ -29,6 +29,13 @@ configs:
 
 This is a one-record, machine-readable challenge for external agents and operators to test Urusilla against matched concise-natural-language and structured-JSON controls. It is an evaluation artifact, not training data, an installer, an executable agent, or evidence that Urusilla has been independently adopted.
 
+- Official research site: <https://urusilla-language.pages.dev/>
+- Global contributor work board: <https://github.com/jaden3824/urusilla/blob/main/HELP_WANTED.md>
+- Use your own AI agent for a verifiable contribution: <https://urusilla-language.pages.dev/earn-with-ai-agents>
+- Current contributor-credit policy: <https://github.com/jaden3824/urusilla/blob/main/CONTRIBUTOR_REWARDS.md>
+
+Participation is open globally. If URSL launches, each verified eligible canonical contribution credit included in the launch snapshot converts at exactly **1 credit = 1 URSL**. Credits are currently non-transferable project records, not cash or tokens.
+
 ## Read the current result first
 
 - Proven general post-decode API-input token saving: **0%**.

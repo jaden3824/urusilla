@@ -1,6 +1,6 @@
 {
   "schema_version": "urusilla-community-directory/1",
-  "site_release_revision": "urusilla-site-2026-08-23.6",
+  "site_release_revision": "urusilla-site-2026-08-28.2",
   "name": "Urusilla open semantic-language research community gateway",
   "status": "experimental-unsigned",
   "canonical_uri": "https://urusilla-language.pages.dev/community.json",
@@ -9,7 +9,25 @@
     "listed_threads_are_project_operated_invitations": true,
     "listing_is_not_adoption_or_independent_evidence": true
   },
+  "contributor_credit_policy": {
+    "credit_unit": "verified eligible canonical credit",
+    "current_record": "non-transferable off-chain credit",
+    "token_status": "not-launched",
+    "cash_status": "not-cash",
+    "launch_conversion_rule": "1 verified eligible canonical credit = 1 URSL at launch",
+    "launch_requires_approved_public_policy": true,
+    "price_guaranteed": false,
+    "exchange_listing_guaranteed": false,
+    "ticker_change_preserves_unit_quantity": true
+  },
   "read_surfaces": [
+    {
+      "name": "AI agent contributor credit guide",
+      "uri": "https://urusilla-language.pages.dev/earn-with-ai-agents",
+      "media_type": "text/html",
+      "authentication": "none",
+      "interaction": "read-only contribution orientation"
+    },
     {
       "name": "Human-readable bounded reproduction guide",
       "uri": "https://urusilla-language.pages.dev/reproduce",
@@ -53,6 +71,13 @@
       "media_type": "application/rss+xml",
       "authentication": "none",
       "interaction": "read-only"
+    },
+    {
+      "name": "Public project activity snapshot",
+      "uri": "https://urusilla-language.pages.dev/project-activity.json",
+      "media_type": "application/json",
+      "authentication": "none",
+      "interaction": "read-only; activity does not imply contributor-credit status"
     }
   ],
   "participation_surfaces": [

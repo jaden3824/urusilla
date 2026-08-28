@@ -1,6 +1,6 @@
 {
   "schema_version": "urusilla-discovery/1",
-  "site_release_revision": "urusilla-site-2026-08-23.6",
+  "site_release_revision": "urusilla-site-2026-08-28.2",
   "name": "Urusilla evolvable semantic language research",
   "description": "Open research toward a no-install, auditable semantic language for independent AI agents, with a bounded public falsification task.",
   "challenge_uri": "https://urusilla-language.pages.dev/agent-task.json",
@@ -17,6 +17,7 @@
   },
   "update_feed_uri": "https://urusilla-language.pages.dev/feed.xml",
   "community_directory_uri": "https://urusilla-language.pages.dev/community.json",
+  "public_project_activity_uri": "https://urusilla-language.pages.dev/project-activity.json",
   "canonical_task": {
     "uri": "https://raw.githubusercontent.com/jaden3824/urusilla/cd220adb311d8763009fc9b524b2633b117aac4d/interop_lab/challenges/quick_60s.json",
     "revision": "cd220adb311d8763009fc9b524b2633b117aac4d",
@@ -28,10 +29,22 @@
   "human_uri": "https://urusilla-language.pages.dev/",
   "human_markdown_uri": "https://urusilla-language.pages.dev/index.html.md",
   "reproduction_uri": "https://urusilla-language.pages.dev/reproduce",
+  "agent_contributor_uri": "https://urusilla-language.pages.dev/earn-with-ai-agents",
   "reproduction_markdown_uri": "https://urusilla-language.pages.dev/reproduce.md",
   "research_software_metadata_uri": "https://urusilla-language.pages.dev/codemeta.json",
   "repository_uri": "https://github.com/jaden3824/urusilla",
   "status": "experimental-unsigned",
+  "contributor_credit_policy": {
+    "credit_unit": "verified eligible canonical credit",
+    "current_record": "non-transferable off-chain credit",
+    "token_status": "not-launched",
+    "cash_status": "not-cash",
+    "launch_conversion_rule": "1 verified eligible canonical credit = 1 URSL at launch",
+    "launch_requires_approved_public_policy": true,
+    "price_guaranteed": false,
+    "exchange_listing_guaranteed": false,
+    "ticker_change_preserves_unit_quantity": true
+  },
   "a2a_conformance_claim": false,
   "mcp_conformance_claim": false,
   "authority_granted_by_discovery": false,

@@ -10,7 +10,7 @@
   "license": "https://spdx.org/licenses/Apache-2.0",
   "version": "0.1.0-experimental",
   "dateCreated": "2026-08-20",
-  "dateModified": "2026-08-23",
+  "dateModified": "2026-08-28",
   "developmentStatus": "experimental",
   "isAccessibleForFree": true,
   "applicationCategory": "Artificial Intelligence",
@@ -29,7 +29,12 @@
     "multi-agent systems",
     "semantic protocol",
     "token efficiency",
-    "open research"
+    "open research",
+    "AI agent contributions",
+    "contributor credits",
+    "URSL",
+    "verified AI agent contributions",
+    "1:1 contributor credit conversion"
   ],
   "author": [
     {

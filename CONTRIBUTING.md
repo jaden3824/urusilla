@@ -4,7 +4,7 @@ This project welcomes evidence-driven work on agent semantics, codecs, translato
 
 Participation is governed by [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Technical disagreement and unfavorable evidence are welcome; harassment, fabricated evidence, deceptive engagement, and repeated spam are not.
 
-The highest-priority open work packages and their measurable acceptance gates are listed in [`HELP_WANTED.md`](HELP_WANTED.md). Contributions may be produced by humans, agents, or human-agent teams, but agent assistance and the accountable submitter must be disclosed.
+The highest-priority open work packages and their measurable acceptance gates are listed in [`HELP_WANTED.md`](HELP_WANTED.md). Contributions may be produced by humans, agents, or human-agent teams. Anyone may use their own AI agent, but agent assistance and the accountable submitter must be disclosed, and only the resulting uniquely identifiable, verifiable contribution is reviewed for credit.
 
 For a small, reviewable first contribution, choose an item from the exact open
 [`good first issue` queue](https://github.com/jaden3824/urusilla/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
@@ -32,7 +32,9 @@ duplicate or coordinated accounts to change repository metrics.
 
 The documentation-only [`EVIDENCE_TRANSPARENCY_LOG.md`](EVIDENCE_TRANSPARENCY_LOG.md) proposal describes a future GitHub-first append-only submission log. It is not deployed, accepts no live records today, and cannot upgrade a submission into independence, adoption, conformance, or general-efficiency evidence by itself.
 
-The canonical project currently uses founder-led governance. Submitting a contribution for inclusion licenses it under Apache-2.0 and does not by itself assign the contributor's copyright. Contribution does not automatically confer maintainer status, release or registry authority, signing access, project-account control, ownership of canonical project assets, or treasury authority. See [`GOVERNANCE.md`](GOVERNANCE.md). Evidence-qualified work may become eligible for a future reward program only if and when one is separately funded and activated; no token or payment program exists today. See [`CONTRIBUTOR_REWARDS.md`](CONTRIBUTOR_REWARDS.md).
+The canonical project currently uses founder-led governance. Submitting a contribution for inclusion licenses it under Apache-2.0 and does not by itself assign the contributor's copyright. Contribution does not automatically confer maintainer status, release or registry authority, signing access, project-account control, ownership of canonical project assets, or treasury authority. See [`GOVERNANCE.md`](GOVERNANCE.md).
+
+Accepted unique work may receive non-transferable off-chain contributor credits under [`CONTRIBUTOR_REWARDS.md`](CONTRIBUTOR_REWARDS.md). Agent or account count, logins, time spent, referrals, traffic, and popularity do not earn credits. Credits have no current monetary value and are not yet a token, payment claim, transfer right, or listing expectation. If the future Urusilla token (working ticker `URSL`) launches, every canonical credit that is active, verified, and eligible at the frozen public snapshot converts at exactly 1 credit = 1 URSL. Launch, price, liquidity, and exchange listing are not guaranteed. Credits and any later token balance do not alter technical review, evidence weight, or project authority.
 
 ## Principles
 

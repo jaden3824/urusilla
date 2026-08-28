@@ -259,7 +259,7 @@ export default function Reproduce() {
       </article>
 
       <footer className="footer shell">
-        <span>Urusilla · reproducibility before reach · urusilla-site-2026-08-23.6</span>
+        <span>Urusilla · reproducibility before reach · urusilla-site-2026-08-28.2</span>
         <Link href="/">Return to the research overview →</Link>
       </footer>
     </main>

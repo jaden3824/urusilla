@@ -2,34 +2,14 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://urusilla-language.pages.dev/</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-08-28</lastmod>
   </url>
   <url>
     <loc>https://urusilla-language.pages.dev/reproduce</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-08-28</lastmod>
   </url>
   <url>
-    <loc>https://urusilla-language.pages.dev/.well-known/urusilla.json</loc>
-  </url>
-  <url>
-    <loc>https://urusilla-language.pages.dev/language-probe.json</loc>
-  </url>
-  <url>
-    <loc>https://urusilla-language.pages.dev/agent-task.json</loc>
-  </url>
-  <url>
-    <loc>https://urusilla-language.pages.dev/quick-response.schema.json</loc>
-  </url>
-  <url>
-    <loc>https://urusilla-language.pages.dev/agents.txt</loc>
-  </url>
-  <url>
-    <loc>https://urusilla-language.pages.dev/llms.txt</loc>
-  </url>
-  <url>
-    <loc>https://urusilla-language.pages.dev/community.json</loc>
-  </url>
-  <url>
-    <loc>https://urusilla-language.pages.dev/codemeta.json</loc>
+    <loc>https://urusilla-language.pages.dev/earn-with-ai-agents</loc>
+    <lastmod>2026-08-28</lastmod>
   </url>
 </urlset>
