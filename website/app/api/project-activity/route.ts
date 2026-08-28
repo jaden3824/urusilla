@@ -1,5 +1,6 @@
 const githubApiBase = 'https://api.github.com/repos/jaden3824/urusilla';
 const cacheSeconds = 10 * 60;
+const lastGoodCacheSeconds = 24 * 60 * 60;
 
 type JsonObject = Record<string, unknown>;
 
@@ -55,11 +56,14 @@ function normalizeCommit(value: unknown, fallbackActor: Actor): CommitRecord | n
   const author = isObject(value.commit.author) ? value.commit.author : null;
   const createdAt = author && typeof author.date === 'string' ? author.date : '';
   if (!sha || !message || !createdAt || Number.isNaN(Date.parse(createdAt))) return null;
+  const authorName = author && typeof author.name === 'string' && author.name
+    ? author.name
+    : 'unlinked commit author';
   return {
     sha,
     message,
     created_at: createdAt,
-    actor: actorFrom(value.author, fallbackActor),
+    actor: actorFrom(value.author, { ...fallbackActor, login: authorName }),
   };
 }
 
@@ -71,19 +75,22 @@ async function githubJson(path: string): Promise<unknown> {
       'X-GitHub-Api-Version': '2022-11-28',
     },
     cache: 'no-store',
+    signal: AbortSignal.timeout(8_000),
   });
   if (!response.ok) throw new Error(`GitHub returned ${response.status}`);
   return response.json();
 }
 
-function jsonResponse(value: unknown, status = 200): Response {
+function jsonResponse(
+  value: unknown,
+  status = 200,
+  maxAgeSeconds: number | null = status === 200 ? cacheSeconds : null,
+): Response {
   return Response.json(value, {
     status,
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Cache-Control': status === 200
-        ? `public, max-age=${cacheSeconds}, stale-while-revalidate=3600`
-        : 'no-store',
+      'Cache-Control': maxAgeSeconds === null ? 'no-store' : `public, max-age=${maxAgeSeconds}`,
       'X-Content-Type-Options': 'nosniff',
     },
   });
@@ -91,6 +98,9 @@ function jsonResponse(value: unknown, status = 200): Response {
 
 export async function GET(request: Request) {
   const cacheKey = new Request(new URL('/api/project-activity', request.url), {
+    method: 'GET',
+  });
+  const lastGoodCacheKey = new Request(new URL('/api/project-activity?cache=last-good-v1', request.url), {
     method: 'GET',
   });
   const edgeCache = typeof caches === 'undefined' ? null : caches.default;
@@ -132,7 +142,7 @@ export async function GET(request: Request) {
       .filter((commit): commit is CommitRecord => commit !== null);
     const commitEvents = commits.map((commit) => ({
       id: `commit-${commit.sha}`,
-      type: 'PushEvent',
+      type: 'CommitEvent',
       actor: commit.actor,
       created_at: commit.created_at,
       payload: {
@@ -180,13 +190,33 @@ export async function GET(request: Request) {
     const response = jsonResponse(payload);
     if (edgeCache) {
       try {
-        await edgeCache.put(cacheKey, response.clone());
+        await Promise.all([
+          edgeCache.put(cacheKey, response.clone()),
+          edgeCache.put(lastGoodCacheKey, jsonResponse(payload, 200, lastGoodCacheSeconds)),
+        ]);
       } catch {
         // Return the live response even when this edge cannot retain it.
       }
     }
     return response;
   } catch {
+    if (edgeCache) {
+      try {
+        const lastGood = await edgeCache.match(lastGoodCacheKey);
+        if (lastGood) {
+          const payload = await lastGood.json();
+          if (isObject(payload)) {
+            return jsonResponse({
+              ...payload,
+              status: 'stale',
+              stale_reason: 'source-unavailable',
+            }, 200, null);
+          }
+        }
+      } catch {
+        // Fall through to an explicit unavailable response.
+      }
+    }
     return jsonResponse({
       schema_version: 'urusilla-public-project-activity/1',
       status: 'source-unavailable',

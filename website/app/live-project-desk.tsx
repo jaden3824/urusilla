@@ -117,6 +117,16 @@ function eventToActivity(event: GithubEvent): Activity | null {
         url: commit ? `${repoUrl}/commit/${commit.sha}` : `${repoUrl}/commits`,
       };
     }
+    case 'CommitEvent': {
+      const commit = event.payload.commits?.at(-1);
+      return {
+        ...base,
+        verb: 'authored',
+        subject: 'a commit',
+        detail: commit?.message.split('\n')[0] ?? 'Commit recorded on main',
+        url: commit ? `${repoUrl}/commit/${commit.sha}` : `${repoUrl}/commits`,
+      };
+    }
     case 'IssuesEvent':
       if (!event.payload.issue) return null;
       return {
@@ -217,7 +227,6 @@ export function LiveProjectDesk() {
       void (async () => {
         const cached = readCachedDesk();
         const cachedAt = cached ? new Date(cached.stored_at) : null;
-        const cacheIsFresh = Boolean(cachedAt && Date.now() - cachedAt.getTime() < refreshIntervalMs);
 
         if (cached && cachedAt && !cancelled) {
           setData(cached.data);
@@ -238,7 +247,7 @@ export function LiveProjectDesk() {
           }
         }
 
-        if (!cacheIsFresh && !cancelled) void load();
+        if (!cancelled) void load();
       })();
     }, 0);
     const interval = window.setInterval(() => void load(), refreshIntervalMs);
