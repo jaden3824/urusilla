@@ -310,7 +310,7 @@ jobs:
           const sitemap = fs.readFileSync('website/public/sitemap.xml', 'utf8');
           const routes = require('./website/public/_routes.json');
           const sha256 = crypto.createHash('sha256').update(body).digest('hex');
-          const siteRelease = 'urusilla-site-2026-08-23.6';
+          const siteRelease = 'urusilla-site-2026-08-28.2';
           const frozenArtifactRelease = 'urusilla-site-2026-08-23.2';
           const responseSchemaSha256 = crypto.createHash('sha256').update(hostedResponseSchemaBody).digest('hex');
 
