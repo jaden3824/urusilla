@@ -102,6 +102,37 @@
         "schema_uri": "urn:urusilla:schema:peer-dialogue-reply:0.1",
         "strict_conformance": false
       }
+    },
+    {
+      "case_id": "required-schema-inline-constraint-conflict",
+      "query_path": "schema_resolution_query.inline-conflict.json",
+      "binding": {
+        "uri": "urn:urusilla:schema:peer-dialogue-reply:0.1",
+        "sha256": "sha256:4e40793ff15a897db35f3805c252f38f47dff816d76e37de9b7a17f210152e37",
+        "bytes": 1202,
+        "media_type": "application/schema+json"
+      },
+      "available_resource_ids": [
+        "peer-dialogue-reply"
+      ],
+      "fallback_route": "json",
+      "expected": {
+        "conformance_scope": "required-answer-schema",
+        "effect_authorized": false,
+        "fallback": {
+          "media_type": "application/json",
+          "value": {
+            "reason_code": "required-schema-inline-constraint-conflict",
+            "status": "fallback"
+          }
+        },
+        "format": "urusilla-required-schema-resolution-decision/1",
+        "reason_code": "required-schema-inline-constraint-conflict",
+        "route": "json",
+        "schema_binding_verified": true,
+        "schema_uri": "urn:urusilla:schema:peer-dialogue-reply:0.1",
+        "strict_conformance": false
+      }
     }
   ]
 }

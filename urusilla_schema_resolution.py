@@ -58,7 +58,11 @@ class SchemaResource:
 
 
 def _fallback(
-    *, schema_uri: str | None, reason_code: str, route: str
+    *,
+    schema_uri: str | None,
+    reason_code: str,
+    route: str,
+    schema_binding_verified: bool = False,
 ) -> dict[str, Any]:
     if route == "json":
         fallback: dict[str, Any] = {
@@ -79,7 +83,7 @@ def _fallback(
         "format": DECISION_FORMAT,
         "reason_code": reason_code,
         "route": route,
-        "schema_binding_verified": False,
+        "schema_binding_verified": schema_binding_verified,
         "schema_uri": schema_uri,
         "strict_conformance": False,
     }
@@ -99,6 +103,60 @@ def _success(schema_uri: str) -> dict[str, Any]:
     }
 
 
+def _inline_required_fields(body: Mapping[str, Any]) -> frozenset[str] | None:
+    """Return the union of explicit hard answer-field requirements.
+
+    ``None`` means that a declared ``required_fields`` condition is malformed.
+    An empty set means that this bounded compatibility check has no inline
+    field requirement to compare.  This is a project-profile check, not a new
+    v0.1 core meaning for arbitrary constraint conditions.
+    """
+
+    required_fields: set[str] = set()
+    for constraint in body.get("constraints", []):
+        if (
+            constraint.get("scope") != "answer"
+            or constraint.get("mode") != "hard"
+        ):
+            continue
+        condition = constraint.get("condition")
+        if not isinstance(condition, Mapping) or "required_fields" not in condition:
+            continue
+        fields = condition["required_fields"]
+        if (
+            type(fields) is not list
+            or not fields
+            or not all(type(field) is str and field for field in fields)
+            or len(set(fields)) != len(fields)
+        ):
+            return None
+        required_fields.update(fields)
+    return frozenset(required_fields)
+
+
+def _schema_forbids_inline_required_field(
+    schema: Mapping[str, Any], inline_required_fields: frozenset[str]
+) -> bool | None:
+    """Check the pinned reply payload object for an explicit field conflict.
+
+    The bounded peer-reply contract places reply fields in
+    ``arguments[0]``.  ``None`` means the resolved schema does not expose that
+    object shape, so compatibility cannot be established by this gate.
+    """
+
+    try:
+        arguments = schema["properties"]["arguments"]
+        payload = arguments["prefixItems"][0]
+        properties = payload["properties"]
+    except (KeyError, IndexError, TypeError):
+        return None
+    if not isinstance(payload, Mapping) or not isinstance(properties, Mapping):
+        return None
+    if payload.get("additionalProperties") is not False:
+        return False
+    return not inline_required_fields.issubset(properties)
+
+
 def resolve_required_answer_schema(
     message: Mapping[str, Any],
     binding: Mapping[str, Any],
@@ -110,12 +168,14 @@ def resolve_required_answer_schema(
 
     A successful decision requires an exact match to a project-pinned URI,
     SHA-256, byte length, and media type, plus valid JSON and a matching schema
-    document ``$id``.  The decision covers only resource availability at the
-    required-answer-schema stage.  It does not validate a future answer
-    instance, authenticate a publisher, or establish strict conformance.
-    Callers must bind those and all deployment requirements separately.  Every
-    observable resolution failure returns a closed fallback decision;
-    malformed messages still fail through the structural validator.
+    document ``$id``.  For this bounded project profile, an explicit hard
+    inline ``required_fields`` condition must also avoid fields forbidden by
+    the pinned reply payload object.  The decision does not validate a future
+    answer instance, authenticate a publisher, or establish strict
+    conformance.  Callers must bind those and all deployment requirements
+    separately.  Every observable resolution failure returns a closed
+    fallback decision; malformed messages still fail through the structural
+    validator.
     """
 
     if fallback_route not in {"json", "text"}:
@@ -221,4 +281,30 @@ def resolve_required_answer_schema(
             reason_code="required-schema-id-mismatch",
             route=fallback_route,
         )
+    inline_required_fields = _inline_required_fields(body)
+    if inline_required_fields is None:
+        return _fallback(
+            schema_uri=schema_uri,
+            reason_code="required-schema-inline-constraint-invalid",
+            route=fallback_route,
+            schema_binding_verified=True,
+        )
+    if inline_required_fields:
+        conflict = _schema_forbids_inline_required_field(
+            schema, inline_required_fields
+        )
+        if conflict is None:
+            return _fallback(
+                schema_uri=schema_uri,
+                reason_code="required-schema-inline-compatibility-unverified",
+                route=fallback_route,
+                schema_binding_verified=True,
+            )
+        if conflict:
+            return _fallback(
+                schema_uri=schema_uri,
+                reason_code="required-schema-inline-constraint-conflict",
+                route=fallback_route,
+                schema_binding_verified=True,
+            )
     return _success(schema_uri)

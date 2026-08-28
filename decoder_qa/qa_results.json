@@ -10,7 +10,7 @@
   ],
   "campaigns": {
     "baseline": {
-      "elapsed_seconds": 4.011249,
+      "elapsed_seconds": 3.717724,
       "errors": [],
       "expected_failures": [],
       "failures": [],
@@ -22,7 +22,7 @@
       ],
       "name": "baseline",
       "network_policy": "socket connect, bind, and name-resolution audit events denied",
-      "peak_rss_bytes": 82755584,
+      "peak_rss_bytes": 84475904,
       "process_return_code": 0,
       "resource_limits": {
         "address_space_bytes": {
@@ -96,10 +96,10 @@
         "duplicate_map_v02_sha256": "6605ba5c574dcdbd81fc3cd753aacfcdb95e11834d936cb1d3b04f68a112d3d7",
         "truncation_input_sequence_sha256": "fe4d7ab074147eb4db302186080b297570a46cb4a1b0c6abcbbb8230300985b8"
       },
-      "elapsed_seconds": 0.420581,
+      "elapsed_seconds": 0.359104,
       "name": "boundaries",
       "network_policy": "socket connect, bind, and name-resolution audit events denied",
-      "peak_rss_bytes": 73400320,
+      "peak_rss_bytes": 73465856,
       "process_return_code": 0,
       "resource_limits": {
         "address_space_bytes": {
@@ -146,13 +146,13 @@
       "total_cases": 1952
     },
     "known_defects": {
-      "elapsed_seconds": 0.137318,
+      "elapsed_seconds": 0.111129,
       "evaluated_cases": 16,
       "finding_count": 0,
       "findings": [],
       "name": "known_defects",
       "network_policy": "socket connect, bind, and name-resolution audit events denied",
-      "peak_rss_bytes": 33406976,
+      "peak_rss_bytes": 32260096,
       "process_return_code": 0,
       "resolved_ids": [
         "DQA-001",
@@ -224,11 +224,11 @@
         "v01_mutation_sequence_sha256": "2fc49f89d4b10694e9eb23d65e51eb0e3232f8376729d8d17e4d4091101a4113",
         "v02_mutation_sequence_sha256": "06c40497bed408159fb398087ea3bad13bb6717c64a44f5c6b06fb23225279ed"
       },
-      "elapsed_seconds": 0.215903,
+      "elapsed_seconds": 0.196896,
       "fixed_seed": "0xa11ce55dec0de202",
       "name": "mutations",
       "network_policy": "socket connect, bind, and name-resolution audit events denied",
-      "peak_rss_bytes": 34226176,
+      "peak_rss_bytes": 33488896,
       "process_return_code": 0,
       "resource_limits": {
         "address_space_bytes": {
@@ -275,13 +275,13 @@
       "total_cases": 2048
     },
     "qa_tests": {
-      "elapsed_seconds": 2.720396,
+      "elapsed_seconds": 2.271288,
       "errors": [],
       "expected_failures": [],
       "failures": [],
       "name": "qa_tests",
       "network_policy": "socket connect, bind, and name-resolution audit events denied",
-      "peak_rss_bytes": 75825152,
+      "peak_rss_bytes": 75694080,
       "process_return_code": 0,
       "resource_limits": {
         "address_space_bytes": {
@@ -345,10 +345,10 @@
         "ledger_sha256": "sha256:0ae2147fa81c3822284740e41118f1bbea292aa2a060232b94e8d9b74b92ecc2",
         "snapshot_sha256": "51b3dfb81d2a2c681dc1d66d9b96fab6e71a325502811f81cd4ec6e9e31aebca"
       },
-      "elapsed_seconds": 0.831999,
+      "elapsed_seconds": 0.697257,
       "name": "replay",
       "network_policy": "socket connect, bind, and name-resolution audit events denied",
-      "peak_rss_bytes": 33832960,
+      "peak_rss_bytes": 33341440,
       "process_return_code": 0,
       "resource_limits": {
         "address_space_bytes": {
@@ -418,11 +418,11 @@
         "public_v02_frame_sequence_sha256": "aeca229ffbd7cb6387cd5e98df168da3f98cd1c71397ba72d94d33050118f81b",
         "v02_profile_capsule_sha256": "b8d2cee7827f57e9c1b523cb195fbb75f3a91f8ad20e7a2f5209ce3abf63cdf6"
       },
-      "elapsed_seconds": 0.970231,
+      "elapsed_seconds": 0.889732,
       "fixed_seed": "0x5e4a01c0de123457",
       "name": "roundtrip",
       "network_policy": "socket connect, bind, and name-resolution audit events denied",
-      "peak_rss_bytes": 33177600,
+      "peak_rss_bytes": 33865728,
       "process_return_code": 0,
       "resource_limits": {
         "address_space_bytes": {
@@ -469,10 +469,10 @@
       "total_cases": 1097
     }
   },
-  "elapsed_seconds_total": 9.938934,
-  "execution_id": "2b520da61515565998c37b80b829dbab8a9a342e623e30947a506cbf6d0a793c",
-  "generated_at_utc": "2026-08-28T04:17:59+00:00",
-  "git_revision": "cb3cd8c19d9ad5b4d932eb67fb57a53a305ec603",
+  "elapsed_seconds_total": 8.850678,
+  "execution_id": "a014113795bfee089d3d4d4dfba8d55ac510af30eadf68610eaa5712457c8a26",
+  "generated_at_utc": "2026-08-28T04:46:11+00:00",
+  "git_revision": "0af4834231e184525abbd0e8d94245343e9dd704",
   "outcome": "passed",
   "platform": "macOS-15.0-arm64-arm-64bit-Mach-O",
   "policy": {
@@ -498,8 +498,8 @@
       "sha256": "5c5c0df2c5104ea682ea72344b33b3b743b5f9a4693e6c6132ca74e64df28a78"
     },
     "README.md": {
-      "bytes": 74792,
-      "sha256": "1745502b0596ee74e386007b26a455e8f3401fcf31d4c2e0fb262d35278be5a1"
+      "bytes": 75016,
+      "sha256": "bfdded4c05cdabf4f7d85ed179bd74614ba26ffa430dbba5801f7a08035bfa72"
     },
     "RESEARCH_PROGRAM.md": {
       "bytes": 18698,
@@ -634,7 +634,7 @@
       "sha256": "aef3158a37c7e7581fd090d737008683cca5b472ebf217a1a5823d051db57a51"
     }
   },
-  "source_snapshot_sha256": "17a846bece5b9e5156124923fd6cabbcccdef9b878e5c0dfd1d6d71aea3c6ab7",
+  "source_snapshot_sha256": "0bc004eeae80ebce2eaa3fdc6d197f45ce07744759812b02b8978d73e677f766",
   "source_stable_during_run": true,
   "totals": {
     "baseline_tests": 101,

@@ -148,7 +148,11 @@ backed by the content-bound
 Its positive vector verifies the project-pinned bytes for the original
 answer-schema URN and sets `schema_binding_verified: true`, while retaining
 `strict_conformance: false`. Its missing-resource and tampered-byte vectors
-close to concise JSON and text fallback respectively. Every decision retains
+close to concise JSON and text fallback respectively. A paired conflict cell
+changes only the inline hard `required_fields` list by adding `confidence`,
+which the pinned schema forbids through `additionalProperties: false`; the
+binding still verifies, but the route closes to JSON fallback with
+`required-schema-inline-constraint-conflict`. Every decision retains
 `effect_authorized: false`.
 
 These fixtures harden the post-observation evaluation path; they do not rewrite

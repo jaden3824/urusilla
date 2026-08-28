@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 import hashlib
 import json
 from pathlib import Path
@@ -25,12 +26,12 @@ def load_json(name: str) -> dict[str, object]:
 
 def run_schema_resolution_vector(case_id: str) -> dict[str, object]:
     vectors = load_json("schema_resolution_vectors.json")
-    query = load_json(str(vectors["query_path"]))
     descriptors = {
         descriptor["resource_id"]: descriptor
         for descriptor in vectors["resources"]
     }
     case = next(item for item in vectors["cases"] if item["case_id"] == case_id)
+    query = load_json(str(case.get("query_path", vectors["query_path"])))
     resources = {}
     for resource_id in case["available_resource_ids"]:
         descriptor = descriptors[resource_id]
@@ -114,6 +115,32 @@ class PublicDialogueProbe001Tests(unittest.TestCase):
                 self.assertEqual(decision["route"], route)
                 self.assertEqual(decision["fallback"]["media_type"], media_type)
                 self.assertFalse(decision["effect_authorized"])
+
+    def test_resolved_schema_closes_on_forbidden_inline_required_field(self) -> None:
+        base_query = load_json("schema_resolution_query.json")
+        conflict_query = load_json("schema_resolution_query.inline-conflict.json")
+        expected_mutation = deepcopy(base_query)
+        expected_mutation["body"]["constraints"][0]["condition"][
+            "required_fields"
+        ].append("confidence")
+        self.assertEqual(conflict_query, expected_mutation)
+
+        canonical = normalize_message(conflict_query)
+        frame = encode_message(conflict_query)
+        self.assertEqual(decode_message(frame), canonical)
+
+        vectors = load_json("schema_resolution_vectors.json")
+        case = next(
+            item
+            for item in vectors["cases"]
+            if item["case_id"] == "required-schema-inline-constraint-conflict"
+        )
+        decision = run_schema_resolution_vector(case["case_id"])
+        self.assertEqual(decision, case["expected"])
+        self.assertTrue(decision["schema_binding_verified"])
+        self.assertFalse(decision["strict_conformance"])
+        self.assertEqual(decision["route"], "json")
+        self.assertFalse(decision["effect_authorized"])
 
     def test_self_consistent_unpinned_schema_cannot_open_typed_route(self) -> None:
         vectors = load_json("schema_resolution_vectors.json")
