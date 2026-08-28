@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-const apiBase = 'https://api.github.com/repos/jaden3824/urusilla';
 const repoUrl = 'https://github.com/jaden3824/urusilla';
+const liveActivityUrl = '/api/project-activity';
 const snapshotUrl = '/project-activity.json';
 const cacheKey = 'urusilla-public-project-activity-v1';
 const refreshIntervalMs = 10 * 60_000;
@@ -177,7 +177,6 @@ function eventToActivity(event: GithubEvent): Activity | null {
 async function fetchJson<T>(url: string, signal: AbortSignal): Promise<T> {
   const response = await fetch(url, {
     headers: { Accept: 'application/vnd.github+json' },
-    cache: 'no-store',
     signal,
   });
   if (!response.ok) throw new Error(`GitHub returned ${response.status}`);
@@ -194,13 +193,12 @@ export function LiveProjectDesk() {
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 10_000);
     try {
-      const [repo, events, contributors] = await Promise.all([
-        fetchJson<Repo>(apiBase, controller.signal),
-        fetchJson<GithubEvent[]>(`${apiBase}/events?per_page=30`, controller.signal),
-        fetchJson<Contributor[]>(`${apiBase}/contributors?per_page=12`, controller.signal),
-      ]);
-      const nextData = { repo, events, contributors };
-      const receivedAt = new Date();
+      const live = await fetchJson<DeskSnapshot>(liveActivityUrl, controller.signal);
+      if (!live.repo || !Array.isArray(live.events) || !Array.isArray(live.contributors)) {
+        throw new Error('Live activity response is incomplete');
+      }
+      const nextData = { repo: live.repo, events: live.events, contributors: live.contributors };
+      const receivedAt = live.generated_at ? new Date(live.generated_at) : new Date();
       setData(nextData);
       setCheckedAt(receivedAt);
       writeCachedDesk(nextData, receivedAt);
