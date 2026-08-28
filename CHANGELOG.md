@@ -7,14 +7,25 @@ the versioning section of the specification before comparing identifiers.
 ## Unreleased
 
 - The non-authoritative contribution ledger is now included in the Python
-  package and existing CI matrix. A separate synthetic Ed25519 checkpoint trial
-  binds an exact replay-verified snapshot, review metadata, appeal window, and
-  caller-pinned trust-policy/key identity while keeping canonical credit, token
-  claim, transfer, conversion, onchain anchoring, and effect authority false.
-  Checkpoint artifacts cannot supply their own trust key, and mutation,
-  substitution, malformed signatures, oversized snapshots, and invalid appeal
-  windows fail closed. Reply-evidence evaluation also snapshots mutable reply
-  and binding mappings before validation so post-validation reads cannot produce
+  package and existing CI matrix. A synthetic adjudication trial binds an exact
+  caller-pinned policy and expected decision across project, ledger, epoch,
+  registration event, contribution, subject, class, points, evidence, reason,
+  and appeal time. It verifies an Ed25519 reviewer quorum plus distinct
+  policy-listed organizations while rejecting self-review, duplicate identities
+  or keys, revoked or out-of-window keys, policy or decision substitution, and
+  malformed or oversized inputs. Stable reviewer-subject references block
+  direct self-review and duplicate subjects without claiming alias resolution.
+  The checked recording path replays and matches the exact registration event,
+  evidence digest, epoch policy, points, and decision digest before it appends a
+  test award. A separate synthetic Ed25519 checkpoint trial
+  binds the replay-verified resulting snapshot, the same policy/roster metadata,
+  appeal window, and caller-pinned trust-policy/key identity. The end-to-end
+  trial links the verified decision digest to the exact ledger award and then
+  to the signed checkpoint while keeping canonical credit, token claim,
+  transfer, conversion, onchain anchoring, and effect authority false. These
+  signatures do not prove real-world reviewer identity or organization
+  independence. Reply-evidence evaluation also snapshots mutable reply and
+  binding mappings before validation so post-validation reads cannot produce
   contradictory diagnostics.
 - `prepare_message()` now emits a canonical, claim-ineligible chronology for
   the preflight route, action-state control decision, actual compiler and

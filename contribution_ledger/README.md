@@ -1,7 +1,7 @@
 # Local Contribution Ledger MVP
 
-Status: local research prototype with a synthetic signed-checkpoint trial;
-non-financial, non-transferable, and non-authoritative
+Status: local research prototype with synthetic adjudication-quorum and
+signed-checkpoint trials; non-financial, non-transferable, and non-authoritative
 
 `ledger.py` implements a standard-library-only append-only ledger for
 retrospective contribution test points. It is not a blockchain, coin, token,
@@ -9,24 +9,36 @@ wallet, treasury, payment rail, or financial product. It performs no network
 operation and contains no future conversion, redemption, transfer, approval,
 allowance, exchange, pricing, or governance-by-balance function.
 
-An `award_granted` event in this prototype is a test record, not an accepted or
+An `award_granted` event in the base ledger is a test record, not an accepted or
 verified Urusilla contribution credit. Anyone can instantiate a separate local
-ledger and supply a decision digest. The implementation does not authenticate
-reviewers, enforce a non-conflicted quorum, designate a canonical ledger, or
-prove the truth or independence of evidence. Hash chains and Merkle roots prove
-internal content consistency only. A future canonical credit system would need
-separately authenticated adjudication and signed public checkpoints.
+ledger and supply a decision digest. Hash chains and Merkle roots prove internal
+content consistency only. The separate `adjudication.py` trial can verify that
+an exact, caller-pinned policy's presented Ed25519 approvals meet its reviewer
+and organization thresholds, but the organization and identity labels in that
+policy remain assertions rather than independently established facts.
 
-The optional `checkpoint.py` trial tests one narrow part of that later path. It
-binds an exact replay-verified snapshot, contribution-policy digest, reviewer-
-roster digest, checkpoint time, appeal deadline, trust-policy digest, and key
+The adjudication statement binds the project, contribution-policy digest,
+ledger, epoch, registration event, contribution, subject, class, points,
+evidence digest, reason code, decision time, and appeal deadline. The caller
+must separately derive and pin the exact expected statement, so even a newly
+signed quorum for another ledger or point value cannot be substituted. Duplicate
+reviewers, key IDs, public keys, signatures, revoked or out-of-window keys,
+self-review, malformed encodings, and insufficient organization diversity fail
+closed. This trial currently supports only an `approve` statement and does not
+resolve real-world identity aliases. The bounded
+`record_synthetic_adjudicated_award()` path additionally replays the exact
+ledger, matches the registration event and its evidence digest, matches the
+epoch policy, and writes only the statement's signed points and decision digest.
+
+The optional `checkpoint.py` trial tests the aggregate snapshot part of that
+later path. It binds an exact replay-verified snapshot, contribution-policy
+digest, reviewer-roster digest, checkpoint time, appeal deadline, trust-policy digest, and key
 ID to a detached Ed25519 signature. Verification trusts only a public key, key
 ID, trust-policy digest, expected snapshot, and review-metadata pins obtained
 separately by the caller. The artifact cannot supply its own replacement key.
-This proves key approval of exact bytes;
-it does not authenticate real-world reviewer identity, establish a quorum,
-issue canonical credit, create a token claim, authorize an effect, or anchor a
-timestamp or record onchain.
+This proves key approval of exact bytes; it does not authenticate real-world
+reviewer identity, issue canonical credit, create a token claim, authorize an
+effect, or anchor a timestamp or record onchain.
 
 ## Bounded purpose
 
@@ -81,6 +93,22 @@ trust policy or key ID, substituted public keys, malformed signatures,
 noncanonical or oversized snapshot JSON, invalid appeal windows, and any attempt
 to enable canonical credit, a token claim, transfer, conversion, or effects.
 
+## Synthetic quorum-to-checkpoint flow
+
+The integration test follows this exact research-only path:
+
+1. open a fixed-policy epoch and register content-addressed evidence;
+2. derive an exact adjudication statement from that registration event;
+3. verify three synthetic reviewers from three policy-listed organizations;
+4. use the checked recording path to append the verified statement digest and
+   its exact points to `award_granted`;
+5. replay the ledger and sign a checkpoint carrying the same contribution-policy
+   and reviewer-roster digests.
+
+Both verification results keep canonical credit, token claim, transfer,
+conversion, and effect authority false. The test establishes byte and signature
+linkage, not a production reviewer registry or canonical project award.
+
 ## Minimal example
 
 ```python
@@ -117,9 +145,11 @@ Run the standard-library ledger tests from the repository root:
 python3 -m unittest discover -s tests -p 'test_contribution_ledger.py' -v
 ```
 
-Install the optional signature dependency before running the checkpoint tests:
+Install the optional signature dependency before running the adjudication and
+checkpoint tests:
 
 ```text
 python3 -m pip install '.[evidence-auth]'
+python3 -m unittest discover -s tests -p 'test_contribution_adjudication*.py' -v
 python3 -m unittest discover -s tests -p 'test_contribution_checkpoint.py' -v
 ```

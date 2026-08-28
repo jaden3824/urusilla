@@ -293,7 +293,7 @@ The near-term [`EVIDENCE_LADDER.md`](EVIDENCE_LADDER.md) starts with causal payl
 - [`PROVENANCE.md`](PROVENANCE.md) — source-attribution contract for agents and implementations
 - [`GOVERNANCE.md`](GOVERNANCE.md) — founding attribution, canonical authority, change process, and succession
 - [`CONTRIBUTOR_REWARDS.md`](CONTRIBUTOR_REWARDS.md) — evidence-first contributor rewards and optional tokenless attestations
-- [`contribution_ledger/README.md`](contribution_ledger/README.md) — non-authoritative append-only credit-record and detached signed-checkpoint trials
+- [`contribution_ledger/README.md`](contribution_ledger/README.md) — non-authoritative append-only credit-record, adjudication-quorum, and signed-checkpoint trials
 - [`COMPUTE_CONTRIBUTIONS.md`](COMPUTE_CONTRIBUTIONS.md) — contribute locally executed evaluation runs without sharing API keys; compute credit is separate from authorship
 - [`outputs/AGENTMEASURE_URUSILLA_MAPPING_2026-08-23.md`](outputs/AGENTMEASURE_URUSILLA_MAPPING_2026-08-23.md) — project-authored FMT-001/002/003 interoperability mapping and synthetic conformance fixture
 - [`outputs/EVOLUTION_PROTOCOL_REVIEW_2026-08-23.md`](outputs/EVOLUTION_PROTOCOL_REVIEW_2026-08-23.md) — audit of the current adaptive-language claim and the `EVO-MIN-1` minimum falsification experiment

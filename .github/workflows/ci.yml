@@ -412,6 +412,7 @@ jobs:
           import urusilla_hybrid_runtime
           import urusilla_wire_v02
           import contribution_ledger
+          import contribution_ledger.adjudication as contribution_adjudication
           import contribution_ledger.checkpoint as contribution_checkpoint
           import initial_goal_eval
           import source_manifest
@@ -425,10 +426,14 @@ jobs:
           assert contribution_checkpoint.CHECKPOINT_SCHEMA_VERSION == (
               "urusilla-contribution-checkpoint/0.1"
           )
+          assert contribution_adjudication.POLICY_SCHEMA_VERSION == (
+              "urusilla-contribution-adjudication-policy/0.1"
+          )
           installed_paths = {
               str(path) for path in importlib.metadata.files("urusilla") or ()
           }
           assert "contribution_ledger/ledger.py" in installed_paths
+          assert "contribution_ledger/adjudication.py" in installed_paths
           assert "contribution_ledger/checkpoint.py" in installed_paths
           assert not any(
               path.startswith("contribution_ledger/test_")
