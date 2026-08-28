@@ -49,7 +49,7 @@ urusilla-source = "source_manifest:main"
 
 [tool.setuptools]
 py-modules = ["urusilla", "urusilla_a2a_adapter", "urusilla_wire_v02", "urusilla_deterministic_gzip", "urusilla_schema_resolution", "urusilla_schema_reply_evaluation", "source_manifest"]
-packages = ["urusilla_hybrid_runtime", "initial_goal_eval"]
+packages = ["urusilla_hybrid_runtime", "initial_goal_eval", "contribution_ledger"]
 
 [tool.setuptools.package-data]
 initial_goal_eval = ["frozen_method_plan.json"]

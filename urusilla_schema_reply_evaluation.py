@@ -213,7 +213,8 @@ def evaluate_required_schema_reply(
     """Score one reply artifact against the actual schema-resolution path."""
 
     reply_is_object = isinstance(reply, Mapping)
-    reply = reply if reply_is_object else {}
+    reply = dict(reply) if reply_is_object else {}
+    binding_snapshot = dict(binding) if isinstance(binding, Mapping) else binding
     if not isinstance(resources, Mapping):
         raise ReplyEvidenceError("schema resources must be a mapping")
     resource_snapshot = dict(resources)
@@ -223,7 +224,9 @@ def evaluate_required_schema_reply(
         raise ReplyEvidenceError("reply evidence applies only to a typed QUERY")
     schema_uri = body["answer_schema"]
     inline_fields = _inline_required_fields(body)
-    resolution = resolve_required_answer_schema(query, binding, resource_snapshot)
+    resolution = resolve_required_answer_schema(
+        query, binding_snapshot, resource_snapshot
+    )
     if (
         resolution.get("schema_uri") != schema_uri
         or resolution.get("effect_authorized") is not False

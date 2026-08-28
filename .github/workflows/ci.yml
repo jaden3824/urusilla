@@ -411,12 +411,29 @@ jobs:
           import urusilla
           import urusilla_hybrid_runtime
           import urusilla_wire_v02
+          import contribution_ledger
+          import contribution_ledger.checkpoint as contribution_checkpoint
           import initial_goal_eval
           import source_manifest
 
           assert importlib.metadata.version("urusilla") == "0.1.0a0"
           assert urusilla.MAGIC == b"URSL\x01"
           assert urusilla_wire_v02.MAGIC == b"URSL\x02"
+          assert contribution_ledger.LEDGER_SCHEMA_VERSION == (
+              "urusilla-contribution-ledger/0.1"
+          )
+          assert contribution_checkpoint.CHECKPOINT_SCHEMA_VERSION == (
+              "urusilla-contribution-checkpoint/0.1"
+          )
+          installed_paths = {
+              str(path) for path in importlib.metadata.files("urusilla") or ()
+          }
+          assert "contribution_ledger/ledger.py" in installed_paths
+          assert "contribution_ledger/checkpoint.py" in installed_paths
+          assert not any(
+              path.startswith("contribution_ledger/test_")
+              for path in installed_paths
+          )
           assert source_manifest.LANGUAGE_VERSION == "0.1.0"
           assert (
               urusilla_hybrid_runtime.load_capsule().sha256

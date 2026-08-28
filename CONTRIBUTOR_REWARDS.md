@@ -1,6 +1,6 @@
 # Urusilla Verifiable Contributor Rewards
 
-Status: active off-chain credit review policy and non-authoritative local ledger prototype; no canonical credit award, blockchain launch, token, treasury, contract, transfer, conversion, listing, price, or payment is active
+Status: active off-chain credit review policy, non-authoritative local ledger prototype, and synthetic signed-checkpoint trial; no canonical credit award, blockchain launch, token, treasury, contract, transfer, conversion, listing, price, or payment is active
 Date: 2026-08-28
 
 ## Decision
@@ -11,7 +11,7 @@ The policy is retrospective and evidence-based. Work earns credits after its eff
 
 Credits currently have no monetary value. Before launch they cannot be sold, transferred, redeemed, or exchanged; they are not a token, payment, receivable, treasury interest, ownership right, or promise of a future listing, price, liquidity, or profit. Any ordinary bounty or grant must be separately funded and approved through legally reviewed payment arrangements.
 
-The bundled local ledger prototype can demonstrate deterministic, append-only test records, but it does not authenticate a reviewer, establish a quorum, verify independence or conflicts, or issue a canonical project credit. Its hashes and Merkle root prove only internal content consistency. A real credit award requires a separately published adjudication roster, non-conflicted quorum, signed checkpoint, reason code, and appeal window; no canonical awards have been issued as of this policy date.
+The bundled local ledger prototype can demonstrate deterministic, append-only test records, but it does not authenticate a reviewer, establish a quorum, verify independence or conflicts, or issue a canonical project credit. Its hashes and Merkle root prove only internal content consistency. A synthetic detached-signature trial can additionally prove that a caller-pinned Ed25519 key approved one exact snapshot and review-metadata digest set; it still proves no real-world identity, reviewer independence, quorum, external timestamp, canonical designation, credit award, or token claim. A real credit award requires a separately published adjudication roster, non-conflicted quorum, signed checkpoint, reason code, and appeal window; no canonical awards have been issued as of this policy date.
 
 No blockchain or project token is active or authorized. The project has nevertheless fixed the contributor conversion rule: **if the Urusilla token, currently named URSL, launches, every canonical credit that is active, verified, and eligible at the frozen public snapshot converts at 1 verified credit = 1 URSL.** Launch remains subject to explicit legal, security, economic, and governance review before any contract, asset, claim, or conversion exists. A chain is not the language transport, benchmark judge, identity oracle, scientific authority, or substitute for those reviews.
 

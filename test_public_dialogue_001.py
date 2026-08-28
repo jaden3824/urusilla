@@ -468,6 +468,56 @@ class PublicDialogueProbe001Tests(unittest.TestCase):
         self.assertEqual(resources.lookups, 1)
         self.assertTrue(evaluation["schema_payload_valid"])
 
+    def test_reply_is_snapshotted_before_validation_and_result_export(self) -> None:
+        vectors = load_json("schema_reply_evidence_vectors.json")
+        case = next(
+            item
+            for item in vectors["cases"]
+            if item["case_id"] == "resolved-nine-reply-nine"
+        )
+        descriptor = vectors["resources"][0]
+        schema_uri = descriptor["uri"]
+        resources = {
+            schema_uri: SchemaResource(
+                uri=schema_uri,
+                media_type=descriptor["media_type"],
+                content=(EVIDENCE / descriptor["path"]).read_bytes(),
+            )
+        }
+
+        class FlippingReply(Mapping):
+            def __init__(self) -> None:
+                self.lookups: dict[str, int] = {}
+
+            def __iter__(self):
+                return iter(case["reply"])
+
+            def __len__(self) -> int:
+                return len(case["reply"])
+
+            def __getitem__(self, key):
+                lookups = self.lookups.get(key, 0)
+                self.lookups[key] = lookups + 1
+                if key == "schema_urn" and lookups >= 1:
+                    return "urn:attacker:changed"
+                if key == "validated_against" and lookups >= 1:
+                    return "inline-fallback"
+                return case["reply"][key]
+
+        reply = FlippingReply()
+        evaluation = evaluate_required_schema_reply(
+            load_json(case["query_path"]),
+            case["binding"],
+            resources,
+            reply,
+        )
+        self.assertEqual(reply.lookups["schema_urn"], 1)
+        self.assertEqual(reply.lookups["validated_against"], 1)
+        self.assertEqual(evaluation["classification"], "resolved-schema-payload")
+        self.assertTrue(evaluation["reply_evidence_signal_valid"])
+        self.assertEqual(evaluation["schema_urn"], schema_uri)
+        self.assertEqual(evaluation["validated_against"], "resolved-schema")
+
     def test_underdetermined_is_only_the_exact_valid_f7_gap(self) -> None:
         vectors = load_json("schema_reply_evidence_vectors.json")
         case = next(

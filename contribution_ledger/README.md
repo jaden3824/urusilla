@@ -1,8 +1,9 @@
 # Local Contribution Ledger MVP
 
-Status: local research prototype; non-financial and non-transferable
+Status: local research prototype with a synthetic signed-checkpoint trial;
+non-financial, non-transferable, and non-authoritative
 
-This directory implements a standard-library-only append-only ledger for
+`ledger.py` implements a standard-library-only append-only ledger for
 retrospective contribution test points. It is not a blockchain, coin, token,
 wallet, treasury, payment rail, or financial product. It performs no network
 operation and contains no future conversion, redemption, transfer, approval,
@@ -15,6 +16,17 @@ reviewers, enforce a non-conflicted quorum, designate a canonical ledger, or
 prove the truth or independence of evidence. Hash chains and Merkle roots prove
 internal content consistency only. A future canonical credit system would need
 separately authenticated adjudication and signed public checkpoints.
+
+The optional `checkpoint.py` trial tests one narrow part of that later path. It
+binds an exact replay-verified snapshot, contribution-policy digest, reviewer-
+roster digest, checkpoint time, appeal deadline, trust-policy digest, and key
+ID to a detached Ed25519 signature. Verification trusts only a public key, key
+ID, trust-policy digest, expected snapshot, and review-metadata pins obtained
+separately by the caller. The artifact cannot supply its own replacement key.
+This proves key approval of exact bytes;
+it does not authenticate real-world reviewer identity, establish a quorum,
+issue canonical credit, create a token claim, authorize an effect, or anchor a
+timestamp or record onchain.
 
 ## Bounded purpose
 
@@ -55,6 +67,20 @@ identity, reviewer independence, originality of slightly modified work, or the
 truth of off-chain evidence. Those remain mandatory review boundaries before
 any real-world bounty could be considered.
 
+## Synthetic signed-checkpoint trial
+
+`build_checkpoint()` first replays the local ledger and freezes its canonical
+snapshot. `sign_checkpoint()` and `verify_checkpoint()` require the optional
+`evidence-auth` dependency. Signing accepts a raw 32-byte Ed25519 seed for the
+bounded offline trial, but no private or public key is written into the
+checkpoint artifact. Production key custody, signer publication, reviewer
+quorum, and canonical checkpoint designation remain outside this prototype.
+
+The verifier rejects snapshot or metadata mutation, a mismatched caller-pinned
+trust policy or key ID, substituted public keys, malformed signatures,
+noncanonical or oversized snapshot JSON, invalid appeal windows, and any attempt
+to enable canonical credit, a token claim, transfer, conversion, or effects.
+
 ## Minimal example
 
 ```python
@@ -85,8 +111,15 @@ jsonl = ledger.to_jsonl()
 snapshot = ledger.snapshot_json()
 ```
 
-Run the bounded test suite from the repository root:
+Run the standard-library ledger tests from the repository root:
 
 ```text
-python3 -m unittest -v contribution_ledger.test_ledger
+python3 -m unittest discover -s tests -p 'test_contribution_ledger.py' -v
+```
+
+Install the optional signature dependency before running the checkpoint tests:
+
+```text
+python3 -m pip install '.[evidence-auth]'
+python3 -m unittest discover -s tests -p 'test_contribution_checkpoint.py' -v
 ```

@@ -6,6 +6,16 @@ the versioning section of the specification before comparing identifiers.
 
 ## Unreleased
 
+- The non-authoritative contribution ledger is now included in the Python
+  package and existing CI matrix. A separate synthetic Ed25519 checkpoint trial
+  binds an exact replay-verified snapshot, review metadata, appeal window, and
+  caller-pinned trust-policy/key identity while keeping canonical credit, token
+  claim, transfer, conversion, onchain anchoring, and effect authority false.
+  Checkpoint artifacts cannot supply their own trust key, and mutation,
+  substitution, malformed signatures, oversized snapshots, and invalid appeal
+  windows fail closed. Reply-evidence evaluation also snapshots mutable reply
+  and binding mappings before validation so post-validation reads cannot produce
+  contradictory diagnostics.
 - `prepare_message()` now emits a canonical, claim-ineligible chronology for
   the preflight route, action-state control decision, actual compiler and
   fidelity calls, and final route. The prepared execution binding includes the
