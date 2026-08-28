@@ -1,0 +1,177 @@
+{
+  "format": "urusilla-required-schema-reply-evidence-vectors/1",
+  "source_comment_uri": "https://thecolony.ai/post/07cd8c64-ff29-4c5e-a95c-d61f6517622f#comment-ec940033-d637-4b45-85cd-8ad18fdbf607",
+  "offline_only": true,
+  "external_effects_authorized": false,
+  "claim_boundary": "Project-authored offline fixtures test project-pinned contract identity, reply-embedded validation-path diagnostics, and fail-closed reply evidence only; they do not authenticate a publisher and are not model comprehension, external conformance, independent reproduction, adoption, generalization, or efficiency evidence.",
+  "resources": [
+    {
+      "resource_id": "reply-evidence-schema",
+      "path": "peer_dialogue_reply_evidence.schema.json",
+      "uri": "urn:urusilla:schema:peer-dialogue-reply-evidence:0.1",
+      "sha256": "sha256:910094f2a7567a69219008c0ae595483cbe3b6b4fafdc590705e47df07c2a975",
+      "bytes": 2090,
+      "media_type": "application/schema+json"
+    },
+    {
+      "resource_id": "inline-fallback-contract",
+      "path": "peer_dialogue_reply_inline_fallback.schema.json",
+      "uri": "urn:urusilla:contract:inline-peer-dialogue-reply-evidence:0.1",
+      "sha256": "sha256:3480011e042491dea9f57cd52305afda697b3ddffa37985d57b8f4947c925b45",
+      "bytes": 1184,
+      "media_type": "application/schema+json"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "resolved-nine-reply-nine",
+      "query_path": "schema_reply_evidence_query.resolved.json",
+      "binding": {
+        "uri": "urn:urusilla:schema:peer-dialogue-reply-evidence:0.1",
+        "sha256": "sha256:910094f2a7567a69219008c0ae595483cbe3b6b4fafdc590705e47df07c2a975",
+        "bytes": 2090,
+        "media_type": "application/schema+json"
+      },
+      "available_resource_ids": [
+        "reply-evidence-schema"
+      ],
+      "inline_fallback_resource_id": null,
+      "reply": {
+        "choice": "semantic-fidelity",
+        "reason": "The content-bound schema is the evaluated contract.",
+        "next_question": "Which independent receiver should run the frozen cell?",
+        "evidence_uri": "https://github.com/jaden3824/urusilla",
+        "limitation": "Project-authored offline fixture only.",
+        "receiver_id": "urn:agent:offline-fixture",
+        "run_id": "schema-reply-evidence-001",
+        "validated_against": "resolved-schema",
+        "schema_urn": "urn:urusilla:schema:peer-dialogue-reply-evidence:0.1"
+      },
+      "expected": {
+        "classification": "resolved-schema-payload",
+        "reason_code": "resolved-schema-reply-payload-verified",
+        "schema_payload_valid": true,
+        "fallback_artifact_valid": false,
+        "inline_fallback_contract_verified": false,
+        "reply_evidence_signal_valid": true,
+        "must_fail": false,
+        "missing_fields": [],
+        "publisher_authenticated": false,
+        "strict_conformance": false,
+        "effect_authorized": false
+      }
+    },
+    {
+      "case_id": "resolved-nine-reply-seven",
+      "query_path": "schema_reply_evidence_query.resolved.json",
+      "binding": {
+        "uri": "urn:urusilla:schema:peer-dialogue-reply-evidence:0.1",
+        "sha256": "sha256:910094f2a7567a69219008c0ae595483cbe3b6b4fafdc590705e47df07c2a975",
+        "bytes": 2090,
+        "media_type": "application/schema+json"
+      },
+      "available_resource_ids": [
+        "reply-evidence-schema"
+      ],
+      "inline_fallback_resource_id": null,
+      "reply": {
+        "choice": "semantic-fidelity",
+        "reason": "The seven inline fields are present.",
+        "next_question": "Can shape alone establish contract provenance?",
+        "evidence_uri": "https://github.com/jaden3824/urusilla",
+        "limitation": "The two provenance fields are absent.",
+        "receiver_id": "urn:agent:offline-fixture",
+        "run_id": "schema-reply-evidence-002"
+      },
+      "expected": {
+        "classification": "underdetermined",
+        "reason_code": "resolved-schema-reply-fields-missing",
+        "schema_payload_valid": false,
+        "fallback_artifact_valid": false,
+        "inline_fallback_contract_verified": false,
+        "reply_evidence_signal_valid": false,
+        "must_fail": false,
+        "missing_fields": [
+          "schema_urn",
+          "validated_against"
+        ],
+        "strict_conformance": false,
+        "effect_authorized": false
+      }
+    },
+    {
+      "case_id": "unresolved-bound-inline-diagnostic",
+      "query_path": "schema_reply_evidence_query.unresolved-inline.json",
+      "binding": {
+        "uri": "urn:urusilla:schema:peer-dialogue-reply-evidence:0.1",
+        "sha256": "sha256:910094f2a7567a69219008c0ae595483cbe3b6b4fafdc590705e47df07c2a975",
+        "bytes": 2090,
+        "media_type": "application/schema+json"
+      },
+      "available_resource_ids": [],
+      "inline_fallback_resource_id": "inline-fallback-contract",
+      "reply": {
+        "choice": "semantic-fidelity",
+        "reason": "Only the separately content-bound inline fallback was evaluated.",
+        "next_question": "Can the missing authoritative schema later tighten this contract?",
+        "evidence_uri": "https://github.com/jaden3824/urusilla",
+        "limitation": "Authoritative schema conformance remains unknown.",
+        "receiver_id": "urn:agent:offline-fixture",
+        "run_id": "schema-reply-evidence-003",
+        "validated_against": "inline-fallback",
+        "schema_urn": "urn:urusilla:schema:peer-dialogue-reply-evidence:0.1"
+      },
+      "expected": {
+        "classification": "inline-fallback-artifact",
+        "reason_code": "inline-fallback-artifact-verified",
+        "schema_payload_valid": false,
+        "fallback_artifact_valid": true,
+        "inline_fallback_contract_verified": true,
+        "reply_evidence_signal_valid": false,
+        "must_fail": false,
+        "missing_fields": [],
+        "resolution_reason_code": "required-schema-missing",
+        "publisher_authenticated": false,
+        "strict_conformance": false,
+        "effect_authorized": false
+      }
+    },
+    {
+      "case_id": "unresolved-no-inline-shaped-reply",
+      "query_path": "schema_reply_evidence_query.unresolved-no-inline.json",
+      "binding": {
+        "uri": "urn:urusilla:schema:peer-dialogue-reply-evidence:0.1",
+        "sha256": "sha256:910094f2a7567a69219008c0ae595483cbe3b6b4fafdc590705e47df07c2a975",
+        "bytes": 2090,
+        "media_type": "application/schema+json"
+      },
+      "available_resource_ids": [],
+      "inline_fallback_resource_id": null,
+      "reply": {
+        "choice": "semantic-fidelity",
+        "reason": "This object is deliberately conformant-shaped.",
+        "next_question": "Does shape rescue an unresolved contract?",
+        "evidence_uri": "https://github.com/jaden3824/urusilla",
+        "limitation": "No schema or content-bound inline contract was available.",
+        "receiver_id": "urn:agent:offline-fixture",
+        "run_id": "schema-reply-evidence-004",
+        "validated_against": "resolved-schema",
+        "schema_urn": "urn:urusilla:schema:peer-dialogue-reply-evidence:0.1"
+      },
+      "expected": {
+        "classification": "must-fail",
+        "reason_code": "unresolved-schema-no-content-bound-inline-contract",
+        "schema_payload_valid": false,
+        "fallback_artifact_valid": false,
+        "inline_fallback_contract_verified": false,
+        "reply_evidence_signal_valid": false,
+        "must_fail": true,
+        "missing_fields": [],
+        "resolution_reason_code": "required-schema-missing",
+        "publisher_authenticated": false,
+        "strict_conformance": false,
+        "effect_authorized": false
+      }
+    }
+  ]
+}

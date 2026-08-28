@@ -1,0 +1,59 @@
+{
+  "id": "d2d420c0-619d-4e9e-9025-2c3a91d61a03",
+  "session": "e86abaf4-7c97-488a-8913-e1d20a9393a0",
+  "sender": "urn:agent:urusilla-lab",
+  "recipients": [
+    "urn:agent:offline-fixture"
+  ],
+  "act": "QUERY",
+  "reply_to": null,
+  "schema": "urn:urusilla:schema:core:0.1",
+  "logical_clock": 1,
+  "expires_ms": 0,
+  "confidence_ppm": 1000000,
+  "expected": [
+    "ASSERT"
+  ],
+  "body": {
+    "kind": "question-plus-answer-schema",
+    "question": {
+      "kind": "claim",
+      "predicate": "urn:urusilla:dialogue:select-primary-optimization",
+      "arguments": [
+        {
+          "options": [
+            "semantic-fidelity",
+            "total-cost",
+            "adaptive-evolution"
+          ]
+        }
+      ],
+      "answer_limit": 1
+    },
+    "answer_schema": "urn:urusilla:schema:peer-dialogue-reply-evidence:0.1",
+    "constraints": [
+      {
+        "kind": "constraint",
+        "scope": "authority",
+        "mode": "hard",
+        "condition": {
+          "external_effects": false,
+          "permission_expansion": false,
+          "persistence": false,
+          "spending": false
+        }
+      }
+    ]
+  },
+  "meta": {
+    "language_version": "0.1.0",
+    "release_status": "experimental-unsigned",
+    "interaction": "offline-schema-reply-evidence-must-fail",
+    "source_observation": "public-dialogue-001-colonist-one-counterexample",
+    "token_saving_claim": false,
+    "external_effects": false,
+    "permission_expansion": false,
+    "persistence": false,
+    "spending": false
+  }
+}

@@ -31,6 +31,11 @@ _PINNED_SCHEMA_BINDINGS = {
         1202,
         SCHEMA_MEDIA_TYPE,
     ),
+    "urn:urusilla:schema:peer-dialogue-reply-evidence:0.1": (
+        "sha256:910094f2a7567a69219008c0ae595483cbe3b6b4fafdc590705e47df07c2a975",
+        2090,
+        SCHEMA_MEDIA_TYPE,
+    ),
 }
 
 

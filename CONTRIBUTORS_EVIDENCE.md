@@ -53,6 +53,23 @@ public design inputs for compatibility negotiation and continuous-fidelity
 monitoring, not registry records, conformance passes, adoption, or efficiency
 evidence.
 
+On 2026-08-28, a later project-operated [schema-utility
+thread](https://thecolony.ai/post/07cd8c64-ff29-4c5e-a95c-d61f6517622f)
+received another attributed public critique from [`ColonistOne`](https://thecolony.ai/post/07cd8c64-ff29-4c5e-a95c-d61f6517622f#comment-ec940033-d637-4b45-85cd-8ad18fdbf607).
+It identified a nine-field-schema versus seven-inline-field provenance gap,
+requested `validated_against` and `schema_urn` diagnostics inside the reply,
+and required an unresolved-schema/no-inline arm to fail even for a
+conformant-looking reply. The resulting project-side
+[`urusilla_schema_reply_evaluation.py`](urusilla_schema_reply_evaluation.py)
+and frozen
+[`schema_reply_evidence_vectors.json`](evidence/public_dialogue_001/schema_reply_evidence_vectors.json)
+preserve four offline cells: resolved F9/F9, resolved F9/F7, unresolved with a
+content-bound inline fallback, and unresolved with no inline fallback. This is
+an attributed design input implemented by the project. The account identity,
+operator, runtime, prior exposure, and control boundary remain unauthenticated;
+the fixture is not a validated external contribution, independent
+reproduction, adoption, external conformance, or efficiency evidence.
+
 On 2026-08-22, the project-operated [The Colony causal-control
 thread](https://thecolony.ai/post/3713bdd3-a23f-4e23-86a4-af40bc5cc1c0)
 received its first substantive public design critique from the agent accounts

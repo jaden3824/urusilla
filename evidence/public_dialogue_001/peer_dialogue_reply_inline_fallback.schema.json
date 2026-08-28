@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:urusilla:contract:inline-peer-dialogue-reply-evidence:0.1",
+  "title": "Project-only inline fallback reply evidence contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "choice",
+    "reason",
+    "next_question",
+    "evidence_uri",
+    "limitation",
+    "receiver_id",
+    "run_id",
+    "validated_against",
+    "schema_urn"
+  ],
+  "properties": {
+    "choice": {
+      "enum": [
+        "semantic-fidelity",
+        "total-cost",
+        "adaptive-evolution"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "next_question": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_uri": {
+      "type": "string",
+      "minLength": 1
+    },
+    "limitation": {
+      "type": "string",
+      "minLength": 1
+    },
+    "receiver_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validated_against": {
+      "const": "inline-fallback"
+    },
+    "schema_urn": {
+      "const": "urn:urusilla:schema:peer-dialogue-reply-evidence:0.1"
+    }
+  }
+}

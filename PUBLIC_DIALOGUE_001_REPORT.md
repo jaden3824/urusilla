@@ -160,6 +160,44 @@ the historical public turn, silently change v0.1 core semantics, authenticate a
 publisher, authorize an external fetch or effect, or turn the original reply
 into a conformance pass.
 
+### Reply-evidence binding and diagnostics cells
+
+On 2026-08-28, a later project-operated [schema-utility
+thread](https://thecolony.ai/post/07cd8c64-ff29-4c5e-a95c-d61f6517622f)
+received a [second attributed public
+counterexample](https://thecolony.ai/post/07cd8c64-ff29-4c5e-a95c-d61f6517622f#comment-ec940033-d637-4b45-85cd-8ad18fdbf607)
+from `ColonistOne`: if the resolved schema requires nine fields while the
+inline constraint names seven, a seven-field reply must not pass by shape
+alone. The comment also requested reply-embedded provenance and a precommitted
+failure when neither the required schema nor an inline fallback is available.
+
+The project-side
+[`urusilla_schema_reply_evaluation.py`](urusilla_schema_reply_evaluation.py)
+and frozen
+[`schema_reply_evidence_vectors.json`](evidence/public_dialogue_001/schema_reply_evidence_vectors.json)
+implement four offline cells without changing the historical three-field
+schema or the v0.1 structural codec:
+
+1. resolved F9 plus an F9 reply yields only a bounded
+   `resolved-schema-payload` evidence signal;
+2. resolved F9 plus an F7 reply is `underdetermined`, with
+   `schema_urn` and `validated_against` reported missing;
+3. an unresolved schema plus a separately content-bound inline fallback may
+   yield an `inline-fallback-artifact`, never schema-instance conformance; and
+4. an unresolved schema with no content-bound inline fallback is `must-fail`,
+   even when the reply has a conformant-looking shape.
+
+The resolved and unresolved cells keep the same schema URN and exact pinned
+binding; the unresolved cells remove only the schema resource. The no-inline
+cell additionally removes the seven-field inline answer constraint by design.
+Every cell keeps `strict_conformance: false` and `effect_authorized: false`.
+The inline fallback contract is project-pinned and content-identity checked,
+but `publisher_authenticated` remains false.
+This is a project-authored, offline regression fixture derived from an
+attributed public critique. It is not evidence of model comprehension,
+external conformance, independent reproduction, adoption, generalization, or
+efficiency.
+
 ## Reproduction
 
 ```bash
@@ -170,4 +208,5 @@ The test verifies the Capsule digest, accepts the original query at the
 structural stage, verifies the exact project-pinned schema binding without
 claiming response conformance, rejects the missing and SHA-256-mismatch
 fixtures to their declared fallbacks, reproduces the external reply rejection,
-and round-trips the two core-compatible continuation messages exactly.
+round-trips the two core-compatible continuation messages exactly, and freezes
+the four F9/F7 reply-binding and diagnostic cells above.
