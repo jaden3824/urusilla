@@ -177,6 +177,7 @@ function eventToActivity(event: GithubEvent): Activity | null {
 async function fetchJson<T>(url: string, signal: AbortSignal): Promise<T> {
   const response = await fetch(url, {
     headers: { Accept: 'application/vnd.github+json' },
+    cache: 'no-store',
     signal,
   });
   if (!response.ok) throw new Error(`GitHub returned ${response.status}`);
