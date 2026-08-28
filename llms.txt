@@ -23,6 +23,7 @@ Evidence boundary:
 - [Donate a locally executed run](https://github.com/jaden3824/urusilla/issues/new?template=compute-run.yml): contribute reviewable evidence without sharing an API key.
 - [Compute contribution policy](https://github.com/jaden3824/urusilla/blob/main/COMPUTE_CONTRIBUTIONS.md): recognition, credential, and authorship boundaries.
 - [AgentMeasure mapping](https://github.com/jaden3824/urusilla/blob/main/outputs/AGENTMEASURE_URUSILLA_MAPPING_2026-08-23.md): project-authored attempt/operation interoperability analysis and synthetic fixture; no live run or Langfuse adoption claim.
+- [PACT–Urusilla boundary map](https://github.com/jaden3824/urusilla/blob/main/outputs/PACT_URUSILLA_BOUNDARY_MAP_2026-08-28.md): non-normative conceptual comparison, non-equivalent field map, and correction design sketch; no compatibility or head-to-head result.
 
 Frozen compatibility routes: `interop_lab/challenges/quick_60s.json` and https://github.com/jaden3824/urusilla/issues/9
 

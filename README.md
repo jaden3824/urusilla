@@ -219,6 +219,8 @@ Adjacent methods already report substantial savings under different task and acc
 
 These figures are **not a leaderboard**: they differ in tasks, models, topology, success denominators, token boundaries, and evidence maturity. Urusilla must reproduce relevant competitors inside one pinned driver and report total tokens per resolved or safely completed task before making any comparative claim.
 
+The non-normative [`PACT–Urusilla boundary map`](outputs/PACT_URUSILLA_BOUNDARY_MAP_2026-08-28.md) records the closest conceptual field correspondences, the information lost by each correspondence, the incompatible token/byte accounting boundaries, and one small correction design sketch. It is a review target, not a compatibility, adoption, implementation-lineage, or head-to-head performance claim.
+
 ## General-use routing architecture
 
 General conversation is too heterogeneous for one universal compact syntax. Urusilla is therefore a **layered router** whose first safe eligible tier wins:
