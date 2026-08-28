@@ -97,7 +97,13 @@ export async function GET(request: Request) {
   if (edgeCache) {
     try {
       const cached = await edgeCache.match(cacheKey);
-      if (cached) return cached;
+      if (cached) {
+        return new Response(cached.body, {
+          status: cached.status,
+          statusText: cached.statusText,
+          headers: new Headers(cached.headers),
+        });
+      }
     } catch {
       // A cache failure must not hide otherwise available public GitHub data.
     }
