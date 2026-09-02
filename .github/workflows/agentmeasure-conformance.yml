@@ -5,16 +5,19 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   conformance:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: "Vector 001 - retry/cache boundary"
-        uses: roy-tong/AgentMeasure@2cf476d6f7d0fc45401db5a822e1f12de009ac74
+        uses: roy-tong/AgentMeasure@2cf476d
         with:
           fixture: outputs/agentmeasure_urusilla_fixture_001.events.jsonl
       - name: "Vector 002 - multi-operation grain"
-        uses: roy-tong/AgentMeasure@2cf476d6f7d0fc45401db5a822e1f12de009ac74
+        uses: roy-tong/AgentMeasure@2cf476d
         with:
           fixture: outputs/agentmeasure_urusilla_fixture_002.events.jsonl
