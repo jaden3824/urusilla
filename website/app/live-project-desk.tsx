@@ -51,6 +51,7 @@ type DeskData = {
 
 type DeskSnapshot = DeskData & {
   generated_at?: string;
+  status?: 'stale';
 };
 
 type CachedDesk = {
@@ -213,7 +214,7 @@ export function LiveProjectDesk() {
       setData(nextData);
       setCheckedAt(receivedAt);
       writeCachedDesk(nextData, receivedAt);
-      setStatus('ready');
+      setStatus(live.status === 'stale' ? 'error' : 'ready');
     } catch {
       setStatus('error');
     } finally {
