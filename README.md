@@ -123,9 +123,14 @@ protocol.
 The screen's input boundary is now explicit rather than caller-asserted. A
 content-derived preflight hashes exact source and transmitted bytes and records
 tokenizer, chat-template, path-DAG, pre-call inclusive token-cap, and raw/JSON
-success-receipt inventory. It still always blocks numeric screening because no
-implemented compiler derives exact token vectors and phase bounds from those
-bytes. It never chooses a session length or authorizes receiver calls. A separate
+success-receipt inventory. The `/1` preflight remains inventory-only and always
+blocks numeric screening. A separate
+[`content-bound compiler`](initial_goal_eval/content_bound_compiler_v1.py) now
+derives conservative finite token vectors from registered exact inputs and
+invokes the corrected `/3` arithmetic screen. This permits only conditional
+zero-call screening; no tracked real row supplies the required artifacts.
+Neither layer selects a session length, authorizes receiver calls, or produces
+efficiency evidence. A separate
 perfect-sender diagnostic can exercise one cold Capsule comprehension followed
 by `N` direct action-state turns while running matched raw and descriptive JSON
 arms in fresh contexts, but its current callback accepts only a caller's

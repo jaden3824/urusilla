@@ -103,7 +103,9 @@ export async function GET(request: Request) {
   const lastGoodCacheKey = new Request(new URL('/api/project-activity?cache=last-good-v1', request.url), {
     method: 'GET',
   });
-  const edgeCache = typeof caches === 'undefined' ? null : caches.default;
+  const edgeCache = typeof caches === 'undefined' || !('default' in caches)
+    ? null
+    : (caches as CacheStorage & { default: Cache }).default;
   if (edgeCache) {
     try {
       const cached = await edgeCache.match(cacheKey);

@@ -461,6 +461,11 @@ class SessionInvalidationTests(TestCase):
                     expected_reason,
                 )
 
+                self.assertEqual(
+                    session.snapshot().cost.turn_provider_reported_tokens,
+                    (15,),
+                )
+
     def test_reply_binding_and_receipt_mismatches_invalidate(self) -> None:
         cases = (
             (
@@ -530,7 +535,7 @@ class SessionInvalidationTests(TestCase):
                 )
 
     def test_token_ceiling_and_adapter_failure_are_terminal(self) -> None:
-        session, _, _ = new_session()
+        session, attempt, _ = new_session()
         lease = prepare_session_turn(
             session,
             "bounded",
@@ -540,6 +545,11 @@ class SessionInvalidationTests(TestCase):
         with self.assertRaises(SessionError):
             execute_session_turn(session, lease, SessionAdapter())
         self.assertEqual(session.invalidation_reason, "token-budget-exceeded")
+        self.assertEqual(session.snapshot().cost.turn_provider_reported_tokens, (15,))
+        self.assertEqual(
+            session.snapshot().cost.reported_call_total_tokens,
+            attempt.evidence.provider_total_tokens + 15,
+        )
 
         class FailingAdapter:
             def complete_session_turn(self, handle, call):
@@ -555,3 +565,4 @@ class SessionInvalidationTests(TestCase):
         with self.assertRaises(SessionError):
             execute_session_turn(session, lease, FailingAdapter())
         self.assertEqual(session.invalidation_reason, "adapter-call-failed")
+        self.assertEqual(session.snapshot().cost.turn_provider_reported_tokens, ())

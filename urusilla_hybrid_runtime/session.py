@@ -955,6 +955,12 @@ class ReceiverSession:
                     "adapter-reply-type-invalid",
                     "session adapter returned an invalid reply type",
                 )
+            # A discarded reply still reports provider usage for this call.
+            # Record it before context, receipt, or budget checks invalidate
+            # the session; responses without a valid reply remain unreported.
+            self._turn_provider_reported_tokens.append(
+                reply.reply.provider_total_tokens
+            )
             if reply.context_reset_observed:
                 self._fail("context-reset", "provider reported a context reset")
             if reply.context_compaction_observed:
@@ -1029,9 +1035,6 @@ class ReceiverSession:
             )
             self._last_provider_receipts_sha256 = reply.receipts.sha256
             self._next_turn += 1
-            self._turn_provider_reported_tokens.append(
-                reply.reply.provider_total_tokens
-            )
             return SessionTurnResult(
                 lease_sha256=lease.sha256,
                 response_sha256=reply.receipts.response_content_sha256,

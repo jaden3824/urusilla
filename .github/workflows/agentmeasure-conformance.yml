@@ -1,0 +1,39 @@
+name: agentmeasure-conformance
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Check out pinned AgentMeasure without unrelated adapter dependencies
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: roy-tong/AgentMeasure
+          ref: 2cf476d6f7d0fc45401db5a822e1f12de009ac74
+          path: .agentmeasure-ci
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /action.yml
+            /conformance/pack/
+            /lab/
+      - name: Vector 001 - retry/cache boundary
+        uses: ./.agentmeasure-ci
+        with:
+          fixture: outputs/agentmeasure_urusilla_fixture_001.events.jsonl
+          require: execution-grain,retry-reconciliation,cost-preservation,operation-grain,evidence-boundary
+      - name: Vector 002 - multi-operation grain
+        uses: ./.agentmeasure-ci
+        with:
+          fixture: outputs/agentmeasure_urusilla_fixture_002.events.jsonl
+          require: execution-grain,retry-reconciliation,cost-preservation,operation-grain,evidence-boundary
